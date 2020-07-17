@@ -1,0 +1,297 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.data.model.nemo &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../../index.html"><img src="../../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" >vacumm</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../../data.html" accesskey="U">vacumm.data</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.data.model.nemo</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2013-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Valerie Garnier&#39;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;vgarnier@ifremer.fr&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s1">&#39;2012-11-14&#39;</span>
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="s1">&#39;NEMO model data manipulation&#39;</span>
+
+
+<span class="kn">from</span> <span class="nn">vacumm.data</span> <span class="k">import</span> <span class="n">register_dataset</span>
+<span class="kn">from</span> <span class="nn">vacumm.data.misc.dataset</span> <span class="k">import</span> <span class="n">OceanDataset</span>
+
+
+<div class="viewcode-block" id="Nemo"><a class="viewcode-back" href="../../../../library/data.model.nemo.html#vacumm.data.model.nemo.Nemo">[docs]</a><span class="k">class</span> <span class="nc">Nemo</span><span class="p">(</span><span class="n">OceanDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;:class:`~vacumm.data.misc.dataset.Dataset` class to read the</span>
+<span class="sd">    NEMO ocean model outputs</span>
+
+<span class="sd">    Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;nemo&#39;</span>
+    <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;ocean&#39;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;The NEMO ocean model&quot;</span>
+
+
+    <span class="n">ncobj_specs</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="c1"># depth</span>
+        <span class="s1">&#39;depth&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;depth&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># salinity</span>
+        <span class="s1">&#39;sal&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;vosaline&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># sea surface height</span>
+        <span class="s1">&#39;ssh&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sossheig&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># temperature</span>
+        <span class="s1">&#39;temp&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;votemper&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># salinity</span>
+        <span class="s1">&#39;sal&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;vosaline&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># zonal current (3d)</span>
+        <span class="s1">&#39;u3d&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;vozocrtx&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># zonal current (barotrope)</span>
+        <span class="c1">#&#39;ubt&#39;:{&#39;search&#39;:{&#39;id&#39;: [&#39;vosaline&#39;]}},</span>
+
+        <span class="c1"># meridional current (3d)</span>
+        <span class="s1">&#39;v3d&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;vomecrty&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># meridional current (2d)</span>
+        <span class="c1">#&#39;vbt&#39;:{&#39;search&#39;:{&#39;id&#39;:[&#39;vomecrty&#39;]}}</span>
+
+        <span class="c1"># -- Atmosphere --</span>
+            <span class="c1"># net downward heat flux</span>
+        <span class="s1">&#39;sohefldo&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sohefldo&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># cloud cover</span>
+        <span class="s1">&#39;soccov&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;soccov&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># surface heat flux: damping</span>
+        <span class="s1">&#39;sohefldp&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sohefldp&#39;</span><span class="p">]}},</span>
+
+            <span class="c1"># specific humidity</span>
+        <span class="s1">&#39;sohumspe&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sohumspe&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># latent downward heat flux</span>
+        <span class="s1">&#39;lathf&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;solhflup&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># Longwave Downward Hear flux</span>
+        <span class="s1">&#39;lwhf&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;solwfldo&#39;</span><span class="p">]}},</span>
+
+            <span class="c1"># Sensible Downward Heat Flux</span>
+        <span class="s1">&#39;senhf&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sosbhfup&#39;</span><span class="p">]}},</span>
+
+            <span class="c1"># Shortwave Radiation</span>
+        <span class="s1">&#39;soshfldo&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;soshfldo&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># Air temperature at 2m</span>
+        <span class="s1">&#39;sotemair&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sotemair&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># Concentration/dilution water flux</span>
+        <span class="s1">&#39;sowaflcd&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sowaflcd&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># Surface Water Flux: Damping</span>
+        <span class="s1">&#39;sowafldp&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sowafldp&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># Net Upward Water Flux</span>
+        <span class="s1">&#39;sowaflup&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sowaflup&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># Total Precip</span>
+        <span class="s1">&#39;sowapre&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sowapre&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># Wind speed module at 10m</span>
+        <span class="s1">&#39;sowindsp&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sowindsp&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># -- Rivers --</span>
+        <span class="c1"># River runoffs</span>
+        <span class="s1">&#39;sornf&#39;</span><span class="p">:{</span><span class="s1">&#39;search&#39;</span><span class="p">:{</span><span class="s1">&#39;id&#39;</span><span class="p">:[</span><span class="s1">&#39;sornf&#39;</span><span class="p">]}},</span>
+
+        <span class="c1"># SST</span>
+        <span class="s1">&#39;sst&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;inherit&#39;</span><span class="p">:</span><span class="s1">&#39;temp&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;select&#39;</span><span class="p">:{</span><span class="s1">&#39;level&#39;</span><span class="p">:</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)},</span>
+            <span class="s1">&#39;squeeze&#39;</span><span class="p">:</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="p">,</span>
+        <span class="c1"># sea surface salinity</span>
+        <span class="s1">&#39;sss&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;inherit&#39;</span><span class="p">:</span><span class="s1">&#39;sal&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;select&#39;</span><span class="p">:{</span><span class="s1">&#39;level&#39;</span><span class="p">:</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)},</span>
+            <span class="s1">&#39;squeeze&#39;</span><span class="p">:</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="p">,</span>
+        <span class="c1"># sea surface zonal velocity</span>
+        <span class="s1">&#39;usurf&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;inherit&#39;</span><span class="p">:</span><span class="s1">&#39;u3d&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;select&#39;</span><span class="p">:{</span><span class="s1">&#39;level&#39;</span><span class="p">:</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)},</span>
+            <span class="s1">&#39;squeeze&#39;</span><span class="p">:</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="p">,</span>
+        <span class="c1"># sea surface meridional velocity</span>
+        <span class="s1">&#39;vsurf&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;inherit&#39;</span><span class="p">:</span><span class="s1">&#39;v3d&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;select&#39;</span><span class="p">:{</span><span class="s1">&#39;level&#39;</span><span class="p">:</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)},</span>
+            <span class="s1">&#39;squeeze&#39;</span><span class="p">:</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+
+    <span class="n">positive</span> <span class="o">=</span> <span class="s1">&#39;down&#39;</span></div>
+
+
+<span class="c1">#: Alias for :class:`Nemo`</span>
+<span class="n">NEMO</span> <span class="o">=</span> <span class="n">Nemo</span>
+
+<span class="c1"># Register the class</span>
+<span class="n">register_dataset</span><span class="p">(</span><span class="n">NEMO</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span> <span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">vacumm.data</span> <span class="k">import</span> <span class="n">setup_dataset</span>
+    <span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="n">map2</span> <span class="k">as</span> <span class="nb">map</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">setup_dataset</span><span class="p">(</span><span class="s1">&#39;nemo&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;/tmp/oo7/oo/mfstep_sys4/best_estimate/2004/INGV_MFSTEP-SYS4_20040702_ASLV.nc&#39;</span><span class="p">)</span>
+    <span class="n">sshmod</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_ssh</span><span class="p">()</span>
+    <span class="c1">#map(sshmod[0, Ellipsis], res=None)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">setup_dataset</span><span class="p">(</span><span class="s1">&#39;nemo&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;/tmp/oo7/oo/mfstep_sys4/best_estimate/2004/INGV_MFSTEP-SYS4_20040702_TEMP.nc&#39;</span><span class="p">)</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_temp</span><span class="p">()</span>
+    <span class="n">xxx</span>
+    <span class="c1">#map(temp[0, 0, Ellipsis], res=None)  # axes verticaux inverses dans NEMO !!!!!!!</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">get_depth</span><span class="p">()</span>
+    <span class="n">xxxx</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" >vacumm</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../../data.html" >vacumm.data</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1336 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.3.3.7. Base classes and utilities &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.3.3.7. Base classes and utilities</a><ul>
+<li><a class="reference internal" href="#introduction">1.3.3.7.1. Introduction</a></li>
+<li><a class="reference internal" href="#logging-features">1.3.3.7.2. Logging features</a></li>
+<li><a class="reference internal" href="#configuration-features">1.3.3.7.3. Configuration features</a></li>
+<li><a class="reference internal" href="#debugging-features">1.3.3.7.4. Debugging features</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/misc.bases.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="base-classes-and-utilities">
+<span id="user-tut-misc-bases"></span><h1>1.3.3.7. Base classes and utilities<a class="headerlink" href="#base-classes-and-utilities" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>See also the api documentations:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="../library/misc.bases.html#module-vacumm.misc.bases" title="vacumm.misc.bases"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bases</span></code></a></li>
+<li><a class="reference internal" href="../library/misc.config.html#module-vacumm.misc.config" title="vacumm.misc.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">config</span></code></a></li>
+<li><a class="reference internal" href="../library/misc.log.html#module-vacumm.misc.log" title="vacumm.misc.log"><code class="xref py py-mod docutils literal notranslate"><span class="pre">log</span></code></a></li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="introduction">
+<h2>1.3.3.7.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>As the api documentation states, the <a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object</span></code></a> provides
+convenient features for logging and configuration management.</p>
+<p>This tutorial aims to show you these features and how to customize though most
+users will only need to use them as such.</p>
+<p>In this tutorial we will define a ‘MyObject’ class which inherit from
+<a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object</span></code></a> as you will do in your code to take advantage
+of this class.</p>
+<p>One of the mecanism of this class is to allow developpers to execute things when
+the class is defined (when its module is imported). The goal of these things may
+be various but the default goal is to allow a class to be parametrized using a
+configuration file.</p>
+<p>If you also need to do things at class initialization, below is the way you may
+redefine the <a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object.init_class" title="vacumm.misc.bases.Object.init_class"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object.init_class()</span></code></a> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.bases</span> <span class="kn">import</span> <span class="n">Object</span>
+
+<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">init_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+        <span class="c1"># do your class related stuff here</span>
+        <span class="k">print</span> <span class="s1">&#39;stack trace:&#39;</span>
+        <span class="k">print</span> <span class="bp">cls</span><span class="o">.</span><span class="n">stack_trace</span><span class="p">()</span>
+        <span class="k">print</span>
+        <span class="k">print</span> <span class="s1">&#39;default config:&#39;</span>
+        <span class="k">print</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Object</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: False. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: boolean(default=False). Switching to default value: False.
+  warn(warnmsg.format(**locals()))
+stack trace:
+Stack trace (innermost last):
+ &lt;module&gt;                                                      (../../../scripts/tutorials/misc.bases.py:6)
+ MyObject.__init__                                             (/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/bases.py:382)
+ MyObject._init_class                                          (/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/bases.py:523)
+ MyObject.init_class                                           (../../../scripts/tutorials/misc.bases.py:12)
+
+default config:
+{&#39;cfg_debug&#39;: &#39;False&#39;, &#39;log_obj_stats&#39;: &#39;False&#39;}
+</pre></div>
+</div>
+</div>
+<div class="section" id="logging-features">
+<h2>1.3.3.7.2. Logging features<a class="headerlink" href="#logging-features" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object</span></code></a> and its instances have logging capabilities
+through two <a class="reference internal" href="../library/misc.log.html#vacumm.misc.log.Logger" title="vacumm.misc.log.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.log.Logger</span></code></a> objects, one used when logging methods
+are called from the class and another one dedicated to each instance of this class.</p>
+<p>The following example introduce the basic usage of these features.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.bases</span> <span class="kn">import</span> <span class="n">Object</span>
+
+<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    
+    <span class="n">MyObject</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Call logging classmethod debug&#39;</span><span class="p">)</span>
+    <span class="n">MyObject</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Call logging classmethod info&#39;</span><span class="p">)</span>
+    <span class="n">MyObject</span><span class="o">.</span><span class="n">set_loglevel</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">)</span>
+    <span class="n">MyObject</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">set_format</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">MyObject</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Call logging classmethod debug&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Show the default logging configuration</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">()</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span>
+        <span class="s1">&#39;These are the default instance logging configuration:</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;  level:       </span><span class="si">%r</span><span class="s1"> (</span><span class="si">%r</span><span class="s1">)</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;  format:      </span><span class="si">%r</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;  date format: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">(),</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_level</span><span class="p">(),</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_format</span><span class="p">(),</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_date_format</span><span class="p">()</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Configure logging at init</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">(</span>
+        <span class="n">logger_level</span><span class="o">=</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span>
+        <span class="n">logger_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">logger_date_format</span><span class="o">=</span><span class="s1">&#39;%H:%M:%S&#39;</span>
+    <span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span>
+        <span class="s1">&#39;Customizing instance logging configuration:</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;  level:       </span><span class="si">%r</span><span class="s1"> (</span><span class="si">%r</span><span class="s1">)</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;  format:      </span><span class="si">%r</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;  date format: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">(),</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_level</span><span class="p">(),</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_format</span><span class="p">(),</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_date_format</span><span class="p">()</span>
+    <span class="p">)</span>
+    
+    <span class="n">obj</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;debug message&#39;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;verbose message&#39;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;info message&#39;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s1">&#39;notice message&#39;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;warning message&#39;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;error message&#39;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;critical message&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span> <span class="mi">0</span> <span class="o">/</span> <span class="mi">0</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Division by 0 failed !&#39;</span><span class="p">)</span>
+    
+    <span class="n">MyObject</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  MyObject.get_logger(): </span><span class="si">%r</span><span class="se">\n</span><span class="s1">  MyObject.get_class_logger(): </span><span class="si">%r</span><span class="se">\n</span><span class="s1">  MyObject.logger: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">MyObject</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(),</span> <span class="n">MyObject</span><span class="o">.</span><span class="n">get_class_logger</span><span class="p">(),</span> <span class="n">MyObject</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  obj.get_logger(): </span><span class="si">%r</span><span class="se">\n</span><span class="s1">  obj.get_class_logger(): </span><span class="si">%r</span><span class="se">\n</span><span class="s1">  obj.logger: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(),</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_class_logger</span><span class="p">(),</span> <span class="n">obj</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+    
+    <span class="n">obj</span><span class="o">.</span><span class="n">set_loglevel</span><span class="p">(</span><span class="s1">&#39;notice&#39;</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s1">&#39;the loglevel is now </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">())</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span>
+        <span class="s1">&#39;you will not see this message as it is emitted with a &quot;verbose&quot; level and &#39;</span>
+        <span class="s1">&#39;the logger is now configured with a </span><span class="si">%r</span><span class="s1"> minimum level&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">())</span>
+    
+    <span class="n">obj</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s1">&#39;Using the config method:</span><span class="se">\n</span><span class="s1">  obj.logger.config(): </span><span class="si">%s</span><span class="se">\n</span><span class="s1">  MyObject().logger.config(): </span><span class="si">%s</span><span class="se">\n</span><span class="s1">  MyObject(logger_config=obj).logger.config(): </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">(),</span> <span class="n">MyObject</span><span class="p">()</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">(),</span> <span class="n">MyObject</span><span class="p">(</span><span class="n">logger_config</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">())</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: False. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: boolean(default=False). Switching to default value: False.
+  warn(warnmsg.format(**locals()))
+[MyObject INFO] Call logging classmethod info
+2019-01-21 15:24:44 CET - MyObject - DEBUG - Call logging classmethod debug
+[MyObject NOTICE] These are the default instance logging configuration:
+  level:       &#39;INFO&#39; (20)
+  format:      &#39;[%(asctime)s %(name)s %(levelname)s] %(message)s&#39;
+  date format: &#39;%Y-%m-%d %H:%M:%S %Z&#39;
+[MyObject DEBUG] Loaded &lt;class &#39;__main__.MyObject&#39;&gt; configuration:
+  section:  MyObject
+  nested:   None
+  from:     None
+  loaded:   
+  cfg_debug = False
+  log_obj_stats = False
+[MyObject NOTICE] Customizing instance logging configuration:
+  level:       &#39;DEBUG&#39; (10)
+  format:      &#39;%(asctime)s - %(name)s - %(levelname)s - %(message)s&#39;
+  date format: &#39;%H:%M:%S&#39;
+[MyObject DEBUG] debug message
+[MyObject VERBOSE] verbose message
+[MyObject INFO] info message
+[MyObject NOTICE] notice message
+[MyObject WARNING] warning message
+[MyObject ERROR] error message
+[MyObject CRITICAL] critical message
+[MyObject ERROR] Division by 0 failed !
+Traceback (most recent call last):
+  File &quot;../../../scripts/tutorials/misc.bases.logging.py&quot;, line 52, in main
+    try: 0 / 0
+ZeroDivisionError: integer division or modulo by zero
+2019-01-21 15:24:44 CET - MyObject - VERBOSE - 
+  MyObject.get_logger(): &lt;vacumm.misc.log.Logger object at 0x7f7d7f7c6350&gt;
+  MyObject.get_class_logger(): &lt;vacumm.misc.log.Logger object at 0x7f7d7f7c6350&gt;
+  MyObject.logger: &lt;property object at 0x7f7d7fc32f18&gt;
+[MyObject VERBOSE] 
+  obj.get_logger(): &lt;vacumm.misc.log.Logger object at 0x7f7d7f7c6910&gt;
+  obj.get_class_logger(): &lt;vacumm.misc.log.Logger object at 0x7f7d7f7c6350&gt;
+  obj.logger: &lt;vacumm.misc.log.Logger object at 0x7f7d7f7c6910&gt;
+[MyObject NOTICE] the loglevel is now &#39;NOTICE&#39;
+[MyObject NOTICE] Using the config method:
+  obj.logger.config(): {&#39;date_format&#39;: &#39;%H:%M:%S&#39;, &#39;format&#39;: &#39;%(asctime)s - %(name)s - %(levelname)s - %(message)s&#39;, &#39;level&#39;: 25}
+  MyObject().logger.config(): {&#39;date_format&#39;: &#39;%Y-%m-%d %H:%M:%S %Z&#39;, &#39;format&#39;: &#39;[%(asctime)s %(name)s %(levelname)s] %(message)s&#39;, &#39;level&#39;: 20}
+  MyObject(logger_config=obj).logger.config(): {&#39;date_format&#39;: &#39;%H:%M:%S&#39;, &#39;format&#39;: &#39;%(asctime)s - %(name)s - %(levelname)s - %(message)s&#39;, &#39;level&#39;: 25}
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration-features">
+<h2>1.3.3.7.3. Configuration features<a class="headerlink" href="#configuration-features" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object</span></code></a> may use configurations features provided by the
+<a class="reference internal" href="../library/misc.config.html#module-vacumm.misc.config" title="vacumm.misc.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">config</span></code></a> module.</p>
+<p>When your module containing the <a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object</span></code></a> subclass is
+loaded, a specification file with the module name with the ‘.py’ extension replaced
+with the ‘.ini’ extension is looked up and the default configuration is loaded
+from the specification defaults.</p>
+<p>The way you may change your class’s specification file is to redefine the
+<a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object.get_config_spec_file" title="vacumm.misc.bases.Object.get_config_spec_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object.get_config_spec_file()</span></code></a> method, the section name
+defaults to the class name, you may also change it by redefining the
+<a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object.get_config_section_name" title="vacumm.misc.bases.Object.get_config_section_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object.get_config_section_name()</span></code></a> method.</p>
+<p>The <a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object.get_default_config" title="vacumm.misc.bases.Object.get_default_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object.get_default_config()</span></code></a> method will return the
+default configuration mentionned above.</p>
+<p>The <a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object.apply_config" title="vacumm.misc.bases.Object.apply_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object.apply_config()</span></code></a> method will be called each time a
+configuration is loaded using the <a class="reference internal" href="../library/misc.bases.html#vacumm.misc.bases.Object.load_config" title="vacumm.misc.bases.Object.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object.load_config()</span></code></a> method,
+you may also want to redefine.</p>
+<p>Logging configuration related to your class may be customized using a nested
+section named ‘Logger’.</p>
+<p>Specification file:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[MyObject]</span>
+    <span class="na">afloat</span> <span class="o">=</span> <span class="s">float(default=0.0)</span>
+<span class="s">    somefloats = floats(default=list())</span>
+</pre></div>
+</div>
+<p>Configuration file:</p>
+<div class="highlight-cfg notranslate"><div class="highlight"><pre><span></span><span class="k">[MyObject]</span>
+    <span class="na">afloat</span> <span class="o">=</span> <span class="s">42.0</span>
+<span class="s">    somefloats = 0, 42.0</span>
+<span class="s">    [[Logger]]</span>
+<span class="s">        level = &#39;debug&#39;</span>
+<span class="s">        format = &#39;%(asctime)s - %(name)s - %(levelname)s - %(message)s&#39;</span>
+<span class="s">        date_format = &#39;%H:%M:%S&#39;</span>
+<span class="s">    # Warning:</span>
+<span class="s">    # Despite indentation, any options that appear below will be loaded as </span>
+<span class="s">    # Logger subsection option... So you have to always write subsections after</span>
+<span class="s">    # a section options</span>
+</pre></div>
+</div>
+<p>Code using these specification and configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.bases</span> <span class="kn">import</span> <span class="n">Object</span>
+
+<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+    <span class="c1"># These are the defaults but in case you want to change these behavior...</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_config_spec_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.ini&#39;</span>
+        <span class="c1"># =&gt; misc.bases.config.ini</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_config_section_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="c1"># =&gt; MyObject</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">()</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">()</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Default configuration:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dict</span><span class="p">()))</span>
+    <span class="n">cfgfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.cfg&#39;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loaded configuration (</span><span class="si">%s</span><span class="s1">):</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">cfgfile</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dict</span><span class="p">()))</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Debug message after configuration has been loaded&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<p>The outputs of this code are:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: False. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: boolean(default=False). Switching to default value: False.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: 0.0. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: float(default=0.0). Switching to default value: 0.0.
+  warn(warnmsg.format(**locals()))
+[MyObject INFO] Default configuration:
+{ &#39;afloat&#39;: &#39;0.0&#39;,
+  &#39;cfg_debug&#39;: &#39;False&#39;,
+  &#39;log_obj_stats&#39;: &#39;False&#39;,
+  &#39;somefloats&#39;: []}
+[MyObject INFO] Loaded configuration (../../../scripts/tutorials/misc.bases.config.cfg):
+{ &#39;MyObject&#39;: { &#39;Logger&#39;: { &#39;date_format&#39;: &#39;%H:%M:%S&#39;,
+                            &#39;format&#39;: &#39;%(asctime)s - %(name)s - %(levelname)s - %(message)s&#39;,
+                            &#39;level&#39;: &#39;debug&#39;},
+                &#39;afloat&#39;: &#39;42.0&#39;,
+                &#39;somefloats&#39;: [&#39;0&#39;, &#39;42.0&#39;]},
+  &#39;afloat&#39;: &#39;0.0&#39;,
+  &#39;cfg_debug&#39;: &#39;False&#39;,
+  &#39;log_obj_stats&#39;: &#39;False&#39;,
+  &#39;somefloats&#39;: []}
+</pre></div>
+</div>
+<p>Note that MyObject attributes and logger have been changed by the loaded configuration.</p>
+</div>
+<div class="section" id="debugging-features">
+<h2>1.3.3.7.4. Debugging features<a class="headerlink" href="#debugging-features" title="Permalink to this headline">¶</a></h2>
+<p>The following example shows some method calls you may use when writing your code
+to trace or debug it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">cdms2</span><span class="o">,</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.axes</span> <span class="kn">import</span> <span class="n">create_time</span><span class="p">,</span> <span class="n">create_lat</span><span class="p">,</span> <span class="n">create_lon</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.bases</span> <span class="kn">import</span> <span class="n">Object</span>
+
+<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">do_something</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">num</span><span class="p">,</span> <span class="n">den</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span>
+        <span class="k">except</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Division by 0 failed !</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_trace</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;The function emitting this message is: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_name</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;The stack trace of the function emitting this message is:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack_trace</span><span class="p">())</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">create_time</span><span class="p">([</span><span class="s1">&#39;1900-01-01 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;9999-12-31 23:59:59&#39;</span><span class="p">])</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">create_lat</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">create_lon</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">ranf</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;random data&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Time:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Latitude:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Longitude:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">stats</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Variable:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">stats</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">()</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">do_something</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: False. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: boolean(default=False). Switching to default value: False.
+  warn(warnmsg.format(**locals()))
+[MyObject ERROR] Division by 0 failed !
+--------------------------------------------------------------------------------
+Exception details, locals by frame, innermost last
+--------------------------------------------------------------------------------
+  File &quot;../../../scripts/tutorials/misc.bases.debug.py&quot;, line 30, in &lt;module&gt;
+    main()
+
+	            MyObject &lt;class &#39;vacumm.misc.bases.Class&#39;&gt; = &lt;class &#39;__main__.MyObject&#39;&gt;
+	              Object &lt;class &#39;vacumm.misc.bases.Class&#39;&gt; = &lt;class &#39;vacumm.misc.bases.Object&#39;&gt;
+
+--------------------------------------------------------------------------------
+  File &quot;../../../scripts/tutorials/misc.bases.debug.py&quot;, line 27, in main
+    obj.do_something()
+
+	                 obj &lt;class &#39;__main__.MyObject&#39;&gt; = &lt;__main__.MyObject object at 0x7fa4f51aa190&gt;
+
+--------------------------------------------------------------------------------
+  File &quot;../../../scripts/tutorials/misc.bases.debug.py&quot;, line 13, in do_something
+    except: self.exception(&#39;Division by 0 failed !\n%s&#39;, self.exception_trace())
+
+	                 den &lt;type &#39;int&#39;&gt; = 0
+	                 num &lt;type &#39;int&#39;&gt; = 0
+	                self &lt;class &#39;__main__.MyObject&#39;&gt; = &lt;__main__.MyObject object at 0x7fa4f51aa190&gt;
+
+--------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;../../../scripts/tutorials/misc.bases.debug.py&quot;, line 12, in do_something
+    try: num / den
+ZeroDivisionError: integer division or modulo by zero
+
+--------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;../../../scripts/tutorials/misc.bases.debug.py&quot;, line 12, in do_something
+    try: num / den
+ZeroDivisionError: integer division or modulo by zero
+[MyObject INFO] The function emitting this message is: do_something
+[MyObject INFO] The stack trace of the function emitting this message is:
+Stack trace (innermost last):
+ &lt;module&gt;                                                      (../../../scripts/tutorials/misc.bases.debug.py:30)
+ main                                                          (../../../scripts/tutorials/misc.bases.debug.py:27)
+ MyObject(140346463527312).do_something                        (../../../scripts/tutorials/misc.bases.debug.py:15)
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/cf.py:981: VACUMMWarning: Error while load cached cf specs: 
+  vcwarn(&#39;Error while load cached cf specs: &#39;.format(e.args))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;temp&#39;, &#39;temperature&#39;, &#39;TEMP&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Temperature. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;sea_water_temperature&#39;, &#39;sea_water_potential_temperature&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: degrees_celsius. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: generic. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: option(&#39;generic&#39;,&#39;ocean&#39;,&#39;atmos&#39;,&#39;waves&#39;,&#39;land&#39;,default=&#39;generic&#39;). Switching to default value: generic.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: thermal. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: isa. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=isa). Switching to default value: isa.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;lon&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list(lon)). Switching to default value: [&#39;lon&#39;].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;lat&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list(lat)). Switching to default value: [&#39;lat&#39;].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;time&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list(time)). Switching to default value: [&#39;time&#39;].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Potential temperature. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_potential_temperature. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;sal&#39;, &#39;psal&#39;, &#39;salinity&#39;, &#39;SAL&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Salinity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: PSU. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: haline. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea surface temperature. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;sea_surface_temperature&#39;, &#39;surface_sea_water_temperature&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea surface salinity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_surface_salinity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water density. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_density. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: kg m-3. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: dense. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sigmat. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water density minus 1000. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_sigma_t. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water neutral density. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_neutral_density. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sigmatheta. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water potential density minus 1000. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_sigma_theta. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;pdens&#39;, &#39;sigma0&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water potential density. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_potential_density. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: pdens. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water potential density with ref at 1000 dbar. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water potential density with ref at 2000 dbar. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water potential density with ref at 3000 dbar. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water potential density with ref at 4000 dbar. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea surface density. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_surface_density. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water electrial conductivity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_electrical_conductivity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: S m-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Speed of sound in water. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: speed_of_sound_in_sea_water. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: m s-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Mixed layer depth. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mixed_layer_depth. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: m. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: t. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Potential energy deficit. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: potential_energy_deficit. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: J m-2. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Ocean heat content. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ocean_heat_content. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: J. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Ocean salt content. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ocean_salt_content. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: kg. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Specific heat capacity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: specific_heat_capacity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: J K-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;ssh&#39;, &#39;xe&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea surface height. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;sea_surface_height_above_sea_level&#39;, &#39;sea_surface_height_above_geoid&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: balance. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;uz&#39;, &#39;u3d&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water velocity along X. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_x_velocity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: delta. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: u. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;t&#39;, &#39;u&#39;, &#39;v&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;vz&#39;, &#39;v3d&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water velocity along Y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_y_velocity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: v. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;wz&#39;, &#39;w3d&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water velocity along Z at W location. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;sea_water_z_velocity_at_w_location&#39;, &#39;sea_water_z_velocity&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: w. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: lon_u. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list(lon)). Switching to default value: [&#39;lon&#39;].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: lat_u. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list(lat)). Switching to default value: [&#39;lat&#39;].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: lon_v. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list(lon)). Switching to default value: [&#39;lon&#39;].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: lat_v. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list(lat)). Switching to default value: [&#39;lat&#39;].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;ubt&#39;, &#39;u2d&#39;, &#39;u&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water barotropic velocity along X. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: barotropic_sea_water_x_velocity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;vbt&#39;, &#39;v2d&#39;, &#39;v&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water barotropic velocity along Y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: barotropic_sea_water_y_velocity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;ubc&#39;, &#39;u&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water baroclinic velocity along X. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: baroclinic_sea_water_x_velocity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;vbc&#39;, &#39;v&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water baroclinic velocity along Y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: baroclinic_sea_water_y_velocity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Sea surface velocity along X&#39;, &#39;Eastward surface current&#39;, &#39;Eastward current&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;sea_surface_x_velocity&#39;, &#39;eastward_sea_water_velocity&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Sea surface velocity along Y&#39;, &#39;Northward surface current&#39;, &#39;Northward current&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;sea_surface_y_velocity&#39;, &#39;northward_sea_water_velocity&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water barotropic geostrophic velocity along X. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;barotropic_sea_water_x_geostrophic_velocity&#39;, &#39;eastward_geostrophic_current_velocity&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water barotropic geostrophic velocity along Y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;barotropic_sea_water_y_geostrophic_velocity&#39;, &#39;northward_geostrophic_current_velocity&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea water speed. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_water_speed. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: amp. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: cspd. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Direction of sea water velocity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: direction_of_sea_water_velocity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: degrees. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: phase. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Kinetic energy. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: m2 s-2. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Eddy kinetic energy. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Turbulent kinetic energy. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Mean kinetic energy. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;kz&#39;, &#39;kzm&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Vertical diffusivity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: average_ocean_vertical_tracer_diffusivity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: m2 s-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;bathy&#39;, &#39;h0&#39;, &#39;dpt&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Bathymetry. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;model_sea_floor_depth_below_sea_level&#39;, &#39;model_sea_floor_depth_below_geoid&#39;, &#39;sea_floor_depth_below_geoid&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: deep_r. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: t. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: hx. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: bathymetry at u-location. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: hy. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: bathymetry at v-location. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;meanlev&#39;, &#39;niv_moy&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Mean Sea Level. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;mean_sea_level_above_sea_floor_depth_at_lowest_astronomical_tide&#39;, &#39;mean_sea_level&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;depth&#39;, &#39;dep&#39;, &#39;deptht&#39;, &#39;depthu&#39;, &#39;depthv&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Depth. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ocean_layer_depth. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: deep. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;t&#39;, &#39;u&#39;, &#39;v&#39;, &#39;w&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;altitude&#39;, &#39;altitudet&#39;, &#39;altitudeu&#39;, &#39;altitudev&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Altitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: atmosphere_layer_altitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Mesh size along x. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: cell_x_size. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;t&#39;, &#39;u&#39;, &#39;v&#39;, &#39;f&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Mesh size along y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: cell_y_size. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Ocean layer thickness. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ocean_layer_thickness. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;cell_x_size&#39;, &#39;cell_x_step&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Mesh step along y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;cell_y_step&#39;, &#39;cell_y_size&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Volume of the cell. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: cell_volume. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: m3. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Volume of the sea water. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: seawater_volume. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;corio&#39;, &#39;f0&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Coriolis parameter. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: coriolis_parameter. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: s-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Meridional derivative of coriolis parameter. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: meridional_derivative_of_coriolis_parameter. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: m-1 s-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;oro&#39;, &#39;zs&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Orography for SLEVE vertical coordinates. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: orography. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Smoothed orography for SLEVE vertical coordinates. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: smoothed_orography. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: nethf. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Net radiation. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;surface_net_averaged_downward_radiative_flux&#39;, &#39;surface_net_downward_radiative_flux&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: W m-2. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Net longwave radiation (positive when directed downward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: surface_net_downward_longwave_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: solar. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Net shortwave radiation (positive when directed downward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: surface_net_downward_shortwave_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ghf. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Ground heat flux (SW + LW - LE - H). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: averaged_downward_ground_heat_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Longwave radiation (positive when directed upward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: surface_upward_longwave_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Shortwave radiation (positive when directed upward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: surface_upward_shortwave_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Longwave radiation (positive when directed downward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: surface_downward_longwave_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Shortwave radiation (positive when directed downward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: surface_downward_shortwave_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Latent heat flux (positive when directed downward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: surface_downward_latent_heat_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: W.m-2. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Latent heat flux (positive when directed upward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;surface_averaged_upward_latent_heat_flux&#39;, &#39;upward_latent_heat_flux&#39;, &#39;surface_upward_latent_heat_flux&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sensible heat flux (positive when directed downward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: surface_downward_sensible_heat_flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sensible heat flux (positive when directed upward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;surface_averaged_upward_sensible_heat_flux&#39;, &#39;upward_sensible_heat_flux&#39;, &#39;surface_upward_sensible_heat_flux&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: evaporation (positive when directed downward). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: lwe_thickness_of_water_evaporation_amount. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: tempo. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Precipitation [Downward (positive when it is raining)]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;lwe_thickness_of_precipitation_amount&#39;, &#39;lwe_thickness_of_downward_precipitation_amount&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;m&#39;, &#39;mm&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: t2m. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: 2 m temperature. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: air_potential_temperature_at_2_meters. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;K&#39;, &#39;degrees_kelvin&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: q2m. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: 2 m specific humidity. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: air_specific_humidity_at_2_meters. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: kg kg-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: air_relative_specific_humidity_at_2_meters. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;z0a&#39;, &#39;z0&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Air roughness length. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;air_surface_roughness_length&#39;, &#39;surface_roughness_length&#39;, &#39;roughness_length&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;cda&#39;, &#39;cd&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Averaged drag momentum coefficient&#39;, &#39;Drag momentum coefficient&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;averaged_drag_momentum_coefficient_in_air&#39;, &#39;drag_momentum_coefficient_in_air&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: W s-2. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;cha&#39;, &#39;ch&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Averaged drag thermal coefficient&#39;, &#39;Drag thermal coefficient&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;averaged_drag_thermal_coefficient_in_air&#39;, &#39;drag_thermal_coefficient_in_air&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;cea&#39;, &#39;ce&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Averaged latent heat flux coefficient&#39;, &#39;Latent heat flux coefficient&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;averaged_latent_heat_coefficient_in_air&#39;, &#39;latent_heat_coefficient_in_air&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Wind speed. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: wind_speed. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: speed. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Wind direction. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;wind_to_direction&#39;, &#39;wind_from_direction&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Wind from direction. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: wind_from_direction. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Wind to direction. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: wind_to_direction. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;uair&#39;, &#39;ua&#39;, &#39;uwnd&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Zonal wind speed (westerly). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;eastward_wind&#39;, &#39;x_wind&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;vair&#39;, &#39;va&#39;, &#39;vwnd&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Meridional wind speed (northerly). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;northward_wind&#39;, &#39;y_wind&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;wair&#39;, &#39;wa&#39;, &#39;wwnd&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Upward wind speed. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;upward_wind&#39;, &#39;z_wind&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;tair&#39;, &#39;temp&#39;, &#39;tht&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;air_potential_temperature&#39;, &#39;air_temperature&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;degrees_kelvin&#39;, &#39;K&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: pa. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Absolute pressure. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: air_pressure_at_sea_level. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Pa. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: tkea. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Turbulent Kinetic Energy. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: air_turbulent_kinetic_energy. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: 10-m zonal wind speed (westerly). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;x_wind_at_10m&#39;, &#39;x_wind&#39;, &#39;x_wind_at_u_location&#39;, &#39;x_wind_at_10m_at_u_location&#39;, &#39;eastward_wind&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: 10-m meridional wind speed (northerly). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;y_wind_at_10m&#39;, &#39;y_wind&#39;, &#39;y_wind_at_v_location&#39;, &#39;y_wind_at_10m_at_v_location&#39;, &#39;northward_wind&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;z_wind_at_10m&#39;, &#39;upward_wind_at_10m&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: 10-m wind speed along X. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;x_wind_at_10m&#39;, &#39;x_wind&#39;, &#39;grid_eastward_wind&#39;, &#39;x_wind_at_u_location&#39;, &#39;x_wind_at_10m_at_u_location&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: 10-m wind speed along Y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;y_wind_at_10m&#39;, &#39;y_wind&#39;, &#39;grid_northward_wind&#39;, &#39;y_wind_at_v_location&#39;, &#39;y_wind_at_10m_at_v_location&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Surface eastward wind stress. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;surface_downward_eastward_stress&#39;, &#39;surface_eastward_stress&#39;, &#39;surface_downward_x_stress&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;N m-2&#39;, &#39;Pa&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Surface northward wind stress. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;surface_downward_northward_stress&#39;, &#39;surface_northward_stress&#39;, &#39;surface_downward_y_stress&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ustress. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Surface wind stress along X. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;surface_downward_x_stress&#39;, &#39;surface_x_stress&#39;, &#39;surface_downward_x_stress_at_u_location&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: N m-2. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: vstress. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Surface wind stress along Y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;surface_downward_y_stress&#39;, &#39;surface_y_stress&#39;, &#39;surface_downward_y_stress_at_v_location&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: height of the top level. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: maximum_height. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;hs&#39;, &#39;hm0&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Significant wave height&#39;, &#39;Significant height of wind and swell waves&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;sea_surface_wave_significant_height&#39;, &#39;significant_height_of_wind_and_swell_waves&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mssx. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Eastward mean square slope. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;eastward_mean_square_slope&#39;, &#39;x_mean_square_slope&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: m m-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mssy. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Northward mean square slope. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;nortward_mean_square_slope&#39;, &#39;y_mean_square_slope&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mss. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mean square slope. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mean_square_slope. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mlw. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Mean wave length. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mean_wave_length. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: t0m1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Mean wave period. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_surface_wind_wave_mean_period_from_variance_spectral_density_inverse_frequency_moment. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: s. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: dp. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Peak direction. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_surface_wave_peak_direction. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: tp. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Peak period. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_surface_wave_peak_period. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: fp. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Peak frequency&#39;, &#39;Frequency of wind and swell waves at spectral peak&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: peak_frequency_of_wind_and_swell_waves. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;th1p&#39;, &#39;dir&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Mean wave direction&#39;, &#39;Mean direction of wind and swell waves at spectral peak&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_surface_wave_from_direction. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: degree. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;char&#39;, &#39;cha&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Charnock coefficient for surface roughness length for momentum in air. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: charnock_coefficient_for_surface_roughness_length_for_momentum_in_air. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ubr. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Near bottom rms velocities. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: rms_amplitude_of_orbital_bottom_velocity_of_wind_and_swell_waves. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: uubr. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Rms of near bottom zonal velocities. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: rms_of_bottom_zonal_velocity_amplitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: vubr. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Rms of near bottom meridional velocities. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: rms_of_bottom_meridional_velocity_amplitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: bhd. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Radiation pressure (Bernoulli head). Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: bernoulli_head_pressure_of_wind_and_swell_waves. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: N s-1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;foc&#39;, &#39;phioc&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Wave mixing kinetic turbulent energy due to surface breaking wave. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: turbulent_kinetic_energy_flux_into_sea_water_due_to_surface_dissipation_wave. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;W m-2&#39;, &#39;m3 s-3&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;utwo&#39;, &#39;tauox&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Zonal component of the surface wave-ocean momentum flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;x_component_of_surface_wave_ocean_momentum_flux&#39;, &#39;northward_wave_to_ocean_stress&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;vtwo&#39;, &#39;tauoy&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Meridional component of the surface wave-ocean momentum flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;y_component_of_surface_wave_ocean_momentum_flux&#39;, &#39;northward_wave_to_ocean_stress&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: utaw. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Eastward wave supported wind stress&#39;, &#39;Zonal component of the atmosphere-wave momentum flux&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: x_component_of_wave_supported_wind_stress. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: vtaw. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Northward wave supported wind stress&#39;, &#39;Meridional component of the atmosphere-wave momentum flux&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: y_component_of_wave_supported_wind_stress. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: fbb. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Wave dissipation in bottom boundary layer. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: wave_energy_dissipation_in_bottom_boundary_layer. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: utbb. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Zonal component of the bottom wave-ocean momentum flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;x_component_of_bottom_wave_ocean_momentum_flux&#39;, &#39;eastward_wave_to_bottom_boundary_layer_stress&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: vtbb. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Meridional component of the bottom wave-ocean momentum flux. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;y_component_of_bottom_wave_ocean_momentum_flux&#39;, &#39;northward_wave_to_bottom_boundary_layer_stress&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: uuss. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Eastward surface stokes drift. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: eastward_surface_stokes_drift. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: vuss. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Northward surface stokes drift. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: northward_surface_stokes_drift. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: utus. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Eastward stokes transport. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: eastward_stokes_transport. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: vtus. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: northward_stokes_transport. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: mapsta. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Status map. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: status_map. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: 1. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: wlv. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Sea surface height above sea level. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: sea_surface_height_above_sea_level. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: F. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Time. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: time. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: T. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;lon&#39;, &#39;longitude&#39;, &#39;nav_lon&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Longitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: longitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;degrees_east&#39;, &#39;degree_east&#39;, &#39;degree_e&#39;, &#39;degrees_e&#39;, &#39;degreee&#39;, &#39;degreese&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ni. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: nj. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: X. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: isau. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=isa). Switching to default value: isa.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;lat&#39;, &#39;latitude&#39;, &#39;nav_lat&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Latitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: latitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;degrees_north&#39;, &#39;degree_north&#39;, &#39;degree_n&#39;, &#39;degrees_n&#39;, &#39;degreen&#39;, &#39;degreesn&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Y. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:depth. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: Z. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:depth_t. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:depth_u. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:depth_v. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:depth_w. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:altitude. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:altitude_t. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:altitude_u. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:altitude_v. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: variables:altitude_w. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: string(default=None). Switching to default value: None.
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: level. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Model level number&#39;, &#39;Sigma level&#39;, &#39;Sigma level at W location&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;model_level_number&#39;, &#39;ocean_sigma_coordinate&#39;, &#39;ocean_s_coordinate&#39;, &#39;ocean_sigma_coordinate_at_w_location&#39;, &#39;ocean_s_coordinate_at_w_location&#39;, &#39;atmosphere_sigma_coordinate&#39;, &#39;atmosphere_s_coordinate&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: level_w. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;Sigma level&#39;, &#39;Sigma level at W location&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: [&#39;ocean_sigma_coordinate_at_w_location&#39;, &#39;ocean_s_coordinate_at_w_location&#39;]. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: ni. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: x-dimension of the grid. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: x_grid_index. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: nj. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings((default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: y-dimension of the grid. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/config.py:508: UserWarning: Bad configuration value: y_grid_index. Error: &quot;&#39;module&#39; object has no attribute &#39;getfullargspec&#39;&quot;. It must conform the follwing specs: strings(default=list()). Switching to default value: [].
+  warn(warnmsg.format(**locals()))
+Traceback (most recent call last):
+  File &quot;../../../scripts/tutorials/misc.bases.debug.py&quot;, line 30, in &lt;module&gt;
+    main()
+  File &quot;../../../scripts/tutorials/misc.bases.debug.py&quot;, line 27, in main
+    obj.do_something()
+  File &quot;../../../scripts/tutorials/misc.bases.debug.py&quot;, line 16, in do_something
+    t = create_time([&#39;1900-01-01 00:00:00&#39;, &#39;9999-12-31 23:59:59&#39;])
+  File &quot;/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/axes.py&quot;, line 494, in create_time
+    if istime(values):
+  File &quot;/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/axes.py&quot;, line 180, in istime
+    specs = get_cf_axis_specs(&#39;time&#39;)
+  File &quot;/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/cf.py&quot;, line 1041, in get_cf_axis_specs
+    return get_cf_specs(name=name, category=&#39;axes&#39;, cf_source=cf_source)
+  File &quot;/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/cf.py&quot;, line 991, in get_cf_specs
+    parent=cf.CF_SPECS)
+  File &quot;/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/cf.py&quot;, line 122, in __init__
+    self._post_process_()
+  File &quot;/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/cf.py&quot;, line 201, in _post_process_
+    self._check_entry_(name)
+  File &quot;/home/shom/sraynaud/Dev/forge/vacumm/lib/vacumm/misc/cf.py&quot;, line 232, in _check_entry_
+    specs[&#39;name&#39;].remove(name)
+AttributeError: &#39;str&#39; object has no attribute &#39;remove&#39;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

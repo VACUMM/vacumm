@@ -1,0 +1,363 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.report.ifroco.common &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../../index.html"><img src="../../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.report.ifroco.common</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Common utilities&quot;&quot;&quot;</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2013-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="k">import</span> <span class="n">SafeConfigParser</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.color</span> <span class="k">import</span> <span class="n">cmap_srs</span>
+<span class="kn">from</span> <span class="nn">matplotlib.transforms</span> <span class="k">import</span> <span class="n">offset_copy</span><span class="p">,</span> <span class="n">blended_transform_factory</span>
+<span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+<span class="kn">import</span> <span class="nn">locale</span>
+
+<span class="n">lang</span> <span class="o">=</span> <span class="s1">&#39;fr_FR.UTF-8&#39;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LANG&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lang</span>
+<span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span><span class="n">lang</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LC_NUMERIC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;en_US.UTF-8&#39;</span>
+<span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_NUMERIC</span><span class="p">,</span> <span class="s1">&#39;en_US.UTF-8&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PREVIMERError"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.PREVIMERError">[docs]</a><span class="k">class</span> <span class="nc">PREVIMERError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<span class="c1"># Load configuration here</span>
+<span class="n">cfgfiles</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span> <span class="s1">&#39;ifroco.cfg&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;previmer.cfg&#39;</span><span class="p">,</span> <span class="s1">&#39;ifroco.cfg&#39;</span>
+<span class="p">]</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
+
+<div class="viewcode-block" id="load_cfg"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.load_cfg">[docs]</a><span class="k">def</span> <span class="nf">load_cfg</span><span class="p">(</span><span class="n">cfiles</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load configuration</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **cfiles**: single or list of alternative config files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cfiles</span><span class="p">:</span> <span class="n">cfiles</span> <span class="o">=</span> <span class="n">cfgfiles</span>
+    <span class="k">return</span> <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfiles</span><span class="p">)</span></div>
+
+<span class="n">cfgfiles</span> <span class="o">=</span> <span class="n">load_cfg</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="cfgget"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.cfgget">[docs]</a><span class="k">def</span> <span class="nf">cfgget</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;DEFAULT&#39;</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get an evaluated config option</span>
+
+<span class="sd">    .. note:: Convert strings to unicode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">reload</span><span class="p">:</span> <span class="n">load_cfg</span><span class="p">(</span><span class="n">reload</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span> <span class="k">return</span> <span class="n">alt</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="set_mpl_defaults"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.set_mpl_defaults">[docs]</a><span class="k">def</span> <span class="nf">set_mpl_defaults</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Set some Mtpotlib plot defaults&quot;&quot;&quot;</span>
+    <span class="n">grid_color</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;grid_color&#39;</span><span class="p">)</span>
+    <span class="n">rc</span><span class="p">(</span><span class="s1">&#39;grid&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">grid_color</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+    <span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_background"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.add_background">[docs]</a><span class="k">def</span> <span class="nf">add_background</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a linear background to the figure&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">fig</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="n">colorb</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;bgcolor_bottom&#39;</span><span class="p">)</span>
+    <span class="n">colort</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;bgcolor_top&#39;</span><span class="p">)</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap_srs</span><span class="p">([</span><span class="n">colorb</span><span class="p">,</span> <span class="n">colort</span><span class="p">])</span>
+    <span class="n">bgaxes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">bgaxes</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+    <span class="n">bgaxes</span><span class="o">.</span><span class="n">imshow</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_title"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.add_title">[docs]</a><span class="k">def</span> <span class="nf">add_title</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">addlegtime</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a multiline title&quot;&quot;&quot;</span>
+
+    <span class="c1"># Some inits</span>
+    <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">fig</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="mf">0.01</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_color&#39;</span><span class="p">)</span>
+    <span class="n">family</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_font&#39;</span><span class="p">)</span>
+    <span class="n">title_size</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_size&#39;</span><span class="p">)</span>
+    <span class="n">title_weight</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_weight&#39;</span><span class="p">)</span>
+    <span class="n">title_legsize</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_legsize&#39;</span><span class="p">)</span>
+    <span class="n">ren</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+    <span class="n">heights</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Form inputs</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[[</span><span class="n">texts</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="n">addlegtime</span><span class="p">:</span> <span class="c1"># add legal time</span>
+        <span class="n">legtext</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;(heure légale) mise à jour du %m/</span><span class="si">%d</span><span class="s2">/%Y %Hh%M&quot;</span><span class="p">,</span><span class="n">now</span><span class="p">())</span>
+        <span class="n">legtext</span> <span class="o">=</span> <span class="n">legtext</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+        <span class="n">legtext</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">legtext</span><span class="p">,</span> <span class="n">title_legsize</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">addlegtime</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span> <span class="c1"># on last line</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="n">texts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">last</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">last</span> <span class="o">=</span> <span class="p">[</span><span class="n">last</span><span class="p">]</span>
+            <span class="n">last</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">legtext</span><span class="p">)</span>
+            <span class="n">texts</span> <span class="o">=</span> <span class="n">texts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># new line</span>
+            <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">legtext</span><span class="p">)</span>
+
+    <span class="c1"># Loop on lines</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">texts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">texts</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">texts</span><span class="p">]</span>
+
+        <span class="c1"># Several text on sameline?</span>
+        <span class="n">multi</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span><span class="o">!=</span><span class="mi">1</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">multi</span><span class="p">:</span>
+            <span class="n">ha</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">]</span>
+            <span class="n">widths</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">tt</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ha</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;center&#39;</span><span class="p">]</span>
+        <span class="n">heights</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Loop on text specs</span>
+        <span class="k">for</span> <span class="n">it</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">texts</span><span class="p">):</span>
+
+            <span class="c1"># Specs</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">text</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">text</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="n">title_size</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">title_weight</span>
+
+            <span class="c1"># Alignment and xoffset</span>
+            <span class="k">if</span> <span class="n">ha</span><span class="p">[</span><span class="n">it</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;left&#39;</span><span class="p">:</span>
+                <span class="n">tr</span> <span class="o">=</span> <span class="n">offset_copy</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">transFigure</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;points&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ha</span><span class="p">[</span><span class="n">it</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;right&#39;</span><span class="p">:</span>
+                <span class="n">tr</span> <span class="o">=</span> <span class="n">offset_copy</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">transFigure</span><span class="p">,</span> <span class="n">x</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;points&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tr</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">transFigure</span>
+
+            <span class="c1"># Plot it</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">tr</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="n">family</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="n">ha</span><span class="p">[</span><span class="n">it</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+
+            <span class="c1"># Adjust</span>
+            <span class="n">tw</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">(</span><span class="n">renderer</span><span class="o">=</span><span class="n">ren</span><span class="p">)</span><span class="o">.</span><span class="n">inverse_transformed</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">transFigure</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">multi</span><span class="p">:</span>
+                <span class="n">widths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+                <span class="n">tt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">it</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">x0</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">widths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">widths</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">tt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+                    <span class="n">tt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+
+            <span class="n">heights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+
+        <span class="c1"># Next position</span>
+        <span class="n">y</span> <span class="o">-=</span> <span class="nb">max</span><span class="p">(</span><span class="n">heights</span><span class="p">)</span><span class="o">*</span><span class="mf">1.2</span>
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+
+<div class="viewcode-block" id="add_logos"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.add_logos">[docs]</a><span class="k">def</span> <span class="nf">add_logos</span><span class="p">(</span><span class="n">logofiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add logos using its config name&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">logofiles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">logofiles</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;logo_def&#39;</span><span class="p">)</span>
+    <span class="n">lastx</span> <span class="o">=</span> <span class="mf">0.005</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logofiles</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">logofiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">logofiles</span><span class="p">]</span>
+    <span class="n">logodir</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;logo_dir&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">logofile</span> <span class="ow">in</span> <span class="n">logofiles</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">logofile</span><span class="p">):</span>
+            <span class="n">imgfile</span> <span class="o">=</span> <span class="n">logofile</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">imgfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">logodir</span><span class="p">,</span> <span class="n">logofile</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">imgfile</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PREVIMERError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find logo: &quot;</span><span class="o">+</span><span class="n">logofile</span><span class="p">)</span>
+        <span class="n">imgm</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">imgfile</span><span class="p">)</span>
+        <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="n">imgm</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">fig</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+        <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span>
+        <span class="n">dpi</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="o">*</span><span class="mf">1.</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">lastx</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">,</span> <span class="n">nx</span><span class="o">/</span><span class="n">dpi</span><span class="o">/</span><span class="n">xsize</span><span class="p">,</span> <span class="n">ny</span><span class="o">/</span><span class="n">dpi</span><span class="o">/</span><span class="n">ysize</span><span class="p">],</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">imgm</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">)</span>
+        <span class="n">lastx</span> <span class="o">+=</span> <span class="n">nx</span><span class="o">/</span><span class="n">dpi</span><span class="o">/</span><span class="n">xsize</span></div>
+
+<div class="viewcode-block" id="add_copyright"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.add_copyright">[docs]</a><span class="k">def</span> <span class="nf">add_copyright</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a copyright info at the bottom right&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">fig</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;copyright_size&#39;</span><span class="p">)</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">offset_copy</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">transFigure</span><span class="p">,</span> <span class="n">x</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;points&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">.</span><span class="mi">99</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_xlabel"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.set_xlabel">[docs]</a><span class="k">def</span> <span class="nf">set_xlabel</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the X label with appropriate default font properies&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_color&#39;</span><span class="p">),</span>
+        <span class="n">family</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_font&#39;</span><span class="p">),</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;label_size&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="set_ylabel"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.set_ylabel">[docs]</a><span class="k">def</span> <span class="nf">set_ylabel</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the Y labe with appropriate font properiesl&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_color&#39;</span><span class="p">),</span>
+        <span class="n">family</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_font&#39;</span><span class="p">),</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;label_size&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_axlabel"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.add_axlabel">[docs]</a><span class="k">def</span> <span class="nf">add_axlabel</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A label to an axis with appropriate default font properies&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_color&#39;</span><span class="p">),</span>
+        <span class="n">family</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_font&#39;</span><span class="p">),</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;label_size&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">offset_copy</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">dy</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">(),</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;points&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="n">ha</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="n">va</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="format_label"><a class="viewcode-back" href="../../../../library/report.ifroco.common.html#vacumm.report.ifroco.common.format_label">[docs]</a><span class="k">def</span> <span class="nf">format_label</span><span class="p">(</span><span class="n">labelobj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For a label object with appropriate default font properies&quot;&quot;&quot;</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_color&#39;</span><span class="p">),</span>
+        <span class="n">family</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;title_font&#39;</span><span class="p">),</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">cfgget</span><span class="p">(</span><span class="s1">&#39;label_size&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">labelobj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

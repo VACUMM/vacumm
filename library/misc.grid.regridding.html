@@ -1,0 +1,1762 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.8.4. vacumm.misc.grid.regridding – Regridding and interpolation &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.8.4. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.regridding</span></code> – Regridding and interpolation</a></li>
+<li><a class="reference internal" href="#overview">2.3.8.5. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.8.6. Content</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.grid.regridding.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-grid-regridding-regridding-and-interpolation">
+<span id="lib-misc-grid-regridding"></span><h1>2.3.8.4. <a class="reference internal" href="#module-vacumm.misc.grid.regridding" title="vacumm.misc.grid.regridding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid.regridding</span></code></a> – Regridding and interpolation<a class="headerlink" href="#vacumm-misc-grid-regridding-regridding-and-interpolation" title="Permalink to this headline">¶</a></h1>
+<p>This modules uses some fortran routines: <a class="reference internal" href="misc.grid.finterp.html#lib-misc-grid-finterp"><span class="std std-ref">Interace to fortran interpolation routines</span></a>.</p>
+</div>
+<div class="section" id="overview">
+<h1>2.3.8.5. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.cargen" title="vacumm.misc.grid.regridding.cargen"><code class="xref py py-func docutils literal notranslate"><span class="pre">cargen()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.cellave1d" title="vacumm.misc.grid.regridding.cellave1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">cellave1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.cellave2d" title="vacumm.misc.grid.regridding.cellave2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">cellave2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.cellerr1d" title="vacumm.misc.grid.regridding.cellerr1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">cellerr1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.cubic1d" title="vacumm.misc.grid.regridding.cubic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">cubic1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.extend1d" title="vacumm.misc.grid.regridding.extend1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">extend1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.extend2d" title="vacumm.misc.grid.regridding.extend2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">extend2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.extendgrid" title="vacumm.misc.grid.regridding.extendgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">extendgrid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.fill1d" title="vacumm.misc.grid.regridding.fill1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">fill1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.fill1d" title="vacumm.misc.grid.regridding.fill1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">fill1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.fill1d2" title="vacumm.misc.grid.regridding.fill1d2"><code class="xref py py-func docutils literal notranslate"><span class="pre">fill1d2()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.fill2d" title="vacumm.misc.grid.regridding.fill2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">fill2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.grid2xy" title="vacumm.misc.grid.regridding.grid2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid2xy()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.griddata" title="vacumm.misc.grid.regridding.griddata"><code class="xref py py-func docutils literal notranslate"><span class="pre">griddata()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.interp1d" title="vacumm.misc.grid.regridding.interp1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">interp1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.interp2d" title="vacumm.misc.grid.regridding.interp2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">interp2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.krig" title="vacumm.misc.grid.regridding.krig"><code class="xref py py-func docutils literal notranslate"><span class="pre">krig()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.nearest1d" title="vacumm.misc.grid.regridding.nearest1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">nearest1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.refine" title="vacumm.misc.grid.regridding.refine"><code class="xref py py-func docutils literal notranslate"><span class="pre">refine()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d_method_name" title="vacumm.misc.grid.regridding.regrid1d_method_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d_method_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1dold" title="vacumm.misc.grid.regridding.regrid1dold"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1dold()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid2d" title="vacumm.misc.grid.regridding.regrid2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid2d_method_name" title="vacumm.misc.grid.regridding.regrid2d_method_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2d_method_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid2d_tool_name" title="vacumm.misc.grid.regridding.regrid2d_tool_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2d_tool_name()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid2dnew" title="vacumm.misc.grid.regridding.regrid2dnew"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2dnew()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid2dold" title="vacumm.misc.grid.regridding.regrid2dold"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2dold()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regrid_method" title="vacumm.misc.grid.regridding.regrid_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid_method()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regular" title="vacumm.misc.grid.regridding.regular"><code class="xref py py-func docutils literal notranslate"><span class="pre">regular()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.regular_fill1d" title="vacumm.misc.grid.regridding.regular_fill1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regular_fill1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.shift1d" title="vacumm.misc.grid.regridding.shift1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">shift1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.shift2d" title="vacumm.misc.grid.regridding.shift2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">shift2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.shiftgrid" title="vacumm.misc.grid.regridding.shiftgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">shiftgrid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.spline_interp1d" title="vacumm.misc.grid.regridding.spline_interp1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">spline_interp1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.transect" title="vacumm.misc.grid.regridding.transect"><code class="xref py py-func docutils literal notranslate"><span class="pre">transect()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.xy2grid" title="vacumm.misc.grid.regridding.xy2grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">xy2grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.xy2xy" title="vacumm.misc.grid.regridding.xy2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">xy2xy()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder.regrid" title="vacumm.misc.grid.regridding.CDATRegridder.regrid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">regrid()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.regridding.CurvedInterpolator" title="vacumm.misc.grid.regridding.CurvedInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">CurvedInterpolator</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.CurvedInterpolator.valid_methods" title="vacumm.misc.grid.regridding.CurvedInterpolator.valid_methods"><code class="xref py py-attr docutils literal notranslate"><span class="pre">valid_methods</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.CurvedInterpolator.interp" title="vacumm.misc.grid.regridding.CurvedInterpolator.interp"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interp()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.CurvedInterpolator.regrid" title="vacumm.misc.grid.regridding.CurvedInterpolator.regrid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">regrid()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.regridding.GridData" title="vacumm.misc.grid.regridding.GridData"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridData</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GridData.regrid" title="vacumm.misc.grid.regridding.GridData.regrid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">regrid()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GridData.rgrd" title="vacumm.misc.grid.regridding.GridData.rgrd"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rgrd()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger" title="vacumm.misc.grid.regridding.GriddedMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">GriddedMerger</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.add" title="vacumm.misc.grid.regridding.GriddedMerger.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.append" title="vacumm.misc.grid.regridding.GriddedMerger.append"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.get_grid" title="vacumm.misc.grid.regridding.GriddedMerger.get_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.get_lat" title="vacumm.misc.grid.regridding.GriddedMerger.get_lat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lat()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.get_lon" title="vacumm.misc.grid.regridding.GriddedMerger.get_lon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lon()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.insert" title="vacumm.misc.grid.regridding.GriddedMerger.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.merge" title="vacumm.misc.grid.regridding.GriddedMerger.merge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.plot" title="vacumm.misc.grid.regridding.GriddedMerger.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.remove" title="vacumm.misc.grid.regridding.GriddedMerger.remove"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.set_grid" title="vacumm.misc.grid.regridding.GriddedMerger.set_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_grid()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h1>2.3.8.6. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-vacumm.misc.grid.regridding"></span><p>Regridding utilities</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Tutorials: <a class="reference internal" href="../tutorials/misc.grid.regridding.html#user-tut-misc-grid-regridding"><span class="std std-ref">Regrillage 1D et 2D</span></a></p>
+</div>
+<dl class="class">
+<dt id="vacumm.misc.grid.regridding.CDATRegridder">
+<em class="property">class </em><code class="descname">CDATRegridder</code><span class="sig-paren">(</span><em>fromgrid</em>, <em>togrid</em>, <em>missing=None</em>, <em>order=None</em>, <em>mask=None</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#CDATRegridder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.CDATRegridder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Regridding using CDAT regridders</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This code is adapted from the <a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder.regrid" title="vacumm.misc.grid.regridding.CDATRegridder.regrid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">regrid()</span></code></a> method of MV2 arrays.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fromgrid</strong>: Input grid, or variable with a grid.</li>
+<li><strong>togrid</strong>: Output grid.</li>
+<li><strong>tool</strong>, optional: One of <code class="docutils literal notranslate"><span class="pre">&quot;esmf&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;libcf&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;regrid2&quot;</span></code>.</li>
+<li><strong>method</strong>, optional: One of <code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;path&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;conservative&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.CDATRegridder.regrid">
+<code class="descname">regrid</code><span class="sig-paren">(</span><em>vari</em>, <em>weidstfracs=None</em>, <em>check_mask=None</em>, <em>csvhack=False</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#CDATRegridder.regrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.CDATRegridder.regrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regrid the variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>vari</strong>: Input variable.</p>
+</li>
+<li><p class="first"><strong>weidstfracs</strong>, optional: Specify how to apply weights computed using
+destination fractions. Divide if &lt;0, else multiply. It is not used with
+linear and match methods.</p>
+</li>
+<li><p class="first"><strong>check_mask</strong>, optional: Mask point using masked data (the algo
+interpolate the mask and check level 0.999). MUST BE IMPROVED!
+If None, mask is checked if tool!=’regrid2’</p>
+</li>
+<li><p class="first"><strong>csvhack</strong>, optional: Hack to prevent a bug with conservative-like method
+of the ESMF regridder. Use it if you have strange result in the output
+most right longitude.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The algo mask the must right longitude of input data before
+processing.</p>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.grid.regridding.CurvedInterpolator">
+<em class="property">class </em><code class="descname">CurvedInterpolator</code><span class="sig-paren">(</span><em>fromgrid</em>, <em>topts</em>, <em>g2g=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#CurvedInterpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.CurvedInterpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Interpolator from a curved grid to random points or another grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>fromgrid</strong>: Input grid, or variable with a grid.</li>
+<li><strong>topts</strong>: Output coordinates or grid. It a tuple of coordinates, it is
+assumed that it refers to random points, and NOT a grid.</li>
+<li><strong>g2g</strong>, optional: Force the interpretation of <code class="docutils literal notranslate"><span class="pre">topts</span></code> as a grid or axes
+of a grid.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">CurvedInterpolator</span><span class="p">(</span><span class="n">ssti</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="p">(</span><span class="n">lono</span><span class="p">,</span> <span class="n">lato</span><span class="p">))</span> <span class="c1"># lono/lato 1D</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">CurvedInterpolator</span><span class="p">(</span><span class="n">ssti</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">grido</span><span class="p">)</span> <span class="c1"># grid</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ssto</span> <span class="o">=</span> <span class="n">interpolator</span><span class="p">(</span><span class="n">ssti</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.CurvedInterpolator.interp">
+<code class="descname">interp</code><span class="sig-paren">(</span><em>vari</em>, <em>method='bilinear'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#CurvedInterpolator.interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.CurvedInterpolator.interp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.CurvedInterpolator.regrid">
+<code class="descname">regrid</code><span class="sig-paren">(</span><em>vari</em>, <em>method='bilinear'</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.regridding.CurvedInterpolator.regrid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.regridding.CurvedInterpolator.valid_methods">
+<code class="descname">valid_methods</code><em class="property"> = ['bilinear', 'nearest', 'dstwgt']</em><a class="headerlink" href="#vacumm.misc.grid.regridding.CurvedInterpolator.valid_methods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.grid.regridding.GridData">
+<em class="property">class </em><code class="descname">GridData</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>ggo</em>, <em>nl=False</em>, <em>ext=False</em>, <em>geo=None</em>, <em>method='nat'</em>, <em>sub=30</em>, <em>margin=0.5</em>, <em>compress=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GridData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GridData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>2D interpolator from a randomly spaced sample on a regular grid</p>
+<p>Possible algorithms:</p>
+<ul>
+<li><p class="first">Natural Neighbor using nat.Natgrid:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.ncarg.ucar.edu//ngmath/natgrid/nnhome.html">http://www.ncarg.ucar.edu//ngmath/natgrid/nnhome.html</a></li>
+<li><a class="reference external" href="http://www.cisl.ucar.edu/zine/98/spring/text/3.natgrid.html">http://www.cisl.ucar.edu/zine/98/spring/text/3.natgrid.html</a></li>
+<li><a class="reference external" href="http://dilbert.engr.ucdavis.edu/~suku/nem/nem_intro/node3.html">http://dilbert.engr.ucdavis.edu/~suku/nem/nem_intro/node3.html</a></li>
+<li><a class="reference external" href="http://www.ems-i.com/gmshelp/Interpolation/Interpolation_Schemes/Natural_Neighbor_Interpolation.htm">http://www.ems-i.com/gmshelp/Interpolation/Interpolation_Schemes/Natural_Neighbor_Interpolation.htm</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">2D splines using css.css.Cssgrid</p>
+</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>xi</strong>: Input 1D X positions.</p>
+</li>
+<li><p class="first"><strong>yi</strong>: Input 1D Y positions.</p>
+</li>
+<li><p class="first"><strong>ggo</strong>: Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.</p>
+</li>
+<li><p class="first"><em>method</em>: Interpolator type, either ‘nat’ (Natural Neighbors) or ‘css’ (=’splines’ using splines) [default: ‘nat’]</p>
+</li>
+<li><p class="first"><em>nl</em>: Nonlinear interpolator (usually gives better results) [default: False]</p>
+</li>
+<li><p class="first"><em>ext</em>: Extrapolate value outsite convex hull [<strong>‘nat’ only</strong>, default: False]</p>
+</li>
+<li><p class="first"><em>mask</em>: Mask to apply to output data [default: None]</p>
+</li>
+<li><p class="first"><em>compress</em>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, interolate only unmasked data, and thus does not try guess the best mask (that’s more efficient but very bad if data are masked!).</p>
+</li>
+<li><p class="first"><em>sub</em>: Size of blocks for subblocking [<strong>“nat” only</strong>]</p>
+</li>
+<li><p class="first"><em>margin</em>: Margin around ouput grid (or block) to select input data.
+Value is relative to X and Y extent.</p>
+</li>
+<li><p class="first">Other keywords are set as attribute to the interpolator instance ; to get the list of parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nat</span> <span class="p">;</span> <span class="n">nat</span><span class="o">.</span><span class="n">printParameterTable</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">css</span> <span class="p">;</span> <span class="n">css</span><span class="o">.</span><span class="n">printParameterTable</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">GridData</span><span class="p">(</span><span class="n">gridi</span><span class="p">,</span> <span class="n">grido</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nat&#39;</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">margin</span><span class="o">=.</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">varo1</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">vari1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">varo2</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">vari2</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GridData.regrid">
+<code class="descname">regrid</code><span class="sig-paren">(</span><em>zi</em>, <em>missing_value=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.regridding.GridData.regrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate zi on output grid</p>
+<ul class="simple">
+<li><strong>zi</strong>: At least a 1D array.</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GridData.rgrd">
+<code class="descname">rgrd</code><span class="sig-paren">(</span><em>zi</em>, <em>missing_value=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.regridding.GridData.rgrd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate zi on output grid</p>
+<ul class="simple">
+<li><strong>zi</strong>: At least a 1D array.</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger">
+<em class="property">class </em><code class="descname">GriddedMerger</code><span class="sig-paren">(</span><em>grid</em>, <em>id=None</em>, <em>long_name=None</em>, <em>units=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Merge several gridded variables onto a grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>grid</strong>: Output grid</li>
+<li><strong>id</strong>, optional: Output id</li>
+<li><strong>long_name</strong>, optional: Output long name</li>
+<li><strong>units</strong>, optional: Output units</li>
+<li>Other keywords are set a output attributes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gm</span> <span class="o">=</span> <span class="n">GriddedMerger</span><span class="p">(</span><span class="n">mygrid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gm</span> <span class="o">+=</span> <span class="n">var1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gm</span> <span class="o">+=</span> <span class="n">var3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gm</span> <span class="o">-=</span> <span class="n">var3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gm</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">gm</span><span class="p">)</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">gm</span>
+<span class="go">....</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myvar</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">res_ratio</span><span class="o">=.</span><span class="mi">4</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.grid.regridding.GriddedMerger.append" title="vacumm.misc.grid.regridding.GriddedMerger.append"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>var</em>, <em>method='auto'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a bathymetry to the top of the merger</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.get_grid">
+<code class="descname">get_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.get_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the grid for merging</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.get_lat">
+<code class="descname">get_lat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.get_lat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.get_lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the loatitudes of the grid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.get_lon">
+<code class="descname">get_lon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.get_lon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.get_lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the longitudes of the grid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>idx</em>, <em>var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.merge">
+<code class="descname">merge</code><span class="sig-paren">(</span><em>res_ratio=0.5</em>, <em>pad=5</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge all the variables on to a grid</p>
+<ul class="simple">
+<li><strong>grid</strong>: Out put grid or axes.</li>
+<li><em>res_ratio</em>: Resolution ratio for choosing between cell
+averaging and bilinear interpolation (see: <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid_method" title="vacumm.misc.grid.regridding.regrid_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid_method()</span></code></a>).</li>
+<li><em>regrid_&lt;kwparam&gt;</em>: <em>&lt;kwparam&gt;</em> is passed to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid2d" title="vacumm.misc.grid.regridding.regrid2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2d()</span></code></a> for interpolation.</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge and plot</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.regridding.GriddedMerger.set_grid">
+<code class="descname">set_grid</code><span class="sig-paren">(</span><em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#GriddedMerger.set_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.GriddedMerger.set_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the grid for merging</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.cargen">
+<code class="descname">cargen</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>ggo</em>, <em>mask=None</em>, <em>compress=False</em>, <em>missing_value=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#cargen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.cargen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolator from IFREMER</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xi</strong>: Input 1D X positions.</li>
+<li><strong>yi</strong>: Input 1D Y positions.</li>
+<li><strong>ggo</strong>, optional: Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.</li>
+<li><strong>mask</strong>, optional: Mask to apply to output data [default: None]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.cellave1d">
+<code class="descname">cellave1d</code><span class="sig-paren">(</span><em>vari</em>, <em>axo</em>, <em>conserv=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#cellave1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.cellave1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cell averaging  or conservative regridding along an axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vari</strong>: Input cdms array</li>
+<li><strong>axo</strong>: Output cdms axis</li>
+<li><strong>axis</strong>, optional: Axis on wich to operate</li>
+<li><strong>conservative</strong>, optional: If True, regridding is conservative</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an wrapper to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a> using <code class="docutils literal notranslate"><span class="pre">cellave</span></code> or <code class="docutils literal notranslate"><span class="pre">conservative</span></code> as a default method.
+See its help for more information.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.cellave2d">
+<code class="descname">cellave2d</code><span class="sig-paren">(</span><em>vari</em>, <em>ggo</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#cellave2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.cellave2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid2d" title="vacumm.misc.grid.regridding.regrid2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2d()</span></code></a> call with <code class="docutils literal notranslate"><span class="pre">method=&quot;cellave&quot;</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.cellerr1d">
+<code class="descname">cellerr1d</code><span class="sig-paren">(</span><em>vari</em>, <em>axo</em>, <em>erri</em>, <em>errl=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#cellerr1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.cellerr1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cell averaing with weights based on errors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vari</strong>: Input cdms array</li>
+<li><strong>axo</strong>: Output cdms axis</li>
+<li><strong>erri</strong>: Input measurement errors</li>
+<li><strong>errl</strong>, optional: Input lag error relative to lag</li>
+<li><strong>axis</strong>, optional: Axis on wich to operate</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an wrapper to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a> using <code class="docutils literal notranslate"><span class="pre">cellerr</span></code> method.
+See its help for more information.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.cubic1d">
+<code class="descname">cubic1d</code><span class="sig-paren">(</span><em>vari</em>, <em>axo</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#cubic1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.cubic1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cubic interpolation along an axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vari</strong>: Input cdms array</li>
+<li><strong>axo</strong>: Output cdms axis</li>
+<li><strong>axis</strong>, optional: Axis on wich to operate</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an wrapper to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a> using <code class="docutils literal notranslate"><span class="pre">cubic</span></code> as a default method.
+See its help for more information.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.extend1d">
+<code class="descname">extend1d</code><span class="sig-paren">(</span><em>var</em>, <em>ext=0</em>, <em>mode=None</em>, <em>axis=-1</em>, <em>copy=False</em>, <em>num=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#extend1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.extend1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extrapolate data on an axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>var</strong>: Array.</p>
+</li>
+<li><p class="first"><strong>ext</strong>, optional: Size of extension. If a tuple,
+it gives left and right extensions, else the same
+for both.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Interpolation mode for boundary point outside initial positions.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;extrap&quot;</span></code> if axis else <code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;extrap&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>: Linear extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>: Constant extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cyclic&quot;</span></code>: Cyclic extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;masked&quot;</span></code>: Masked.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>axis</strong>, optional: Axis on which to operate.</p>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Always input copy data.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.extend2d">
+<code class="descname">extend2d</code><span class="sig-paren">(</span><em>vari</em>, <em>iext=0</em>, <em>jext=0</em>, <em>mode=None</em>, <em>copy=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#extend2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.extend2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate data on an grid shifted by an half cell size in X and Y</p>
+<p>X and Y are supposed to be the -1 and -2 axes of var.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>var</strong>: Array.</p>
+</li>
+<li><p class="first"><strong>i/jext</strong>, optional: Size of extension along i/j.
+If a tuple,it gives left and right extensions, else the same
+for both.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Interpolation mode for boundary point outside initial positions.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;extrap&quot;</span></code> if axis else <code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;extrap&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>: Linear extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>: Constant extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;masked&quot;</span></code>: Masked.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Always input copy data.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.extendgrid">
+<code class="descname">extendgrid</code><span class="sig-paren">(</span><em>gg</em>, <em>iext=0</em>, <em>jext=0</em>, <em>mode='extrap'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#extendgrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.extendgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extrapolate a grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>gg</strong>: cdms2 grid.</p>
+</li>
+<li><p class="first"><strong>i/jext</strong>: Size of extrapolation along i/j.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Interpolation mode for boundary point outside initial positions.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;extrap&quot;</span></code>: Linear extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>: Constant extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;masked&quot;</span></code>: Masked.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.fill1d">
+<code class="descname">fill1d</code><span class="sig-paren">(</span><em>vari</em>, <em>axis=0</em>, <em>method='linear'</em>, <em>maxgap=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#fill1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.fill1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill missing values of a 1D array using interpolation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong>: Input <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> variable</li>
+<li><em>axis</em>: Axis number on which filling is performed</li>
+<li><em>method</em>: Interpolation method (see <a class="reference internal" href="#vacumm.misc.grid.regridding.interp1d" title="vacumm.misc.grid.regridding.interp1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">interp1d()</span></code></a>)</li>
+<li><em>maxgap</em>: Maximal size of filled gaps (in steps)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fill1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">,</span> <span class="n">maxgap</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">Filled <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> variable similar to input one</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descname">fill1d</code><span class="sig-paren">(</span><em>vari</em>, <em>axis=0</em>, <em>method='linear'</em>, <em>maxgap=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#fill1d"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Fill missing values of a 1D array using interpolation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong>: Input <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> variable</li>
+<li><em>axis</em>: Axis number on which filling is performed</li>
+<li><em>method</em>: Interpolation method (see <a class="reference internal" href="#vacumm.misc.grid.regridding.interp1d" title="vacumm.misc.grid.regridding.interp1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">interp1d()</span></code></a>)</li>
+<li><em>maxgap</em>: Maximal size of filled gaps (in steps)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fill1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">,</span> <span class="n">maxgap</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">Filled <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> variable similar to input one</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.fill1d2">
+<code class="descname">fill1d2</code><span class="sig-paren">(</span><em>vi</em>, <em>axis=0</em>, <em>k=1</em>, <em>padding=None</em>, <em>clip=False</em>, <em>min_padding=None</em>, <em>method='linear'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#fill1d2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.fill1d2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill missing values of a 1D array using spline interpolation.</p>
+<ul class="simple">
+<li><strong>vi</strong>: Input cdms variable</li>
+<li><em>k</em>: Order of splines [default: 1 = linear]</li>
+<li><em>padding</em>: Padding around an gap defining where on which part of the sample we must fit splines [default: max([min_padding,len(gap)*5])]</li>
+<li><em>min_padding</em>: See padding [default: k]</li>
+<li><em>method</em>: See <a class="reference internal" href="#vacumm.misc.grid.regridding.interp1d" title="vacumm.misc.grid.regridding.interp1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">interp1d()</span></code></a> [default: linear]</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body">Filled <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> variable</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.fill2d">
+<code class="descname">fill2d</code><span class="sig-paren">(</span><em>var</em>, <em>xx=None</em>, <em>yy=None</em>, <em>mask=None</em>, <em>copy=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#fill2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.fill2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill missing value of 2D variable using inter/extrapolation</p>
+<ul class="simple">
+<li><strong>var</strong>: A cdms 2D variable.</li>
+<li><em>xx/yy</em>: Substitutes for axis coordinates [default: None]</li>
+<li>Other keywords are passe to <a class="reference internal" href="#vacumm.misc.grid.regridding.griddata" title="vacumm.misc.grid.regridding.griddata"><code class="xref py py-func docutils literal notranslate"><span class="pre">griddata()</span></code></a></li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.grid2xy">
+<code class="descname">grid2xy</code><span class="sig-paren">(</span><em>vari</em>, <em>xo</em>, <em>yo</em>, <em>zo=None</em>, <em>to=None</em>, <em>zi=None</em>, <em>method='linear'</em>, <em>outaxis=None</em>, <em>distmode='haversine'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#grid2xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.grid2xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate gridded data to ramdom positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>vari</strong>: Input cdms variable on a grid</p>
+</li>
+<li><p class="first"><strong>xo</strong>: Output longitudes</p>
+</li>
+<li><p class="first"><strong>yo</strong>: Output latitudes</p>
+</li>
+<li><p class="first"><strong>method</strong>, optional: Interpolation method</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">nearest</span></code>: Nearest neighbor</li>
+<li><code class="docutils literal notranslate"><span class="pre">linear</span></code>: Linear interpolation</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>zo</strong>, optional: Output depths (negative in the ocean).</p>
+</li>
+<li><p class="first"><strong>to</strong>, optional: Output times.</p>
+</li>
+<li><p class="first"><strong>zi</strong>, optional: Input depths when variable in space.</p>
+</li>
+<li><p class="first"><strong>outaxis</strong>, optional: Output spatial axis</p>
+<blockquote>
+<div><ul class="simple">
+<li>A cdms2 axis.</li>
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>: Longitudes or latitudes depending
+on the range if coordinates are monotonic, else <code class="docutils literal notranslate"><span class="pre">'dist'</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'lon'</span></code> or <code class="docutils literal notranslate"><span class="pre">'x'</span></code>: Longitudes.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'lat'</span></code> or <code class="docutils literal notranslate"><span class="pre">'y'</span></code>: Latitudes.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'dist'</span></code> or <code class="docutils literal notranslate"><span class="pre">'d'</span></code>: Distance in km.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>distmode</strong>, optional: Distance computation mode.
+See <a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.get_distances" title="vacumm.misc.grid.misc.get_distances"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_distances()</span></code></a>.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.griddata">
+<code class="descname">griddata</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>ggo</em>, <em>method='linear'</em>, <em>cgrid=False</em>, <em>cache=None</em>, <em>proj=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#griddata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.griddata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation in one single shot using GridData</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong>: 1D input x coordinates.</li>
+<li><strong>yi</strong>: 1D input y coordinates (same length as xi).</li>
+<li><strong>zi</strong>: 1D input values (same length as xi).</li>
+<li><strong>method</strong>, optional: Method of interpolation,
+within (‘nat’, ‘css’, ‘carg’, ‘krig’) [default: ‘carg’]</li>
+<li><strong>cgrid</strong>, optional: Output on a C-grid at U- and V-points
+deduced from ggo [default: False].
+Not available for ‘carg’ and ‘krig’ methods.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.grid.regridding.GridData" title="vacumm.misc.grid.regridding.GridData"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridData</span></code></a> and <a class="reference internal" href="#vacumm.misc.grid.regridding.cargen" title="vacumm.misc.grid.regridding.cargen"><code class="xref py py-func docutils literal notranslate"><span class="pre">cargen()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.interp1d">
+<code class="descname">interp1d</code><span class="sig-paren">(</span><em>vari</em>, <em>axo</em>, <em>method='linear'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#interp1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.interp1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linear or cubic interpolation along an axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vari</strong>: Input cdms array</li>
+<li><strong>axo</strong>: Output cdms axis</li>
+<li><strong>axis</strong>, optional: Axis on wich to operate</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an wrapper to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a> using <code class="docutils literal notranslate"><span class="pre">linear</span></code> as a default method.
+See its help for more information.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.interp2d">
+<code class="descname">interp2d</code><span class="sig-paren">(</span><em>vari</em>, <em>ggo</em>, <em>method='interp'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#interp2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.interp2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid2d" title="vacumm.misc.grid.regridding.regrid2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2d()</span></code></a> call with <code class="docutils literal notranslate"><span class="pre">method=&quot;interp&quot;</span></code> by default</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.krig">
+<code class="descname">krig</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>ggo</em>, <em>mask=True</em>, <em>proj=True</em>, <em>missing_value=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#krig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.krig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kriging interpolator to a grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xi</strong>: Input 1D X positions.</li>
+<li><strong>yi</strong>: Input 1D Y positions.</li>
+<li><strong>zi</strong>: Input N-D with last dim as space.</li>
+<li><strong>ggo</strong>, optional: Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.</li>
+<li><strong>mask</strong>, optional: Mask to apply to output data [default: None]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.nearest1d">
+<code class="descname">nearest1d</code><span class="sig-paren">(</span><em>vari</em>, <em>axo</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#nearest1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.nearest1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation along an axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vari</strong>: Input cdms array</li>
+<li><strong>axo</strong>: Output cdms axis</li>
+<li><strong>axis</strong>, optional: Axis on wich to operate</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an wrapper to <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a> using <code class="docutils literal notranslate"><span class="pre">nearest</span></code> as a default method.
+See its help for more information.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.refine">
+<code class="descname">refine</code><span class="sig-paren">(</span><em>vari</em>, <em>factor</em>, <em>geo=True</em>, <em>smoothcoast=False</em>, <em>noaxes=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#refine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.refine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refine a variable on a grid by a factor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vari</strong>: 1D or 2D variable.</li>
+<li><strong>factor</strong>: Refinement factor &gt; 1</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid1d">
+<code class="descname">regrid1d</code><span class="sig-paren">(</span><em>vari</em>, <em>axo</em>, <em>method='auto'</em>, <em>axis=None</em>, <em>axi=None</em>, <em>iaxo=None</em>, <em>iaxi=None</em>, <em>xmap=None</em>, <em>xmapper=None</em>, <em>mask_thres=0.5</em>, <em>extrap=0</em>, <em>erri=None</em>, <em>errl=None</em>, <em>geterr=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regrid1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation along one axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>vari</strong>: Input cdms array.</p>
+</li>
+<li><p class="first"><strong>axo</strong>: Output cdms axis or array. It can be of any dimensions.</p>
+</li>
+<li><p class="first"><strong>method</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;|0</span></code>: Nearest neighbor</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;|2</span></code>: Linear interpolation</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cubic&quot;|2</span></code>: Cubic interpolation (not used, switched to <code class="docutils literal notranslate"><span class="pre">3</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;hermit&quot;|3</span></code>: Cubic hermit interpolation</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cellerr&quot;|4</span></code>: Cell averaging based on errors</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;|-1</span></code>: Cell averaging</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;conserv&quot;|-1</span></code>: Conservative cel averaging
+(like <code class="docutils literal notranslate"><span class="pre">cellave</span></code> but with integral preserved)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>axis</strong>, optional: Dimension (int) on which the interpolation is performed.
+If not specified, it is guessed from the
+input and output axis types, or set to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</li>
+<li><p class="first"><strong>axi</strong>, optional: Input axis. It defaults to the axis-th axis of <code class="docutils literal notranslate"><span class="pre">vari</span></code>.
+Like <code class="docutils literal notranslate"><span class="pre">axo</span></code>, it can be of any dimensions.</p>
+</li>
+<li><p class="first"><strong>iaxo</strong>, optional: Dimension of <code class="docutils literal notranslate"><span class="pre">axo</span></code> on which the interpolation is performed
+when <code class="docutils literal notranslate"><span class="pre">axo</span></code> has more than one dimension.</p>
+</li>
+<li><p class="first"><strong>iaxi</strong>, optional: Same as <code class="docutils literal notranslate"><span class="pre">iaxo</span></code> but for <code class="docutils literal notranslate"><span class="pre">axi</span></code>.</p>
+</li>
+<li><p class="first"><strong>mask_thres</strong>, optional: Time steps when interpolated mask is greater than
+this value are masked.</p>
+</li>
+<li><p class="first"><strong>extrap</strong>, optional: Extrapolate outside input grid when the “nearest” method
+is used:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>: No extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">-1</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;min&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;bottom&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;lower&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;first&quot;</span></code>:
+Extrapolate toward first values of the axis.</li>
+<li><code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;top&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;upper&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;last&quot;</span></code>:
+Extrapolate toward last values of the axis.</li>
+<li><code class="docutils literal notranslate"><span class="pre">2</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;both&quot;</span></code>: Extrapolate toward both first and last values.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>erri</strong>, optional: Input “measurement” errors with the same shape as input
+variable.</p>
+</li>
+<li><p class="first"><strong>errl</strong>, optional: Derivative of lag error with respect to lag.
+Note that the lag must expressed in <strong>days</strong> for time axes.
+If positive, it based on quadratic errors, else on error itself.
+Estimate for instance it using the slope of a linear regression.
+It is usually varying in space and constant in time.</p>
+</li>
+<li><p class="first"><strong>geterr</strong>, optional: When method is “cellerr”, also return the error
+along with the variable.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">varo</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">taxis</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span> <span class="c1"># interpolation in time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">varo</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">zo</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Z interpolation on second axis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">varo</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">zzo</span><span class="p">,</span> <span class="n">iaxo</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">zzi</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># sigma to sigma</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Cubic method, use “linear” interpolation when less than 4 valid points are available.
+Linear interpolation uses “nearest” interpolation when less than 2 points are
+available.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid1d_method_name">
+<code class="descname">regrid1d_method_name</code><span class="sig-paren">(</span><em>method</em>, <em>raiseerr=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regrid1d_method_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid1d_method_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the method name and return its generic name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid1dold">
+<code class="descname">regrid1dold</code><span class="sig-paren">(</span><em>vari</em>, <em>axo</em>, <em>method='auto'</em>, <em>axis=None</em>, <em>xmap=None</em>, <em>xmapper=None</em>, <em>mask_thres=0.5</em>, <em>extrap=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regrid1dold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid1dold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation along one axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>vari</strong>: Input cdms array.</p>
+</li>
+<li><p class="first"><strong>axo</strong>: Output cdms axis.</p>
+</li>
+<li><p class="first"><strong>method</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;</span></code>: Nearest neighbor</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>: Linear interpolation</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cubic&quot;</span></code>: Cubic interpolation</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;</span></code>: Cell averaging</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;conserv&quot;</span></code>: Conservative cel averaging (like <code class="docutils literal notranslate"><span class="pre">cellave</span></code> but with integral preserved)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>axis</strong>, optional: Axis (int) on which to operate. If not specified, it is guessed from the
+input and output axis types, or set to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</li>
+<li><p class="first"><strong>xmap</strong>, optional: Integer or tuple that specify on which axes input axis is varying.</p>
+</li>
+<li><p class="first"><strong>xmapper</strong>, optional: Array that specify values of input axis along axes specified by <code class="docutils literal notranslate"><span class="pre">xmap</span></code>.
+It is an array of size <code class="docutils literal notranslate"><span class="pre">(...,len(var.getAxis(xmap[-2])),</span> <span class="pre">len(var.getAxis(xmap[-1])),</span> <span class="pre">len(var.getAxis(axis))]</span></code>.</p>
+</li>
+<li><p class="first"><strong>mask_thres</strong>, optional: Time steps when interpolated mask is greater than
+this value are masked.</p>
+</li>
+<li><p class="first"><strong>extrap</strong>, optional: Extrapolate outside input grid when the “nearest” method
+is used:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>: No extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">-1</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;min&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;bottom&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;lower&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;first&quot;</span></code>:
+Extrapolate toward first values of the axis.</li>
+<li><code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;top&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;upper&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;last&quot;</span></code>:
+Extrapolate toward last values of the axis.</li>
+<li><code class="docutils literal notranslate"><span class="pre">2</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;both&quot;</span></code>: Extrapolate toward both first and last values.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Cubic method, use “linear” interpolation when less than 4 valid points are available.
+Linear interpolation uses “nearest” interpolation when less than 2 points are
+available.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid2d">
+<code class="descname">regrid2d</code><span class="sig-paren">(</span><em>vari</em>, <em>ggo</em>, <em>method='auto'</em>, <em>tool=None</em>, <em>rgdr=None</em>, <em>getrgdr=False</em>, <em>erode=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regrid2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regrid a variable from a regular grid to another</p>
+<p>If the input or output grid is curvilinear and <code class="docutils literal notranslate"><span class="pre">method</span></code> is set to
+<code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;conserv&quot;</span></code>, the <a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> is used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>vari</strong>: Variable cdms on regular grid</p>
+</li>
+<li><p class="first"><strong>ggo</strong>: Tuple of (x,y) or a cdms grid or a cdms variable with a grid</p>
+</li>
+<li><p class="first"><strong>method</strong>, optional: One of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>: method guessed between <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">cellave</span></code>
+according to resolution of input and output grid (see <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid_method" title="vacumm.misc.grid.regridding.regrid_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid_method()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;</span></code>: nearest neighbour</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;bilinear&quot;</span></code>: bilinear interpolation (low res. to high res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;dstwgt&quot;</span></code> : distance weighting between the four nearest grid points
+(low res. to high res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;patch&quot;</span></code> : patch recovery interpolation (low res. to high res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;</span></code> : weighted regridding based on areas of cells (high res. to low res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;conserv&quot;</span></code> : same as <code class="docutils literal notranslate"><span class="pre">cell</span></code> but conservative (high res. to low res.)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>tool</strong>, optional: Regridder. One of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>: tool guessed depending on the method, the first available tool
+and the grids (rectangular or curvilinear).</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;vacumm&quot;</span></code>: Internal routines.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;esmf&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;libcf&quot;</span></code>: Regridders provided by UVCDAT.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;regrid2&quot;</span></code>: Old regridder provided by CDAT (rectangular only).</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>rgdr</strong>, optional: An already set up regridder instance to speed up regridding:
+<a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> instance for <code class="docutils literal notranslate"><span class="pre">regrid2</span></code>, <code class="docutils literal notranslate"><span class="pre">esmf</span></code> and <code class="docutils literal notranslate"><span class="pre">libcf</span></code> tools,
+else a <a class="reference internal" href="#vacumm.misc.grid.regridding.CurvedInterpolator" title="vacumm.misc.grid.regridding.CurvedInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">CurvedInterpolator</span></code></a> instance for <code class="docutils literal notranslate"><span class="pre">vacumm</span></code> tool with
+interpolation on curvilinear grids.</p>
+</li>
+<li><p class="first"><strong>getrgdr</strong>, optional: Also return the regridder instance if it applies, or None.</p>
+</li>
+<li><p class="first">Other keywords are passed to special interpolation functions depending on method and choices :</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.cargen" title="vacumm.misc.grid.regridding.cargen"><code class="xref py py-func docutils literal notranslate"><span class="pre">cargen()</span></code></a> when “nat” or “carg” method is used</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Tools/methods:</th><td class="field-body"><p class="first">Overview table of method availability for each tool.
+<code class="docutils literal notranslate"><span class="pre">RECT</span></code> means that it only works with rectangular grids.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="20%" />
+<col width="24%" />
+<col width="15%" />
+<col width="17%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Met/Tool</th>
+<th class="head">Vacumm</th>
+<th class="head">regrid2d</th>
+<th class="head">ESMF</th>
+<th class="head">Libcf</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>nearest</td>
+<td>OK</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>bilinear</td>
+<td>OK</td>
+<td>&#160;</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr class="row-even"><td>dstwgt</td>
+<td>OK</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>patch</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>OK</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>cellave</td>
+<td>&#160;</td>
+<td>RECT</td>
+<td>OK</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>conserv</td>
+<td>&#160;</td>
+<td>RECT</td>
+<td>OK</td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regrid2d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regrid2d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid2d_method_name">
+<code class="descname">regrid2d_method_name</code><span class="sig-paren">(</span><em>method</em>, <em>raiseerr=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regrid2d_method_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid2d_method_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the method name and return its generic name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid2d_tool_name">
+<code class="descname">regrid2d_tool_name</code><span class="sig-paren">(</span><em>tool</em>, <em>raiseerr=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regrid2d_tool_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid2d_tool_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the tool name and return its generic name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid2dnew">
+<code class="descname">regrid2dnew</code><span class="sig-paren">(</span><em>vari</em>, <em>ggo</em>, <em>method='auto'</em>, <em>tool=None</em>, <em>rgdr=None</em>, <em>getrgdr=False</em>, <em>erode=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid2dnew" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regrid a variable from a regular grid to another</p>
+<p>If the input or output grid is curvilinear and <code class="docutils literal notranslate"><span class="pre">method</span></code> is set to
+<code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;conserv&quot;</span></code>, the <a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> is used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>vari</strong>: Variable cdms on regular grid</p>
+</li>
+<li><p class="first"><strong>ggo</strong>: Tuple of (x,y) or a cdms grid or a cdms variable with a grid</p>
+</li>
+<li><p class="first"><strong>method</strong>, optional: One of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>: method guessed between <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">cellave</span></code>
+according to resolution of input and output grid (see <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid_method" title="vacumm.misc.grid.regridding.regrid_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid_method()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;</span></code>: nearest neighbour</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;bilinear&quot;</span></code>: bilinear interpolation (low res. to high res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;dstwgt&quot;</span></code> : distance weighting between the four nearest grid points
+(low res. to high res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;patch&quot;</span></code> : patch recovery interpolation (low res. to high res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;</span></code> : weighted regridding based on areas of cells (high res. to low res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;conserv&quot;</span></code> : same as <code class="docutils literal notranslate"><span class="pre">cell</span></code> but conservative (high res. to low res.)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>tool</strong>, optional: Regridder. One of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>: tool guessed depending on the method, the first available tool
+and the grids (rectangular or curvilinear).</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;vacumm&quot;</span></code>: Internal routines.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;esmf&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;libcf&quot;</span></code>: Regridders provided by UVCDAT.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;regrid2&quot;</span></code>: Old regridder provided by CDAT (rectangular only).</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>rgdr</strong>, optional: An already set up regridder instance to speed up regridding:
+<a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> instance for <code class="docutils literal notranslate"><span class="pre">regrid2</span></code>, <code class="docutils literal notranslate"><span class="pre">esmf</span></code> and <code class="docutils literal notranslate"><span class="pre">libcf</span></code> tools,
+else a <a class="reference internal" href="#vacumm.misc.grid.regridding.CurvedInterpolator" title="vacumm.misc.grid.regridding.CurvedInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">CurvedInterpolator</span></code></a> instance for <code class="docutils literal notranslate"><span class="pre">vacumm</span></code> tool with
+interpolation on curvilinear grids.</p>
+</li>
+<li><p class="first"><strong>getrgdr</strong>, optional: Also return the regridder instance if it applies, or None.</p>
+</li>
+<li><p class="first">Other keywords are passed to special interpolation functions depending on method and choices :</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.cargen" title="vacumm.misc.grid.regridding.cargen"><code class="xref py py-func docutils literal notranslate"><span class="pre">cargen()</span></code></a> when “nat” or “carg” method is used</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Tools/methods:</th><td class="field-body"><p class="first">Overview table of method availability for each tool.
+<code class="docutils literal notranslate"><span class="pre">RECT</span></code> means that it only works with rectangular grids.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="20%" />
+<col width="24%" />
+<col width="15%" />
+<col width="17%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Met/Tool</th>
+<th class="head">Vacumm</th>
+<th class="head">regrid2d</th>
+<th class="head">ESMF</th>
+<th class="head">Libcf</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>nearest</td>
+<td>OK</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>bilinear</td>
+<td>OK</td>
+<td>&#160;</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr class="row-even"><td>dstwgt</td>
+<td>OK</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>patch</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>OK</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>cellave</td>
+<td>&#160;</td>
+<td>RECT</td>
+<td>OK</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>conserv</td>
+<td>&#160;</td>
+<td>RECT</td>
+<td>OK</td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regrid2d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regrid2d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid2dold">
+<code class="descname">regrid2dold</code><span class="sig-paren">(</span><em>vari</em>, <em>ggo</em>, <em>method='auto'</em>, <em>mask_thres=0.5</em>, <em>ext=False</em>, <em>bilinear_masking='dstwgt'</em>, <em>ext_masking='poly'</em>, <em>cdr=None</em>, <em>getcdr=False</em>, <em>usecdr=None</em>, <em>useoldcdr=True</em>, <em>check_mask=True</em>, <em>clipminmax=False</em>, <em>geo=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regrid2dold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid2dold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regrid a variable from a regular grid to another</p>
+<p>If the input or output grid is curvilinear and <code class="docutils literal notranslate"><span class="pre">method</span></code> is set to
+<code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;conserv&quot;</span></code>, the <a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> is used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>vari</strong>: Variable cdms on regular grid</p>
+</li>
+<li><p class="first"><strong>ggo</strong>: Tuple of (x,y) or a cdms grid or a cdms variable with a grid</p>
+</li>
+<li><p class="first"><strong>method</strong>, optional: One of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>: method guessed according to resolution of input and output grid (see <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid_method" title="vacumm.misc.grid.regridding.regrid_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid_method()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;</span></code>: nearest neighbour</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;bilinear&quot;</span></code>: bilinear interpolation (low res. to high res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;dstwgt&quot;</span></code> : distance weighting (low res. to high res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cellave&quot;</span></code> : weighted regridding based on areas of cells (high res. to low res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;conserv&quot;</span></code> : same as <code class="docutils literal notranslate"><span class="pre">cell</span></code> but conservative (high res. to low res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;bining&quot;</span></code> : simple averaging using bining (very high res. to low res.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nat&quot;</span></code> : Natgrid interpolation (low res. to high res.) (see <a class="reference internal" href="#vacumm.misc.grid.regridding.GridData" title="vacumm.misc.grid.regridding.GridData"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridData</span></code></a> for more info)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;carg&quot;</span></code> : Interpolation with minicargen(low res. to high res.) (see <a class="reference internal" href="#vacumm.misc.grid.regridding.cargen" title="vacumm.misc.grid.regridding.cargen"><code class="xref py py-func docutils literal notranslate"><span class="pre">cargen()</span></code></a> for more info)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>cdr</strong>, optional: <a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> instance.</p>
+</li>
+<li><p class="first"><strong>getcdr</strong>, optional: Also return the computed <a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> instance.</p>
+</li>
+<li><p class="first"><strong>usecdr</strong>, optional: Force the use or not of a <a class="reference internal" href="#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> instance,
+even for rectangular grids.</p>
+</li>
+<li><p class="first"><strong>useoldcdr</strong>, optional: Force the use the old CDAT regridder (rectangular grids only).</p>
+</li>
+<li><p class="first"><strong>ext</strong>, optional: Perform extrapolation when possible</p>
+</li>
+<li><p class="first"><strong>bilinear_masking</strong>: the way to handle interpolation near masked values</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;</span></code>: brut masking using nearest neighbor</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;dstwgt&quot;</span></code> : distance weight data are used where interpolated mask is lower <code class="docutils literal notranslate"><span class="pre">mask_thres</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>mask_thres</strong>, optional: Threshold for masking points for some methods (~ land fraction) for
+<strong>rectangular grids only</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">method=&quot;bilinear&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">bilinear_masking=&quot;dstwght&quot;</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">method=&quot;cellave&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">method=&quot;bining&quot;</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><dl class="first docutils">
+<dt><strong>ext_masking</strong>, optional: Manual masking method when <code class="docutils literal notranslate"><span class="pre">ext=False</span></code> (when needed)</dt>
+<dd><p class="first">with methods [“carg”,] (see <a class="reference internal" href="misc.grid.masking.html#vacumm.misc.grid.masking.grid_envelop_mask" title="vacumm.misc.grid.masking.grid_envelop_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid_envelop_mask()</span></code></a>)
+if input grid is not rectangular</p>
+<ul class="last simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;poly&quot;</span></code>: use the polygon defined by the input grid envelopp and check if output points are inside</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nearest&quot;</span></code>: use hack with nearest 2d interpolation</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Other keywords are passed to special interpolation functions depending on method and choices :</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.regridding.cargen" title="vacumm.misc.grid.regridding.cargen"><code class="xref py py-func docutils literal notranslate"><span class="pre">cargen()</span></code></a> when “nat” or “carg” method is used</li>
+<li><strong>mask_thres</strong>, optional: Time steps when interpolated mask is greater than
+this value are masked.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">regrid2d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">bilinear_masking</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regrid2d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">,</span> <span class="n">mask_thres</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regrid2d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nat&#39;</span><span class="p">,</span> <span class="n">hor</span><span class="o">=.</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regrid_method">
+<code class="descname">regrid_method</code><span class="sig-paren">(</span><em>gridi</em>, <em>grido</em>, <em>ratio=0.55</em>, <em>iaxi=-1</em>, <em>iaxo=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regrid_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regrid_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Guess the best regridding method for passing from <code class="docutils literal notranslate"><span class="pre">gridi</span></code> to <code class="docutils literal notranslate"><span class="pre">grido</span></code></p>
+<p>If <code class="docutils literal notranslate"><span class="pre">resolution(gridi)</span> <span class="pre">&lt;=</span> <span class="pre">ratio*resolution(grido)</span></code>, <code class="docutils literal notranslate"><span class="pre">method=&quot;cellave&quot;</span></code>
+else  <code class="docutils literal notranslate"><span class="pre">method=&quot;interp&quot;</span></code>
+The <a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.resol" title="vacumm.misc.grid.misc.resol"><code class="xref py py-func docutils literal notranslate"><span class="pre">resol()</span></code></a> function is used to estimate
+the resolution.
+For grids, a resolution common to X and Y axes is estimated using the following
+sequence:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xres</span><span class="p">,</span> <span class="n">yres</span> <span class="o">=</span> <span class="n">resol</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="n">xres</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">yres</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>gridi</strong>: Grid, tuple of axes or single axis or array.</li>
+<li><strong>grido</strong>: Grid, tuple of axes or single axis or array.</li>
+<li><strong>ratio</strong>, optional: Limit ratio of output grid resolution to input grid resolution.</li>
+<li><strong>iaxi/iaxo</strong>, optional: Dimension on which to compute the resolution with
+<a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.resol" title="vacumm.misc.grid.misc.resol"><code class="xref py py-func docutils literal notranslate"><span class="pre">resol()</span></code></a> when <code class="docutils literal notranslate"><span class="pre">gridi</span></code> and <code class="docutils literal notranslate"><span class="pre">grido</span></code> are single axes
+with several dimensions.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>..note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">resolution</span> <span class="n">of</span> <span class="n">the</span> <span class="n">grids</span> <span class="ow">is</span> <span class="n">checked</span> <span class="ow">in</span> <span class="n">their</span> <span class="n">attributes</span> <span class="s2">&quot;_xres&quot;</span> <span class="ow">and</span> <span class="s2">&quot;_yres&quot;</span>
+<span class="n">before</span> <span class="n">before</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">them</span><span class="o">.</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">'cellave'</span></code> OR <code class="docutils literal notranslate"><span class="pre">'linear'</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regular">
+<code class="descname">regular</code><span class="sig-paren">(</span><em>vi</em>, <em>dx=None</em>, <em>verbose=True</em>, <em>auto_bounds=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regular" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill a variable with missing values when step of first axis is increasing</p>
+<ul class="simple">
+<li><strong>vi</strong>: Input array on almost regular axis</li>
+<li><em>dx</em>: Force grid step to this. Else, auto evaluated.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.regular_fill1d">
+<code class="descname">regular_fill1d</code><span class="sig-paren">(</span><em>var</em>, <em>k=1</em>, <em>dx=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#regular_fill1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.regular_fill1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combination: fill1d(regular_fill)) (with their parameter)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.shift1d">
+<code class="descname">shift1d</code><span class="sig-paren">(</span><em>var</em>, <em>shift=0</em>, <em>bmode=None</em>, <em>axis=-1</em>, <em>copy=True</em>, <em>shiftaxis=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#shift1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.shift1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate data on an axis shifted by an half cell size</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>var</strong>: array.</p>
+</li>
+<li><p class="first"><strong>shift</strong>, optional: Shift to operate.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code>: No shift.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&lt;0</span></code>: Shilt toward bottom of the axis.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&gt;0</span></code>: Shilt toward top of the axis.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>bmode</strong>, optional: Boundary mode.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;extrap&quot;</span></code> if axis else <code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>: Linear extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>: Constant extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;masked&quot;</span></code>: Mask outside data.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cyclic&quot;</span></code>: Cyclic extrapolation.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>axis</strong>, optional: Axis on which to operate.</p>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Always input copy data.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.shift2d">
+<code class="descname">shift2d</code><span class="sig-paren">(</span><em>vari</em>, <em>ishift=0</em>, <em>jshift=0</em>, <em>bmode=None</em>, <em>copy=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#shift2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.shift2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate data on an grid shifted by an half cell size in X and Y</p>
+<p>X and Y are supposed to be the -1 and -2 axes of var.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>var</strong>: array.</p>
+</li>
+<li><p class="first"><strong>[i/j]shift</strong>, optional: Shift to operate along X/Y.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code>: No shift.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&lt;0</span></code>: Shilt toward bottom of the axis.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&gt;0</span></code>: Shilt toward top of the axis.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>bmode</strong>, optional: Boundary mode.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>: Linear extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>: Constant extrapolation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;masked&quot;</span></code>: Mask outside data.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cyclic&quot;</span></code>: Cyclic extrapolation.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Always input copy data.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.shiftgrid">
+<code class="descname">shiftgrid</code><span class="sig-paren">(</span><em>gg</em>, <em>ishift=0</em>, <em>jshift=0</em>, <em>bmode='linear'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#shiftgrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.shiftgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift a grid of an half cell</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>gg</strong>: cdms2 grid.</li>
+<li><strong>i/jshift</strong>: Fraction cell to shift.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.spline_interp1d">
+<code class="descname">spline_interp1d</code><span class="sig-paren">(</span><em>old_var</em>, <em>new_axis</em>, <em>check_missing=True</em>, <em>k=3</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#spline_interp1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.spline_interp1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Backward compatibility function</p>
+<p>See <a class="reference internal" href="#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.transect">
+<code class="descname">transect</code><span class="sig-paren">(</span><em>var</em>, <em>lons</em>, <em>lats</em>, <em>depths=None</em>, <em>times=None</em>, <em>method='linear'</em>, <em>subsamp=3</em>, <em>getcoords=False</em>, <em>outaxis=None</em>, <em>depth=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#transect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.transect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a transect in a -[T][Z]YX variable</p>
+<p>It calls <code class="xref py py-func docutils literal notranslate"><span class="pre">transect_specs()</span></code> to compute transect
+coordinates when not explictly specified, and <a class="reference internal" href="#vacumm.misc.grid.regridding.grid2xy" title="vacumm.misc.grid.regridding.grid2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid2xy()</span></code></a> to perform
+4D interpolations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tsst</span> <span class="o">=</span> <span class="n">transect</span><span class="p">(</span><span class="n">sst</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.6</span><span class="p">),</span> <span class="p">(</span><span class="mf">42.</span><span class="p">,</span><span class="mf">43.</span><span class="p">),</span> <span class="n">subsamp</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tmld</span> <span class="o">=</span> <span class="n">transect</span><span class="p">(</span><span class="n">mld</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">],</span> <span class="p">[</span><span class="mf">42.</span><span class="p">,</span><span class="mf">43.</span><span class="p">,</span><span class="mf">43.</span><span class="p">],</span> <span class="n">outaxis</span><span class="o">=</span><span class="s1">&#39;dist&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tprof</span> <span class="o">=</span> <span class="n">transect</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">42.</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>var</strong>: MV2 array of at least rank 2 (YX).</p>
+</li>
+<li><p class="first"><strong>lons/lats</strong>: Specification of transect, either</p>
+<blockquote>
+<div><ul class="simple">
+<li>Coordinates of first and last point in degrees as
+tuples in the form <code class="docutils literal notranslate"><span class="pre">(lon0,lon1)</span></code> and <code class="docutils literal notranslate"><span class="pre">(lat0,lat1)</span></code>.
+The array of coordinates is generated using <code class="xref py py-func docutils literal notranslate"><span class="pre">transect_specs()</span></code>.</li>
+<li>Or explicit array of coordinates (as scalars, lists or arrays).</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>depths</strong>, optional: Output depths. If not a tuple, it must have
+the same size as lons and lats.</p>
+</li>
+<li><p class="first"><strong>times</strong>, optional: Tuple, or time sequence or axis of the same length as
+resulting coordinates. If provided, the interpolation is first done
+in space, them onto this lagrangian time,
+and the final space-time trajectory is returned.
+If <code class="docutils literal notranslate"><span class="pre">outaxis</span></code> is None, <code class="docutils literal notranslate"><span class="pre">taxis</span></code> becomes the output axis.</p>
+</li>
+<li><p class="first"><strong>subsamp</strong>, optional: Subsampling with respect to grid cell
+(only when coordinates are not explicit).</p>
+</li>
+<li><p class="first"><strong>method</strong>, optional: Interpolation method (see <a class="reference internal" href="#vacumm.misc.grid.regridding.grid2xy" title="vacumm.misc.grid.regridding.grid2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid2xy()</span></code></a>).</p>
+</li>
+<li><p class="first"><strong>getcoords</strong>, optional: Also get computed coordiantes.</p>
+</li>
+<li><p class="first"><strong>outaxis</strong>, optional: Output spatial axis (see <a class="reference internal" href="#vacumm.misc.grid.regridding.grid2xy" title="vacumm.misc.grid.regridding.grid2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid2xy()</span></code></a>).</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">tvar</span></code> or <code class="docutils literal notranslate"><span class="pre">tvar,tons,tlats</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.xy2grid">
+<code class="descname">xy2grid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#xy2grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.xy2grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.grid.regridding.griddata" title="vacumm.misc.grid.regridding.griddata"><code class="xref py py-func docutils literal notranslate"><span class="pre">griddata()</span></code></a></p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.misc.grid.regridding.GridData" title="vacumm.misc.grid.regridding.GridData"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridData</span></code></a> <a class="reference internal" href="#vacumm.misc.grid.regridding.cargen" title="vacumm.misc.grid.regridding.cargen"><code class="xref py py-func docutils literal notranslate"><span class="pre">cargen()</span></code></a> <a class="reference internal" href="#vacumm.misc.grid.regridding.xy2grid" title="vacumm.misc.grid.regridding.xy2grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">xy2grid()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.regridding.xy2xy">
+<code class="descname">xy2xy</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>xo</em>, <em>yo</em>, <em>method='linear'</em>, <em>proj=True</em>, <em>cache=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/regridding.html#xy2xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.regridding.xy2xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation between to unstructured grids using scipy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xi/yi</strong>: 1D input positions</li>
+<li><strong>zi</strong>: atleast-1D input values</li>
+<li><strong>xo,yo</strong>: 1D output positions</li>
+<li><em>proj</em>: convert positions to meters using mercator projection</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

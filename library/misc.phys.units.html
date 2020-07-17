@@ -1,0 +1,426 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.12.2. vacumm.misc.phys.units – Units &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.12.2. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.phys.units</span></code> – Units</a><ul>
+<li><a class="reference internal" href="#overview">2.3.12.2.1. Overview</a></li>
+<li><a class="reference internal" href="#module-vacumm.misc.phys.units">2.3.12.2.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.phys.units.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-phys-units-units">
+<span id="lib-misc-phy-units"></span><h1>2.3.12.2. <a class="reference internal" href="#module-vacumm.misc.phys.units" title="vacumm.misc.phys.units"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.phys.units</span></code></a> – Units<a class="headerlink" href="#vacumm-misc-phys-units-units" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.12.2.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.phys.units.kt2ms" title="vacumm.misc.phys.units.kt2ms"><code class="xref py py-func docutils literal notranslate"><span class="pre">kt2ms()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.ms2kt" title="vacumm.misc.phys.units.ms2kt"><code class="xref py py-func docutils literal notranslate"><span class="pre">ms2kt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.deg2m" title="vacumm.misc.phys.units.deg2m"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2m()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.m2deg" title="vacumm.misc.phys.units.m2deg"><code class="xref py py-func docutils literal notranslate"><span class="pre">m2deg()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.ms2bf" title="vacumm.misc.phys.units.ms2bf"><code class="xref py py-func docutils literal notranslate"><span class="pre">ms2bf()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.dms2deg" title="vacumm.misc.phys.units.dms2deg"><code class="xref py py-func docutils literal notranslate"><span class="pre">dms2deg()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.deg2dms" title="vacumm.misc.phys.units.deg2dms"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2dms()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.mph2ms" title="vacumm.misc.phys.units.mph2ms"><code class="xref py py-func docutils literal notranslate"><span class="pre">mph2ms()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.ms2mph" title="vacumm.misc.phys.units.ms2mph"><code class="xref py py-func docutils literal notranslate"><span class="pre">ms2mph()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.phys.units.tometric" title="vacumm.misc.phys.units.tometric"><code class="xref py py-func docutils literal notranslate"><span class="pre">tometric()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.kel2degc" title="vacumm.misc.phys.units.kel2degc"><code class="xref py py-func docutils literal notranslate"><span class="pre">kel2degc()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.degc2kel" title="vacumm.misc.phys.units.degc2kel"><code class="xref py py-func docutils literal notranslate"><span class="pre">degc2kel()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.convert_units" title="vacumm.misc.phys.units.convert_units"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert_units()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.basic_proj" title="vacumm.misc.phys.units.basic_proj"><code class="xref py py-func docutils literal notranslate"><span class="pre">basic_proj()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.uuconvert" title="vacumm.misc.phys.units.uuconvert"><code class="xref py py-func docutils literal notranslate"><span class="pre">uuconvert()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.rad2deg" title="vacumm.misc.phys.units.rad2deg"><code class="xref py py-func docutils literal notranslate"><span class="pre">rad2deg()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.deg2rad" title="vacumm.misc.phys.units.deg2rad"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2rad()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.vect2mod" title="vacumm.misc.phys.units.vect2mod"><code class="xref py py-func docutils literal notranslate"><span class="pre">vect2mod()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.phys.units.vect2dir" title="vacumm.misc.phys.units.vect2dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">vect2dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.vect2moddir" title="vacumm.misc.phys.units.vect2moddir"><code class="xref py py-func docutils literal notranslate"><span class="pre">vect2moddir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.moddir2vectx" title="vacumm.misc.phys.units.moddir2vectx"><code class="xref py py-func docutils literal notranslate"><span class="pre">moddir2vectx()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.moddir2vecty" title="vacumm.misc.phys.units.moddir2vecty"><code class="xref py py-func docutils literal notranslate"><span class="pre">moddir2vecty()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.moddir2vectxy" title="vacumm.misc.phys.units.moddir2vectxy"><code class="xref py py-func docutils literal notranslate"><span class="pre">moddir2vectxy()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.strfsize" title="vacumm.misc.phys.units.strfsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">strfsize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.strpsize" title="vacumm.misc.phys.units.strpsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">strpsize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.phys.units.uuconvert" title="vacumm.misc.phys.units.uuconvert"><code class="xref py py-func docutils literal notranslate"><span class="pre">uuconvert()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vacumm.misc.phys.units">
+<span id="content"></span><h2>2.3.12.2.2. Content<a class="headerlink" href="#module-vacumm.misc.phys.units" title="Permalink to this headline">¶</a></h2>
+<p>Unit conversions</p>
+<dl class="function">
+<dt id="vacumm.misc.phys.units.kt2ms">
+<code class="descname">kt2ms</code><span class="sig-paren">(</span><em>nd</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#kt2ms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.kt2ms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert nds to m/s</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.ms2kt">
+<code class="descname">ms2kt</code><span class="sig-paren">(</span><em>ms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#ms2kt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.ms2kt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert m/s to nds</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.deg2m">
+<code class="descname">deg2m</code><span class="sig-paren">(</span><em>degrees</em>, <em>lat=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#deg2m"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.deg2m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a distance in degrees to meters</p>
+<ul class="simple">
+<li><strong>degrees</strong>: Distance in degrees</li>
+<li><em>lat</em>: optional latitude, defaults to 0.</li>
+</ul>
+<p>Return: Distance in meters</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.misc.phys.units.m2deg" title="vacumm.misc.phys.units.m2deg"><code class="xref py py-func docutils literal notranslate"><span class="pre">m2deg()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.m2deg">
+<code class="descname">m2deg</code><span class="sig-paren">(</span><em>meters</em>, <em>lat=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#m2deg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.m2deg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a distance in meters to degrees</p>
+<ul class="simple">
+<li><strong>meters</strong>: Distance in meters</li>
+<li><em>lat</em>: optional latitude, defaults to 0.</li>
+</ul>
+<p>Return: Distance in degrees</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.misc.phys.units.deg2m" title="vacumm.misc.phys.units.deg2m"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2m()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.ms2bf">
+<code class="descname">ms2bf</code><span class="sig-paren">(</span><em>ms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#ms2bf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.ms2bf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from m/s to Beauforts (wind)</p>
+<ul class="simple">
+<li><strong>ms</strong>: Wind speed in m/s.</li>
+</ul>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="http://fr.wikipedia.org/wiki/%C3%89chelle_de_Beaufort">http://fr.wikipedia.org/wiki/%C3%89chelle_de_Beaufort</a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.dms2deg">
+<code class="descname">dms2deg</code><span class="sig-paren">(</span><em>d</em>, <em>m=0</em>, <em>s=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#dms2deg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.dms2deg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from degrees/minutes/seconds to degrees</p>
+<ul class="simple">
+<li><strong>d</strong>: degrees</li>
+<li><em>m</em>: minutes [default: 0]</li>
+<li><em>s</em>: seconds [default: 0]</li>
+</ul>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.misc.phys.units.deg2dms" title="vacumm.misc.phys.units.deg2dms"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2dms()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.deg2dms">
+<code class="descname">deg2dms</code><span class="sig-paren">(</span><em>deg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#deg2dms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.deg2dms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from degrees to degrees/minutes/seconds</p>
+<ul class="simple">
+<li><strong>deg</strong>: degrees</li>
+</ul>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.misc.phys.units.dms2deg" title="vacumm.misc.phys.units.dms2deg"><code class="xref py py-func docutils literal notranslate"><span class="pre">dms2deg()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.mph2ms">
+<code class="descname">mph2ms</code><span class="sig-paren">(</span><em>mph</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#mph2ms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.mph2ms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from mph to m/s</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.ms2mph">
+<code class="descname">ms2mph</code><span class="sig-paren">(</span><em>ms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#ms2mph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.ms2mph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from m/s to mph</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.tometric">
+<code class="descname">tometric</code><span class="sig-paren">(</span><em>units, value=1.0, munits=['m', 'm/s']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#tometric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.tometric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to convert units to metric system using <code class="xref py py-mod docutils literal notranslate"><span class="pre">udunits</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body">a float or <code class="docutils literal notranslate"><span class="pre">None</span></code> if conversion failed.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.kel2degc">
+<code class="descname">kel2degc</code><span class="sig-paren">(</span><em>tk</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#kel2degc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.kel2degc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from degrees Kelvin to degrees Celsius</p>
+<ul class="simple">
+<li><strong>tk</strong>: Temperature in Kelvin.</li>
+</ul>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="http://fr.wikipedia.org/wiki/Kelvin">http://fr.wikipedia.org/wiki/Kelvin</a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.degc2kel">
+<code class="descname">degc2kel</code><span class="sig-paren">(</span><em>dc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#degc2kel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.degc2kel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from degrees Celsius to degrees Kelvin</p>
+<ul class="simple">
+<li><strong>dc</strong>: Temperature in degrees Celsius.</li>
+</ul>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="http://fr.wikipedia.org/wiki/Kelvin">http://fr.wikipedia.org/wiki/Kelvin</a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.convert_units">
+<code class="descname">convert_units</code><span class="sig-paren">(</span><em>value</em>, <em>oldunits</em>, <em>newunits</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.phys.units.convert_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change units using unidata units connverter</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.basic_proj">
+<code class="descname">basic_proj</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em>, <em>inverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#basic_proj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.basic_proj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a position from degrees to meters like a geographic projection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lon</strong>: Longitude in degrees or meters.</li>
+<li><strong>lat</strong>: Latitude in degrees or meters.</li>
+<li><strong>inverse</strong>, optional: Invert the projection from meters to degrees.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.uuconvert">
+<code class="descname">uuconvert</code><span class="sig-paren">(</span><em>value</em>, <em>oldunits</em>, <em>newunits</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#uuconvert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.uuconvert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change units using unidata units connverter</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.rad2deg">
+<code class="descname">rad2deg</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#rad2deg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.rad2deg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.deg2rad">
+<code class="descname">deg2rad</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#deg2rad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.deg2rad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.vect2mod">
+<code class="descname">vect2mod</code><span class="sig-paren">(</span><em>u</em>, <em>v</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#vect2mod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.vect2mod" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.vect2dir">
+<code class="descname">vect2dir</code><span class="sig-paren">(</span><em>u</em>, <em>v</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#vect2dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.vect2dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.vect2moddir">
+<code class="descname">vect2moddir</code><span class="sig-paren">(</span><em>u</em>, <em>v</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#vect2moddir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.vect2moddir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.moddir2vectx">
+<code class="descname">moddir2vectx</code><span class="sig-paren">(</span><em>m</em>, <em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#moddir2vectx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.moddir2vectx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.moddir2vecty">
+<code class="descname">moddir2vecty</code><span class="sig-paren">(</span><em>m</em>, <em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#moddir2vecty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.moddir2vecty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.moddir2vectxy">
+<code class="descname">moddir2vectxy</code><span class="sig-paren">(</span><em>m</em>, <em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#moddir2vectxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.moddir2vectxy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.strfsize">
+<code class="descname">strfsize</code><span class="sig-paren">(</span><em>size</em>, <em>fmt=None</em>, <em>si=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#strfsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.strfsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>size</strong>: the size in bytes</li>
+<li><dl class="first docutils">
+<dt><strong>fmt</strong>: the format to use, will receive the size and the unit as format arguments</dt>
+<dd>(None will automatically use “%.3f %s” or “%d %s”)</dd>
+</dl>
+</li>
+<li><strong>si</strong>: whether to use International System units (10^3, …) or not (2**10, …)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">a string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.phys.units.strpsize">
+<code class="descname">strpsize</code><span class="sig-paren">(</span><em>size</em>, <em>si=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#strpsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.phys.units.strpsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a size in Ko, Mo, Kio, Mio, …</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>size</strong>: the size string</li>
+<li><strong>si</strong>: whether to use International System units (10^3, …) or not (2**10, …)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">the float number of bytes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descname">uuconvert</code><span class="sig-paren">(</span><em>value</em>, <em>oldunits</em>, <em>newunits</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/phys/units.html#uuconvert"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Change units using unidata units connverter</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

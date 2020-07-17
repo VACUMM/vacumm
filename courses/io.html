@@ -1,0 +1,304 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.8.7. Leçon sur la lecture et l’écriture de fichiers &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/courses/io.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lecon-sur-la-lecture-et-l-ecriture-de-fichiers">
+<h1>3.8.7. Leçon sur la lecture et l’écriture de fichiers<a class="headerlink" href="#lecon-sur-la-lecture-et-l-ecriture-de-fichiers" title="Permalink to this headline">¶</a></h1>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_io_netcdf.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Testing to read/modidy/(re)write NEtCDF files without loosing attributes&quot;&quot;&quot;</span>
+
+<span class="c1"># Inits</span>
+<span class="n">ncfile</span> <span class="o">=</span> <span class="s2">&quot;nobounds.nc&quot;</span>
+<span class="n">outfile</span> <span class="o">=</span> <span class="s2">&quot;result.nc&quot;</span>
+
+<span class="c1"># Imports</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.misc</span> <span class="k">import</span> <span class="n">get_atts</span>
+
+<span class="c1"># Warnings off</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+<span class="c1"># Open input file</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="n">ncfile</span><span class="p">))</span>
+
+<span class="c1"># Open output file</span>
+<span class="n">fw</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+
+<span class="c1"># Cancel the default behaviour (&lt;=&gt; generating bounds variables)</span>
+<span class="n">cdms2</span><span class="o">.</span><span class="n">setAutoBounds</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+<span class="c1"># -- Read and write in another file variables</span>
+<span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">listvariable</span><span class="p">():</span>
+    <span class="nb">print</span> <span class="s1">&#39;&gt;&gt; &#39;</span><span class="o">+</span><span class="n">var</span><span class="o">+</span> <span class="s1">&#39; &lt;&lt;&#39;</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span> <span class="c1"># - Variable is an n-dimension array</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
+        <span class="c1"># - Example of moficiation - mask an area</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;TEMP&#39;</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[:,:,:,</span><span class="mi">80</span><span class="p">:</span><span class="mi">200</span><span class="p">]</span><span class="o">=</span><span class="n">MV2</span><span class="o">.</span><span class="n">masked</span>
+        <span class="c1"># =&gt; Practice: Try to modify the variable and its mask before writing.</span>
+        <span class="c1"># =&gt; Practice: Change attributes of the variable.</span>
+    <span class="k">except</span><span class="p">:</span> <span class="c1"># - Variable is a single float</span>
+        <span class="n">interm</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+        <span class="c1"># For single float, need to re-allocate attributes</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">typecode</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="nb">id</span><span class="o">=</span><span class="n">interm</span><span class="o">.</span><span class="n">id</span><span class="p">,</span><span class="n">attributes</span><span class="o">=</span><span class="n">get_atts</span><span class="p">(</span><span class="n">interm</span><span class="p">))</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+        
+    <span class="c1"># Write variable</span>
+    <span class="n">fw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    
+<span class="c1"># -- Global attributes</span>
+<span class="c1"># (add automatically Conventions = &quot;CF-1.0&quot; as global attribute)</span>
+<span class="n">ga</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">listglobal</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">ga</span><span class="p">:</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">fw</span><span class="p">,</span><span class="n">att</span><span class="p">,</span><span class="n">f</span><span class="o">.</span><span class="n">getglobal</span><span class="p">(</span><span class="n">att</span><span class="p">))</span>
+<span class="n">fw</span><span class="o">.</span><span class="n">toto</span> <span class="o">=</span> <span class="s1">&#39;tutu&#39;</span>
+<span class="c1"># =&gt; Practice: Add new global attributes to the file.</span>
+
+<span class="c1"># Close files</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">fw</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># Test variables in output file</span>
+<span class="n">fn</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+<span class="n">fn</span><span class="o">.</span><span class="n">showvariable</span><span class="p">()</span>
+<span class="n">fn</span><span class="o">.</span><span class="n">close</span>
+
+<span class="c1"># -----------------------------------------------------------</span>
+<span class="c1"># ---- Read large datasets ----</span>
+<span class="c1"># - Example with previmer files</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; How to use ncread_files ...&#39;</span>
+<span class="n">rep</span><span class="o">=</span><span class="s1">&#39;/home/oo4/oo/modeles_previmer/f1_e2500/best_estimate/2013&#39;</span>
+<span class="n">xe</span> <span class="o">=</span> <span class="n">ncread_files</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rep</span><span class="p">,</span><span class="s2">&quot;PREVIMER_F1-MARS3D-MANGAE2500_%Y%m</span><span class="si">%d</span><span class="s2">T%H00Z.nc&quot;</span><span class="p">),</span> <span class="s1">&#39;xe&#39;</span><span class="p">,</span>  
+    <span class="p">(</span><span class="s1">&#39;2013-01-05&#39;</span><span class="p">,</span> <span class="s1">&#39;2013-01-07&#39;</span><span class="p">,</span> <span class="s1">&#39;co&#39;</span><span class="p">))</span>    
+<span class="nb">print</span> <span class="n">xe</span><span class="o">.</span><span class="n">shape</span>
+<span class="c1"># =&gt; Practice: Try different parameters in ncread_files.</span>
+    
+</pre></div>
+</div>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_io_other.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*- </span>
+<span class="sd">&quot;&quot;&quot; UV-CDAT - Time (time, datetime, cdtime, ...) &quot;&quot;&quot;</span>
+
+<span class="c1"># Imports</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;qt4agg&#39;</span><span class="p">)</span>
+
+<span class="c1"># import time, datetime, cdtime</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="kn">from</span> <span class="nn">vacumm.config</span> <span class="k">import</span> <span class="n">data_sample</span>
+<span class="c1"># from StringIO import StringIO</span>
+<span class="kn">import</span> <span class="nn">cdms2</span> <span class="k">as</span> <span class="nn">cdms</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="n">strftime</span><span class="p">,</span> <span class="n">ch_units</span><span class="p">,</span> <span class="n">strptime</span>
+<span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">SC</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">mp</span>
+
+<span class="c1"># Inits</span>
+<span class="n">drifterfile</span> <span class="o">=</span> <span class="s2">&quot;drifter.txt&quot;</span>
+<span class="n">adcpfile</span> <span class="o">=</span> <span class="s2">&quot;adcp.txt&quot;</span>
+
+
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># ---- Read an ASCII file ----</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; ASCII file &#39;</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span>
+<span class="c1"># We load a cdms variable</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">cdms</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="s1">&#39;mars3d.t.nc&#39;</span><span class="p">))</span>
+<span class="n">temp</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;temp&#39;</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span>  <span class="n">f</span><span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span>  <span class="n">f</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># We get the Time</span>
+<span class="n">time</span> <span class="o">=</span>  <span class="n">temp</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span> <span class="c1"># axis</span>
+<span class="n">ctime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()</span> <span class="c1"># time cdtime.comptime()</span>
+
+<span class="c1"># Create the file with the format : YYYY/MM/DDZHH:MM TEMP U V</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;misc.io.ascii.1.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Ligne de commentaire</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">Z%H:%M&#39;</span><span class="p">,</span>  <span class="n">ctime</span><span class="p">[</span><span class="n">it</span><span class="p">])</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%.4f</span><span class="s1"> </span><span class="si">%f</span><span class="s1"> </span><span class="si">%f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">temp</span><span class="p">[</span><span class="n">it</span><span class="p">],</span> <span class="n">u</span><span class="p">[</span><span class="n">it</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="n">it</span><span class="p">]))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c1"># =&gt; Practice: Read just a small part of the file (10 last lines and/or 10 first lines)</span>
+
+<span class="c1"># Quick check (two first lines)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;misc.io.ascii.1.dat&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[:</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># Quick writing using Numpy</span>
+<span class="c1"># - Creation</span>
+<span class="n">time_units</span> <span class="o">=</span> <span class="s1">&#39;hours since </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">ctime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">newtime</span> <span class="o">=</span> <span class="n">ch_units</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">time_units</span><span class="p">)[:]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">newtime</span><span class="p">,</span><span class="n">temp</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">999.</span><span class="p">),</span> 
+    <span class="n">u</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">999.</span><span class="p">),</span> <span class="n">v</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">999.</span><span class="p">)],</span><span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;misc.io.ascii.2.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;# Ligne de commentaire</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">N</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="c1">#   Note : we can enter f or the file name in N.savetxt()</span>
+<span class="c1"># - Check</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;misc.io.ascii.2.dat&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[:</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># Advanced reading</span>
+<span class="c1"># - Time converter</span>
+<span class="k">def</span> <span class="nf">convtime</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">Z%H:%M&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">torel</span><span class="p">(</span><span class="n">time_units</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+<span class="c1"># - uncomplete load</span>
+<span class="n">tt</span><span class="p">,</span> <span class="n">uu</span><span class="p">,</span> <span class="n">vv</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;misc.io.ascii.1.dat&#39;</span><span class="p">,</span>  <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> 
+    <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">converters</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="n">convtime</span><span class="p">},</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># - check</span>
+<span class="nb">print</span> <span class="n">tt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uu</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># =&gt; Practice: Explore N.genfromtxt and try to read misc.io.ascii.1.dat with this function.</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># ---- Read/Write an binary MAT file (Matlab) ----</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; .MAT file &#39;</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span>
+
+<span class="c1"># -- Example on ASPEX (Scanfish) data</span>
+<span class="c1"># - Load a mat file</span>
+<span class="n">mat</span> <span class="o">=</span> <span class="n">SC</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="s1">&#39;SectionG_simplified.mat&#39;</span><span class="p">))</span>
+<span class="n">T</span><span class="o">=</span><span class="n">mat</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span>
+<span class="n">lat</span><span class="o">=</span><span class="n">mat</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
+<span class="n">P</span><span class="o">=</span><span class="n">mat</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
+
+<span class="nb">print</span> <span class="s1">&#39;* Close the figure to execute following actions ...&#39;</span>
+<span class="c1"># - Figure</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="o">-</span><span class="n">P</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Latitude&#39;</span><span class="p">)</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Depth&#39;</span><span class="p">)</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="o">-</span><span class="mi">110</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Scanfish ASPEX Section G&#39;</span><span class="p">)</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Practice: Write only the salinity in another .MAT file.</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># ---- Read/Write an binary npy file (Numpy) ----</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; .NPY file &#39;</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># - Write</span>
+<span class="n">N</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;test.npy&#39;</span><span class="p">,</span><span class="n">arr</span><span class="p">)</span>
+
+<span class="c1"># - Load</span>
+<span class="n">a1</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">a1</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

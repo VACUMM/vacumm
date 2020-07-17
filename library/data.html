@@ -1,0 +1,251 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.7. vacumm.data – Data management &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/data.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-vacumm.data">
+<span id="vacumm-data-data-management"></span><span id="lib-data"></span><h1>2.7. <a class="reference internal" href="#module-vacumm.data" title="vacumm.data"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data</span></code></a> – Data management<a class="headerlink" href="#module-vacumm.data" title="Permalink to this headline">¶</a></h1>
+<p>Data tools</p>
+<dl class="data">
+<dt id="vacumm.data.DATASET_SPECS">
+<code class="descname">DATASET_SPECS</code><em class="property"> = {}</em><a class="headerlink" href="#vacumm.data.DATASET_SPECS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifications of available dataset types</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.data.DS">
+<code class="descname">DS</code><span class="sig-paren">(</span><em>ncfile</em>, <em>clsname='generic'</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data.html#DS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.DS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a specialized <a class="reference internal" href="data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.data.misc.dataset.Dataset</span></code></a> instance</p>
+<p>Available methods for retreiving data (or derived data) are the same
+for all dataset types.
+And whatever the dataset type, the outputs will all have the same
+format (names, attributes…). Formating is defined and performed
+by the <a class="reference internal" href="data.cf.html#module-vacumm.data.cf" title="vacumm.data.cf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data.cf</span></code></a> module.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>ncfile</strong>: Netcdf file name(s) or pattern compatibile with
+<a class="reference internal" href="misc.io.html#vacumm.misc.io.list_forecast_files" title="vacumm.misc.io.list_forecast_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">list_forecast_files()</span></code></a>, so
+please read the documentation of this function carefully.</li>
+<li><strong>clsname</strong>: Generic class name. Please choose one of:</li>
+<li>All other keyword are passed to the class initialization.
+See <a class="reference internal" href="data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> a list of these options.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">A child of <a class="reference internal" href="data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.data.misc.dataset.Dataset</span></code></a>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.data</span> <span class="k">import</span> <span class="n">DS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mars</span> <span class="o">=</span> <span class="n">DS</span><span class="p">(</span><span class="s1">&#39;results.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;mars&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">mars</span><span class="o">.</span><span class="n">get_resol</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sst</span> <span class="o">=</span> <span class="n">mars</span><span class="o">.</span><span class="n">get_sst</span><span class="p">()</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="../user.desc.dataset.html#user-desc-dataset"><span class="std std-ref">Using the generic data classes</span></a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.data.print_registered_datasets">
+<code class="descname">print_registered_datasets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data.html#print_registered_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.print_registered_datasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print all registered datasets</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.data.register_dataset">
+<code class="descname">register_dataset</code><span class="sig-paren">(</span><em>cls</em>, <em>clsname=None</em>, <em>warn=True</em>, <em>force=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data.html#register_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.register_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a new <a class="reference internal" href="data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class
+that can be loaded with <a class="reference internal" href="#vacumm.data.DS" title="vacumm.data.DS"><code class="xref py py-func docutils literal notranslate"><span class="pre">DS()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.data.setup_dataset">
+<code class="descname">setup_dataset</code><span class="sig-paren">(</span><em>clsname</em>, <em>ncfile=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data.html#setup_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.setup_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <code class="docutils literal notranslate"><span class="pre">DS(ncfile,</span>&#160; <span class="pre">clsname,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p>See <a class="reference internal" href="#vacumm.data.DS" title="vacumm.data.DS"><code class="xref py py-func docutils literal notranslate"><span class="pre">DS()</span></code></a> for arguments.</p>
+<p>This function is here mainly for backward compatibility.</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data.cf.html">2.7.1. <code class="docutils literal notranslate"><span class="pre">vacumm.data.cf</span></code> – CF conventions and extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.misc.html">2.7.2. <code class="docutils literal notranslate"><span class="pre">vacumm.data.misc</span></code> – Generic utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data.misc.coloc.html">2.7.2.1. <code class="docutils literal notranslate"><span class="pre">data.misc.coloc</span></code> – Colocalisations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.coloc.html#overview">2.7.2.1.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.coloc.html#content">2.7.2.1.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.misc.arakawa.html">2.7.2.2. <code class="docutils literal notranslate"><span class="pre">data.misc.arakawa</span></code> – Arakawa grids</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.arakawa.html#overview">2.7.2.2.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.arakawa.html#content">2.7.2.2.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.misc.dataset.html">2.7.2.3. <code class="docutils literal notranslate"><span class="pre">data.misc.dataset</span></code> – Generic data classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.dataset.html#overview">2.7.2.3.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.dataset.html#content">2.7.2.3.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.misc.profile.html">2.7.2.4. <code class="docutils literal notranslate"><span class="pre">data.misc.profile</span></code> – Management of profiles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.profile.html#overview">2.7.2.4.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.profile.html#content">2.7.2.4.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.misc.satellite.html">2.7.2.5. <code class="docutils literal notranslate"><span class="pre">data.misc.satellite</span></code> – Gestion des données satellite</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.satellite.html#overview">2.7.2.5.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.satellite.html#content">2.7.2.5.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.misc.sigma.html">2.7.2.6. <code class="docutils literal notranslate"><span class="pre">data.misc.sigma</span></code> – Sigma coordinates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.sigma.html#overview">2.7.2.6.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.misc.sigma.html#content">2.7.2.6.2. Content</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data.model.html">2.7.3. <code class="docutils literal notranslate"><span class="pre">vacumm.data.model</span></code> – Classes for numeric models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data.model.html#ocean-models">2.7.3.1. Ocean models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.model.mars.html">2.7.3.1.1. <code class="docutils literal notranslate"><span class="pre">vacumm.data.model.mars3d</span></code> – MARS3D ocean model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="data.model.mars.html#overview">2.7.3.1.1.1. Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.model.mars.html#content">2.7.3.1.1.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="data.model.nemo.html">2.7.3.1.2. <code class="docutils literal notranslate"><span class="pre">vacumm.data.model.nemo</span></code> – Nemo ocean model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="data.model.nemo.html#overview">2.7.3.1.2.1. Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.model.nemo.html#content">2.7.3.1.2.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="data.model.hycom.html">2.7.3.1.3. <code class="docutils literal notranslate"><span class="pre">vacumm.data.model.hycom</span></code> – Modele HYCOM</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="data.model.hycom.html#overview">2.7.3.1.3.1. Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.model.hycom.html#content">2.7.3.1.3.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="data.model.swan.html">2.7.3.1.4. <code class="docutils literal notranslate"><span class="pre">vacumm.data.model.swan</span></code> – SWAN wave model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="data.model.swan.html#overview">2.7.3.1.4.1. Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.model.swan.html#content">2.7.3.1.4.2. Content</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.model.html#atmospheric-models">2.7.3.2. Atmospheric models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.model.cfsr.html">2.7.3.2.1. <code class="docutils literal notranslate"><span class="pre">vacumm.data.model.cfsr</span></code> – CFSR atmospheric model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="data.model.cfsr.html#overview">2.7.3.2.1.1. Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="data.model.cfsr.html#content">2.7.3.2.1.2. Content</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

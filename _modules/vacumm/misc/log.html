@@ -1,0 +1,1083 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.misc.log &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../index.html"><img src="../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.misc.log</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2010-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Jonathan Wilkins&#39;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;wilkins@actimar.fr&#39;</span>
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="s1">&#39;Logging features&#39;</span>
+
+<span class="kn">import</span> <span class="nn">fnmatch</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">logging.handlers</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">warnings</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># location since Python 2.7</span>
+    <span class="kn">from</span> <span class="nn">weakref</span> <span class="k">import</span> <span class="n">WeakSet</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># separately installed</span>
+    <span class="c1">#warnings.warn(&#39;Cannot import weakref.WeakSet, trying weakrefset.WeakSet&#39;)</span>
+    <span class="kn">from</span> <span class="nn">weakrefset</span> <span class="k">import</span> <span class="n">WeakSet</span>
+    <span class="c1"># in debugging mode, show which weakrefset module is in use</span>
+    <span class="k">if</span> <span class="s1">&#39;--debug&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">weakrefset</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Using </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">weakrefset</span><span class="o">.</span><span class="vm">__file__</span><span class="p">))</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">curses</span>
+    <span class="n">curses</span><span class="o">.</span><span class="n">setupterm</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span> <span class="n">hascurses</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">else</span><span class="p">:</span> <span class="n">hascurses</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">VERBOSE</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span> <span class="o">+</span> <span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="o">-</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">NOTICE</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="o">+</span> <span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span> <span class="o">-</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">addLevelName</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span> <span class="s1">&#39;VERBOSE&#39;</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">addLevelName</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTICE</span><span class="p">,</span> <span class="s1">&#39;NOTICE&#39;</span><span class="p">)</span>
+
+<span class="c1"># Patch logging handleError annoying behavior (&lt;2.7?)</span>
+<span class="c1"># NOTE: logging errors are not just printed, exception is raised</span>
+<span class="c1">#      (logging.raiseExceptions is used either to mean raise or print ...)</span>
+<span class="n">_org_handle_error</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="o">.</span><span class="n">handleError</span>
+<span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">logging</span><span class="o">.</span><span class="n">raiseExceptions</span><span class="p">:</span>
+        <span class="k">raise</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="o">.</span><span class="n">handleError</span> <span class="o">=</span> <span class="n">handle_error</span>
+<span class="k">del</span> <span class="n">handle_error</span>
+
+<div class="viewcode-block" id="LogLevelError"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.LogLevelError">[docs]</a><span class="k">class</span> <span class="nc">LogLevelError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Invalid log level: &quot;</span><span class="si">%s</span><span class="s1">&quot;, available are: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_str_levels</span><span class="p">())))</span></div>
+
+<div class="viewcode-block" id="check_level"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.check_level">[docs]</a><span class="k">def</span> <span class="nf">check_level</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">logging</span><span class="o">.</span><span class="n">_levelNames</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">LogLevelError</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">level</span></div>
+
+<div class="viewcode-block" id="convert_level"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.convert_level">[docs]</a><span class="k">def</span> <span class="nf">convert_level</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Convert a level from int/str to str/int</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">_levelNames</span><span class="p">[</span><span class="n">check_level</span><span class="p">(</span><span class="n">level</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="get_int_levels"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.get_int_levels">[docs]</a><span class="k">def</span> <span class="nf">get_int_levels</span><span class="p">():</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">_levelNames</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="get_str_levels"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.get_str_levels">[docs]</a><span class="k">def</span> <span class="nf">get_str_levels</span><span class="p">():</span>
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">get_str_level</span><span class="p">(</span><span class="n">l</span><span class="p">),</span> <span class="n">get_int_levels</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="get_int_level"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.get_int_level">[docs]</a><span class="k">def</span> <span class="nf">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the int level for the given int/str level</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">convert_level</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">check_level</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LogLevelError</span><span class="p">(</span><span class="n">level</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_str_level"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.get_str_level">[docs]</a><span class="k">def</span> <span class="nf">get_str_level</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the str level for the given int/str level</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">check_level</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">convert_level</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LogLevelError</span><span class="p">(</span><span class="n">level</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="filter_name"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.filter_name">[docs]</a><span class="k">def</span> <span class="nf">filter_name</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="n">names</span><span class="p">,)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">unicode</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">names</span><span class="p">)</span>
+    <span class="n">svalue</span> <span class="o">=</span> <span class="n">unicode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;=&#39;</span> <span class="ow">in</span> <span class="n">svalue</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">svalue</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+            <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+                    <span class="k">return</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">default</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="ColoredStreamHandler"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.ColoredStreamHandler">[docs]</a><span class="k">class</span> <span class="nc">ColoredStreamHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">):</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;blackf&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span>
+        <span class="s1">&#39;redf&#39;</span><span class="p">:</span><span class="mi">31</span><span class="p">,</span>
+        <span class="s1">&#39;greenf&#39;</span><span class="p">:</span><span class="mi">32</span><span class="p">,</span>
+        <span class="s1">&#39;yellowf&#39;</span><span class="p">:</span><span class="mi">33</span><span class="p">,</span>
+        <span class="s1">&#39;bluef&#39;</span><span class="p">:</span><span class="mi">34</span><span class="p">,</span>
+        <span class="s1">&#39;purplef&#39;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span>
+        <span class="s1">&#39;cyanf&#39;</span><span class="p">:</span><span class="mi">36</span><span class="p">,</span>
+        <span class="s1">&#39;whitef&#39;</span><span class="p">:</span><span class="mi">37</span><span class="p">,</span>
+        <span class="s1">&#39;blackb&#39;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span>
+        <span class="s1">&#39;redb&#39;</span><span class="p">:</span><span class="mi">41</span><span class="p">,</span>
+        <span class="s1">&#39;greenb&#39;</span><span class="p">:</span><span class="mi">42</span><span class="p">,</span>
+        <span class="s1">&#39;yellowb&#39;</span><span class="p">:</span><span class="mi">43</span><span class="p">,</span>
+        <span class="s1">&#39;blueb&#39;</span><span class="p">:</span><span class="mi">44</span><span class="p">,</span>
+        <span class="s1">&#39;purpleb&#39;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span>
+        <span class="s1">&#39;cyanb&#39;</span><span class="p">:</span><span class="mi">46</span><span class="p">,</span>
+        <span class="s1">&#39;whiteb&#39;</span><span class="p">:</span><span class="mi">47</span><span class="p">,</span>
+        <span class="s1">&#39;boldon&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;boldoff&#39;</span><span class="p">:</span><span class="mi">22</span><span class="p">,</span>
+        <span class="s1">&#39;italicson&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+        <span class="s1">&#39;italicsoff&#39;</span><span class="p">:</span><span class="mi">23</span><span class="p">,</span>
+        <span class="s1">&#39;ulon&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
+        <span class="s1">&#39;uloff&#39;</span><span class="p">:</span><span class="mi">24</span><span class="p">,</span>
+        <span class="s1">&#39;invon&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+        <span class="s1">&#39;invoff&#39;</span><span class="p">:</span><span class="mi">27</span><span class="p">,</span>
+        <span class="s1">&#39;reset&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">level_colors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">:</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span><span class="s1">&#39;cyanf&#39;</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">:</span><span class="s1">&#39;bluef&#39;</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span><span class="s1">&#39;greenf&#39;</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">NOTICE</span><span class="p">:</span><span class="s1">&#39;greenf,boldon&#39;</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span><span class="s1">&#39;yellowf,boldon&#39;</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span><span class="s1">&#39;redf,boldon&#39;</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span><span class="s1">&#39;purplef,boldon&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :Params:</span>
+<span class="sd">            - **kwargs**: may contain:</span>
+<span class="sd">                - **colorize**: True/False: whether to colorize message if possible (curses)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># terminal capabilities (man 5 terminfo)</span>
+        <span class="c1"># setf: set foreground color</span>
+        <span class="c1"># setaf: set foreground color using ansi escape</span>
+        <span class="c1"># setb/setab: same for background</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colorable</span> <span class="o">=</span> <span class="n">hascurses</span> <span class="ow">and</span> <span class="n">stream</span><span class="o">.</span><span class="n">isatty</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">curses</span><span class="o">.</span><span class="n">tigetstr</span><span class="p">(</span><span class="s1">&#39;setf&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">curses</span><span class="o">.</span><span class="n">tigetstr</span><span class="p">(</span><span class="s1">&#39;setaf&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colorize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;colorize&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorable</span>
+        <span class="c1"># TODO: add per log record components colorization</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ColoredStreamHandler.get_level_color"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.ColoredStreamHandler.get_level_color">[docs]</a>    <span class="k">def</span> <span class="nf">get_level_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">level_colors</span><span class="p">[</span><span class="n">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="ColoredStreamHandler.format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.ColoredStreamHandler.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="n">formatted</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+        <span class="c1"># Check if colorize cannot be done</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">colorable</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorize</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">formatted</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_level_color</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">)</span> <span class="o">+</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">color</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="se">\033</span><span class="s1">[</span><span class="si">%d</span><span class="s1">m&#39;</span><span class="o">%</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[</span><span class="si">%s</span><span class="s1">m&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;reset&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colors</span> <span class="k">if</span> <span class="n">c</span><span class="p">)),</span>
+                <span class="n">formatted</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;reset&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">formatted</span></div></div>
+
+<div class="viewcode-block" id="Formatter"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Formatter">[docs]</a><span class="k">class</span> <span class="nc">Formatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span> <span class="k">pass</span></div>
+
+<span class="k">class</span> <span class="nc">_Redirector_</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="o">+</span><span class="n">buf</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="Logger"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger">[docs]</a><span class="k">class</span> <span class="nc">Logger</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">getLoggerClass</span><span class="p">()):</span>
+    <span class="sd">&#39;&#39;&#39;Logger based on the standard python logging package.&#39;&#39;&#39;</span>
+
+    <span class="n">initial_level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="c1"># The initial default level, which would not be changed by set_default_level</span>
+    <span class="n">default_level</span> <span class="o">=</span> <span class="n">initial_level</span>
+    <span class="n">default_format</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(name)s</span><span class="s1"> </span><span class="si">%(levelname)s</span><span class="s1">] </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">console</span><span class="o">=</span><span class="s1">&#39;[</span><span class="si">%(name)s</span><span class="s1"> </span><span class="si">%(levelname)s</span><span class="s1">] </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">logfile</span><span class="o">=</span><span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(name)s</span><span class="s1"> </span><span class="si">%(levelname)s</span><span class="s1">] </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># &#39;%Y-%m-%d %H:%M:%S %Z&#39;</span>
+    <span class="c1"># &#39;%a %d %b %Y %H:%M:%S %Z&#39;</span>
+    <span class="n">default_date_format</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %Z&#39;</span><span class="p">,</span>
+        <span class="n">console</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="c1">#%H:%M:%S&#39;,</span>
+        <span class="n">logfile</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %Z&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">default_max_file_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="mi">500</span>
+    <span class="n">default_max_file_backup</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">default_encoding</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># &#39;utf-8&#39;</span>
+    <span class="n">default_colorize</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">shared_handlers</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Store instances of this class, used to configure already created loggers</span>
+    <span class="c1"># through the apply_class_optparser_options</span>
+    <span class="c1"># Avoid memory leaks by using WeakSet !</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="n">WeakSet</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">console</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">colorize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">logfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">redirect_warnings</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redirect_stdout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redirect_stderr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">name_filters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initialize the logger (level, formats) and its default handlers.</span>
+
+<span class="sd">        :Params:</span>
+<span class="sd">            - **name**: Logger name</span>
+<span class="sd">            - **level**: Initial logging level name (case insensitive) or number.</span>
+<span class="sd">            - **format**: logs format</span>
+<span class="sd">            - **date_format**: logs date format</span>
+<span class="sd">            - **console**: add a stream handler (see below)</span>
+<span class="sd">            - **colorize**: colorize terminal stream handlers if possible</span>
+<span class="sd">            - **logfile**: add a rotating file handler (see below)</span>
+<span class="sd">            - **redirect_warnings**, optional: Redirect messages issued by :mod:`warnings.warn`.</span>
+<span class="sd">            - **redirect_stdout**, optional: Redirect messages issued to sys.stdout.</span>
+<span class="sd">            - **redirect_stderr**, optional: Redirect messages issued to sys.stderr.</span>
+<span class="sd">            - **name_filters**: for named based configuration, see :meth:`filter_name`</span>
+<span class="sd">            - **config**: see :meth:`config`</span>
+
+<span class="sd">        Available log levels: **debug, verbose, info, notice, warning, error, critical**.</span>
+
+<span class="sd">        Console handler, accessible through **self.console_handler**, is enabled</span>
+<span class="sd">        by default and uses sys.stderr and is created with :meth:`new_rotating_file_handler`.</span>
+
+<span class="sd">        Rotating file handler, accessible through **self.file_handler**, is disabled</span>
+<span class="sd">        by default  and is created with :meth:`new_stream_handler`.</span>
+<span class="sd">        **Note: for applications with a large number of loggers, you may create the</span>
+<span class="sd">        file handler with :meth:`new_rotating_file_handler` and pass this handler to</span>
+<span class="sd">        the constructor of all loggers, this will avoid opening the same file multiple times.**</span>
+
+<span class="sd">        The **logfile** and **console** arguments can take the form of:</span>
+<span class="sd">            - a list or tuple: interpreted as positionnal arguments for the corresponding method.</span>
+<span class="sd">            - a dict: interpreted as named arguments for the corresponding method.</span>
+<span class="sd">            - a boolean for stream handler, True to create the handler</span>
+<span class="sd">            - a string for the file handler, specifying the log file path</span>
+<span class="sd">            - an existing handler</span>
+
+<span class="sd">        For example, you may customize logger creation:</span>
+
+<span class="sd">        &gt;&gt;&gt; l = Logger(</span>
+<span class="sd">                name=os.path.basename(sys.argv[0]),</span>
+<span class="sd">                level=&#39;debug&#39;,</span>
+<span class="sd">                logfile=dict(</span>
+<span class="sd">                    filePath=&#39;output.log&#39;, maxFileSize=1024*50, maxFileBkp=1,</span>
+<span class="sd">                    format=&#39;%(asctime)s - %(name)s - %(level)s - %(message)s&#39;,</span>
+<span class="sd">                    date_format=&#39;%Y-%m-%d %H:%M:%S %Z&#39;,</span>
+<span class="sd">                    level=&#39;info&#39;</span>
+<span class="sd">                ),</span>
+<span class="sd">                console=dict(</span>
+<span class="sd">                    stream=sys.stdout, colorize=False,</span>
+<span class="sd">                    format=&#39;%(name)s - %(levelname)s - %(message)s&#39;</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_level</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="nb">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_format</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">date_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">date_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_date_format</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name_filters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">name_filters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__name_filters</span> <span class="o">=</span> <span class="n">name_filters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger_class</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLoggerClass</span><span class="p">()</span>
+
+        <span class="c1"># We must set the level both at init and with set_level below</span>
+        <span class="c1"># because set_level will use get_level if filtered level doesn&#39;t match</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger_class</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_level</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__format</span> <span class="o">=</span> <span class="nb">format</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_format</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="nb">format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__date_format</span> <span class="o">=</span> <span class="n">date_format</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_date_format</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date_format</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">date_format</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">skipCaller</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">notice</span><span class="p">))</span>
+
+        <span class="c1"># Setup stream handler (console)?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">console</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span> <span class="o">=</span> <span class="n">console</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_stream_handler</span><span class="p">(</span><span class="o">*</span><span class="n">console</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">console</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">console</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;colorize&#39;</span><span class="p">,</span> <span class="n">colorize</span> <span class="k">if</span> <span class="n">colorize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_colorize</span><span class="p">)</span>
+                <span class="n">console</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">,</span>  <span class="nb">format</span><span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="s1">&#39;console&#39;</span> <span class="ow">in</span> <span class="nb">format</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_format</span><span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">])</span>
+                <span class="n">console</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;date_format&#39;</span><span class="p">,</span>  <span class="n">date_format</span><span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="s1">&#39;console&#39;</span> <span class="ow">in</span> <span class="n">date_format</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_date_format</span><span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_stream_handler</span><span class="p">(</span><span class="o">**</span><span class="n">console</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="p">)</span>
+
+        <span class="c1"># Setup file handler (logfile) ?</span>
+        <span class="c1"># This sould be carefully used: 1 file handler = 1 opened file !</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="n">logfile</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_rotating_file_handler</span><span class="p">(</span><span class="o">*</span><span class="n">logfile</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                    <span class="n">logfile</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;filePath&#39;</span><span class="p">:</span> <span class="n">logfile</span><span class="p">}</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">logfile</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">logfile</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">,</span>  <span class="nb">format</span><span class="p">[</span><span class="s1">&#39;logfile&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="s1">&#39;logfile&#39;</span> <span class="ow">in</span> <span class="nb">format</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_format</span><span class="p">[</span><span class="s1">&#39;logfile&#39;</span><span class="p">])</span>
+                <span class="n">logfile</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;date_format&#39;</span><span class="p">,</span>  <span class="n">date_format</span><span class="p">[</span><span class="s1">&#39;logfile&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="s1">&#39;logfile&#39;</span> <span class="ow">in</span> <span class="n">date_format</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_date_format</span><span class="p">[</span><span class="s1">&#39;logfile&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_rotating_file_handler</span><span class="p">(</span><span class="o">**</span><span class="n">logfile</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="p">)</span>
+
+        <span class="c1">#self.config(name=name, level=level, format=format, date_format=date_format)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="c1"># Add global handlers: handlers registered for all Logger</span>
+        <span class="k">for</span> <span class="n">hdlr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">shared_handlers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">hdlr</span><span class="p">)</span>
+
+        <span class="c1"># Store new instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Redirections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_warnings</span> <span class="o">=</span> <span class="n">redirect_warnings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stderr</span> <span class="o">=</span> <span class="n">redirect_stderr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stdout</span> <span class="o">=</span> <span class="n">redirect_stdout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_warnings</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stderr</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stdout</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_redirections</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Logger.start_redirections"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.start_redirections">[docs]</a>    <span class="k">def</span> <span class="nf">start_redirections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">which</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;stdout&#39;</span><span class="p">,</span> <span class="s1">&#39;stderr&#39;</span><span class="p">,</span> <span class="s1">&#39;warnings&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_warnings</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_warnings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_old_showwarnings</span> <span class="o">=</span> <span class="n">warnings</span><span class="o">.</span><span class="n">showwarning</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">showwarning</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">showwarning</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_warnings</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stdout</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stdout</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stdout</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stdout</span> <span class="o">=</span> <span class="s1">&#39;debug&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_old_sys_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">_Redirector_</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stdout</span><span class="p">),</span>
+                <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;STDOUT: &#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stdout</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stderr</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stderr</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stderr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stderr</span> <span class="o">=</span> <span class="s1">&#39;warning&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_old_sys_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">_Redirector_</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stderr</span><span class="p">),</span>
+                <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;STDERR: &#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stderr</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Logger.stop_redirections"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.stop_redirections">[docs]</a>    <span class="k">def</span> <span class="nf">stop_redirections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">which</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;stdout&#39;</span><span class="p">,</span> <span class="s1">&#39;stderr&#39;</span><span class="p">,</span> <span class="s1">&#39;warnings&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_redirect_warnings</span> <span class="ow">and</span> <span class="n">which</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;warnings&#39;</span><span class="p">]</span> <span class="ow">and</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_warnings</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">showwarning</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_showwarnings</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_warnings</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stdout</span> <span class="ow">and</span> <span class="n">which</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;stdout&#39;</span><span class="p">]</span> <span class="ow">and</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stdout</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_sys_stdout</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stdout</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_redirect_stderr</span> <span class="ow">and</span> <span class="n">which</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;stderr&#39;</span><span class="p">]</span> <span class="ow">and</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stderr</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_sys_stderr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_redirected_stderr</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Logger.set_name"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_name">[docs]</a>    <span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="Logger.get_name"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+<div class="viewcode-block" id="Logger.set_name_filters"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_name_filters">[docs]</a>    <span class="k">def</span> <span class="nf">set_name_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__name_filters</span> <span class="o">=</span> <span class="n">filters</span></div>
+
+<div class="viewcode-block" id="Logger.get_name_filters"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_name_filters">[docs]</a>    <span class="k">def</span> <span class="nf">get_name_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.filter_name"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.filter_name">[docs]</a>    <span class="k">def</span> <span class="nf">filter_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Used by the set_{level,format,date_format} instance methods.</span>
+<span class="sd">        The logger get_name() and instance variable self.__name_filters are evaluated against the</span>
+<span class="sd">        couples name1=value1[,name2=value2,...] in value to determine the value to return, default</span>
+<span class="sd">        is returned if nothing match, value is return if it isn&#39;t a filter expression.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">filter_name</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">__name_filters</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.set_level"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_level">[docs]</a>    <span class="k">def</span> <span class="nf">set_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;console&#39;</span> <span class="ow">in</span> <span class="n">level</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="s1">&#39;logfile&#39;</span> <span class="ow">in</span> <span class="n">level</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">[</span><span class="s1">&#39;logfile&#39;</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span> <span class="c1"># warn: &#39;=&#39; character in fmt are not allowed ...</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_name</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_level_name</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__logger_class</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">))</span></div>
+
+    <span class="n">setLevel</span> <span class="o">=</span> <span class="n">set_level</span> <span class="c1"># do not delete, redefinition of logging.Logger.setLevel</span>
+
+<div class="viewcode-block" id="Logger.set_level_console"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_level_console">[docs]</a>    <span class="k">def</span> <span class="nf">set_level_console</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_level</span><span class="p">({</span><span class="s1">&#39;console&#39;</span><span class="p">:</span><span class="n">level</span><span class="p">},</span> <span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.set_level_logfile"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_level_logfile">[docs]</a>    <span class="k">def</span> <span class="nf">set_level_logfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_level</span><span class="p">({</span><span class="s1">&#39;logfile&#39;</span><span class="p">:</span><span class="n">level</span><span class="p">},</span> <span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.get_level"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_level">[docs]</a>    <span class="k">def</span> <span class="nf">get_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_int_level</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.get_level_name"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_level_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_level_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_str_level</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.set_format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_format">[docs]</a>    <span class="k">def</span> <span class="nf">set_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;console&#39;</span> <span class="ow">in</span> <span class="nb">format</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_handler_formats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;logfile&#39;</span> <span class="ow">in</span> <span class="nb">format</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_handler_formats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">[</span><span class="s1">&#39;logfile&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span> <span class="c1"># warn: &#39;=&#39; character in fmt are not allowed ...</span>
+                <span class="nb">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_name</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_format</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__format</span> <span class="o">=</span> <span class="nb">format</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_handler_formats</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.get_format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_format">[docs]</a>    <span class="k">def</span> <span class="nf">get_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__format</span></div>
+
+<div class="viewcode-block" id="Logger.set_date_format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_date_format">[docs]</a>    <span class="k">def</span> <span class="nf">set_date_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;console&#39;</span> <span class="ow">in</span> <span class="nb">format</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_handler_formats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="nb">format</span><span class="p">[</span><span class="s1">&#39;console&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;logfile&#39;</span> <span class="ow">in</span> <span class="nb">format</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_handler_formats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_handler</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="nb">format</span><span class="p">[</span><span class="s1">&#39;logfile&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span> <span class="c1"># warn: &#39;=&#39; character in fmt are not allowed ...</span>
+                <span class="nb">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_name</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_date_format</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__date_format</span> <span class="o">=</span> <span class="nb">format</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_handler_formats</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.get_date_format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_date_format">[docs]</a>    <span class="k">def</span> <span class="nf">get_date_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__date_format</span></div>
+
+<div class="viewcode-block" id="Logger.new_formatter"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.new_formatter">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">new_formatter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">formatter</span> <span class="ow">and</span> <span class="n">formatter</span><span class="o">.</span><span class="n">format</span><span class="p">:</span>
+                <span class="nb">format</span> <span class="o">=</span> <span class="n">formatter</span><span class="o">.</span><span class="n">_fmt</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">format</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_format</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">date_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">formatter</span> <span class="ow">and</span> <span class="n">formatter</span><span class="o">.</span><span class="n">datefmt</span><span class="p">:</span>
+                <span class="n">date_format</span> <span class="o">=</span> <span class="n">formatter</span><span class="o">.</span><span class="n">datefmt</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">date_format</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_date_format</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.set_handler_formats"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_handler_formats">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_handler_formats</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">new_formatter</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="n">date_format</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="n">handler</span><span class="o">.</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span></div>
+
+<div class="viewcode-block" id="Logger.is_verbose"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.is_verbose">[docs]</a>    <span class="k">def</span> <span class="nf">is_verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_level</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">logging</span><span class="o">.</span><span class="n">VERBOSE</span></div>
+
+<div class="viewcode-block" id="Logger.is_debug"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.is_debug">[docs]</a>    <span class="k">def</span> <span class="nf">is_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_level</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span></div>
+
+<div class="viewcode-block" id="Logger.add_handler"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.add_handler">[docs]</a>    <span class="k">def</span> <span class="nf">add_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">handler</span><span class="o">.</span><span class="n">formatter</span><span class="p">:</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_formatter</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;shared&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_shared_handler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logger_class</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span></div>
+    <span class="n">addHandler</span> <span class="o">=</span> <span class="n">add_handler</span> <span class="c1"># do not delete, redefinition of logging.Logger.addHandler</span>
+
+<div class="viewcode-block" id="Logger.remove_handler"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.remove_handler">[docs]</a>    <span class="k">def</span> <span class="nf">remove_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hdlr</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span> <span class="n">hdlr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span> <span class="nb">print</span><span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logger_class</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hdlr</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span> <span class="nb">print</span><span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span></div>
+    <span class="n">removeHandler</span> <span class="o">=</span> <span class="n">remove_handler</span> <span class="c1"># do not delete, redefinition of logging.Logger.removeHandler</span>
+
+<div class="viewcode-block" id="Logger.clean"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">hdlr</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_handler</span><span class="p">(</span><span class="n">hdlr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.new_stream_handler"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.new_stream_handler">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">new_stream_handler</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">colorize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="n">ColoredStreamHandler</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">colorize</span><span class="o">=</span><span class="n">colorize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">level</span><span class="p">:</span> <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="ow">or</span> <span class="n">date_format</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">set_handler_formats</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">handler</span></div>
+
+<div class="viewcode-block" id="Logger.add_stream_handler"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.add_stream_handler">[docs]</a>    <span class="k">def</span> <span class="nf">add_stream_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_stream_handler</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">handler</span></div>
+
+<div class="viewcode-block" id="Logger.colorize"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.colorize">[docs]</a>    <span class="k">def</span> <span class="nf">colorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span> <span class="ow">and</span> <span class="n">isisntance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="p">,</span> <span class="n">ColoredStreamHandler</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">active</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="o">.</span><span class="n">colorize</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">active</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">console_handler</span><span class="o">.</span><span class="n">colorize</span></div>
+
+<div class="viewcode-block" id="Logger.new_rotating_file_handler"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.new_rotating_file_handler">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">new_rotating_file_handler</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filePath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">maxFileSize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxFileBkp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">maxFileSize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">maxFileSize</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_max_file_size</span>
+        <span class="k">if</span> <span class="n">maxFileBkp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">maxFileBkp</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_max_file_backup</span>
+        <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">encoding</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_encoding</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filePath</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;-c&#39;</span><span class="p">]:</span> <span class="n">filePath</span> <span class="o">=</span> <span class="s1">&#39;python&#39;</span>
+            <span class="k">else</span><span class="p">:</span> <span class="n">filePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">filePath</span> <span class="o">+=</span> <span class="s1">&#39;.log&#39;</span>
+        <span class="n">fileDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fileDir</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">fileDir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">fileDir</span><span class="p">)</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">maxBytes</span><span class="o">=</span><span class="n">maxFileSize</span><span class="p">,</span> <span class="n">backupCount</span><span class="o">=</span><span class="n">maxFileBkp</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">level</span><span class="p">:</span> <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="ow">or</span> <span class="n">date_format</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">set_handler_formats</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">date_format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">handler</span></div>
+
+<div class="viewcode-block" id="Logger.add_rotating_file_handler"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.add_rotating_file_handler">[docs]</a>    <span class="k">def</span> <span class="nf">add_rotating_file_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_rotating_file_handler</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">handler</span></div>
+
+<div class="viewcode-block" id="Logger.notice"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.notice">[docs]</a>    <span class="k">def</span> <span class="nf">notice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTICE</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.verbose"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.verbose">[docs]</a>    <span class="k">def</span> <span class="nf">verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="c1">#   def _log(self, level, msg, *args, **kwargs):</span>
+<span class="c1">#       msg = msg.encode(&#39;utf-8&#39;, &#39;replace&#39;)</span>
+<span class="c1">#       return super(self.__class__, self)._log(level, msg, *args, **kwargs)</span>
+
+<div class="viewcode-block" id="Logger.log"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logger_class</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="c1"># redefine findCaller to ignore certain callers,</span>
+    <span class="c1"># used to support the new levels (verbose/notice)</span>
+<div class="viewcode-block" id="Logger.findCaller"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.findCaller">[docs]</a>    <span class="k">def</span> <span class="nf">findCaller</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the stack frame of the caller so that we can note the source</span>
+<span class="sd">        file name, line number and function name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+        <span class="c1">#On some versions of IronPython, currentframe() returns None if</span>
+        <span class="c1">#IronPython isn&#39;t run with -X:Frames.</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="s2">&quot;(unknown file)&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;(unknown function)&quot;</span>
+        <span class="n">skipCallers</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_skipCallers&#39;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="k">while</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;f_code&quot;</span><span class="p">):</span>
+            <span class="n">co</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_code</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">co</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
+            <span class="n">skip</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">f_code</span> <span class="ow">in</span> <span class="n">skipCallers</span><span class="p">:</span>
+                <span class="n">skip</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">_srcfile</span><span class="p">:</span>
+                <span class="n">skip</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">skip</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
+                <span class="k">continue</span>
+            <span class="n">rv</span> <span class="o">=</span> <span class="p">(</span><span class="n">co</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">f_lineno</span><span class="p">,</span> <span class="n">co</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">return</span> <span class="n">rv</span></div>
+     
+<div class="viewcode-block" id="Logger.skipCaller"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.skipCaller">[docs]</a>    <span class="k">def</span> <span class="nf">skipCaller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Register a function, method, code or set/list/tuple of codes to be skipped by findCaller</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">skipCallers</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_skipCallers&#39;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">caller</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">skipCallers</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">caller</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skipCaller</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">skip</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="kn">import</span> <span class="nn">types</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">CodeType</span><span class="p">):</span>
+            <span class="n">func_code</span> <span class="o">=</span> <span class="n">caller</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+            <span class="n">func_code</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">func_code</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">):</span>
+            <span class="n">func_code</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="vm">__func__</span><span class="o">.</span><span class="n">func_code</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;skipCaller accept only function or method types, found </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">type</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">skip</span><span class="p">:</span>
+            <span class="n">skipCallers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">func_code</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">skipCallers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">func_code</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_skipCallers&#39;</span><span class="p">,</span> <span class="n">skipCallers</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.set_default_level"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_default_level">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_default_level</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span> <span class="n">level</span> <span class="o">=</span> <span class="n">filter_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_default_level</span><span class="p">())</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">default_level</span> <span class="o">=</span> <span class="n">get_int_level</span><span class="p">(</span><span class="n">level</span><span class="p">)</span></div>
+<div class="viewcode-block" id="Logger.get_default_level"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_default_level">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_level</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_level</span></div>
+
+<div class="viewcode-block" id="Logger.set_default_format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_default_format">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_default_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the default format for the specified target.</span>
+<span class="sd">        The target can be one or a list of: %s.</span>
+<span class="sd">        If target is None, all default formats are changed.</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">default_format</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">format</span> <span class="o">=</span> <span class="n">filter_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_default_format</span><span class="p">(</span><span class="n">target</span><span class="p">))</span> <span class="c1"># warn: &#39;=&#39; character in fmt are then not allowed ...</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">target</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_format</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span> <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="n">target</span><span class="p">,)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_format</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">format</span></div>
+
+<div class="viewcode-block" id="Logger.get_default_format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_default_format">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the default format for the specified target, or all formats dict if target is None&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_format</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_format</span><span class="p">[</span><span class="n">target</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Logger.set_default_date_format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_default_date_format">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_default_date_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the default date format for the specified target.</span>
+<span class="sd">        The target can be one or a list of: %s.</span>
+<span class="sd">        If target is None, all default date formats are changed.</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">default_date_format</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">format</span> <span class="o">=</span> <span class="n">filter_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_default_date_format</span><span class="p">(</span><span class="n">target</span><span class="p">))</span> <span class="c1"># warn: &#39;=&#39; character in fmt are then not allowed ...</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">target</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_date_format</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span> <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="n">target</span><span class="p">,)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_date_format</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">format</span></div>
+
+<div class="viewcode-block" id="Logger.get_default_date_format"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.get_default_date_format">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_date_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the default date format for the specified target, or all formats dict if target is None&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_date_format</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_date_format</span><span class="p">[</span><span class="n">target</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Logger.set_default_max_file_size"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_default_max_file_size">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_default_max_file_size</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span> <span class="n">value</span> <span class="o">=</span> <span class="n">filter_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_default_max_file_size</span><span class="p">)</span> <span class="c1"># warn: &#39;=&#39; character in fmt are then not allowed ...</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">default_max_file_size</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Logger.set_default_max_file_backup"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.set_default_max_file_backup">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_default_max_file_backup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span> <span class="n">value</span> <span class="o">=</span> <span class="n">filter_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_default_max_file_backup</span><span class="p">)</span> <span class="c1"># warn: &#39;=&#39; character in fmt are then not allowed ...</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">default_max_file_backup</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Logger.default_colorize"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.default_colorize">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">default_colorize</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">active</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_colorize</span> <span class="o">=</span> <span class="n">active</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_colorize</span></div>
+    <span class="n">get_default_colorize</span> <span class="o">=</span> <span class="n">default_colorize</span>
+    <span class="n">set_default_colorize</span> <span class="o">=</span> <span class="n">default_colorize</span>
+
+<div class="viewcode-block" id="Logger.add_shared_handler"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.add_shared_handler">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">add_shared_handler</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">shared_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_add_parser_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">rename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add logging options to a optparse OptionParser&#39;&#39;&#39;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;loglevel&#39;</span><span class="p">,</span><span class="s1">&#39;logformat&#39;</span><span class="p">,</span><span class="s1">&#39;logdateformat&#39;</span><span class="p">,</span><span class="s1">&#39;lognocolor&#39;</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">rename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rename</span><span class="p">)</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="s1">&#39;--</span><span class="si">%s%s%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">names</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">optparse</span>
+        <span class="c1"># we must handle both optparse and argparse</span>
+        <span class="n">add</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="s1">&#39;add_option&#39;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;add_argument&#39;</span><span class="p">)</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">fmt</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">),</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;_logger_debug&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set logging level to DEBUG&#39;</span><span class="p">)</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">fmt</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">),</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;_logger_verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set logging level to VERBOSE&#39;</span><span class="p">)</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">fmt</span><span class="p">(</span><span class="s1">&#39;loglevel&#39;</span><span class="p">),</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;_logger_level&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set logging level, available levels are: </span><span class="si">%s</span><span class="s1">. You may restrict this level for specific classes with filters: --loglevel=Class1=debug,Class2=warning&#39;</span><span class="o">%</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_str_levels</span><span class="p">())))</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">fmt</span><span class="p">(</span><span class="s1">&#39;logformat&#39;</span><span class="p">),</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;_logger_format&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;format&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set logging format. Can also use filters.&#39;</span><span class="p">)</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">fmt</span><span class="p">(</span><span class="s1">&#39;logdateformat&#39;</span><span class="p">),</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;_logger_dateformat&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;format&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set logging date format. Can also use filters.&#39;</span><span class="p">)</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">fmt</span><span class="p">(</span><span class="s1">&#39;lognocolor&#39;</span><span class="p">),</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;_logger_nocolor&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Disable logging colors&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Logger.add_optparser_options"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.add_optparser_options">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">add_optparser_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_add_parser_options</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.add_argparser_options"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.add_argparser_options">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">add_argparser_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_add_parser_options</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_apply_class_parser_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">instances</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Apply logging options from a optparse OptionParser, to this class defaults and optionally all existing instances&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_debug</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">set_default_level</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_verbose</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">set_default_level</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_level</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">set_default_level</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">_logger_level</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_format</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">set_default_format</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">_logger_format</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_dateformat</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">set_default_date_format</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">_logger_dateformat</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_nocolor</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">set_default_colorize</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instances</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">apply_optparser_options</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Logger.apply_class_optparser_options"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.apply_class_optparser_options">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">apply_class_optparser_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_apply_class_parser_options</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.apply_class_argparser_options"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.apply_class_argparser_options">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">apply_class_argparser_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_apply_class_parser_options</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_apply_parser_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Apply logging options from a optparse OptionParser, to this instance&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_debug</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_verbose</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_level</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">_logger_level</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_format</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_format</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">_logger_format</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_dateformat</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_date_format</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">_logger_dateformat</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">_logger_nocolor</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Logger.apply_optparser_options"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.apply_optparser_options">[docs]</a>    <span class="k">def</span> <span class="nf">apply_optparser_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_parser_options</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.apply_argparser_options"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.apply_argparser_options">[docs]</a>    <span class="k">def</span> <span class="nf">apply_argparser_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_parser_options</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.config"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.config">[docs]</a>    <span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get or set logging configuration</span>
+
+<span class="sd">        This method uses the get_* and set_* methods.</span>
+
+<span class="sd">        :Params:</span>
+<span class="sd">            - **args**: depending of the type:</span>
+<span class="sd">                - basestring: (getter) return the corresponding value(s)</span>
+<span class="sd">                - Logger: (setter) use this logger&#39;s configuration</span>
+<span class="sd">                - dict: (setter) use this dict&#39;s configuration</span>
+<span class="sd">            - **kwargs**: key/value pairs of configuration which are to be set</span>
+
+<span class="sd">        Getter:</span>
+
+<span class="sd">            &gt;&gt;&gt; logger.config(&#39;level&#39;)</span>
+<span class="sd">            %(default_level)r</span>
+<span class="sd">            &gt;&gt;&gt; logger.config(&#39;level&#39;, &#39;format&#39;)</span>
+<span class="sd">            (%(default_level)r, %(default_format)r)</span>
+<span class="sd">            &gt;&gt;&gt; logger.config() # return complete configuration as a dict</span>
+<span class="sd">            TODO</span>
+
+<span class="sd">        Setter:</span>
+
+<span class="sd">            &gt;&gt;&gt; logger.config(level=%(default_level)r)</span>
+<span class="sd">            &gt;&gt;&gt; logger.config(level=%(default_level)r, format=%(default_format)r)</span>
+<span class="sd">            &gt;&gt;&gt; logger.config(configdict) # use a dict as config key/value pairs</span>
+<span class="sd">            &gt;&gt;&gt; logger.config(otherlogger) # use another logger&#39;s configuration</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="c1"># &#39;name&#39; should not appear in this list</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="s1">&#39;format&#39;</span><span class="p">,</span> <span class="s1">&#39;date_format&#39;</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;get_&#39;</span><span class="o">+</span><span class="n">arg</span><span class="p">)()</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">arg</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;set_&#39;</span><span class="o">+</span><span class="n">k</span><span class="p">)(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Logger</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">config</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot configure using objects of type </span><span class="si">%r</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">c</span></div>
+
+    <span class="c1"># TODO: merge with config method above</span>
+<div class="viewcode-block" id="Logger.load_config"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.load_config">[docs]</a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfgo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cfgo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
+        <span class="k">if</span> <span class="n">nested</span><span class="p">:</span>
+            <span class="n">cfgo</span> <span class="o">=</span> <span class="n">cfgo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="n">nested</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">cfgo</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfgo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">cfgo</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cfgo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_format</span><span class="p">(</span><span class="n">cfgo</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cfgo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;date_format&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_date_format</span><span class="p">(</span><span class="n">cfgo</span><span class="p">[</span><span class="s1">&#39;date_format&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cfgo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_rotating_file_handler</span><span class="p">(</span><span class="n">filePath</span><span class="o">=</span><span class="n">cfgo</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Logger.showwarning"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.Logger.showwarning">[docs]</a>    <span class="k">def</span> <span class="nf">showwarning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span>
+            <span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s1">&#39;REDIRECTED: </span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="c1">#   @classmethod</span>
+<span class="c1">#   def load_default_config(cls, *args, **kwargs):</span>
+<span class="c1">#       cls.load_config(cls, *args, **kwargs)</span>
+
+
+<span class="c1">#class ClassFilter(logging.Filter):</span>
+<span class="c1">#   def __init__(self, obj):</span>
+<span class="c1">#       self.obj = obj</span>
+<span class="c1">#   def add_rule(self, rule):</span>
+<span class="c1">#       self.rule.append(rule)</span>
+<span class="c1">#       self.eval_rule()</span>
+<span class="c1">#   def eval_rule():</span>
+<span class="c1">#       self.filtered = False</span>
+<span class="c1">#   def filter(self, record):</span>
+<span class="c1">#       return self.filtered</span>
+
+
+<span class="c1"># Fix logger adapter is not a new-style class in python &lt; 2.7, resulting</span>
+<span class="c1"># in super() failures when inheriting LoggerAdapter</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">_LoggerAdapter</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">LoggerAdapter</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">k</span><span class="p">):</span>
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">LoggerAdapter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">k</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+   <span class="n">_LoggerAdapter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">LoggerAdapter</span>
+
+<div class="viewcode-block" id="LoggerAdapter"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.LoggerAdapter">[docs]</a><span class="k">class</span> <span class="nc">LoggerAdapter</span><span class="p">(</span><span class="n">_LoggerAdapter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">_LoggerAdapter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="p">{})</span>
+
+<div class="viewcode-block" id="LoggerAdapter.get_logger"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.LoggerAdapter.get_logger">[docs]</a>    <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span></div>
+
+<div class="viewcode-block" id="LoggerAdapter.process"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.LoggerAdapter.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">copy</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">extra</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;extra&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">msg</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">LoggerAdapter</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;extra&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span><span class="p">,</span> <span class="n">kwargs</span></div>
+
+<div class="viewcode-block" id="LoggerAdapter.verbose"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.LoggerAdapter.verbose">[docs]</a>    <span class="k">def</span> <span class="nf">verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delegate a log call to the underlying logger, after adding</span>
+<span class="sd">        contextual information from this adapter instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LoggerAdapter.notice"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.LoggerAdapter.notice">[docs]</a>    <span class="k">def</span> <span class="nf">notice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delegate a log call to the underlying logger, after adding</span>
+<span class="sd">        contextual information from this adapter instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LoggerAdapter.is_debug"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.LoggerAdapter.is_debug">[docs]</a>    <span class="k">def</span> <span class="nf">is_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return True if the logger level is debug (or greater)&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">is_debug</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LoggerAdapter.is_verbose"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.LoggerAdapter.is_verbose">[docs]</a>    <span class="k">def</span> <span class="nf">is_verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return True if the logger level is verbose (or greater)&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">()</span></div></div>
+
+<span class="c1">#</span>
+<span class="c1"># MAY HAVE SIDE EFFECTS WHEN DAEMONIZED, TOCHECK: DO NOT CLOSE STREAMS WHEN DAEMONIZING</span>
+<span class="c1"># bug can be reproduced when e.g. MySQLdb send warnings</span>
+<span class="c1"># Redirect stdout/stderr to a logger</span>
+<div class="viewcode-block" id="StreamLogWrapper"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.StreamLogWrapper">[docs]</a><span class="k">class</span> <span class="nc">StreamLogWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<div class="viewcode-block" id="StreamLogWrapper.write"><a class="viewcode-back" href="../../../library/misc.log.html#vacumm.misc.log.StreamLogWrapper.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span> <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span> <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span></div></div>
+
+<span class="c1"># A default logger</span>
+<span class="n">default</span> <span class="o">=</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;-c&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;python&#39;</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="k">if</span> <span class="s1">&#39;--verbose&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span> <span class="n">default</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s1">&#39;--debug&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span> <span class="n">default</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">)</span>
+<span class="c1"># Register logging function using the default logger</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">get_str_levels</span><span class="p">()):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">f</span><span class="p">):</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+<span class="k">del</span> <span class="n">l</span>
+<span class="c1"># Plus the special exception log func</span>
+<span class="n">exception</span> <span class="o">=</span> <span class="n">default</span><span class="o">.</span><span class="n">exception</span>
+
+
+<span class="k">def</span> <span class="nf">_testLog</span><span class="p">():</span>
+
+    <span class="n">levels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">_levelNames</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+        <span class="n">levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_str_level</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">funcs</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="n">l</span> <span class="o">!=</span> <span class="s1">&#39;NOTSET&#39;</span><span class="p">,</span> <span class="n">levels</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">lvl</span> <span class="ow">in</span> <span class="n">levels</span><span class="p">:</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Logger(level=</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">lvl</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">lvl</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(name)-30s</span><span class="s1"> : message sent with level </span><span class="si">%(levelname)-10s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">())(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+
+<span class="c1">#   Logger.parseOptions()</span>
+    <span class="k">class</span> <span class="nc">A</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span> <span class="k">pass</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">())(</span><span class="s1">&#39;Hello log function </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">B</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">pfx</span> <span class="o">=</span> <span class="s1">&#39;log_&#39;</span>
+            <span class="n">lkw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">):</span> <span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pfx</span><span class="p">):],</span><span class="n">v</span><span class="p">)</span> <span class="p">,</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">):</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">pfx</span><span class="p">),</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">iteritems</span><span class="p">())))</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">lkw</span><span class="p">)</span>
+    <span class="n">B</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="s1">&#39;notset&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+    <span class="n">B</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+    <span class="n">B</span><span class="p">(</span><span class="n">log_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">_testLog</span><span class="p">()</span>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

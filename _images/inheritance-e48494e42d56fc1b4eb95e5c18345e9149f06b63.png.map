@@ -1,0 +1,6 @@
+<map id="inheritance1bdd584a37" name="inheritance1bdd584a37">
+<area shape="poly" id="node1" href="#vacumm.misc.remote.InputWorkFiles" target="_top" title="A class to deal with input remote files" alt="" coords="194,93,189,87,175,82,154,77,128,75,99,74,69,75,43,77,22,82,8,87,4,93,8,99,22,104,43,108,69,111,99,112,128,111,154,108,175,104,189,99"/>
+<area shape="poly" id="node2" href="#vacumm.misc.remote.WorkFile" target="_top" title="Base class for :class:`InputWorkFiles` and class:`OutputWorkFile`" alt="" coords="165,23,161,17,150,11,132,7,109,4,84,4,59,4,37,7,19,11,8,17,4,23,8,29,19,34,37,38,59,41,84,42,109,41,132,38,150,34,161,29"/>
+<area shape="poly" id="node3" href="#vacumm.misc.remote.OutputWorkFile" target="_top" title="A class to deal with an output remote file" alt="" coords="403,93,399,87,385,82,363,77,336,75,306,74,276,75,249,77,228,82,214,87,209,93,214,99,228,104,249,108,276,111,306,112,336,111,363,108,385,104,399,99"/>
+<area shape="poly" id="node4" href="#vacumm.misc.remote.SSHBank" target="_top" title="Interface to handle a bank of SSH/SFTP connections" alt="" coords="350,23,346,17,334,11,315,7,292,4,266,4,240,4,216,7,197,11,186,17,181,23,186,29,197,34,216,38,240,41,266,42,292,41,315,38,334,34,346,29"/>
+</map>

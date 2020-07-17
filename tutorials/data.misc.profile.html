@@ -1,0 +1,218 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.3.6.1.1. Les objets profils verticaux &#8212; VACUMM v3.6.0 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/data.misc.profile.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="les-objets-profils-verticaux">
+<span id="user-tut-data-misc-profile"></span><h1>1.3.6.1.1. Les objets profils verticaux<a class="headerlink" href="#les-objets-profils-verticaux" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">cdms2</span><span class="o">,</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">pylab</span>
+<span class="kn">import</span> <span class="nn">vacumm.data.misc.profile</span> <span class="k">as</span> <span class="nn">P</span>
+
+<span class="c1"># Turn off netcdf4 file writting</span>
+<span class="n">cdms2</span><span class="o">.</span><span class="n">setNetcdfShuffleFlag</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">setNetcdfDeflateFlag</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">setNetcdfDeflateLevelFlag</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1">##########</span>
+<span class="c1"># NOTES:</span>
+<span class="c1">##########</span>
+<span class="c1"># Profile:          Single profile object having one or more variables at a specific location and time</span>
+<span class="c1"># Profiles:         Collection of Profile object with a save method suitable for ProfilesDataset</span>
+<span class="c1"># ProfilesDataset:  Profiles dataset class with plot features</span>
+<span class="c1">##########</span>
+
+
+<span class="c1">##########</span>
+<span class="c1"># 1) Load a profiles file using the generic Profiles class</span>
+<span class="c1">##########</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">Profiles</span><span class="p">(</span>
+    <span class="c1"># time, depth, latitude and longitude must be provided if their name are not those expected</span>
+    <span class="n">variables_map</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;time&#39;</span><span class="p">:(</span><span class="s1">&#39;TIME&#39;</span><span class="p">,),</span>
+        <span class="s1">&#39;depth&#39;</span><span class="p">:(</span><span class="s1">&#39;DEPH&#39;</span><span class="p">,),</span> <span class="c1"># Force using the DEPH variable as depth</span>
+        <span class="s1">&#39;latitude&#39;</span><span class="p">:(</span><span class="s1">&#39;LATITUDE&#39;</span><span class="p">,),</span>
+        <span class="s1">&#39;longitude&#39;</span><span class="p">:(</span><span class="s1">&#39;LONGITUDE&#39;</span><span class="p">,),</span>
+        <span class="s1">&#39;temperature&#39;</span><span class="p">:(</span><span class="s1">&#39;TEMP&#39;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="c1"># The variable argument specify which variables will be used when using the load/save methods.</span>
+    <span class="c1"># Do not specify time, depth, latitude and longitude as they</span>
+    <span class="c1"># are special variables which are always required</span>
+    <span class="n">variables</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;temperature&#39;</span><span class="p">,),</span>
+    <span class="c1"># We could also add a quality code filter:</span>
+    <span class="c1"># qualities=(1,2)</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.config</span> <span class="k">import</span> <span class="n">data_sample</span>
+<span class="n">p</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="s1">&#39;data.misc.profile.nc&#39;</span><span class="p">))</span>
+
+<span class="c1">##########</span>
+<span class="c1"># 2) Save profiles into a file suitable for profiles.py, that can be loaded by ProfilesDataset</span>
+<span class="c1">##########</span>
+<span class="n">of</span> <span class="o">=</span> <span class="s1">&#39;data.misc.profile.converted.nc&#39;</span>
+<span class="n">p</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">of</span><span class="p">)</span>
+<span class="c1"># We could also have specified the variables to write here:</span>
+<span class="c1"># p.save(of, variables=(&#39;temperature&#39;,))</span>
+
+<span class="c1">##########</span>
+<span class="c1"># 3) Load the previously converted file using ProfilesDataset, which is more restrictive,</span>
+<span class="c1"># it is expecting input file to have profile and level axis, time, latitude, longitude variables.</span>
+<span class="c1">##########</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">ProfilesDataset</span><span class="p">(</span><span class="n">of</span><span class="p">)</span>
+
+<span class="c1"># Plot the last two temperature profiles</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">plot_pro</span><span class="p">(</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;plot_pto&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;data.misc.profile.plotpro.png&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">plot_dist</span><span class="p">(</span>
+    <span class="n">plot_lon_min</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">plot_lat_min</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">plot_lon_max</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot_lat_max</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">plot_title</span><span class="o">=</span><span class="s1">&#39;plot_dist&#39;</span><span class="p">)</span>
+<span class="c1">#from _geoslib import Polygon</span>
+<span class="c1">#p.plot_dist(</span>
+<span class="c1">#    polygons=(Polygon(numpy.array([[-10,42],[0,42],[0,50],[-10,50]])),),</span>
+<span class="c1">#    plot_lon_min=-10, plot_lat_min=42,</span>
+<span class="c1">#    plot_lon_max=0, plot_lat_max=50,</span>
+<span class="c1">#    plot_title=&#39;plot_dist&#39;)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;data.misc.profile.plotdist.png&#39;</span><span class="p">)</span>
+<span class="c1">#pylab.show()</span>
+
+
+<span class="c1">##########</span>
+<span class="c1"># 4) Create a profile file from cdms variables</span>
+<span class="c1">##########</span>
+<span class="c1"># Populate a profile list with different number of levels for each profiles</span>
+<span class="n">npro</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">profiles</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">npro</span><span class="p">):</span>
+    <span class="n">profiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+            <span class="n">platform_code</span><span class="o">=</span><span class="s1">&#39;PRF</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span>
+            <span class="n">datetime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">01</span><span class="p">,</span> <span class="mi">01</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
+            <span class="n">latitude</span><span class="o">=</span><span class="mi">46</span><span class="o">+</span><span class="mf">0.1</span><span class="o">*</span><span class="n">i</span><span class="p">,</span>
+            <span class="n">longitude</span><span class="o">=-</span><span class="mi">8</span><span class="o">+</span><span class="mf">0.1</span><span class="o">*</span><span class="n">i</span><span class="p">,</span>
+            <span class="n">depth</span><span class="o">=</span><span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="o">*-</span><span class="mf">10.0</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">var1</span><span class="o">=</span><span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                <span class="n">var2</span><span class="o">=</span><span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">i</span><span class="p">)))))</span>
+<span class="c1"># Add another profile having only var1 variable</span>
+<span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="n">profiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+            <span class="n">platform_code</span><span class="o">=</span><span class="s1">&#39;PRF</span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span>
+            <span class="n">datetime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">01</span><span class="p">,</span> <span class="mi">01</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
+            <span class="n">latitude</span><span class="o">=</span><span class="mi">46</span><span class="o">+</span><span class="mf">0.1</span><span class="o">*</span><span class="n">i</span><span class="p">,</span>
+            <span class="n">longitude</span><span class="o">=-</span><span class="mi">8</span><span class="o">+</span><span class="mf">0.1</span><span class="o">*</span><span class="n">i</span><span class="p">,</span>
+            <span class="n">depth</span><span class="o">=</span><span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="o">*-</span><span class="mf">10.0</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">var1</span><span class="o">=</span><span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">i</span><span class="p">)))))</span>
+
+<span class="c1"># Note that variables must be specified, otherwise the default (&#39;temperature&#39;,&#39;salinity&#39;) is used</span>
+<span class="c1"># (feature used by merge_profiles.py, this must be fixed by a variables auto detection)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">Profiles</span><span class="p">(</span><span class="n">profiles</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;var1&#39;</span><span class="p">,</span> <span class="s1">&#39;var2&#39;</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;data.misc.profile.fromscratch.nc&#39;</span><span class="p">)</span>
+
+
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 02 Jul 2018.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
+  </body>
+</html>

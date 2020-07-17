@@ -1,0 +1,177 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.3.1. Options communes &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.common_options.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="options-communes">
+<span id="user-scripts-common-options"></span><h1>1.6.3.1. Options communes<a class="headerlink" href="#options-communes" title="Permalink to this headline">¶</a></h1>
+<p>Voici une description des options que l’on peut retrouver dans divers scripts utilisateurs:</p>
+<dl class="option">
+<dt id="cmdoption-cfgfile">
+<code class="descname">--cfgfile</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-cfgfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Affiche l’usage et la liste des options possibles.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="id1">
+<code class="descname">--cfgfile</code><code class="descclassname"></code><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permet de spécifier un fichier de configuration.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-v">
+<code class="descname">-v</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-v" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-variables">
+<code class="descname">--variables</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-variables" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Specifie les variables à traiter.</dt>
+<dd><ul class="first last simple">
+<li>Lorsque le nommage des variables n’est pas homogène entre les fichiers, l’utilisateur peut
+spécifier des alias qui seront recherchés dans l’ordre d’appartition.
+Ainsi l’option <strong>“-v temp,temperature”</strong> permet d’indiquer que la variable à rechercher est <strong>“temp”</strong>
+et que si celle ci n’est pas trouvée, on cherchera la variable nommée <strong>“temperature”</strong>.</li>
+<li>Cette option peut être répétée plusieurs fois afin de traiter plusieurs variables
+(ex: script.py -v temp,temperature -v sal,salinity …)</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-o">
+<code class="descname">-o</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-o" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-output">
+<code class="descname">--output</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Motif de fichier de sortie. Les tracés sont enregistrés dans des fichiers
+dont le nom est construit à partir de ce motif. La valeur par défaut indique les substitutions
+possible. Par exemple, le script layer.py a pour motif:</p>
+<blockquote>
+<div><p><strong>“layer-%(var)s-%(depth)s-%(tmin)s-%(tmax)s.png”</strong></p>
+<dl class="docutils">
+<dt>Les substitutions seront:</dt>
+<dd><ul class="first last simple">
+<li><strong>var</strong>: la variable traitée</li>
+<li><strong>depth</strong>: la profondeur de la couche</li>
+<li><strong>tmin</strong>: la valeur minimale de temps couverte par le tracé</li>
+<li><strong>tmax</strong>: la valeur maximale de temps couverte par le tracé</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-show">
+<code class="descname">--show:</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Le script affiche les tracés au fur et à mesure</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

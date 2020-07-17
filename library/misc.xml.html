@@ -1,0 +1,819 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.20. vacumm.misc.xml – XML serialization/deserialization &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.20. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.xml</span></code> – XML serialization/deserialization</a><ul>
+<li><a class="reference internal" href="#overview">2.3.20.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.20.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.xml.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-xml-xml-serialization-deserialization">
+<span id="lib-misc-xml"></span><h1>2.3.20. <a class="reference internal" href="#module-vacumm.misc.xml" title="vacumm.misc.xml"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.xml</span></code></a> – XML serialization/deserialization<a class="headerlink" href="#vacumm-misc-xml-xml-serialization-deserialization" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.20.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.xml.create_xml_element" title="vacumm.misc.xml.create_xml_element"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_xml_element()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.findchildren" title="vacumm.misc.xml.findchildren"><code class="xref py py-func docutils literal notranslate"><span class="pre">findchildren()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.getattribute" title="vacumm.misc.xml.getattribute"><code class="xref py py-func docutils literal notranslate"><span class="pre">getattribute()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.hasattribute" title="vacumm.misc.xml.hasattribute"><code class="xref py py-func docutils literal notranslate"><span class="pre">hasattribute()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.load_xml_attributes" title="vacumm.misc.xml.load_xml_attributes"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_xml_attributes()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.xml.load_xml_childnodes" title="vacumm.misc.xml.load_xml_childnodes"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_xml_childnodes()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.load_xml_textnodes" title="vacumm.misc.xml.load_xml_textnodes"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_xml_textnodes()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.log" title="vacumm.misc.xml.log"><code class="xref py py-func docutils literal notranslate"><span class="pre">log()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.parse_bool" title="vacumm.misc.xml.parse_bool"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_bool()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.pretty_indent" title="vacumm.misc.xml.pretty_indent"><code class="xref py py-func docutils literal notranslate"><span class="pre">pretty_indent()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.xml.register" title="vacumm.misc.xml.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.splitns" title="vacumm.misc.xml.splitns"><code class="xref py py-func docutils literal notranslate"><span class="pre">splitns()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.usafe" title="vacumm.misc.xml.usafe"><code class="xref py py-func docutils literal notranslate"><span class="pre">usafe()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.xml_element_name" title="vacumm.misc.xml.xml_element_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">xml_element_name()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.xml.XmlConfig" title="vacumm.misc.xml.XmlConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">XmlConfig</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.xml_tag_name" title="vacumm.misc.xml.XmlConfig.xml_tag_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xml_tag_name</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.dict" title="vacumm.misc.xml.XmlConfig.dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.from_url" title="vacumm.misc.xml.XmlConfig.from_url"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_url()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.from_xml_doc" title="vacumm.misc.xml.XmlConfig.from_xml_doc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_xml_doc()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.from_xml_elt" title="vacumm.misc.xml.XmlConfig.from_xml_elt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_xml_elt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.from_xml_file" title="vacumm.misc.xml.XmlConfig.from_xml_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_xml_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.from_xml_str" title="vacumm.misc.xml.XmlConfig.from_xml_str"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_xml_str()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.get_current_file" title="vacumm.misc.xml.XmlConfig.get_current_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_current_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.load_xml_doc" title="vacumm.misc.xml.XmlConfig.load_xml_doc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_xml_doc()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.load_xml_elt" title="vacumm.misc.xml.XmlConfig.load_xml_elt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_xml_elt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.load_xml_file" title="vacumm.misc.xml.XmlConfig.load_xml_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_xml_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.load_xml_str" title="vacumm.misc.xml.XmlConfig.load_xml_str"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_xml_str()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.post_load_xml" title="vacumm.misc.xml.XmlConfig.post_load_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post_load_xml()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.pre_load_xml" title="vacumm.misc.xml.XmlConfig.pre_load_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pre_load_xml()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.set_current_file" title="vacumm.misc.xml.XmlConfig.set_current_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_current_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.set_obj" title="vacumm.misc.xml.XmlConfig.set_obj"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_obj()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.tag_name" title="vacumm.misc.xml.XmlConfig.tag_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tag_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.to_obj" title="vacumm.misc.xml.XmlConfig.to_obj"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_obj()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.to_xml_doc" title="vacumm.misc.xml.XmlConfig.to_xml_doc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_doc()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.to_xml_elt" title="vacumm.misc.xml.XmlConfig.to_xml_elt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_elt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.to_xml_file" title="vacumm.misc.xml.XmlConfig.to_xml_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.to_xml_str" title="vacumm.misc.xml.XmlConfig.to_xml_str"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_str()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.to_xml_stream" title="vacumm.misc.xml.XmlConfig.to_xml_stream"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_stream()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.xml_attributes_specs" title="vacumm.misc.xml.XmlConfig.xml_attributes_specs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xml_attributes_specs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.xml_childnodes_specs" title="vacumm.misc.xml.XmlConfig.xml_childnodes_specs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xml_childnodes_specs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.xml_element_name" title="vacumm.misc.xml.XmlConfig.xml_element_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xml_element_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.xml.XmlConfig.xml_textnodes_specs" title="vacumm.misc.xml.XmlConfig.xml_textnodes_specs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xml_textnodes_specs()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.xml.XmlConfigDict" title="vacumm.misc.xml.XmlConfigDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">XmlConfigDict</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.xml.XmlConfigList" title="vacumm.misc.xml.XmlConfigList"><code class="xref py py-class docutils literal notranslate"><span class="pre">XmlConfigList</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.xml.XmlConfigMetaClass" title="vacumm.misc.xml.XmlConfigMetaClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">XmlConfigMetaClass</span></code></a></p>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.20.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vacumm.misc.xml"></span><p><strong>This module provides XML serialization/deserialization features.</strong></p>
+<p>It is intented to provide a way to define python classes able to load/save data
+from/to XML elements, strings or files. The idea is to make a close but non restrictive
+link between XML and Python objects models with the least possible effort.</p>
+<p>Below is an example to briefly introduce how to use this module.
+This could be simplified because there are shortcuts for default type, values
+and other stuff but we will be as explicit as possible to demonstrate how this
+module work.</p>
+<p>Suppose you have or want the following XML syntax:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Report&gt;</span>
+    <span class="nt">&lt;MapFigure</span> <span class="na">showgrid=</span><span class="s">&quot;True&quot;</span> <span class="na">output=</span><span class="s">&quot;meteo.png&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;Title&gt;</span>Temperature and Wind<span class="nt">&lt;/Title&gt;</span>
+        <span class="nt">&lt;BoundingBox</span> <span class="na">lonmin=</span><span class="s">&quot;-10&quot;</span> <span class="na">lonmax=</span><span class="s">&quot;10&quot;</span> <span class="na">latmin=</span><span class="s">&quot;40&quot;</span> <span class="na">latmax=</span><span class="s">&quot;60&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ColorBar</span> <span class="na">levels=</span><span class="s">&quot;0,5,10,15,20,25,30&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;Data</span> <span class="na">file=</span><span class="s">&quot;/path/to/data/file&quot;</span> <span class="na">variable=</span><span class="s">&quot;temperature&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;Data</span> <span class="na">file=</span><span class="s">&quot;/path/to/data/file&quot;</span> <span class="na">variable=</span><span class="s">&quot;wind&quot;</span> <span class="na">plot=</span><span class="s">&quot;windbarbs&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Map&gt;</span>
+<span class="nt">&lt;/Report&gt;</span>
+</pre></div>
+</div>
+<p>This can be serialized with the following python definitions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BoundingBox</span><span class="p">(</span><span class="n">XmlConfig</span><span class="p">):</span>
+    <span class="n">xml_attributes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;lonmin&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="o">-</span><span class="mi">180</span><span class="p">},</span>
+        <span class="s1">&#39;lonmax&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="mi">180</span><span class="p">},</span>
+        <span class="s1">&#39;latmin&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="o">-</span><span class="mi">90</span><span class="p">},</span>
+        <span class="s1">&#39;latmax&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="mi">90</span><span class="p">},</span>
+    <span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">parseFloatList</span><span class="p">(</span><span class="n">floatListString</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">floatListString</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">ColorBar</span><span class="p">(</span><span class="n">XmlConfig</span><span class="p">):</span>
+    <span class="n">xml_attributes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;levels&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="n">parseFloatList</span><span class="p">,</span> <span class="n">default</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">]},</span>
+    <span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">Data</span><span class="p">(</span><span class="n">XmlConfig</span><span class="p">):</span>
+    <span class="n">xml_attributes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;file&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="nb">unicode</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="bp">None</span><span class="p">},</span>
+        <span class="s1">&#39;variable&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="nb">unicode</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="bp">None</span><span class="p">},</span>
+        <span class="s1">&#39;plot&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="o">=</span><span class="nb">unicode</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="s1">&#39;fillcolor&#39;</span><span class="p">},</span>
+    <span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">MapFigure</span><span class="p">(</span><span class="n">XmlConfig</span><span class="p">):</span>
+    <span class="n">xml_attributes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;showgrid&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="bp">False</span><span class="p">},</span>
+        <span class="s1">&#39;temperature&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="nb">unicode</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span><span class="s1">&#39;output.png&#39;</span><span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">xml_childnodes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;boundingBox&#39;</span><span class="p">:{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="n">BoundingBox</span><span class="p">,</span> <span class="n">single</span><span class="p">:</span><span class="bp">True</span><span class="p">},</span>
+        <span class="s1">&#39;colorBar&#39;</span><span class="p">:{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="n">BoundingBox</span><span class="p">,</span> <span class="n">single</span><span class="p">:</span><span class="bp">True</span><span class="p">},</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="n">Data</span><span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">xml_textnodes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;title&#39;</span><span class="p">:{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="nb">unicode</span><span class="p">,</span> <span class="s1">&#39;tagName&#39;</span><span class="p">:</span><span class="s1">&#39;Title&#39;</span><span class="p">,</span> <span class="n">single</span><span class="p">:</span><span class="bp">True</span><span class="p">},</span>
+    <span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">Report</span><span class="p">(</span><span class="n">XmlConfig</span><span class="p">):</span>
+    <span class="n">xml_childnodes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;mapFigures&#39;</span><span class="p">:{</span><span class="nb">type</span><span class="p">:</span><span class="n">MapFigure</span><span class="p">},</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>To load a file ‘report.xml’ containing the XML code above, you can either do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">Report</span><span class="p">()</span>
+<span class="n">r</span><span class="o">.</span><span class="n">load_xml_file</span><span class="p">(</span><span class="s1">&#39;report.xml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">Report</span><span class="o">.</span><span class="n">from_xml_file</span><span class="p">(</span><span class="s1">&#39;report.xml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To save a xml file from the loaded object above you can do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r</span><span class="o">.</span><span class="n">save_xml_file</span><span class="p">(</span><span class="s1">&#39;report.xml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<ul class="last simple">
+<li>This module make use of xml.etree.ElementTree and works with python &gt;= 2.6.</li>
+<li>Some XML functionnalities are not handled, there is no namespace
+support although namespaces can be ignored when loading XML data.
+When specifying an attribute name as ‘namespace:name’ the namespace is ignored
+when loading but is kept when saving.</li>
+<li>When loading a list of elements into a dictionnary (e.g. using an attribute value as key),
+the order will be kept if the module collections.OrderedDict is available (python &gt; 2.7)</li>
+</ul>
+</div>
+<dl class="class">
+<dt id="vacumm.misc.xml.XmlConfig">
+<em class="property">class </em><code class="descname">XmlConfig</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for XML serializations/deserializations.</p>
+<dl class="docutils">
+<dt>Subclasses can define the following <strong>class attributes</strong> which define the serialization specifications:</dt>
+<dd><ul class="first last simple">
+<li><strong>xml_tag_name</strong>: The corresponding xml element name (default is the class name formatted by <a class="reference internal" href="#vacumm.misc.xml.xml_element_name" title="vacumm.misc.xml.xml_element_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xml_element_name()</span></code></a>).</li>
+<li><strong>xml_attributes</strong>: Attribute specifications, see <a class="reference internal" href="#vacumm.misc.xml.load_xml_attributes" title="vacumm.misc.xml.load_xml_attributes"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_xml_attributes()</span></code></a></li>
+<li><strong>xml_childnodes</strong>: Children elements specifications, see <a class="reference internal" href="#vacumm.misc.xml.load_xml_childnodes" title="vacumm.misc.xml.load_xml_childnodes"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_xml_childnodes()</span></code></a></li>
+<li><strong>xml_textnodes</strong>: Text children elements specifications, see <a class="reference internal" href="#vacumm.misc.xml.load_xml_textnodes" title="vacumm.misc.xml.load_xml_textnodes"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_xml_textnodes()</span></code></a></li>
+</ul>
+</dd>
+</dl>
+<p><strong>These attributes can also be passed as named arguments to the constructor to extend or overwrite
+those declared in the class definition.</strong></p>
+<p><strong>XML attributes, childnodes and textnodes are stored in this instance (object) attributes.</strong></p>
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.dict">
+<em class="property">classmethod </em><code class="descname">dict</code><span class="sig-paren">(</span><em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper to collections.OrderedDict if available, dict otherwise</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.from_url">
+<em class="property">classmethod </em><code class="descname">from_url</code><span class="sig-paren">(</span><em>url</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.from_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.from_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method instanciating from xml string returned by url.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.from_xml_doc">
+<em class="property">classmethod </em><code class="descname">from_xml_doc</code><span class="sig-paren">(</span><em>d</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.from_xml_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.from_xml_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method instanciating from xml dom document.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.from_xml_elt">
+<em class="property">classmethod </em><code class="descname">from_xml_elt</code><span class="sig-paren">(</span><em>e</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.from_xml_elt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.from_xml_elt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method instanciating from xml  element.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.from_xml_file">
+<em class="property">classmethod </em><code class="descname">from_xml_file</code><span class="sig-paren">(</span><em>f</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.from_xml_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.from_xml_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method instanciating from xml file.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.from_xml_str">
+<em class="property">classmethod </em><code class="descname">from_xml_str</code><span class="sig-paren">(</span><em>s</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.from_xml_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.from_xml_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method instanciating from xml string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.get_current_file">
+<code class="descname">get_current_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.get_current_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.get_current_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the currently used xml file (from last load/save or manual set)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.load_xml_doc">
+<code class="descname">load_xml_doc</code><span class="sig-paren">(</span><em>d</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.load_xml_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.load_xml_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load from an ElementTree object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.load_xml_elt">
+<code class="descname">load_xml_elt</code><span class="sig-paren">(</span><em>e</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.load_xml_elt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.load_xml_elt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load configurations from an xml element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.load_xml_file">
+<code class="descname">load_xml_file</code><span class="sig-paren">(</span><em>f</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.load_xml_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.load_xml_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load from a file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.load_xml_str">
+<code class="descname">load_xml_str</code><span class="sig-paren">(</span><em>s</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.load_xml_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.load_xml_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load from a string</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.post_load_xml">
+<code class="descname">post_load_xml</code><span class="sig-paren">(</span><em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.post_load_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.post_load_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after load_xml_elt is executed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.pre_load_xml">
+<code class="descname">pre_load_xml</code><span class="sig-paren">(</span><em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.pre_load_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.pre_load_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called before load_xml_elt is executed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.set_current_file">
+<code class="descname">set_current_file</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.set_current_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.set_current_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the currently used xml file. This method automatically called when loading/saving xml file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.set_obj">
+<code class="descname">set_obj</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.set_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.set_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.tag_name">
+<em class="property">classmethod </em><code class="descname">tag_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.tag_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.tag_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the xml element name for this class or instance.
+If cls.xml_tag_name is not set, return class name formatted by <a class="reference internal" href="#vacumm.misc.xml.xml_element_name" title="vacumm.misc.xml.xml_element_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">xml_element_name()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.to_obj">
+<code class="descname">to_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.to_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.to_xml_doc">
+<code class="descname">to_xml_doc</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.to_xml_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.to_xml_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump object to an ElementTree</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.to_xml_elt">
+<code class="descname">to_xml_elt</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.to_xml_elt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.to_xml_elt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump object to an xml element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.to_xml_file">
+<code class="descname">to_xml_file</code><span class="sig-paren">(</span><em>f</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.to_xml_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.to_xml_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump object to a xml file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.to_xml_str">
+<code class="descname">to_xml_str</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.to_xml_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.to_xml_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump object to a xml string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.xml.XmlConfig.to_xml_stream">
+<code class="descname">to_xml_stream</code><span class="sig-paren">(</span><em>stream</em>, <em>pretty=True</em>, <em>indent='  '</em>, <em>encoding='UTF-8'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.to_xml_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.to_xml_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump object to a file object like stream.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.xml.XmlConfig.xml_attributes">
+<code class="descname">xml_attributes</code><em class="property"> = {}</em><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.xml_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.xml_attributes_specs">
+<em class="property">classmethod </em><code class="descname">xml_attributes_specs</code><span class="sig-paren">(</span><em>attrs</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.xml_attributes_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.xml_attributes_specs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fix attrs as used internally</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.xml.XmlConfig.xml_childnodes">
+<code class="descname">xml_childnodes</code><em class="property"> = {}</em><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.xml_childnodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.xml_childnodes_specs">
+<em class="property">classmethod </em><code class="descname">xml_childnodes_specs</code><span class="sig-paren">(</span><em>childnodes</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.xml_childnodes_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.xml_childnodes_specs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fix childnodes as used internally</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.xml_element_name">
+<em class="property">classmethod </em><code class="descname">xml_element_name</code><span class="sig-paren">(</span><em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.xml_element_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.xml_element_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.xml.XmlConfig.xml_tag_name">
+<code class="descname">xml_tag_name</code><em class="property"> = ''</em><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.xml_tag_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.xml.XmlConfig.xml_textnodes">
+<code class="descname">xml_textnodes</code><em class="property"> = {}</em><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.xml_textnodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.xml.XmlConfig.xml_textnodes_specs">
+<em class="property">classmethod </em><code class="descname">xml_textnodes_specs</code><span class="sig-paren">(</span><em>textnodes</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfig.xml_textnodes_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfig.xml_textnodes_specs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fix textnodes as used internally</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.xml.XmlConfigDict">
+<em class="property">class </em><code class="descname">XmlConfigDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfigDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfigDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/collections.html#collections.OrderedDict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>, <a class="reference internal" href="#vacumm.misc.xml.XmlConfig" title="vacumm.misc.xml.XmlConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.xml.XmlConfig</span></code></a></p>
+<p>Convenient class inheriting Dict and XmlConfig to avoid metaclasses conflict when Dict is collections.OrderedDict</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.xml.XmlConfigList">
+<em class="property">class </em><code class="descname">XmlConfigList</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfigList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfigList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference internal" href="#vacumm.misc.xml.XmlConfig" title="vacumm.misc.xml.XmlConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.xml.XmlConfig</span></code></a></p>
+<p>Convenient class inheriting list and XmlConfig</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.xml.XmlConfigMetaClass">
+<em class="property">class </em><code class="descname">XmlConfigMetaClass</code><a class="reference internal" href="../_modules/vacumm/misc/xml.html#XmlConfigMetaClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.XmlConfigMetaClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#type" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a></p>
+<p>Metaclass used to pass the xml element from XmlConfig.from_xml_elt to
+XmlConfig.__init__. This allow XmlConfig descendants to use the loaded
+data in their __init__ straight after XmlConfig.__init__ have been called</p>
+<p>If your implementation already inherit from a metaclass based class, you may use the code at:
+<a class="reference external" href="http://code.activestate.com/recipes/204197-solving-the-metaclass-conflict/">http://code.activestate.com/recipes/204197-solving-the-metaclass-conflict/</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.create_xml_element">
+<code class="descname">create_xml_element</code><span class="sig-paren">(</span><em>name</em>, <em>attributes=None</em>, <em>childnodes=None</em>, <em>skipNone=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#create_xml_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.create_xml_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an xml element with given attributes and children</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong>: the element tag name</li>
+<li><strong>attributes</strong>, optional: dict of attributes name:value</li>
+<li><strong>childnodes</strong>, optional: list/tuple/dict of ElementTree.Element object</li>
+<li><strong>skipNone</strong>, optional: skip attributes which value is None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">a ElementTree.Element object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.findchildren">
+<code class="descname">findchildren</code><span class="sig-paren">(</span><em>elt</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#findchildren"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.findchildren" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find children of an element ignoring namespaces</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>elt</strong>: element to search in</li>
+<li><strong>name</strong>: searched element tag name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">a generator on ElementTree.Element objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.getattribute">
+<code class="descname">getattribute</code><span class="sig-paren">(</span><em>elt</em>, <em>name</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#getattribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.getattribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute value of an element ignoring namespaces</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>elt</strong>: element to search in</li>
+<li><strong>name</strong>: searched attribute name</li>
+<li><strong>default</strong>, optional: default value when elt has no such attribute</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">attribute value or default</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.hasattribute">
+<code class="descname">hasattribute</code><span class="sig-paren">(</span><em>elt</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#hasattribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.hasattribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the presence of an element attribute ignoring namespaces</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>elt</strong>: element to search in</li>
+<li><strong>name</strong>: searched attribute name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">boolean</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.load_xml_attributes">
+<code class="descname">load_xml_attributes</code><span class="sig-paren">(</span><em>elt=None</em>, <em>attributes=None</em>, <em>dst=None</em>, <em>create=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#load_xml_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.load_xml_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize attributes from an element</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>elt</strong>: element to search in</li>
+<li><dl class="first docutils">
+<dt><strong>attributes</strong>: specification for attributes deserialization</dt>
+<dd><dl class="first last docutils">
+<dt>This may be either:</dt>
+<dd><ul class="first last">
+<li><strong>a list of attribute names</strong></li>
+<li><dl class="first docutils">
+<dt><strong>a dict of attributes</strong> {name:spec, …} with name as a string and spec as:</dt>
+<dd><ul class="first last">
+<li><strong>a type function</strong></li>
+<li><strong>a list or tuple</strong> (type function, default value)</li>
+<li><strong>a dict</strong> {‘type’:function, ‘default’:value}</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><strong>dst</strong>: an object that will be populated with the attributes</li>
+<li><strong>create</strong>: whether to create attributes in dst with the default value when they are not in elt</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The type must be a callable taking the attribute value as single string argument and returning the converted value
+With no type function, attributes are loaded without modification (as string)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body">dict of deserialized attributes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.load_xml_childnodes">
+<code class="descname">load_xml_childnodes</code><span class="sig-paren">(</span><em>elt=None</em>, <em>childnodes=None</em>, <em>dst=None</em>, <em>create=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#load_xml_childnodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.load_xml_childnodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize children from an element</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>elt</strong>: element to search in</li>
+<li><dl class="first docutils">
+<dt><strong>childnodes</strong>: specification for children deserialization</dt>
+<dd><dl class="first last docutils">
+<dt>This must be a dict of <strong>object attribute</strong> {name:spec, …} with name as a string and spec as:</dt>
+<dd><ul class="first last">
+<li><strong>a type function</strong></li>
+<li><strong>a list or tuple</strong> (type function, default value)</li>
+<li><dl class="first docutils">
+<dt><strong>a dict with the entries</strong>:</dt>
+<dd><ul class="first last">
+<li><strong>type</strong>: a XmlConfig subclass</li>
+<li><strong>default</strong>: default value, expected as instance or list or dict of XMlConfig object(s), depending on the single/key parameters</li>
+<li><strong>create</strong>: whether to create the instance or list when there are no such children in elt</li>
+<li><strong>args</strong>: positionnal arguments for XmlConfig children creation</li>
+<li><strong>kwargs</strong>: named arguments for XmlConfig children creation</li>
+<li><strong>single</strong>: whether we expect a single instance or a list of instance as result in dst (default is False). This may also be an integer specifying the child 0-based index.</li>
+<li><strong>self</strong>: whether we want to register loaded children in dst as dict entries (default is False)</li>
+<li><strong>key</strong>: which children attribute to use as key when loading with self=True</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><strong>dst</strong>: an object that will be populated with the children</li>
+<li><strong>create</strong>: whether to create attributes in dst with the default value when they are not in elt</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The type must be a subclass of XmlConfig which will be used to deserialize the children elements</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body">a tuple (attributes, elements, entries) of the loaded data</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.load_xml_textnodes">
+<code class="descname">load_xml_textnodes</code><span class="sig-paren">(</span><em>elt=None</em>, <em>textnodes=None</em>, <em>dst=None</em>, <em>create=False</em>, <em>xml_element_name=&lt;function xml_element_name&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#load_xml_textnodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.load_xml_textnodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize text node children from an element</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>elt</strong>: element to search in</li>
+<li><dl class="first docutils">
+<dt><strong>textnodes</strong>: specification for text node children deserialization</dt>
+<dd><dl class="first last docutils">
+<dt>This must be a dict of object attribute {name:spec, …} with name as a string and spec as:</dt>
+<dd><ul class="first last">
+<li><strong>the text nodes tag name</strong></li>
+<li><strong>a list or tuple</strong> (tag name, default value)</li>
+<li><dl class="first docutils">
+<dt><strong>a dict with the entries</strong>:</dt>
+<dd><ul class="first last">
+<li><strong>tagName</strong>: the text nodes tag name (default is the textnode name formatted by xml_element_name)</li>
+<li><strong>type</strong>: a factory function taking the text node content as argument</li>
+<li><strong>default</strong>: default value, expected as instance or list depending on the single parameter</li>
+<li><strong>args</strong>: positionnal arguments for children creation</li>
+<li><strong>kwargs</strong>: named arguments for children creation</li>
+<li><strong>single</strong>: whether we expect a single instance or a list of instance as result in dst (default is False). This may also be an integer specifying the child 0-based index.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><strong>dst</strong>: an object that will be populated with the text node children</li>
+<li><strong>create</strong>: whether to create attributes in dst with the default value when they are not in elt</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The type must be a callable taking the text node value as single string argument and returning the converted value.</p>
+<p>With no type function, text nodes are loaded without modification (as string)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.log">
+<code class="descname">log</code><span class="sig-paren">(</span><em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debugging log function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.parse_bool">
+<code class="descname">parse_bool</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#parse_bool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.parse_bool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.pretty_indent">
+<code class="descname">pretty_indent</code><span class="sig-paren">(</span><em>elem</em>, <em>level=0</em>, <em>indent='  '</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#pretty_indent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.pretty_indent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indent an ElementTree element avoiding extraneous spaces around node text.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.register">
+<code class="descname">register</code><span class="sig-paren">(</span><em>obj</em>, <em>attributes=None</em>, <em>elements=None</em>, <em>entries=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate an object with data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong>: the object to be manipulated</li>
+<li><strong>attributes</strong>, optional: dict, used with setattr on obj</li>
+<li><strong>elements</strong>, optional: list, used with obj.extend</li>
+<li><strong>entries</strong>, optional: dict, used with obj.update</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">obj</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.splitns">
+<code class="descname">splitns</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#splitns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.splitns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split a ‘namespace:name’ string into (‘namespace’, ‘name’) or (None, ‘name’)
+if the name doesnt contains a namespace.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.usafe">
+<code class="descname">usafe</code><span class="sig-paren">(</span><em>o</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#usafe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.usafe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a unicode textual representation of the given object</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.xml.xml_element_name">
+<code class="descname">xml_element_name</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/xml.html#xml_element_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.xml.xml_element_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build an xml element name from the given name, this function returns a
+CamelCase name with any non alphanumeric characters omitted (eg. ‘Class_A’
+=&gt; ‘ClassA’, ‘class_b’ =&gt; ‘Classb’ and class_C =&gt; ‘ClassC’)</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

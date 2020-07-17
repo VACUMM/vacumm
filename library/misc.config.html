@@ -1,0 +1,1040 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.14. vacumm.misc.config – Configuration management &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.14. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.config</span></code> – Configuration management</a><ul>
+<li><a class="reference internal" href="#overview">2.3.14.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.14.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.config.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-config-configuration-management">
+<span id="lib-misc-config"></span><h1>2.3.14. <a class="reference internal" href="#module-vacumm.misc.config" title="vacumm.misc.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.config</span></code></a> – Configuration management<a class="headerlink" href="#vacumm-misc-config-configuration-management" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.14.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.config.print_short_help" title="vacumm.misc.config.print_short_help"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_short_help()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.opt2rst" title="vacumm.misc.config.opt2rst"><code class="xref py py-func docutils literal notranslate"><span class="pre">opt2rst()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.cfg2rst" title="vacumm.misc.config.cfg2rst"><code class="xref py py-func docutils literal notranslate"><span class="pre">cfg2rst()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.cfgargparse" title="vacumm.misc.config.cfgargparse"><code class="xref py py-func docutils literal notranslate"><span class="pre">cfgargparse()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.cfgoptparse" title="vacumm.misc.config.cfgoptparse"><code class="xref py py-func docutils literal notranslate"><span class="pre">cfgoptparse()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.get_spec" title="vacumm.misc.config.get_spec"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_spec()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.get_secnames" title="vacumm.misc.config.get_secnames"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_secnames()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.list_options" title="vacumm.misc.config.list_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">list_options()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.option2rst" title="vacumm.misc.config.option2rst"><code class="xref py py-func docutils literal notranslate"><span class="pre">option2rst()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.config.filter_section" title="vacumm.misc.config.filter_section"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_section()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.register_config_validator" title="vacumm.misc.config.register_config_validator"><code class="xref py py-func docutils literal notranslate"><span class="pre">register_config_validator()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.get_validator" title="vacumm.misc.config.get_validator"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_validator()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_bbox" title="vacumm.misc.config.validator_bbox"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_bbox()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_cdtime" title="vacumm.misc.config.validator_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_cdtime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_cmap" title="vacumm.misc.config.validator_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_cmap()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_color" title="vacumm.misc.config.validator_color"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_color()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_datetime" title="vacumm.misc.config.validator_datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_datetime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_dict" title="vacumm.misc.config.validator_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_dict()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.config.validator_eval" title="vacumm.misc.config.validator_eval"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_eval()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_figsize" title="vacumm.misc.config.validator_figsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_figsize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_interval" title="vacumm.misc.config.validator_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_interval()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_minmax" title="vacumm.misc.config.validator_minmax"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_minmax()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_numerics" title="vacumm.misc.config.validator_numerics"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_numerics()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_path" title="vacumm.misc.config.validator_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_path()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_timeunits" title="vacumm.misc.config.validator_timeunits"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_timeunits()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.validator_workdir" title="vacumm.misc.config.validator_workdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">validator_workdir()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.config.ConfigException" title="vacumm.misc.config.ConfigException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigException</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.config.ValidationWarning" title="vacumm.misc.config.ValidationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationWarning</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.cfgspecs" title="vacumm.misc.config.ConfigManager.cfgspecs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cfgspecs</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.configspecs" title="vacumm.misc.config.ConfigManager.configspecs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">configspecs</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.specs" title="vacumm.misc.config.ConfigManager.specs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">specs</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.validator" title="vacumm.misc.config.ConfigManager.validator"><code class="xref py py-attr docutils literal notranslate"><span class="pre">validator</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.arg_long_help" title="vacumm.misc.config.ConfigManager.arg_long_help"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arg_long_help()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.arg_parse" title="vacumm.misc.config.ConfigManager.arg_parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arg_parse()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.arg_patch" title="vacumm.misc.config.ConfigManager.arg_patch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arg_patch()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.defaults" title="vacumm.misc.config.ConfigManager.defaults"><code class="xref py py-meth docutils literal notranslate"><span class="pre">defaults()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.get_rst" title="vacumm.misc.config.ConfigManager.get_rst"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_rst()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.get_spec" title="vacumm.misc.config.ConfigManager.get_spec"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_spec()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.getspec" title="vacumm.misc.config.ConfigManager.getspec"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getspec()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.load" title="vacumm.misc.config.ConfigManager.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.opt_long_help" title="vacumm.misc.config.ConfigManager.opt_long_help"><code class="xref py py-meth docutils literal notranslate"><span class="pre">opt_long_help()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.opt_parse" title="vacumm.misc.config.ConfigManager.opt_parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">opt_parse()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.opt_patch" title="vacumm.misc.config.ConfigManager.opt_patch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">opt_patch()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.patch" title="vacumm.misc.config.ConfigManager.patch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">patch()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.config.ConfigManager.reset" title="vacumm.misc.config.ConfigManager.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.14.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vacumm.misc.config"></span><p>Configuration management with validation capabilities and commandline interaction.
+It is based on <code class="xref py py-mod docutils literal notranslate"><span class="pre">configobj</span></code> and <code class="xref py py-mod docutils literal notranslate"><span class="pre">validate</span></code> modules.</p>
+<p>List of builtin validators for <code class="xref py py-mod docutils literal notranslate"><span class="pre">validate</span></code>, along with their plural form: <a class="reference internal" href="#vacumm.misc.config.validator_bbox" title="vacumm.misc.config.validator_bbox"><code class="xref py py-func docutils literal notranslate"><span class="pre">bbox</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">bbox_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">bboxes()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">boolean</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">boolean_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">booleans()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_cdtime" title="vacumm.misc.config.validator_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtimes()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_cmap" title="vacumm.misc.config.validator_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">cmaps()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_color" title="vacumm.misc.config.validator_color"><code class="xref py py-func docutils literal notranslate"><span class="pre">color</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">color_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">colors()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_cdtime" title="vacumm.misc.config.validator_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">date</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">date_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">dates()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_datetime" title="vacumm.misc.config.validator_datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">datetime</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">datetime_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">datetimes()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_dict" title="vacumm.misc.config.validator_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">dict</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">dict_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">dicts()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">directories()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_path" title="vacumm.misc.config.validator_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">directory</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">directory_list()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_eval" title="vacumm.misc.config.validator_eval"><code class="xref py py-func docutils literal notranslate"><span class="pre">eval</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">eval_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">evals()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_figsize" title="vacumm.misc.config.validator_figsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">figsize</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">figsize_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">figsizes()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_path" title="vacumm.misc.config.validator_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">file</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">file_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">files()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">float</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">float_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">floats()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">integer</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">integer_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">integers()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_interval" title="vacumm.misc.config.validator_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">interval</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">interval_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">intervals()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_minmax" title="vacumm.misc.config.validator_minmax"><code class="xref py py-func docutils literal notranslate"><span class="pre">minmax</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">minmax_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">minmaxes()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_numerics" title="vacumm.misc.config.validator_numerics"><code class="xref py py-func docutils literal notranslate"><span class="pre">numerics</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">numerics_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">numericss()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_path" title="vacumm.misc.config.validator_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">path</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">path_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">paths()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">string</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">string_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">strings()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_timeunits" title="vacumm.misc.config.validator_timeunits"><code class="xref py py-func docutils literal notranslate"><span class="pre">timeunits</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">timeunits_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">timeunitss()</span></code> <a class="reference internal" href="#vacumm.misc.config.validator_workdir" title="vacumm.misc.config.validator_workdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">workdir</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">workdir_list()</span></code> <code class="xref py py-func docutils literal notranslate"><span class="pre">workdirs()</span></code></p>
+<dl class="exception">
+<dt id="vacumm.misc.config.ConfigException">
+<em class="property">exception </em><code class="descname">ConfigException</code><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Exception" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></a></p>
+<dl class="attribute">
+<dt id="vacumm.misc.config.ConfigException.args">
+<code class="descname">args</code><a class="headerlink" href="#vacumm.misc.config.ConfigException.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.config.ConfigException.message">
+<code class="descname">message</code><a class="headerlink" href="#vacumm.misc.config.ConfigException.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.misc.config.ValidationWarning">
+<em class="property">exception </em><code class="descname">ValidationWarning</code><a class="reference internal" href="../_modules/vacumm/misc/config.html#ValidationWarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ValidationWarning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Warning" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Warning</span></code></a></p>
+<dl class="attribute">
+<dt id="vacumm.misc.config.ValidationWarning.args">
+<code class="descname">args</code><a class="headerlink" href="#vacumm.misc.config.ValidationWarning.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.config.ValidationWarning.message">
+<code class="descname">message</code><a class="headerlink" href="#vacumm.misc.config.ValidationWarning.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.config.ConfigManager">
+<em class="property">class </em><code class="descname">ConfigManager</code><span class="sig-paren">(</span><em>cfgspecfile=None</em>, <em>validator=None</em>, <em>interpolation='template'</em>, <em>encoding=None</em>, <em>boolean_false=True</em>, <em>splitsecdesc=False</em>, <em>cfgfilter=None</em>, <em>cfgfilter_default=False</em>, <em>warn_empty_specs=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A configuration management class based on a configuration specification file
+and a <code class="xref py py-class docutils literal notranslate"><span class="pre">validate.Validator</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Cfg</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="s1">&#39;config.ini&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;template&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Cfg</span><span class="o">.</span><span class="n">opt_parse</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">Cfg</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;config.cfg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">configobj.ConfigObj</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">validate.Validator</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.arg_long_help">
+<code class="descname">arg_long_help</code><span class="sig-paren">(</span><em>rst=True</em>, <em>usage=None</em>, <em>description='Long help based on config specs'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.arg_long_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.arg_long_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the generic long help from config specs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rst</strong>, optional: Reformat output in rst.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.arg_parse">
+<code class="descname">arg_parse</code><span class="sig-paren">(</span><em>parser=None</em>, <em>exc=[]</em>, <em>parse=True</em>, <em>args=None</em>, <em>getparser=False</em>, <em>getargs=False</em>, <em>cfgfile='config.cfg'</em>, <em>patch=None</em>, <em>cfgfileopt='--cfgfile'</em>, <em>cfgfilepatch='before'</em>, <em>nested=None</em>, <em>extraopts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.arg_parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.arg_parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options (<a class="reference external" href="https://docs.python.org/dev/library/argparse.html#module-argparse" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code></a>) and config mixer.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Creates command-line options from config defaults</li>
+<li>Parse command-line argument and create a configuration patch</li>
+</ol>
+</div></blockquote>
+<p>For instance, the following config define the commandline option
+<code class="docutils literal notranslate"><span class="pre">--section1-my-section2-my-key</span></code> with <code class="docutils literal notranslate"><span class="pre">value</span></code> as a default value, s
+tored in a special group of options with a short name and a long description:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">section1</span><span class="p">]</span> <span class="c1"># Short name : long description of the group</span>
+    <span class="p">[[</span><span class="n">my_section2</span><span class="p">]]</span>
+        <span class="n">my_key</span><span class="o">=</span><span class="n">value</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Section and option names must not contain any space-like character !</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to prevent conflict of options, don’t use <code class="docutils literal notranslate"><span class="pre">&quot;_&quot;</span></code> in
+section and option names.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><dl class="first docutils">
+<dt><strong>parser</strong>: optional, a default one is created if not given. This can be:</dt>
+<dd><ul class="first last simple">
+<li>a <code class="xref py py-class docutils literal notranslate"><span class="pre">OptionParser</span></code> instance</li>
+<li>a <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> with keyword arguments for the one to be created</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first"><strong>exc</strong>, optional: List of keys to be excluded from parsing.</p>
+</li>
+<li><p class="first"><strong>parse</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, parse commande line options and arguments</p>
+</li>
+<li><p class="first"><strong>args</strong>, optional: List of arguments to parse instead of default sys.argv[1:]</p>
+</li>
+<li><p class="first"><strong>getparser</strong>: allow getting the parser in addition to the config if parse=True</p>
+</li>
+<li><p class="first"><strong>getargs</strong>: allow getting the parsed arguments in addition to the config if parse=True</p>
+</li>
+<li><dl class="first docutils">
+<dt><strong>patch</strong>, optional: used if parse is True.</dt>
+<dd><p class="first">Can take the following values:
+- a <a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> value indicating wheter to apply defaults on the returned config</p>
+<blockquote>
+<div><p>before applying the command line config</p>
+</div></blockquote>
+<ul class="last simple">
+<li>a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance to apply on the returned config
+before applying the command line config</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>cfgfileopt</strong>: optional, if present a config file option will be added.</dt>
+<dd><p class="first last">Can be a <code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code> or couple of strings to use as the option short and/or long name</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>cfgfilepatch</strong>: specify if the returned config must be patched if a config file command</dt>
+<dd><p class="first last">line option is provided and when to patch it. Can take the following values:
+- True or ‘before’: the config file would be used before command line options
+- ‘after’: the config file would be used after command line options
+- Any False like value: the config file would not be used</p>
+</dd>
+</dl>
+</li>
+<li><p class="first"><strong>nested</strong>: Name of a section whose defines the configuration.
+It must be used when the configuration in nested in more general configuration.</p>
+</li>
+<li><p class="first"><strong>extraopts</strong>: Extra options to declare in the form
+<code class="docutils literal notranslate"><span class="pre">[(args1,</span> <span class="pre">kwargs1),</span> <span class="pre">((args2,</span> <span class="pre">kwargs2),</span> <span class="pre">...]</span></code></p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>the <code class="xref py py-class docutils literal notranslate"><span class="pre">OptionParser</span></code> if parse is False</li>
+<li>the resulting <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> if parse is True and getparser is not True</li>
+<li>the resulting <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> and the <code class="xref py py-class docutils literal notranslate"><span class="pre">OptionParser</span></code> if both parse and getparser are True</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.arg_patch">
+<code class="descname">arg_patch</code><span class="sig-paren">(</span><em>parser</em>, <em>exc=[]</em>, <em>cfgfileopt='cfgfile'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.arg_patch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.arg_patch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call to <a class="reference internal" href="#vacumm.misc.config.ConfigManager.arg_parse" title="vacumm.misc.config.ConfigManager.arg_parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arg_parse()</span></code></a> with an automatic patching of current configuration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">cfg,</span> <span class="pre">args</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.config.ConfigManager.cfgspecs">
+<code class="descname">cfgspecs</code><a class="headerlink" href="#vacumm.misc.config.ConfigManager.cfgspecs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.config.ConfigManager.configspecs">
+<code class="descname">configspecs</code><a class="headerlink" href="#vacumm.misc.config.ConfigManager.configspecs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.defaults">
+<code class="descname">defaults</code><span class="sig-paren">(</span><em>nocomments=False</em>, <em>interpolation=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the default config</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>nocomments</strong>, optional: Do not include option comments in config file.
+If equal to 2, remove section comments too.</li>
+<li><strong>interpolation</strong>, optional: if True, interpolate values.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.get_rst">
+<code class="descname">get_rst</code><span class="sig-paren">(</span><em>mode='specs'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.get_rst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.get_rst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the default configuration to rst declarations with <a class="reference internal" href="#vacumm.misc.config.cfg2rst" title="vacumm.misc.config.cfg2rst"><code class="xref py py-func docutils literal notranslate"><span class="pre">cfg2rst()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.get_spec">
+<code class="descname">get_spec</code><span class="sig-paren">(</span><em>sec</em>, <em>key</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.get_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.get_spec" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#vacumm.misc.config.get_spec" title="vacumm.misc.config.get_spec"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_spec()</span></code></a></p>
+<p>If sec is a basestring, use configspec[sec][key]
+Otherwise use sec as a configspec, sec[key]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.getspec">
+<code class="descname">getspec</code><span class="sig-paren">(</span><em>sec</em>, <em>key</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.config.ConfigManager.getspec" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#vacumm.misc.config.get_spec" title="vacumm.misc.config.get_spec"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_spec()</span></code></a></p>
+<p>If sec is a basestring, use configspec[sec][key]
+Otherwise use sec as a configspec, sec[key]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>cfgfile='config.cfg'</em>, <em>validate='fix'</em>, <em>geterr=False</em>, <em>patch=None</em>, <em>force=True</em>, <em>cfgfilter=False</em>, <em>**kwpatch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance loaded from a file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>cfgfile</strong>, optional: config file</p>
+<blockquote>
+<div><ul class="simple">
+<li>a config file name</li>
+<li>a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance</li>
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: defaults to <code class="docutils literal notranslate"><span class="pre">&quot;config.cfg&quot;</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>validate</strong>, optional: Type of validation</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">False</span></code>: no validation</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;fix&quot;</span></code>: validation fixes and reports errors</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;report&quot;</span></code>: validation reports errors</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code>: validation raises errors</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>geterr</strong>, optional: Return validation results as well</p>
+</li>
+<li><p class="first"><strong>force</strong>, optional: Force re-instantiation of <code class="docutils literal notranslate"><span class="pre">cfgfile</span></code> when it is already
+a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">Depends on <code class="docutils literal notranslate"><span class="pre">geterr</span></code></p>
+<ul class="last simple">
+<li>if <code class="docutils literal notranslate"><span class="pre">True</span></code>: <code class="docutils literal notranslate"><span class="pre">(cfg,</span> <span class="pre">err)</span></code> where is the result of <code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code></li>
+<li>else: <code class="docutils literal notranslate"><span class="pre">cfg</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.opt_long_help">
+<code class="descname">opt_long_help</code><span class="sig-paren">(</span><em>rst=True</em>, <em>usage='Usage: [prog] [options] ...'</em>, <em>description='Long help based on config specs'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.opt_long_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.opt_long_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the generic long help from config specs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rst</strong>, optional: Reformat output in rst.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.opt_parse">
+<code class="descname">opt_parse</code><span class="sig-paren">(</span><em>parser=None</em>, <em>exc=[]</em>, <em>parse=True</em>, <em>args=None</em>, <em>getparser=None</em>, <em>cfgfile='config.cfg'</em>, <em>patch=None</em>, <em>cfgfileopt='--cfgfile'</em>, <em>cfgfilepatch='before'</em>, <em>nested=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.opt_parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.opt_parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options (<a class="reference external" href="https://docs.python.org/dev/library/optparse.html#module-optparse" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">optparse</span></code></a>) and config mixer.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Creates command-line options from config defaults</li>
+<li>Parse command-line argument and create a configuration patch</li>
+</ol>
+</div></blockquote>
+<p>For instance, the following config define the commandline option
+<code class="docutils literal notranslate"><span class="pre">--section1-my-section2-my-key</span></code> with <code class="docutils literal notranslate"><span class="pre">value</span></code> as a default value, s
+tored in a special group of options with a short name and a long description:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">section1</span><span class="p">]</span> <span class="c1"># Short name : long description of the group</span>
+    <span class="p">[[</span><span class="n">my_section2</span><span class="p">]]</span>
+        <span class="n">my_key</span><span class="o">=</span><span class="n">value</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Section and option names must not contain any space-like character !</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to prevent conflict of options, don’t use <code class="docutils literal notranslate"><span class="pre">&quot;_&quot;</span></code> in
+section and option names.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><dl class="first docutils">
+<dt><strong>parser</strong>: optional, a default one is created if not given. This can be:</dt>
+<dd><ul class="first last simple">
+<li>a <code class="xref py py-class docutils literal notranslate"><span class="pre">OptionParser</span></code> instance</li>
+<li>a <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> with keyword arguments for the one to be created</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first"><strong>exc</strong>, optional: List of keys to be excluded from parsing.</p>
+</li>
+<li><p class="first"><strong>parse</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, parse commande line options and arguments</p>
+</li>
+<li><p class="first"><strong>args</strong>, optional: List of arguments to parse instead of default sys.argv[1:]</p>
+</li>
+<li><p class="first"><strong>getparser</strong>: allow getting the parser in addition to the config if parse=True</p>
+</li>
+<li><dl class="first docutils">
+<dt><strong>patch</strong>, optional: used if parse is True.</dt>
+<dd><p class="first">Can take the following values:
+- a <a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> value indicating wheter to apply defaults on the returned config</p>
+<blockquote>
+<div><p>before applying the command line config</p>
+</div></blockquote>
+<ul class="last simple">
+<li>a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance to apply on the returned config
+before applying the command line config</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>cfgfileopt</strong>: optional, if present a config file option will be added.</dt>
+<dd><p class="first last">Can be a <code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code> or couple of strings to use as the option short and/or long name</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>cfgfilepatch</strong>: specify if the returned config must be patched if a config file command</dt>
+<dd><p class="first last">line option is provided and when to patch it. Can take the following values:
+- True or ‘before’: the config file would be used before command line options
+- ‘after’: the config file would be used after command line options
+- Any False like value: the config file would not be used</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>the <code class="xref py py-class docutils literal notranslate"><span class="pre">OptionParser</span></code> if parse is False</li>
+<li>the resulting <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> if parse is True and getparser is not True</li>
+<li>the resulting <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> and the <code class="xref py py-class docutils literal notranslate"><span class="pre">OptionParser</span></code> if both parse and getparser are True</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.opt_patch">
+<code class="descname">opt_patch</code><span class="sig-paren">(</span><em>parser</em>, <em>exc=[]</em>, <em>cfgfileopt='cfgfile'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.opt_patch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.opt_patch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call to <a class="reference internal" href="#vacumm.misc.config.ConfigManager.arg_parse" title="vacumm.misc.config.ConfigManager.arg_parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arg_parse()</span></code></a> with an automatic patching of current configuration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">cfg,</span> <span class="pre">args</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.patch">
+<code class="descname">patch</code><span class="sig-paren">(</span><em>cfg</em>, <em>cfgpatch</em>, <em>validate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.patch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.patch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace config values of <code class="docutils literal notranslate"><span class="pre">cfg</span></code> by those of <code class="docutils literal notranslate"><span class="pre">cfgpatch</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cfg</strong>: A <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance, a config file or
+a dictionary, that must be patched.</li>
+<li><strong>cfgpatch</strong>: A <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance, a config file or
+a dictionary, used for patching.</li>
+<li><strong>validate</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, validate configs if they have a valid config spec.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.config.ConfigManager.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>cfgfile='config.cfg'</em>, <em>backup=True</em>, <em>nocomments=True</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#ConfigManager.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.ConfigManager.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset a config file  to default values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfgfile</strong>, optional: The configuration file to reset.</li>
+<li><strong>backup</strong>, optional: Backup the old config file.</li>
+<li><strong>nocomments</strong>, optional: Do not include comment in config file.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">A <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> instance</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.config.ConfigManager.defaults" title="vacumm.misc.config.ConfigManager.defaults"><code class="xref py py-meth docutils literal notranslate"><span class="pre">defaults()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.config.ConfigManager.specs">
+<code class="descname">specs</code><a class="headerlink" href="#vacumm.misc.config.ConfigManager.specs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.config.ConfigManager.validator">
+<code class="descname">validator</code><a class="headerlink" href="#vacumm.misc.config.ConfigManager.validator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.print_short_help">
+<code class="descname">print_short_help</code><span class="sig-paren">(</span><em>parser</em>, <em>formatter=None</em>, <em>compressed=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#print_short_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.print_short_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print all help of an <a class="reference external" href="https://docs.python.org/dev/library/optparse.html#optparse.OptionParser" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OptionParser</span></code></a> instance but those of groups.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.opt2rst">
+<code class="descname">opt2rst</code><span class="sig-paren">(</span><em>shelp</em>, <em>prog=None</em>, <em>secfmt=':%(secname)s:'</em>, <em>descname='Description'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#opt2rst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.opt2rst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert options displayed in an help string to rst declarations of options</p>
+<p>This is useful for autodocumenting executable python scripts that show a formatted help.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>shelp</strong>: Help string showing options (results from :option:<code class="docutils literal notranslate"><span class="pre">--help</span></code>).</li>
+<li><strong>prog</strong>, optional: Program name, otherwise guess it from usage.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Output:</th><td class="field-body"><p class="first last">String converted to rst format (with <code class="xref rst rst-dir docutils literal notranslate"><span class="pre">cmdoption</span></code> directives).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.cfg2rst">
+<code class="descname">cfg2rst</code><span class="sig-paren">(</span><em>cfg</em>, <em>mode='basic'</em>, <em>optrole='confopt'</em>, <em>secrole='confsec'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#cfg2rst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.cfg2rst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a configuration to rst format</p>
+<p>Configuration sections are declared with the rst directive
+“confsec” and options are declared with the rst directive
+“confopt”.</p>
+<p>For instance:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="na">a</span><span class="o">=</span><span class="s">1 # desc a</span>
+<span class="na">[s1] # desc s1</span>
+    <span class="na">b</span><span class="o">=</span><span class="s">2  # desc b</span>
+<span class="s">    [[s2]] # desc s2</span>
+<span class="s">        c=$a-$b # desd c</span>
+<span class="s">        [sec1] # section 1</span>
+</pre></div>
+</div>
+<p>is converted to:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">confopt</span><span class="p">::</span> a
+
+    desc a
+
+<span class="p">..</span> <span class="ow">confsec</span><span class="p">::</span> [s1]
+
+    desc s1
+
+<span class="p">    ..</span> <span class="ow">confopt</span><span class="p">::</span> [s1] b
+
+        desc b
+
+<span class="p">    ..</span> <span class="ow">confsec</span><span class="p">::</span> [s1][s2]
+
+        desc s2
+
+<span class="p">        ..</span> <span class="ow">confopt</span><span class="p">::</span> [s1][s2] c
+
+            desd c
+</pre></div>
+</div>
+<p>Then one can reference an option with for example <a href="#id1"><span class="problematic" id="id2">``</span></a><code class="xref std std-confopt docutils literal notranslate"><span class="pre">[s1][s2]c</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong>: <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> or <a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a> instance.
+In the case of a <a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a>, the <a class="reference internal" href="#vacumm.misc.config.ConfigManager.defaults" title="vacumm.misc.config.ConfigManager.defaults"><code class="xref py py-meth docutils literal notranslate"><span class="pre">defaults()</span></code></a>
+are used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">rst string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.cfgargparse">
+<code class="descname">cfgargparse</code><span class="sig-paren">(</span><em>cfgspecfile</em>, <em>parser</em>, <em>cfgfileopt='cfgfile'</em>, <em>cfgfile='config.cfg'</em>, <em>exc=[]</em>, <em>extraopts=None</em>, <em>args=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#cfgargparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.cfgargparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge configuration and commandline arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfgspecfile</strong>: Config specification file (.ini).</li>
+<li><strong>parser</strong>: <code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code> instance.</li>
+<li><strong>cfgfileopt</strong>, optional: Name of the option used to specify the
+user config file. Example: <code class="docutils literal notranslate"><span class="pre">'cfgfile'</span></code> creates the option
+<code class="docutils literal notranslate"><span class="pre">--cfgfile=&lt;config</span> <span class="pre">file&gt;</span></code>.</li>
+<li><strong>cfgfile</strong>, optional: Default name for the loaded config file.</li>
+<li><strong>exc</strong>, optional: Config option name that must not be used to generated
+a commandline option.</li>
+<li>Extra params are passed to <a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a> initialization.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">A <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Tasks:</th><td class="field-body"><ol class="first arabic simple">
+<li>Initialize a default configuration (<a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a>)
+from the specification file given by <code class="docutils literal notranslate"><span class="pre">cfgspecfile</span></code>.</li>
+<li>Generate associated commandline options.</li>
+<li>Load a user configuration file (specified with the option
+whose name is given by <code class="docutils literal notranslate"><span class="pre">cfgfileopt</span></code>).</li>
+<li>Patch this configuration with user supplied options retrieved
+using the <code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code> parser <code class="docutils literal notranslate"><span class="pre">parser</span></code>.</li>
+</ol>
+<p class="last">Technically it combines <a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a> and <a class="reference internal" href="#vacumm.misc.config.ConfigManager.arg_parse" title="vacumm.misc.config.ConfigManager.arg_parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ConfigManager.arg_parse()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.cfgoptparse">
+<code class="descname">cfgoptparse</code><span class="sig-paren">(</span><em>cfgspecfile</em>, <em>parser</em>, <em>cfgfileopt='cfgfile'</em>, <em>cfgfile='config.cfg'</em>, <em>exc=[]</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#cfgoptparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.cfgoptparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge configuration and commandline arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfgspecfile</strong>: Config specification file (.ini).</li>
+<li><strong>parser</strong>: <code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code> instance.</li>
+<li><strong>cfgfileopt</strong>, optional: Name of the option used to specify the
+user config file. Example: <code class="docutils literal notranslate"><span class="pre">'cfgfile'</span></code> creates the option
+<code class="docutils literal notranslate"><span class="pre">--cfgfile=&lt;config</span> <span class="pre">file&gt;</span></code>.</li>
+<li><strong>cfgfile</strong>, optional: Default name for the loaded config file.</li>
+<li><strong>exc</strong>, optional: Config option name that must not be used to generated
+a commandline option.</li>
+<li>Extra params are passed to <a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a> initialization.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Tasks:</th><td class="field-body"><ol class="first arabic simple">
+<li>Initialize a default configuration (<a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a>)
+from the specification file given by <code class="docutils literal notranslate"><span class="pre">cfgspecfile</span></code>.</li>
+<li>Generate associated commandline options.</li>
+<li>Load a user configuration file (specified with the option
+whose name is given by <code class="docutils literal notranslate"><span class="pre">cfgfileopt</span></code>).</li>
+<li>Patch this configuration with user supplied options retrieved
+using the <code class="xref py py-class docutils literal notranslate"><span class="pre">OptionParser</span></code> parser <code class="docutils literal notranslate"><span class="pre">parser</span></code>.</li>
+</ol>
+<p class="last">Technically it combines <a class="reference internal" href="#vacumm.misc.config.ConfigManager" title="vacumm.misc.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a> and <a class="reference internal" href="#vacumm.misc.config.ConfigManager.opt_patch" title="vacumm.misc.config.ConfigManager.opt_patch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ConfigManager.opt_patch()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.get_spec">
+<code class="descname">get_spec</code><span class="sig-paren">(</span><em>spec</em>, <em>validator=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#get_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.get_spec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an option specification.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>spec</strong>: the specification string</li>
+<li><strong>validator</strong>: (optional) the validator to use</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A dict with keys:
+- <strong>funcname</strong>: the validation function name
+- <strong>args</strong>:  the positionnal arguments
+- <strong>kwargs</strong>: the named arguments
+- <strong>default</strong>: the default value
+- <strong>iterable</strong>: if the value is list-like
+- <strong>func</strong>: the validation function
+- <strong>opttype</strong>: the function used with <a class="reference external" href="https://docs.python.org/dev/library/optparse.html#module-optparse" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">optparse</span></code></a>
+- <strong>argtype</strong>: the function used with <a class="reference external" href="https://docs.python.org/dev/library/argparse.html#module-argparse" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Read access to these keys can also be done as attribute of the returned dict
+(d.funcname == d[‘funcname’], …)</p>
+<p>For example, a specification file containing:</p>
+<dl class="docutils">
+<dt>[section]</dt>
+<dd>option = integer(default=0, min=-10, max=10)</dd>
+<dt>Would return: <a href="#id3"><span class="problematic" id="id4">``</span></a>{‘funcname’: integer, ‘args’: [],</dt>
+<dd>‘kwargs’: {‘min’: ‘-10’, ‘max’: ‘10’}, ‘default:’ 0,
+‘opttype’: ‘int’, ‘argtype’: int,
+‘func’:is_integer, ‘iterable’: None}</dd>
+</dl>
+<p>This can be usefull when you added extraneous named arguments into your
+specification file for your own use.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.get_secnames">
+<code class="descname">get_secnames</code><span class="sig-paren">(</span><em>cfg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#get_secnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.get_secnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get section names as list from top to bottom [‘sec0’,’sec1’,…]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.list_options">
+<code class="descname">list_options</code><span class="sig-paren">(</span><em>sec</em>, <em>optlist=None</em>, <em>parents=None</em>, <em>values=False</em>, <em>sections=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#list_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.list_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of options of section tree</p>
+<p>Each list items has the format <code class="docutils literal notranslate"><span class="pre">(sections,</span> <span class="pre">optname)</span></code> or
+<code class="docutils literal notranslate"><span class="pre">(sections,</span> <span class="pre">optname,</span> <span class="pre">optvalue)</span></code> depending on the <code class="docutils literal notranslate"><span class="pre">values</span></code> keyword.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.option2rst">
+<code class="descname">option2rst</code><span class="sig-paren">(</span><em>option</em>, <em>optrole='confopt'</em>, <em>secrole='confsec'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#option2rst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.option2rst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format a tuple or <code class="docutils literal notranslate"><span class="pre">(parents,</span> <span class="pre">optname)</span></code> to a rst inline declaration</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.filter_section">
+<code class="descname">filter_section</code><span class="sig-paren">(</span><em>sec</em>, <em>cfgfilter</em>, <em>default=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#filter_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.filter_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively filter a section according to a dict of specifications</p>
+<p>When encountering an option of <code class="docutils literal notranslate"><span class="pre">sec</span></code>, it removed if its value
+in <code class="docutils literal notranslate"><span class="pre">cfgfilter</span></code> is set to False. When not found, it default to the
+<code class="docutils literal notranslate"><span class="pre">__default__</span></code> key of <code class="docutils literal notranslate"><span class="pre">cfgfilter</span></code>. And if the <code class="docutils literal notranslate"><span class="pre">__default__</span></code> is not
+found, it defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> (filtered out).
+When an option is a section and its value in <code class="docutils literal notranslate"><span class="pre">cfgfilter</span></code> is a dictionary,
+this subsection is filtered in the same way with the value as restrictions
+(<code class="docutils literal notranslate"><span class="pre">cfgfilter[subsection]</span></code>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sec</strong>: A <code class="xref py py-class docutils literal notranslate"><span class="pre">configobj.Section</span></code> instance.</li>
+<li><strong>cfgfilter</strong>: A dictionary tree with the same structure as <code class="docutils literal notranslate"><span class="pre">sec</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.register_config_validator">
+<code class="descname">register_config_validator</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#register_config_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.register_config_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new configobj validator function</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">register_config_validator</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">is_level</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.get_validator">
+<code class="descname">get_validator</code><span class="sig-paren">(</span><em>functions=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#get_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.get_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a default validator</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_bbox">
+<code class="descname">validator_bbox</code><span class="sig-paren">(</span><em>value</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_bbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_bbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse bbox coordinates with value format: x1,y1,x2,y2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_cdtime">
+<code class="descname">validator_cdtime</code><span class="sig-paren">(</span><em>value</em>, <em>min=None</em>, <em>max=None</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_cdtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_cdtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator of a date (compatible with <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.s2c()</span></code>)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_cmap">
+<code class="descname">validator_cmap</code><span class="sig-paren">(</span><em>value</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator for colormaps</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_color">
+<code class="descname">validator_color</code><span class="sig-paren">(</span><em>value</em>, <em>default='k'</em>, <em>alpha=False</em>, <em>as256=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_datetime">
+<code class="descname">validator_datetime</code><span class="sig-paren">(</span><em>value</em>, <em>default=None</em>, <em>fmt='%Y-%m-%dT%H:%M:%S'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_datetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse value as a traditionnal python datetime object</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_dict">
+<code class="descname">validator_dict</code><span class="sig-paren">(</span><em>value</em>, <em>default={}</em>, <em>vtype=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>validator for dictionaries</p>
+<p>value:</p>
+<blockquote>
+<div><ul class="simple">
+<li>dict(a=2, b=”x”)</li>
+<li>{“a”:2, “b”:”x”}</li>
+<li>a=2</li>
+<li>a=2, b=”x”</li>
+<li>OrderedDict(b=2)</li>
+<li>dict([(“a”,2),(“b”,”x”)])</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_eval">
+<code class="descname">validator_eval</code><span class="sig-paren">(</span><em>value</em>, <em>default=None</em>, <em>unchanged_if_failed=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate a string that can be evaluated</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_figsize">
+<code class="descname">validator_figsize</code><span class="sig-paren">(</span><em>value</em>, <em>default=(6</em>, <em>6)</em>, <em>min=0</em>, <em>max=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_figsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_figsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator of a figure size (xsize,ysize)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_interval">
+<code class="descname">validator_interval</code><span class="sig-paren">(</span><em>value</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator of an interval of coordinates (min, max [,bounds])</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_minmax">
+<code class="descname">validator_minmax</code><span class="sig-paren">(</span><em>value</em>, <em>min=None</em>, <em>max=None</em>, <em>default=(0</em>, <em>100)</em>, <em>type='float'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_minmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_minmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator of a min,max pair</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_numerics">
+<code class="descname">validator_numerics</code><span class="sig-paren">(</span><em>value</em>, <em>default=None</em>, <em>min=None</em>, <em>max=None</em>, <em>type='float'</em>, <em>n=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_numerics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_numerics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator of a tuple of numeric values</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_path">
+<code class="descname">validator_path</code><span class="sig-paren">(</span><em>value</em>, <em>default=''</em>, <em>expand=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a value as a path
+:Params:</p>
+<blockquote>
+<div>– <strong>expand</strong>: expandvars and expandhome on loaded path</div></blockquote>
+<p><strong>Warning: expand currently can’t work with interpolation</strong></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_timeunits">
+<code class="descname">validator_timeunits</code><span class="sig-paren">(</span><em>value</em>, <em>default='days since 1950-01-01'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_timeunits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_timeunits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator of standard time units</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.config.validator_workdir">
+<code class="descname">validator_workdir</code><span class="sig-paren">(</span><em>value</em>, <em>default=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/config.html#validator_workdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.config.validator_workdir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

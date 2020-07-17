@@ -1,0 +1,1993 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.9.2. vacumm.bathy.shorelines – Shorelines &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.9.2. <code class="docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines</span></code> – Shorelines</a><ul>
+<li><a class="reference internal" href="#overview">2.9.2.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.9.2.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/bathy.shorelines.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-bathy-shorelines-shorelines">
+<span id="lib-bathy-shorelines"></span><h1>2.9.2. <a class="reference internal" href="#module-vacumm.bathy.shorelines" title="vacumm.bathy.shorelines"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines</span></code></a> – Shorelines<a class="headerlink" href="#vacumm-bathy-shorelines-shorelines" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.9.2.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.get_best" title="vacumm.bathy.shorelines.get_best"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_best()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.get_shoreline" title="vacumm.bathy.shorelines.get_shoreline"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_shoreline()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.list_shorelines" title="vacumm.bathy.shorelines.list_shorelines"><code class="xref py py-func docutils literal notranslate"><span class="pre">list_shorelines()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.get_bestres" title="vacumm.bathy.shorelines.get_bestres"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_bestres()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.shorelines.Histolitt" title="vacumm.bathy.shorelines.Histolitt"><code class="xref py py-class docutils literal notranslate"><span class="pre">Histolitt</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.shorelines.EUROSION" title="vacumm.bathy.shorelines.EUROSION"><code class="xref py py-class docutils literal notranslate"><span class="pre">EUROSION</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_SF" title="vacumm.bathy.shorelines.GSHHS_SF"><code class="xref py py-class docutils literal notranslate"><span class="pre">GSHHS_SF</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS" title="vacumm.bathy.shorelines.GSHHS"><code class="xref py py-class docutils literal notranslate"><span class="pre">GSHHS</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_BM" title="vacumm.bathy.shorelines.GSHHS_BM"><code class="xref py py-class docutils literal notranslate"><span class="pre">GSHHS_BM</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine" title="vacumm.bathy.shorelines.ShoreLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShoreLine</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine.avail" title="vacumm.bathy.shorelines.ShoreLine.avail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">avail()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine.embed" title="vacumm.bathy.shorelines.ShoreLine.embed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.9.2.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Inheritance diagram:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="graphviz"><img src="../_images/inheritance-7c0db23eb36c8b25f2245771f5c33e65dc2e7fcc.png" alt="Inheritance diagram of vacumm.bathy.shorelines.Histolitt, vacumm.bathy.shorelines.EUROSION, vacumm.bathy.shorelines.GSHHS_SF, vacumm.bathy.shorelines.GSHHS, vacumm.bathy.shorelines.GSHHS_BM" usemap="#inheritanceabe3ce5cb7" class="inheritance graphviz" /></div>
+<map id="inheritanceabe3ce5cb7" name="inheritanceabe3ce5cb7">
+<area shape="poly" id="node1" href="#vacumm.bathy.shorelines.EUROSION" target="_top" title="Shoreline of Europe at 1/100000 from shapefile of LineStrings" alt="" coords="106,245,104,236,97,228,86,221,71,217,56,216,40,217,26,221,15,228,8,236,5,245,8,254,15,262,26,268,40,272,56,273,71,272,86,268,97,262,104,254"/>
+<area shape="poly" id="node2" href="#vacumm.bathy.shorelines.ShoreLine" target="_top" title="Version of :class:`vacumm.misc.io.Shapes` dedicated to shorelines" alt="" coords="254,139,251,130,244,122,234,116,220,112,205,111,190,112,177,116,166,122,159,130,157,139,159,148,166,156,177,163,190,167,205,168,220,167,234,163,244,156,251,148"/>
+<area shape="poly" id="node6" href="#vacumm.bathy.shorelines.GSHHS_SF" target="_top" title="Fine world shoreline from USGS shapefile" alt="" coords="235,245,232,236,225,228,213,221,199,217,183,216,166,217,152,221,140,228,133,236,131,245,133,254,140,262,152,268,166,272,183,273,199,272,213,268,225,262,232,254"/>
+<area shape="poly" id="node7" href="#vacumm.bathy.shorelines.Histolitt" target="_top" title="Shoreline of France from SHOM/IGN at 1/25000from shapefile of Polygons covering metropolitan France" alt="" coords="338,245,336,236,330,228,322,221,311,217,299,216,286,217,275,221,267,228,261,236,259,245,261,254,267,262,275,268,286,272,299,273,311,272,322,268,330,262,336,254"/>
+<area shape="poly" id="node3" href="#vacumm.bathy.shorelines.GSHHS" target="_top" title="GSHHS" alt="" coords="441,245,439,236,433,228,424,221,413,217,401,216,389,217,378,221,369,228,364,236,362,245,364,254,369,262,378,268,389,272,401,273,413,272,424,268,433,262,439,254"/>
+<area shape="poly" id="node4" href="misc.grid.basemap.html#vacumm.misc.grid.basemap.GSHHS_BM" target="_top" title="Shoreline from USGS using Basemap" alt="" coords="431,139,429,130,421,122,409,116,394,112,377,111,360,112,345,116,333,122,326,130,323,139,326,148,333,156,345,163,360,167,377,168,394,167,409,163,421,156,429,148"/>
+<area shape="poly" id="node5" href="misc.io.html#vacumm.misc.io.Shapes" target="_top" title="A class to read shapefiles and return GEOS objects" alt="" coords="307,34,305,25,300,17,291,11,280,7,268,5,256,7,245,11,236,17,230,25,228,34,230,43,236,51,245,57,256,61,268,63,280,61,291,57,300,51,305,43"/>
+</map><span class="target" id="module-vacumm.bathy.shorelines"></span><p>Utilities to handle shorelines</p>
+<dl class="class">
+<dt id="vacumm.bathy.shorelines.Histolitt">
+<em class="property">class </em><code class="descname">Histolitt</code><span class="sig-paren">(</span><em>input=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#Histolitt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine" title="vacumm.bathy.shorelines.ShoreLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines.ShoreLine</span></code></a></p>
+<p>Shoreline of France from SHOM/IGN at 1/25000from shapefile of Polygons covering metropolitan France</p>
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.INPUT_MULTIPOINTS">
+<code class="descname">INPUT_MULTIPOINTS</code><em class="property"> = 8</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.INPUT_MULTIPOINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.INPUT_POINTS">
+<code class="descname">INPUT_POINTS</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.INPUT_POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.INPUT_POLYGONS">
+<code class="descname">INPUT_POLYGONS</code><em class="property"> = 5</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.INPUT_POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.INPUT_POLYLINES">
+<code class="descname">INPUT_POLYLINES</code><em class="property"> = 3</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.INPUT_POLYLINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.LINE">
+<code class="descname">LINE</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.LINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.LINES">
+<code class="descname">LINES</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.LINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.POINT">
+<code class="descname">POINT</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.POINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.POINTS">
+<code class="descname">POINTS</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.POLY">
+<code class="descname">POLY</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.POLY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.POLYGON">
+<code class="descname">POLYGON</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.POLYGON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.POLYGONS">
+<code class="descname">POLYGONS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.POLYS">
+<code class="descname">POLYS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.POLYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.bathy.shorelines.Histolitt.avail">
+<em class="property">classmethod </em><code class="descname">avail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.avail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this shoreline available locally or for download?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>factor=None</em>, <em>ext=True</em>, <em>nl=True</em>, <em>xyz=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get bathymetry at coast from mean sea level at stations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>factor</em>: Multiplicative correction factor</li>
+<li><em>xyz</em>: If True, return a <code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code> instance instead of a <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> array</li>
+<li><em>ext</em>: Allow extrapolation</li>
+<li><em>nl</em>: Nonlinear interpolation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instance of sea level</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone</em>, <em>copy=True</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip to zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone</strong>: <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax]</span></code></li>
+<li><strong>copy</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make a copy of current instance,
+else simply rehandled the list of shapes.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">copy==True</span></code>, Other parameters are passed to the initialization
+of the new instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.bathy.shorelines.Histolitt.embed">
+<em class="property">classmethod </em><code class="descname">embed</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this shoreline embeddeding this point?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.factor">
+<code class="descname">factor</code><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factor to apply to the sea level on the shoreline to convert to bathymetic “depth”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the numeric version of the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.get_factor">
+<code class="descname">get_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.get_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the associated basemap instance if set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.get_points">
+<code class="descname">get_points</code><span class="sig-paren">(</span><em>key=None</em>, <em>split=True</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.get_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the points from all the shapes as a tuple (x,y)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.get_shapes">
+<code class="descname">get_shapes</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.get_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.get_type">
+<code class="descname">get_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.get_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of shapes</p>
+<ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.Histolitt.POINTS" title="vacumm.bathy.shorelines.Histolitt.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a> = Points,</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.Histolitt.LINES" title="vacumm.bathy.shorelines.Histolitt.LINES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LINES</span></code></a> = LineStrings = PolyLines</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.Histolitt.POLYGONS" title="vacumm.bathy.shorelines.Histolitt.POLYGONS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POLYGONS</span></code></a> = Polygons</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <code class="docutils literal notranslate"><span class="pre">get_points(split=false)</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.greatest_polygon">
+<code class="descname">greatest_polygon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.greatest_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the greatest polygon (only works with polygons!)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.is_type">
+<code class="descname">is_type</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.is_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">is_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">POLYS</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>select=None</em>, <em>ax=None</em>, <em>fill=None</em>, <em>fillcolor=None</em>, <em>points=False</em>, <em>m=True</em>, <em>show=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot shapes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>select</strong>, optional: argument for selecting shapes in the list [defaul: None].</li>
+<li><strong>fill</strong>, optional: Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]</li>
+<li><strong>ax</strong>, optional: Axes instance.</li>
+<li><strong>m</strong>, optional: <a class="reference internal" href="misc.core_plot.html#vacumm.misc.core_plot.Map" title="vacumm.misc.core_plot.Map"><code class="xref py py-class docutils literal notranslate"><span class="pre">Map</span></code></a> instance
+(created with <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a>) or a <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance.</li>
+<li><strong>points</strong>, optional: Plots shapes as points.</li>
+<li><strong>lines</strong>, optional: Plot shapes as lines (if a of type <a class="reference internal" href="#vacumm.bathy.shorelines.Histolitt.POINTS" title="vacumm.bathy.shorelines.Histolitt.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a>).</li>
+<li><strong>fill_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>lines_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LineCollection</span></code></a> or to <a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>points_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">scatter</span></code>.</li>
+<li><strong>m_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-class docutils literal notranslate"><span class="pre">map2</span></code></a> if <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">is</span> <span class="pre">True</span></code>.</li>
+<li><strong>autoscale</strong>, optional: Autoscale axis limits?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>deg=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean “resolution” of the shapes based on the first shape</p>
+<ul>
+<li><p class="first"><strong>deg</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>if <code class="docutils literal notranslate"><span class="pre">False</span></code>: return a resolution in meters has a the median distance between points</li>
+<li>if <code class="docutils literal notranslate"><span class="pre">True</span></code>: return the median distance between points as a resolution in degrees <code class="docutils literal notranslate"><span class="pre">(xres,yres)</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.set_factor">
+<code class="descname">set_factor</code><span class="sig-paren">(</span><em>factor</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.set_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>reverse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort shapes according to their surface or length</p>
+<ul class="simple">
+<li><em>reverse</em>: If True, greater polygons are first [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.sorted">
+<code class="descname">sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.sorted" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.Histolitt.xy">
+<code class="descname">xy</code><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>XY coordinates as a (2,npts) array</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.Histolitt.xyz">
+<code class="descname">xyz</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.Histolitt.xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.bathy.shorelines.Histolitt.bathy" title="vacumm.bathy.shorelines.Histolitt.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.shorelines.EUROSION">
+<em class="property">class </em><code class="descname">EUROSION</code><span class="sig-paren">(</span><em>input=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#EUROSION"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine" title="vacumm.bathy.shorelines.ShoreLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines.ShoreLine</span></code></a></p>
+<p>Shoreline of Europe at 1/100000 from shapefile of LineStrings
+.. warning:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Must</span> <span class="ow">not</span> <span class="n">be</span> <span class="n">used</span> <span class="k">for</span> <span class="n">masking</span><span class="p">,</span> <span class="n">only</span> <span class="k">for</span> <span class="n">coastal</span> <span class="n">interpolations</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.INPUT_MULTIPOINTS">
+<code class="descname">INPUT_MULTIPOINTS</code><em class="property"> = 8</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.INPUT_MULTIPOINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.INPUT_POINTS">
+<code class="descname">INPUT_POINTS</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.INPUT_POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.INPUT_POLYGONS">
+<code class="descname">INPUT_POLYGONS</code><em class="property"> = 5</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.INPUT_POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.INPUT_POLYLINES">
+<code class="descname">INPUT_POLYLINES</code><em class="property"> = 3</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.INPUT_POLYLINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.LINE">
+<code class="descname">LINE</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.LINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.LINES">
+<code class="descname">LINES</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.LINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.POINT">
+<code class="descname">POINT</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.POINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.POINTS">
+<code class="descname">POINTS</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.POLY">
+<code class="descname">POLY</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.POLY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.POLYGON">
+<code class="descname">POLYGON</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.POLYGON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.POLYGONS">
+<code class="descname">POLYGONS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.POLYS">
+<code class="descname">POLYS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.POLYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.bathy.shorelines.EUROSION.avail">
+<em class="property">classmethod </em><code class="descname">avail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.avail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this shoreline available locally or for download?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>factor=None</em>, <em>ext=True</em>, <em>nl=True</em>, <em>xyz=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get bathymetry at coast from mean sea level at stations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>factor</em>: Multiplicative correction factor</li>
+<li><em>xyz</em>: If True, return a <code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code> instance instead of a <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> array</li>
+<li><em>ext</em>: Allow extrapolation</li>
+<li><em>nl</em>: Nonlinear interpolation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instance of sea level</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone</em>, <em>copy=True</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip to zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone</strong>: <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax]</span></code></li>
+<li><strong>copy</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make a copy of current instance,
+else simply rehandled the list of shapes.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">copy==True</span></code>, Other parameters are passed to the initialization
+of the new instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.bathy.shorelines.EUROSION.embed">
+<em class="property">classmethod </em><code class="descname">embed</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this shoreline embeddeding this point?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.factor">
+<code class="descname">factor</code><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factor to apply to the sea level on the shoreline to convert to bathymetic “depth”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the numeric version of the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.get_factor">
+<code class="descname">get_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.get_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the associated basemap instance if set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.get_points">
+<code class="descname">get_points</code><span class="sig-paren">(</span><em>key=None</em>, <em>split=True</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.get_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the points from all the shapes as a tuple (x,y)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.get_shapes">
+<code class="descname">get_shapes</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.get_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.get_type">
+<code class="descname">get_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.get_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of shapes</p>
+<ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.EUROSION.POINTS" title="vacumm.bathy.shorelines.EUROSION.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a> = Points,</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.EUROSION.LINES" title="vacumm.bathy.shorelines.EUROSION.LINES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LINES</span></code></a> = LineStrings = PolyLines</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.EUROSION.POLYGONS" title="vacumm.bathy.shorelines.EUROSION.POLYGONS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POLYGONS</span></code></a> = Polygons</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <code class="docutils literal notranslate"><span class="pre">get_points(split=false)</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.greatest_polygon">
+<code class="descname">greatest_polygon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.greatest_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the greatest polygon (only works with polygons!)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.is_type">
+<code class="descname">is_type</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.is_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">is_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">POLYS</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>select=None</em>, <em>ax=None</em>, <em>fill=None</em>, <em>fillcolor=None</em>, <em>points=False</em>, <em>m=True</em>, <em>show=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot shapes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>select</strong>, optional: argument for selecting shapes in the list [defaul: None].</li>
+<li><strong>fill</strong>, optional: Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]</li>
+<li><strong>ax</strong>, optional: Axes instance.</li>
+<li><strong>m</strong>, optional: <a class="reference internal" href="misc.core_plot.html#vacumm.misc.core_plot.Map" title="vacumm.misc.core_plot.Map"><code class="xref py py-class docutils literal notranslate"><span class="pre">Map</span></code></a> instance
+(created with <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a>) or a <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance.</li>
+<li><strong>points</strong>, optional: Plots shapes as points.</li>
+<li><strong>lines</strong>, optional: Plot shapes as lines (if a of type <a class="reference internal" href="#vacumm.bathy.shorelines.EUROSION.POINTS" title="vacumm.bathy.shorelines.EUROSION.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a>).</li>
+<li><strong>fill_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>lines_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LineCollection</span></code></a> or to <a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>points_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">scatter</span></code>.</li>
+<li><strong>m_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-class docutils literal notranslate"><span class="pre">map2</span></code></a> if <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">is</span> <span class="pre">True</span></code>.</li>
+<li><strong>autoscale</strong>, optional: Autoscale axis limits?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>deg=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean “resolution” of the shapes based on the first shape</p>
+<ul>
+<li><p class="first"><strong>deg</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>if <code class="docutils literal notranslate"><span class="pre">False</span></code>: return a resolution in meters has a the median distance between points</li>
+<li>if <code class="docutils literal notranslate"><span class="pre">True</span></code>: return the median distance between points as a resolution in degrees <code class="docutils literal notranslate"><span class="pre">(xres,yres)</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.set_factor">
+<code class="descname">set_factor</code><span class="sig-paren">(</span><em>factor</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.set_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>reverse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort shapes according to their surface or length</p>
+<ul class="simple">
+<li><em>reverse</em>: If True, greater polygons are first [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.sorted">
+<code class="descname">sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.sorted" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.EUROSION.xy">
+<code class="descname">xy</code><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>XY coordinates as a (2,npts) array</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.EUROSION.xyz">
+<code class="descname">xyz</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.EUROSION.xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.bathy.shorelines.EUROSION.bathy" title="vacumm.bathy.shorelines.EUROSION.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF">
+<em class="property">class </em><code class="descname">GSHHS_SF</code><span class="sig-paren">(</span><em>input=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#GSHHS_SF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine" title="vacumm.bathy.shorelines.ShoreLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines.ShoreLine</span></code></a></p>
+<p>Fine world shoreline from USGS shapefile
+.. warning:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>HUGE! Please use :class:`GSHHS` instead
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.INPUT_MULTIPOINTS">
+<code class="descname">INPUT_MULTIPOINTS</code><em class="property"> = 8</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.INPUT_MULTIPOINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.INPUT_POINTS">
+<code class="descname">INPUT_POINTS</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.INPUT_POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.INPUT_POLYGONS">
+<code class="descname">INPUT_POLYGONS</code><em class="property"> = 5</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.INPUT_POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.INPUT_POLYLINES">
+<code class="descname">INPUT_POLYLINES</code><em class="property"> = 3</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.INPUT_POLYLINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.LINE">
+<code class="descname">LINE</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.LINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.LINES">
+<code class="descname">LINES</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.LINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.POINT">
+<code class="descname">POINT</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.POINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.POINTS">
+<code class="descname">POINTS</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.POLY">
+<code class="descname">POLY</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.POLY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.POLYGON">
+<code class="descname">POLYGON</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.POLYGON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.POLYGONS">
+<code class="descname">POLYGONS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.POLYS">
+<code class="descname">POLYS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.POLYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.avail">
+<em class="property">classmethod </em><code class="descname">avail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.avail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this shoreline available locally or for download?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>factor=None</em>, <em>ext=True</em>, <em>nl=True</em>, <em>xyz=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get bathymetry at coast from mean sea level at stations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>factor</em>: Multiplicative correction factor</li>
+<li><em>xyz</em>: If True, return a <code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code> instance instead of a <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> array</li>
+<li><em>ext</em>: Allow extrapolation</li>
+<li><em>nl</em>: Nonlinear interpolation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instance of sea level</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone</em>, <em>copy=True</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip to zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone</strong>: <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax]</span></code></li>
+<li><strong>copy</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make a copy of current instance,
+else simply rehandled the list of shapes.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">copy==True</span></code>, Other parameters are passed to the initialization
+of the new instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.embed">
+<em class="property">classmethod </em><code class="descname">embed</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this shoreline embeddeding this point?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.factor">
+<code class="descname">factor</code><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factor to apply to the sea level on the shoreline to convert to bathymetic “depth”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the numeric version of the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.get_factor">
+<code class="descname">get_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.get_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the associated basemap instance if set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.get_points">
+<code class="descname">get_points</code><span class="sig-paren">(</span><em>key=None</em>, <em>split=True</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.get_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the points from all the shapes as a tuple (x,y)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.get_shapes">
+<code class="descname">get_shapes</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.get_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.get_type">
+<code class="descname">get_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.get_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of shapes</p>
+<ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_SF.POINTS" title="vacumm.bathy.shorelines.GSHHS_SF.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a> = Points,</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_SF.LINES" title="vacumm.bathy.shorelines.GSHHS_SF.LINES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LINES</span></code></a> = LineStrings = PolyLines</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_SF.POLYGONS" title="vacumm.bathy.shorelines.GSHHS_SF.POLYGONS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POLYGONS</span></code></a> = Polygons</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <code class="docutils literal notranslate"><span class="pre">get_points(split=false)</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.greatest_polygon">
+<code class="descname">greatest_polygon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.greatest_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the greatest polygon (only works with polygons!)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.is_type">
+<code class="descname">is_type</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.is_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">is_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">POLYS</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>select=None</em>, <em>ax=None</em>, <em>fill=None</em>, <em>fillcolor=None</em>, <em>points=False</em>, <em>m=True</em>, <em>show=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot shapes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>select</strong>, optional: argument for selecting shapes in the list [defaul: None].</li>
+<li><strong>fill</strong>, optional: Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]</li>
+<li><strong>ax</strong>, optional: Axes instance.</li>
+<li><strong>m</strong>, optional: <a class="reference internal" href="misc.core_plot.html#vacumm.misc.core_plot.Map" title="vacumm.misc.core_plot.Map"><code class="xref py py-class docutils literal notranslate"><span class="pre">Map</span></code></a> instance
+(created with <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a>) or a <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance.</li>
+<li><strong>points</strong>, optional: Plots shapes as points.</li>
+<li><strong>lines</strong>, optional: Plot shapes as lines (if a of type <a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_SF.POINTS" title="vacumm.bathy.shorelines.GSHHS_SF.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a>).</li>
+<li><strong>fill_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>lines_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LineCollection</span></code></a> or to <a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>points_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">scatter</span></code>.</li>
+<li><strong>m_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-class docutils literal notranslate"><span class="pre">map2</span></code></a> if <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">is</span> <span class="pre">True</span></code>.</li>
+<li><strong>autoscale</strong>, optional: Autoscale axis limits?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>deg=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean “resolution” of the shapes based on the first shape</p>
+<ul>
+<li><p class="first"><strong>deg</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>if <code class="docutils literal notranslate"><span class="pre">False</span></code>: return a resolution in meters has a the median distance between points</li>
+<li>if <code class="docutils literal notranslate"><span class="pre">True</span></code>: return the median distance between points as a resolution in degrees <code class="docutils literal notranslate"><span class="pre">(xres,yres)</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.set_factor">
+<code class="descname">set_factor</code><span class="sig-paren">(</span><em>factor</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.set_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>reverse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort shapes according to their surface or length</p>
+<ul class="simple">
+<li><em>reverse</em>: If True, greater polygons are first [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.sorted">
+<code class="descname">sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.sorted" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.xy">
+<code class="descname">xy</code><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>XY coordinates as a (2,npts) array</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_SF.xyz">
+<code class="descname">xyz</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_SF.xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_SF.bathy" title="vacumm.bathy.shorelines.GSHHS_SF.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.shorelines.GSHHS">
+<em class="property">class </em><code class="descname">GSHHS</code><span class="sig-paren">(</span><em>input=None</em>, <em>clip=None</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>proj=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#GSHHS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines._CoastalBathy_</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines._PolyShapes_</span></code>, <a class="reference internal" href="misc.grid.basemap.html#vacumm.misc.grid.basemap.GSHHS_BM" title="vacumm.misc.grid.basemap.GSHHS_BM"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.grid.basemap.GSHHS_BM</span></code></a></p>
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.INPUT_MULTIPOINTS">
+<code class="descname">INPUT_MULTIPOINTS</code><em class="property"> = 8</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.INPUT_MULTIPOINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.INPUT_POINTS">
+<code class="descname">INPUT_POINTS</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.INPUT_POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.INPUT_POLYGONS">
+<code class="descname">INPUT_POLYGONS</code><em class="property"> = 5</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.INPUT_POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.INPUT_POLYLINES">
+<code class="descname">INPUT_POLYLINES</code><em class="property"> = 3</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.INPUT_POLYLINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.LINE">
+<code class="descname">LINE</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.LINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.LINES">
+<code class="descname">LINES</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.LINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.POINT">
+<code class="descname">POINT</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.POINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.POINTS">
+<code class="descname">POINTS</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.POLY">
+<code class="descname">POLY</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.POLY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.POLYGON">
+<code class="descname">POLYGON</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.POLYGON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.POLYGONS">
+<code class="descname">POLYGONS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.POLYS">
+<code class="descname">POLYS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.POLYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>factor=None</em>, <em>ext=True</em>, <em>nl=True</em>, <em>xyz=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get bathymetry at coast from mean sea level at stations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>factor</em>: Multiplicative correction factor</li>
+<li><em>xyz</em>: If True, return a <code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code> instance instead of a <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> array</li>
+<li><em>ext</em>: Allow extrapolation</li>
+<li><em>nl</em>: Nonlinear interpolation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instance of sea level</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone</em>, <em>copy=True</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip to zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone</strong>: <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax]</span></code></li>
+<li><strong>copy</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make a copy of current instance,
+else simply rehandled the list of shapes.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">copy==True</span></code>, Other parameters are passed to the initialization
+of the new instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.factor">
+<code class="descname">factor</code><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factor to apply to the sea level on the shoreline to convert to bathymetic “depth”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the numeric version of the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.get_factor">
+<code class="descname">get_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.get_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the associated basemap instance if set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.get_points">
+<code class="descname">get_points</code><span class="sig-paren">(</span><em>key=None</em>, <em>split=True</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.get_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the points from all the shapes as a tuple (x,y)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.get_shapes">
+<code class="descname">get_shapes</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.get_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.get_type">
+<code class="descname">get_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.get_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of shapes</p>
+<ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS.POINTS" title="vacumm.bathy.shorelines.GSHHS.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a> = Points,</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS.LINES" title="vacumm.bathy.shorelines.GSHHS.LINES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LINES</span></code></a> = LineStrings = PolyLines</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS.POLYGONS" title="vacumm.bathy.shorelines.GSHHS.POLYGONS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POLYGONS</span></code></a> = Polygons</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <code class="docutils literal notranslate"><span class="pre">get_points(split=false)</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.greatest_polygon">
+<code class="descname">greatest_polygon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.greatest_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the greatest polygon (only works with polygons!)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.is_type">
+<code class="descname">is_type</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.is_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">is_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">POLYS</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>select=None</em>, <em>ax=None</em>, <em>fill=None</em>, <em>fillcolor=None</em>, <em>points=False</em>, <em>m=True</em>, <em>show=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot shapes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>select</strong>, optional: argument for selecting shapes in the list [defaul: None].</li>
+<li><strong>fill</strong>, optional: Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]</li>
+<li><strong>ax</strong>, optional: Axes instance.</li>
+<li><strong>m</strong>, optional: <a class="reference internal" href="misc.core_plot.html#vacumm.misc.core_plot.Map" title="vacumm.misc.core_plot.Map"><code class="xref py py-class docutils literal notranslate"><span class="pre">Map</span></code></a> instance
+(created with <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a>) or a <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance.</li>
+<li><strong>points</strong>, optional: Plots shapes as points.</li>
+<li><strong>lines</strong>, optional: Plot shapes as lines (if a of type <a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS.POINTS" title="vacumm.bathy.shorelines.GSHHS.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a>).</li>
+<li><strong>fill_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>lines_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LineCollection</span></code></a> or to <a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>points_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">scatter</span></code>.</li>
+<li><strong>m_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-class docutils literal notranslate"><span class="pre">map2</span></code></a> if <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">is</span> <span class="pre">True</span></code>.</li>
+<li><strong>autoscale</strong>, optional: Autoscale axis limits?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>deg=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean “resolution” of the shapes based on the first shape</p>
+<ul>
+<li><p class="first"><strong>deg</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>if <code class="docutils literal notranslate"><span class="pre">False</span></code>: return a resolution in meters has a the median distance between points</li>
+<li>if <code class="docutils literal notranslate"><span class="pre">True</span></code>: return the median distance between points as a resolution in degrees <code class="docutils literal notranslate"><span class="pre">(xres,yres)</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.set_factor">
+<code class="descname">set_factor</code><span class="sig-paren">(</span><em>factor</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.set_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>reverse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort shapes according to their surface or length</p>
+<ul class="simple">
+<li><em>reverse</em>: If True, greater polygons are first [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.sorted">
+<code class="descname">sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.sorted" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS.xy">
+<code class="descname">xy</code><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>XY coordinates as a (2,npts) array</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS.xyz">
+<code class="descname">xyz</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS.xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS.bathy" title="vacumm.bathy.shorelines.GSHHS.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM">
+<em class="property">class </em><code class="descname">GSHHS_BM</code><span class="sig-paren">(</span><em>input=None</em>, <em>clip=None</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>proj=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#GSHHS_BM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="misc.io.html#vacumm.misc.io.Shapes" title="vacumm.misc.io.Shapes"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.io.Shapes</span></code></a></p>
+<p>Shoreline from USGS using Basemap</p>
+<p>Initialized with a valid Basemap instance with resolution not equal to None,
+or thanks to arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">create_mapplot.map()</span></code></p>
+<ul class="simple">
+<li><em>input</em>: Basemap or Shapes instance [default: None]</li>
+</ul>
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.INPUT_MULTIPOINTS">
+<code class="descname">INPUT_MULTIPOINTS</code><em class="property"> = 8</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.INPUT_MULTIPOINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.INPUT_POINTS">
+<code class="descname">INPUT_POINTS</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.INPUT_POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.INPUT_POLYGONS">
+<code class="descname">INPUT_POLYGONS</code><em class="property"> = 5</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.INPUT_POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.INPUT_POLYLINES">
+<code class="descname">INPUT_POLYLINES</code><em class="property"> = 3</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.INPUT_POLYLINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.LINE">
+<code class="descname">LINE</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.LINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.LINES">
+<code class="descname">LINES</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.LINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.POINT">
+<code class="descname">POINT</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.POINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.POINTS">
+<code class="descname">POINTS</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.POLY">
+<code class="descname">POLY</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.POLY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.POLYGON">
+<code class="descname">POLYGON</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.POLYGON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.POLYGONS">
+<code class="descname">POLYGONS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.POLYS">
+<code class="descname">POLYS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.POLYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone</em>, <em>copy=True</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip to zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone</strong>: <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax]</span></code></li>
+<li><strong>copy</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make a copy of current instance,
+else simply rehandled the list of shapes.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">copy==True</span></code>, Other parameters are passed to the initialization
+of the new instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the numeric version of the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the associated basemap instance if set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.get_points">
+<code class="descname">get_points</code><span class="sig-paren">(</span><em>key=None</em>, <em>split=True</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.get_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the points from all the shapes as a tuple (x,y)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.get_shapes">
+<code class="descname">get_shapes</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.get_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.get_type">
+<code class="descname">get_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.get_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of shapes</p>
+<ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_BM.POINTS" title="vacumm.bathy.shorelines.GSHHS_BM.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a> = Points,</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_BM.LINES" title="vacumm.bathy.shorelines.GSHHS_BM.LINES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LINES</span></code></a> = LineStrings = PolyLines</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_BM.POLYGONS" title="vacumm.bathy.shorelines.GSHHS_BM.POLYGONS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POLYGONS</span></code></a> = Polygons</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <code class="docutils literal notranslate"><span class="pre">get_points(split=false)</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.is_type">
+<code class="descname">is_type</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.is_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">is_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">POLYS</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>select=None</em>, <em>ax=None</em>, <em>fill=None</em>, <em>points=False</em>, <em>lines=True</em>, <em>fillcolor=None</em>, <em>color='k'</em>, <em>s=None</em>, <em>linewidth=None</em>, <em>m=None</em>, <em>show=True</em>, <em>alpha=1</em>, <em>autoscale=True</em>, <em>title=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot shapes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>select</strong>, optional: argument for selecting shapes in the list [defaul: None].</li>
+<li><strong>fill</strong>, optional: Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]</li>
+<li><strong>ax</strong>, optional: Axes instance.</li>
+<li><strong>m</strong>, optional: <a class="reference internal" href="misc.core_plot.html#vacumm.misc.core_plot.Map" title="vacumm.misc.core_plot.Map"><code class="xref py py-class docutils literal notranslate"><span class="pre">Map</span></code></a> instance
+(created with <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a>) or a <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance.</li>
+<li><strong>points</strong>, optional: Plots shapes as points.</li>
+<li><strong>lines</strong>, optional: Plot shapes as lines (if a of type <a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS_BM.POINTS" title="vacumm.bathy.shorelines.GSHHS_BM.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a>).</li>
+<li><strong>fill_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>lines_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LineCollection</span></code></a> or to <a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>points_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">scatter</span></code>.</li>
+<li><strong>m_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-class docutils literal notranslate"><span class="pre">map2</span></code></a> if <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">is</span> <span class="pre">True</span></code>.</li>
+<li><strong>autoscale</strong>, optional: Autoscale axis limits?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>deg=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean “resolution” of the shapes based on the first shape</p>
+<ul>
+<li><p class="first"><strong>deg</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>if <code class="docutils literal notranslate"><span class="pre">False</span></code>: return a resolution in meters has a the median distance between points</li>
+<li>if <code class="docutils literal notranslate"><span class="pre">True</span></code>: return the median distance between points as a resolution in degrees <code class="docutils literal notranslate"><span class="pre">(xres,yres)</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>reverse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort shapes according to their surface or length</p>
+<ul class="simple">
+<li><em>reverse</em>: If True, greater polygons are first [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.sorted">
+<code class="descname">sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.sorted" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.GSHHS_BM.xy">
+<code class="descname">xy</code><a class="headerlink" href="#vacumm.bathy.shorelines.GSHHS_BM.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>XY coordinates as a (2,npts) array</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.shorelines.ShoreLine">
+<em class="property">class </em><code class="descname">ShoreLine</code><span class="sig-paren">(</span><em>input=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#ShoreLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines._CoastalBathy_</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines._PolyShapes_</span></code>, <a class="reference internal" href="misc.io.html#vacumm.misc.io.Shapes" title="vacumm.misc.io.Shapes"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.io.Shapes</span></code></a></p>
+<p>Version of <a class="reference internal" href="misc.io.html#vacumm.misc.io.Shapes" title="vacumm.misc.io.Shapes"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.io.Shapes</span></code></a> dedicated to shorelines</p>
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.INPUT_MULTIPOINTS">
+<code class="descname">INPUT_MULTIPOINTS</code><em class="property"> = 8</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.INPUT_MULTIPOINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.INPUT_POINTS">
+<code class="descname">INPUT_POINTS</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.INPUT_POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.INPUT_POLYGONS">
+<code class="descname">INPUT_POLYGONS</code><em class="property"> = 5</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.INPUT_POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.INPUT_POLYLINES">
+<code class="descname">INPUT_POLYLINES</code><em class="property"> = 3</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.INPUT_POLYLINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.LINE">
+<code class="descname">LINE</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.LINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.LINES">
+<code class="descname">LINES</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.LINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.POINT">
+<code class="descname">POINT</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.POINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.POINTS">
+<code class="descname">POINTS</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.POLY">
+<code class="descname">POLY</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.POLY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.POLYGON">
+<code class="descname">POLYGON</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.POLYGON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.POLYGONS">
+<code class="descname">POLYGONS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.POLYS">
+<code class="descname">POLYS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.POLYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.bathy.shorelines.ShoreLine.avail">
+<em class="property">classmethod </em><code class="descname">avail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#ShoreLine.avail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.avail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this shoreline available locally or for download?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>factor=None</em>, <em>ext=True</em>, <em>nl=True</em>, <em>xyz=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get bathymetry at coast from mean sea level at stations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>factor</em>: Multiplicative correction factor</li>
+<li><em>xyz</em>: If True, return a <code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code> instance instead of a <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> array</li>
+<li><em>ext</em>: Allow extrapolation</li>
+<li><em>nl</em>: Nonlinear interpolation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instance of sea level</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone</em>, <em>copy=True</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip to zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone</strong>: <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax]</span></code></li>
+<li><strong>copy</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make a copy of current instance,
+else simply rehandled the list of shapes.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">copy==True</span></code>, Other parameters are passed to the initialization
+of the new instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.bathy.shorelines.ShoreLine.embed">
+<em class="property">classmethod </em><code class="descname">embed</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#ShoreLine.embed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this shoreline embeddeding this point?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.factor">
+<code class="descname">factor</code><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factor to apply to the sea level on the shoreline to convert to bathymetic “depth”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the numeric version of the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.get_factor">
+<code class="descname">get_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.get_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the associated basemap instance if set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.get_points">
+<code class="descname">get_points</code><span class="sig-paren">(</span><em>key=None</em>, <em>split=True</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.get_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the points from all the shapes as a tuple (x,y)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.get_shapes">
+<code class="descname">get_shapes</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.get_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.get_type">
+<code class="descname">get_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.get_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of shapes</p>
+<ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine.POINTS" title="vacumm.bathy.shorelines.ShoreLine.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a> = Points,</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine.LINES" title="vacumm.bathy.shorelines.ShoreLine.LINES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LINES</span></code></a> = LineStrings = PolyLines</li>
+<li><a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine.POLYGONS" title="vacumm.bathy.shorelines.ShoreLine.POLYGONS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POLYGONS</span></code></a> = Polygons</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <code class="docutils literal notranslate"><span class="pre">get_points(split=false)</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.greatest_polygon">
+<code class="descname">greatest_polygon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.greatest_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the greatest polygon (only works with polygons!)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.is_type">
+<code class="descname">is_type</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.is_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">is_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">POLYS</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>select=None</em>, <em>ax=None</em>, <em>fill=None</em>, <em>fillcolor=None</em>, <em>points=False</em>, <em>m=True</em>, <em>show=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot shapes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>select</strong>, optional: argument for selecting shapes in the list [defaul: None].</li>
+<li><strong>fill</strong>, optional: Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]</li>
+<li><strong>ax</strong>, optional: Axes instance.</li>
+<li><strong>m</strong>, optional: <a class="reference internal" href="misc.core_plot.html#vacumm.misc.core_plot.Map" title="vacumm.misc.core_plot.Map"><code class="xref py py-class docutils literal notranslate"><span class="pre">Map</span></code></a> instance
+(created with <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a>) or a <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance.</li>
+<li><strong>points</strong>, optional: Plots shapes as points.</li>
+<li><strong>lines</strong>, optional: Plot shapes as lines (if a of type <a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine.POINTS" title="vacumm.bathy.shorelines.ShoreLine.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a>).</li>
+<li><strong>fill_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>lines_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LineCollection</span></code></a> or to <a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>points_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">scatter</span></code>.</li>
+<li><strong>m_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-class docutils literal notranslate"><span class="pre">map2</span></code></a> if <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">is</span> <span class="pre">True</span></code>.</li>
+<li><strong>autoscale</strong>, optional: Autoscale axis limits?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>deg=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean “resolution” of the shapes based on the first shape</p>
+<ul>
+<li><p class="first"><strong>deg</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>if <code class="docutils literal notranslate"><span class="pre">False</span></code>: return a resolution in meters has a the median distance between points</li>
+<li>if <code class="docutils literal notranslate"><span class="pre">True</span></code>: return the median distance between points as a resolution in degrees <code class="docutils literal notranslate"><span class="pre">(xres,yres)</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.set_factor">
+<code class="descname">set_factor</code><span class="sig-paren">(</span><em>factor</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.set_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set factor to apply to the sea level on the shoreline to convert to bathymetic ‘depth’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>reverse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort shapes according to their surface or length</p>
+<ul class="simple">
+<li><em>reverse</em>: If True, greater polygons are first [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.sorted">
+<code class="descname">sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.sorted" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.shorelines.ShoreLine.xy">
+<code class="descname">xy</code><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>XY coordinates as a (2,npts) array</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.shorelines.ShoreLine.xyz">
+<code class="descname">xyz</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.shorelines.ShoreLine.xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.bathy.shorelines.ShoreLine.bathy" title="vacumm.bathy.shorelines.ShoreLine.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.bathy.shorelines.get_best">
+<code class="descname">get_best</code><span class="sig-paren">(</span><em>gg</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#get_best"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.get_best" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the best shoreline (<a class="reference internal" href="#vacumm.bathy.shorelines.GSHHS" title="vacumm.bathy.shorelines.GSHHS"><code class="xref py py-class docutils literal notranslate"><span class="pre">GSHHS</span></code></a> or <a class="reference internal" href="#vacumm.bathy.shorelines.Histolitt" title="vacumm.bathy.shorelines.Histolitt"><code class="xref py py-class docutils literal notranslate"><span class="pre">Histolitt</span></code></a>)
+for my grid or (lon,lat)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.bathy.shorelines.get_shoreline">
+<code class="descname">get_shoreline</code><span class="sig-paren">(</span><em>arg</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#get_shoreline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.get_shoreline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a valid ShoreLine instance according to arg.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p class="first"><strong>arg</strong>: it can be either:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">A :class`~vacumm.misc.io.Shapes` instance</p>
+</li>
+<li><p class="first">A string within the folowing lists:</p>
+<blockquote>
+<div><ul class="simple">
+<li>for GSHHS resolutions: [‘f’, ‘h’, ‘i’, ‘l’, ‘c’]</li>
+<li>for other shorelines: [‘Histolitt’, ‘EUROSION’, ‘GSHHS_SF’, ‘GSHHS’, ‘GSHHS_BM’]</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.bathy.shorelines.list_shorelines">
+<code class="descname">list_shorelines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#list_shorelines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.list_shorelines" title="Permalink to this definition">¶</a></dt>
+<dd><p>List available shorelines</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.bathy.shorelines.get_bestres">
+<code class="descname">get_bestres</code><span class="sig-paren">(</span><em>gg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/shorelines.html#get_bestres"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.shorelines.get_bestres" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the best shoreline resolution as letter, for my grid or (lon,lat)</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

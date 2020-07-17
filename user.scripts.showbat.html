@@ -1,0 +1,303 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.2.6. showbat.py – Plot the bathymetry in an area &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.showbat.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="showbat-py-plot-the-bathymetry-in-an-area">
+<span id="user-scripts-showbat"></span><h1>1.6.2.6. <strong class="program">showbat.py</strong> – Plot the bathymetry in an area<a class="headerlink" href="#showbat-py-plot-the-bathymetry-in-an-area" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"><div class="first highlight-bash notranslate"><div class="highlight"><pre><span></span>showbat.py <span class="o">[</span>options<span class="o">]</span> <span class="o">[</span>ncfile<span class="o">]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Plot the bathymetry in an area. Value are considered negative under the sea
+and positive on land.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Options:</th><td class="field-body"><dl class="first cmdoption">
+<dt id="cmdoption-showbat-py-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showbat-py-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-xmin">
+<code class="descname">--xmin</code><code class="descclassname">=XMIN</code><code class="descclassname">, </code><code class="descname">--x0</code><code class="descclassname">=XMIN</code><code class="descclassname">, </code><code class="descname">--lonmin</code><code class="descclassname">=XMIN</code><a class="headerlink" href="#cmdoption-showbat-py-xmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Min longitude</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-xmax">
+<code class="descname">--xmax</code><code class="descclassname">=XMAX</code><code class="descclassname">, </code><code class="descname">--x1</code><code class="descclassname">=XMAX</code><code class="descclassname">, </code><code class="descname">--lonmax</code><code class="descclassname">=XMAX</code><a class="headerlink" href="#cmdoption-showbat-py-xmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max longitude</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-ymin">
+<code class="descname">--ymin</code><code class="descclassname">=YMIN</code><code class="descclassname">, </code><code class="descname">--y0</code><code class="descclassname">=YMIN</code><code class="descclassname">, </code><code class="descname">--latmin</code><code class="descclassname">=YMIN</code><a class="headerlink" href="#cmdoption-showbat-py-ymin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Min latitude</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-ymax">
+<code class="descname">--ymax</code><code class="descclassname">=YMAX</code><code class="descclassname">, </code><code class="descname">--y1</code><code class="descclassname">=YMAX</code><code class="descclassname">, </code><code class="descname">--latmax</code><code class="descclassname">=YMAX</code><a class="headerlink" href="#cmdoption-showbat-py-ymax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max latitude</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-ncfile">
+<code class="descname">--ncfile</code><code class="descclassname">=NCFILE</code><a class="headerlink" href="#cmdoption-showbat-py-ncfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of netcdf file for a direct access [obsolete, use
+first argument instead]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-n">
+<code class="descname">-n</code><code class="descclassname"> NAME</code><code class="descclassname">, </code><code class="descname">--name</code><code class="descclassname">=NAME</code><a class="headerlink" href="#cmdoption-showbat-py-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of bathymetry as stored in configuration file</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-c">
+<code class="descname">-c</code><code class="descclassname"> CFGFILE</code><code class="descclassname">, </code><code class="descname">--cfgfile</code><code class="descclassname">=CFGFILE</code><a class="headerlink" href="#cmdoption-showbat-py-c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of bathymetry configuration file where to get
+info (file, names)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-varname">
+<code class="descname">--varname</code><code class="descclassname">=VARNAME</code><a class="headerlink" href="#cmdoption-showbat-py-varname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the bathymetric netcdf variable</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-lonname">
+<code class="descname">--lonname</code><code class="descclassname">=LONNAME</code><a class="headerlink" href="#cmdoption-showbat-py-lonname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of longitude axis</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-latname">
+<code class="descname">--latname</code><code class="descclassname">=LATNAME</code><a class="headerlink" href="#cmdoption-showbat-py-latname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of latitude axis</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-t">
+<code class="descname">-t</code><code class="descclassname"> TITLE</code><code class="descclassname">, </code><code class="descname">--title</code><code class="descclassname">=TITLE</code><a class="headerlink" href="#cmdoption-showbat-py-t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Title of the plot</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-land">
+<code class="descname">--land</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showbat-py-land" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do not hide land topography [default: False]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-r">
+<code class="descname">-r</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--reverse</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showbat-py-r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverse bathymetry [default: False]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-zmin">
+<code class="descname">--zmin</code><code class="descclassname">=ZMIN</code><code class="descclassname">, </code><code class="descname">--z0</code><code class="descclassname">=ZMIN</code><a class="headerlink" href="#cmdoption-showbat-py-zmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimal altitude (&lt;0 under the sea, &gt;0 on land)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-zmax">
+<code class="descname">--zmax</code><code class="descclassname">=ZMAX</code><code class="descclassname">, </code><code class="descname">--z1</code><code class="descclassname">=ZMAX</code><a class="headerlink" href="#cmdoption-showbat-py-zmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximal altitude (&lt;0 under the sea, &gt;0 on land)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-maxalt">
+<code class="descname">--maxalt</code><code class="descclassname">=MAXALT</code><a class="headerlink" href="#cmdoption-showbat-py-maxalt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max altitude to plot (positive float)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-noshadow">
+<code class="descname">--noshadow</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showbat-py-noshadow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do not plot shadow for the relief</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-clsize">
+<code class="descname">--clsize</code><code class="descclassname">=CLSIZE</code><a class="headerlink" href="#cmdoption-showbat-py-clsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of contour labels [default: 8, 0 to turn off]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-clglow">
+<code class="descname">--clglow</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showbat-py-clglow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add glow to contour labels [default: False]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-o">
+<code class="descname">-o</code><code class="descclassname"> FIGNAME</code><code class="descclassname">, </code><code class="descname">--out</code><code class="descclassname">=FIGNAME</code><a class="headerlink" href="#cmdoption-showbat-py-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of an output file where to store the plot</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-s">
+<code class="descname">-s</code><code class="descclassname"> FIGSIZE</code><code class="descclassname">, </code><code class="descname">--figsize</code><code class="descclassname">=FIGSIZE</code><a class="headerlink" href="#cmdoption-showbat-py-s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of figure in inches, like “5,6” or simply “5”</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-proj">
+<code class="descname">--proj</code><code class="descclassname">=PROJ</code><a class="headerlink" href="#cmdoption-showbat-py-proj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map projection [default: merc]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-res">
+<code class="descname">--res</code><code class="descclassname">=RES</code><a class="headerlink" href="#cmdoption-showbat-py-res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shoreline resolution [default: auto]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showbat-py-f">
+<code class="descname">-f</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--force</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showbat-py-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don’t ask question</p>
+</dd></dl>
+
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; showbat.py -s <span class="m">8</span> --clglow -o showbat1.png
+Please <span class="nb">set</span> min longitude <span class="o">(</span>or use -f or --xmin options<span class="o">)</span>: -10
+Please <span class="nb">set</span> max longitude <span class="o">(</span>or use -f or --xmax options<span class="o">)</span>: -1
+Please <span class="nb">set</span> min latitude <span class="o">(</span>or use -f or --ymin options<span class="o">)</span>: <span class="m">43</span>
+Please <span class="nb">set</span> max latitude <span class="o">(</span>or use -f or --ymax options<span class="o">)</span>: <span class="m">48</span>
+</pre></div>
+</div>
+<div class="figure" id="id1">
+<img alt="_images/showbat1.png" src="_images/showbat1.png" />
+<p class="caption"><span class="caption-text">Figure created using the first example.</span></p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; showbat.py --xmin<span class="o">=</span>-7 --xmax<span class="o">=</span>-3.5 --y0<span class="o">=</span><span class="m">46</span>.5 --y1<span class="o">=</span><span class="m">49</span> <span class="se">\</span>
+--maxdep<span class="o">=</span><span class="m">200</span> --land -s <span class="m">8</span> --clsize<span class="o">=</span><span class="m">0</span> -o showbat2.png
+</pre></div>
+</div>
+<div class="figure" id="id2">
+<img alt="_images/showbat2.png" src="_images/showbat2.png" />
+<p class="caption"><span class="caption-text">Figure created using the second example.</span></p>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="library/bathy.bathy.html#vacumm.bathy.bathy.NcGriddedBathy" title="vacumm.bathy.bathy.NcGriddedBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">NcGriddedBathy</span></code></a>, <a class="reference internal" href="library/bathy.bathy.html#vacumm.bathy.bathy.plot_bathy" title="vacumm.bathy.bathy.plot_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_bathy()</span></code></a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

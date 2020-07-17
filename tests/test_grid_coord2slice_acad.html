@@ -1,0 +1,211 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.5.2.1. test_grid_coord2slice_acad.py – Test coord2slice() &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tests/test_grid_coord2slice_acad.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="test-grid-coord2slice-acad-py-test-coord2slice">
+<h1>3.5.2.1. <strong class="program">test_grid_coord2slice_acad.py</strong> – Test <a class="reference internal" href="../library/misc.grid.misc.html#vacumm.misc.grid.misc.coord2slice" title="vacumm.misc.grid.misc.coord2slice"><code class="xref py py-func docutils literal notranslate"><span class="pre">coord2slice()</span></code></a><a class="headerlink" href="#test-grid-coord2slice-acad-py-test-coord2slice" title="Permalink to this headline">¶</a></h1>
+<div class="figure">
+<img alt="../_images/test_grid_coord2slice_acad_0.png" src="../_images/test_grid_coord2slice_acad_0.png" />
+</div>
+<div class="figure">
+<img alt="../_images/test_grid_coord2slice_acad_1.png" src="../_images/test_grid_coord2slice_acad_1.png" />
+</div>
+<div class="figure">
+<img alt="../_images/test_grid_coord2slice_acad_2.png" src="../_images/test_grid_coord2slice_acad_2.png" />
+</div>
+<div class="figure">
+<img alt="../_images/test_grid_coord2slice_acad_3.png" src="../_images/test_grid_coord2slice_acad_3.png" />
+</div>
+<div class="figure">
+<img alt="../_images/test_grid_coord2slice_acad_4.png" src="../_images/test_grid_coord2slice_acad_4.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Test :func:`~vacumm.misc.grid.misc.coord2slice`&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="p">(</span><span class="n">coord2slice</span><span class="p">,</span> <span class="n">create_grid</span><span class="p">,</span> <span class="n">create_axes2d</span><span class="p">,</span> <span class="n">meshbounds</span><span class="p">,</span>
+                  <span class="n">add_grid</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">os</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">create_lon</span> <span class="p">)</span>
+
+<span class="n">figfiles</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">figfile</span> <span class="o">=</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_</span><span class="si">%i</span><span class="s1">.png&#39;</span>
+<span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">figfiles</span><span class="p">,</span> <span class="n">figfile</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">lat</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">))</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Target=</span><span class="si">%(label)s</span><span class="s1"> / select: lon=</span><span class="si">%(lon)s</span><span class="s1">, lat=</span><span class="si">%(lat)s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">locals</span><span class="p">())</span>
+    <span class="n">add_grid</span><span class="p">((</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">))</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">xx</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">yy</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">lon</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">lon</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">lon</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">yy</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="s1">&#39;c--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">[:,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yy</span><span class="p">[:,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;c--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">lat</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">lat</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">lat</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">yy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;c--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yy</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;c--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">yy</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">yy</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">xxi</span><span class="p">,</span> <span class="n">yyi</span> <span class="o">=</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">xx</span><span class="p">[</span><span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">]</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">yy</span><span class="p">[</span><span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">]</span>
+<span class="c1">#    mask = mask[ys, xs]</span>
+    <span class="n">xxb</span><span class="p">,</span> <span class="n">yyb</span> <span class="o">=</span> <span class="n">meshbounds</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xxb</span><span class="p">,</span> <span class="n">yyb</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;faceted&#39;</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">c</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">figfiles</span><span class="p">)</span>
+    <span class="n">savefig</span> <span class="o">=</span> <span class="n">figfile</span><span class="o">%</span><span class="n">i</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">savefig</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">savefig</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">savefig</span><span class="p">)</span>
+    <span class="n">figfiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">savefig</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">show</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># %% 1D axis</span>
+<span class="n">lon1d</span> <span class="o">=</span> <span class="n">create_lon</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="k">assert</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon1d</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="s1">&#39;cc&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon1d</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="s1">&#39;cc&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon1d</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="s1">&#39;ccb&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon1d</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon1d</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon1d</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">))</span> <span class="o">==</span> <span class="kc">None</span>
+
+<span class="c1"># %% Rect grid</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10.</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mf">30.</span><span class="p">))</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">coord2slice</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="o">==</span>
+        <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="kc">None</span><span class="p">))</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">coord2slice</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span> <span class="s1">&#39;ccb&#39;</span><span class="p">))</span> <span class="o">==</span>
+        <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="kc">None</span><span class="p">))</span>
+
+<span class="c1"># %% 2D axis</span>
+<span class="n">lon2d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">lon2d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon1d</span><span class="p">[:]</span><span class="o">+</span><span class="n">i</span>
+<span class="n">lat2d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span> <span class="o">=</span> <span class="n">create_axes2d</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">)</span>
+<span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">,</span> <span class="n">lon2d</span><span class="p">,</span> <span class="s1">&#39;lon2d&#39;</span><span class="p">,</span> <span class="n">figfiles</span><span class="p">,</span> <span class="n">figfile</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">,</span> <span class="n">lon2d</span><span class="p">,</span> <span class="s1">&#39;lon2d&#39;</span><span class="p">,</span> <span class="n">figfiles</span><span class="p">,</span> <span class="n">figfile</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">,</span>  <span class="s1">&#39;lat2d&#39;</span><span class="p">,</span> <span class="n">figfiles</span><span class="p">,</span> <span class="n">figfile</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mf">26.6</span><span class="p">,</span><span class="s1">&#39;ccb&#39;</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<span class="c1"># %% Curv grid</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span> <span class="n">figfiles</span><span class="p">,</span> <span class="n">figfile</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="s1">&#39;cc&#39;</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mf">21.9</span><span class="p">,</span> <span class="mf">26.</span><span class="p">,</span> <span class="s1">&#39;cc&#39;</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span> <span class="n">figfiles</span><span class="p">,</span> <span class="n">figfile</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mf">23.4</span><span class="p">,</span> <span class="mf">23.6</span><span class="p">,</span> <span class="s1">&#39;ccb&#39;</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="s1">&#39;ccb&#39;</span><span class="p">),</span><span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="s1">&#39;ccb&#39;</span><span class="p">))</span>
+<span class="k">assert</span> <span class="n">res</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">coord2slice</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="s1">&#39;ccb&#39;</span><span class="p">),</span>
+                    <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="s1">&#39;ccb&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">==</span>
+        <span class="p">[[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

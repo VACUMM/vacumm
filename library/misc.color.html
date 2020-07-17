@@ -1,0 +1,1684 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.6. vacumm.misc.color – Colors and colormaps &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.6. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.color</span></code> – Colors and colormaps</a><ul>
+<li><a class="reference internal" href="#overview">2.3.6.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.6.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.color.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-color-colors-and-colormaps">
+<span id="lib-misc-color"></span><h1>2.3.6. <a class="reference internal" href="#module-vacumm.misc.color" title="vacumm.misc.color"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.color</span></code></a> – Colors and colormaps<a class="headerlink" href="#vacumm-misc-color-colors-and-colormaps" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.6.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.color.bistre" title="vacumm.misc.color.bistre"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bistre</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.decimaitre" title="vacumm.misc.color.decimaitre"><code class="xref py py-attr docutils literal notranslate"><span class="pre">decimaitre</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.jean_pierre" title="vacumm.misc.color.jean_pierre"><code class="xref py py-attr docutils literal notranslate"><span class="pre">jean_pierre</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.land" title="vacumm.misc.color.land"><code class="xref py py-attr docutils literal notranslate"><span class="pre">land</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.color.ocean" title="vacumm.misc.color.ocean"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ocean</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.sea" title="vacumm.misc.color.sea"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sea</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.simple_colors" title="vacumm.misc.color.simple_colors"><code class="xref py py-attr docutils literal notranslate"><span class="pre">simple_colors</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.color.RGB" title="vacumm.misc.color.RGB"><code class="xref py py-func docutils literal notranslate"><span class="pre">RGB()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.RGBA" title="vacumm.misc.color.RGBA"><code class="xref py py-func docutils literal notranslate"><span class="pre">RGBA()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.anamorph_cmap" title="vacumm.misc.color.anamorph_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">anamorph_cmap()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.auto_cmap_topo" title="vacumm.misc.color.auto_cmap_topo"><code class="xref py py-func docutils literal notranslate"><span class="pre">auto_cmap_topo()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.change_luminosity" title="vacumm.misc.color.change_luminosity"><code class="xref py py-func docutils literal notranslate"><span class="pre">change_luminosity()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.change_saturation" title="vacumm.misc.color.change_saturation"><code class="xref py py-func docutils literal notranslate"><span class="pre">change_saturation()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.change_value" title="vacumm.misc.color.change_value"><code class="xref py py-func docutils literal notranslate"><span class="pre">change_value()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_ajete" title="vacumm.misc.color.cmap_ajete"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_ajete()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_ajets" title="vacumm.misc.color.cmap_ajets"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_ajets()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_bathy" title="vacumm.misc.color.cmap_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_bathy()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_br" title="vacumm.misc.color.cmap_br"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_br()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_br2" title="vacumm.misc.color.cmap_br2"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_br2()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_bwr" title="vacumm.misc.color.cmap_bwr"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_bwr()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_bwre" title="vacumm.misc.color.cmap_bwre"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_bwre()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_chla" title="vacumm.misc.color.cmap_chla"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_chla()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_currents" title="vacumm.misc.color.cmap_currents"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_currents()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_custom" title="vacumm.misc.color.cmap_custom"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_custom()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_dynamic_cmyk_hymex" title="vacumm.misc.color.cmap_dynamic_cmyk_hymex"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_dynamic_cmyk_hymex()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_eke" title="vacumm.misc.color.cmap_eke"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_eke()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_gmt" title="vacumm.misc.color.cmap_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_gmt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_grey" title="vacumm.misc.color.cmap_grey"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_grey()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_jet" title="vacumm.misc.color.cmap_jet"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_jet()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_jete" title="vacumm.misc.color.cmap_jete"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_jete()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_jets" title="vacumm.misc.color.cmap_jets"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_jets()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_land" title="vacumm.misc.color.cmap_land"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_land()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_linear" title="vacumm.misc.color.cmap_linear"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_linear()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_magic" title="vacumm.misc.color.cmap_magic"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_magic()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_mg" title="vacumm.misc.color.cmap_mg"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_mg()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_ncview_rainbow" title="vacumm.misc.color.cmap_ncview_rainbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_ncview_rainbow()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_nice_gfdl" title="vacumm.misc.color.cmap_nice_gfdl"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_nice_gfdl()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_pe" title="vacumm.misc.color.cmap_pe"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_pe()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_previmer" title="vacumm.misc.color.cmap_previmer"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_previmer()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_previmer2" title="vacumm.misc.color.cmap_previmer2"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_previmer2()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_rainbow" title="vacumm.misc.color.cmap_rainbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rainbow()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_rainbow_sst_hymex" title="vacumm.misc.color.cmap_rainbow_sst_hymex"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rainbow_sst_hymex()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_rb" title="vacumm.misc.color.cmap_rb"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rb()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_red_tau_hymex" title="vacumm.misc.color.cmap_red_tau_hymex"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_red_tau_hymex()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_regular_steps" title="vacumm.misc.color.cmap_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_regular_steps()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_rnb2_hymex" title="vacumm.misc.color.cmap_rnb2_hymex"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rnb2_hymex()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_rs" title="vacumm.misc.color.cmap_rs"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_rs" title="vacumm.misc.color.cmap_rs"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_steps" title="vacumm.misc.color.cmap_smoothed_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_steps()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_srs" title="vacumm.misc.color.cmap_srs"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_srs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_ss" title="vacumm.misc.color.cmap_ss"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_ss()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_ssec" title="vacumm.misc.color.cmap_ssec"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_ssec()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_steps" title="vacumm.misc.color.cmap_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_steps()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_topo" title="vacumm.misc.color.cmap_topo"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_topo()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_white_centered_hymex" title="vacumm.misc.color.cmap_white_centered_hymex"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_white_centered_hymex()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_wjet" title="vacumm.misc.color.cmap_wjet"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_wjet()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_wjets" title="vacumm.misc.color.cmap_wjets"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_wjets()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_wr" title="vacumm.misc.color.cmap_wr"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_wr()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmap_wre" title="vacumm.misc.color.cmap_wre"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_wre()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmaps_gmt" title="vacumm.misc.color.cmaps_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmaps_gmt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmaps_mpl" title="vacumm.misc.color.cmaps_mpl"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmaps_mpl()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmaps_registered" title="vacumm.misc.color.cmaps_registered"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmaps_registered()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.cmaps_vacumm" title="vacumm.misc.color.cmaps_vacumm"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmaps_vacumm()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.darken" title="vacumm.misc.color.darken"><code class="xref py py-func docutils literal notranslate"><span class="pre">darken()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.desaturate" title="vacumm.misc.color.desaturate"><code class="xref py py-func docutils literal notranslate"><span class="pre">desaturate()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.discretise_cmap" title="vacumm.misc.color.discretise_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">discretise_cmap()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.get_cmap" title="vacumm.misc.color.get_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cmap()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.pastelise" title="vacumm.misc.color.pastelise"><code class="xref py py-func docutils literal notranslate"><span class="pre">pastelise()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.plot_cmap" title="vacumm.misc.color.plot_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_cmap()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.plot_cmaps" title="vacumm.misc.color.plot_cmaps"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_cmaps()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.print_cmaps_gmt" title="vacumm.misc.color.print_cmaps_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_cmaps_gmt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.rainbow" title="vacumm.misc.color.rainbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">rainbow()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.saturate" title="vacumm.misc.color.saturate"><code class="xref py py-func docutils literal notranslate"><span class="pre">saturate()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.show_cmap" title="vacumm.misc.color.show_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">show_cmap()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.to_grey" title="vacumm.misc.color.to_grey"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_grey()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.to_shadow" title="vacumm.misc.color.to_shadow"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_shadow()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.color.whiten" title="vacumm.misc.color.whiten"><code class="xref py py-func docutils literal notranslate"><span class="pre">whiten()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.color.RangedLinearSegmentedColormap" title="vacumm.misc.color.RangedLinearSegmentedColormap"><code class="xref py py-class docutils literal notranslate"><span class="pre">RangedLinearSegmentedColormap</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.color.Scalar2RGB" title="vacumm.misc.color.Scalar2RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scalar2RGB</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.color.StepsNorm" title="vacumm.misc.color.StepsNorm"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepsNorm</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.color.StepsNorm.inverse" title="vacumm.misc.color.StepsNorm.inverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">inverse()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.6.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Inheritance diagram:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="graphviz"><img src="../_images/inheritance-44481a0e5ca2c9f927e50d21369e36a4d9df9c15.png" alt="Inheritance diagram of vacumm.misc.color" usemap="#inheritance1fca5c46d3" class="inheritance graphviz" /></div>
+<map id="inheritance1fca5c46d3" name="inheritance1fca5c46d3">
+<area shape="poly" id="node3" href="#vacumm.misc.color.RangedLinearSegmentedColormap" target="_top" title=":See also:" alt="" coords="280,139,274,130,254,122,224,116,185,112,143,111,100,112,62,116,32,122,12,130,5,139,12,148,32,156,62,163,100,167,143,168,185,167,224,163,254,156,274,148"/>
+<area shape="poly" id="node5" href="#vacumm.misc.color.StepsNorm" target="_top" title="Normalize a given value to the 0&#45;1 range on a stepped linear or log scale" alt="" coords="413,139,410,130,403,122,391,116,376,112,360,111,344,112,329,116,317,122,310,130,307,139,310,148,317,156,329,163,344,167,360,168,376,167,391,163,403,156,410,148"/>
+<area shape="poly" id="node4" href="#vacumm.misc.color.Scalar2RGB" target="_top" title="Converter from scalar to colors" alt="" coords="552,34,549,25,541,17,529,11,514,7,497,5,481,7,466,11,454,17,446,25,443,34,446,43,454,51,466,57,481,61,497,63,514,61,529,57,541,51,549,43"/>
+</map><span class="target" id="module-vacumm.misc.color"></span><p>Variables and utilities about colors and color maps</p>
+<p>List of all available colormaps in matplotlib, including VACUMM colormaps
+(plotted with <a class="reference internal" href="#vacumm.misc.color.plot_cmaps" title="vacumm.misc.color.plot_cmaps"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_cmaps()</span></code></a>)</p>
+<img alt="../_images/misc-color-cmaps.png" src="../_images/misc-color-cmaps.png" />
+<dl class="function">
+<dt id="vacumm.misc.color.RGB">
+<code class="descname">RGB</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.RGB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an <em>RGB</em> tuple of three floats from 0-1.</p>
+<p><em>arg</em> can be an <em>RGB</em> or <em>RGBA</em> sequence or a string in any of
+several forms:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>a letter from the set ‘rgbcmykw’</li>
+<li>a hex color string, like ‘#00FFFF’</li>
+<li>a standard name, like ‘aqua’</li>
+<li>a string representation of a float, like ‘0.4’,
+indicating gray on a 0-1 scale</li>
+</ol>
+</div></blockquote>
+<p>if <em>arg</em> is <em>RGBA</em>, the <em>A</em> will simply be discarded.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.RGBA">
+<code class="descname">RGBA</code><span class="sig-paren">(</span><em>arg</em>, <em>alpha=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.RGBA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an <em>RGBA</em> tuple of four floats from 0-1.</p>
+<p>For acceptable values of <em>arg</em>, see <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_rgb()</span></code>.
+In addition, if <em>arg</em> is “none” (case-insensitive),
+then (0,0,0,0) will be returned.
+If <em>arg</em> is an <em>RGBA</em> sequence and <em>alpha</em> is not <em>None</em>,
+<em>alpha</em> will replace the original <em>A</em>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.color.RangedLinearSegmentedColormap">
+<em class="property">class </em><code class="descname">RangedLinearSegmentedColormap</code><span class="sig-paren">(</span><em>name</em>, <em>segmentdata</em>, <em>N=256</em>, <em>start=0.0</em>, <em>stop=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#RangedLinearSegmentedColormap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.RangedLinearSegmentedColormap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.Colormap.html#matplotlib.colors.Colormap" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.colors.Colormap</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.LinearSegmentedColormap.html#matplotlib.colors.LinearSegmentedColormap" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.colors.LinearSegmentedColormap</span></code></a></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.color.RangedLinearSegmentedColormap.is_gray">
+<code class="descname">is_gray</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.RangedLinearSegmentedColormap.is_gray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.color.RangedLinearSegmentedColormap.reversed">
+<code class="descname">reversed</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.RangedLinearSegmentedColormap.reversed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a reversed instance of the Colormap.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Function not implemented for base class.</p>
+</div>
+<dl class="docutils">
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>The name for the reversed colormap. If it’s None the
+name will be the name of the parent colormap + “_r”.</dd>
+</dl>
+<p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">LinearSegmentedColormap.reversed()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ListedColormap.reversed()</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.color.RangedLinearSegmentedColormap.set_bad">
+<code class="descname">set_bad</code><span class="sig-paren">(</span><em>color=u'k'</em>, <em>alpha=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.RangedLinearSegmentedColormap.set_bad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set color to be used for masked values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.color.RangedLinearSegmentedColormap.set_over">
+<code class="descname">set_over</code><span class="sig-paren">(</span><em>color=u'k'</em>, <em>alpha=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.RangedLinearSegmentedColormap.set_over" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set color to be used for high out-of-range values.
+Requires norm.clip = False</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.color.RangedLinearSegmentedColormap.set_under">
+<code class="descname">set_under</code><span class="sig-paren">(</span><em>color=u'k'</em>, <em>alpha=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.RangedLinearSegmentedColormap.set_under" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set color to be used for low out-of-range values.
+Requires norm.clip = False</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.color.Scalar2RGB">
+<em class="property">class </em><code class="descname">Scalar2RGB</code><span class="sig-paren">(</span><em>vminmax</em>, <em>cmap=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#Scalar2RGB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.Scalar2RGB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Converter from scalar to colors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>vminmax</strong>: Either an array or a tuple of (min,max).</li>
+<li><strong>cmap</strong>, optional: A colormap.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap_srs</span><span class="p">([</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Scalar2RGB</span><span class="p">((</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">20.6</span><span class="p">),</span> <span class="n">cmap</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">c</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="mf">20.6</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="go">(0.0,0.0,1.0,0.5) (0.38,0.0,0.61) (1.0,0.0,0.0) (1.0,0.0,0.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">c</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+<span class="go">[[ 0.          0.          1.        ]</span>
+<span class="go">[ 0.38627451  0.          0.61372549]]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.color.StepsNorm">
+<em class="property">class </em><code class="descname">StepsNorm</code><span class="sig-paren">(</span><em>levels</em>, <em>log=False</em>, <em>masked=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#StepsNorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.StepsNorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.Normalize.html#matplotlib.colors.Normalize" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.colors.Normalize</span></code></a></p>
+<p>Normalize a given value to the 0-1 range on a stepped linear or log scale</p>
+<p>See tutorial <a class="reference internal" href="../tutorials/misc.plot.advanced.stepsnorm.html#user-tut-misc-plot-advanced-stepsnorm"><span class="std std-ref">Utilisation d’une palette à paliers irréguliers</span></a></p>
+<dl class="method">
+<dt id="vacumm.misc.color.StepsNorm.autoscale">
+<code class="descname">autoscale</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.StepsNorm.autoscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set <em>vmin</em>, <em>vmax</em> to min, max of <em>A</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.color.StepsNorm.autoscale_None">
+<code class="descname">autoscale_None</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.StepsNorm.autoscale_None" title="Permalink to this definition">¶</a></dt>
+<dd><p>autoscale only None-valued vmin or vmax.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.color.StepsNorm.inverse">
+<code class="descname">inverse</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#StepsNorm.inverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.StepsNorm.inverse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="vacumm.misc.color.StepsNorm.process_value">
+<em class="property">static </em><code class="descname">process_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#StepsNorm.process_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.StepsNorm.process_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Homogenize the input <em>value</em> for easy and efficient normalization.</p>
+<p><em>value</em> can be a scalar or sequence.</p>
+<p>Returns <em>result</em>, <em>is_scalar</em>, where <em>result</em> is a
+masked array matching <em>value</em>.  Float dtypes are preserved;
+integer types with two bytes or smaller are converted to
+N.float32, and larger types are converted to N.float.
+Preserving float32 when possible, and using in-place operations,
+can greatly improve speed for large arrays.</p>
+<p>Experimental; we may want to add an option to force the
+use of float32.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.color.StepsNorm.scaled">
+<code class="descname">scaled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.color.StepsNorm.scaled" title="Permalink to this definition">¶</a></dt>
+<dd><p>return true if vmin and vmax set</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.anamorph_cmap">
+<code class="descname">anamorph_cmap</code><span class="sig-paren">(</span><em>cmap</em>, <em>transform</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#anamorph_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.anamorph_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tranform a colormap with anamorphim</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmap</strong>: Colormap.</li>
+<li><strong>transform</strong>: Sorted array of float between 0 and 1.</li>
+<li><strong>name</strong>: name of the colormap</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.auto_cmap_topo">
+<code class="descname">auto_cmap_topo</code><span class="sig-paren">(</span><em>varminmax=(0.0</em>, <em>1.0)</em>, <em>gzoom=1.0</em>, <em>xzoom=1.0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#auto_cmap_topo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.auto_cmap_topo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjusted <a class="reference internal" href="#vacumm.misc.color.cmap_topo" title="vacumm.misc.color.cmap_topo"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_topo()</span></code></a> colormap so that altitude 0 fall on center of full colormap by defaut</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>varminmax</strong>: Define the min and max of topo ; it can be either :</p>
+<blockquote>
+<div><ul class="simple">
+<li>a topo variable (array) from which min and max are computed</li>
+<li>a tuple of (min, max) fo topo</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>gzoom</strong>, optional: Global zoom in the colormap (&gt;1.)</p>
+</li>
+<li><p class="first"><strong>xzoom</strong>, optional: Zoom out</p>
+<blockquote>
+<div><ul class="simple">
+<li>the land colormap if more ocean,</li>
+<li>the ocean colormap if more land.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.color.bistre">
+<code class="descname">bistre</code><em class="property"> = (0.9609375, 0.87109375, 0.703125)</em><a class="headerlink" href="#vacumm.misc.color.bistre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Land color</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.change_luminosity">
+<code class="descname">change_luminosity</code><span class="sig-paren">(</span><em>c</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#change_luminosity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.change_luminosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the luminosity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>c</strong>: color</li>
+<li><strong>f</strong>: Factor between 0 and 1 with null impact at 0.5</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.change_saturation">
+<code class="descname">change_saturation</code><span class="sig-paren">(</span><em>c</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#change_saturation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.change_saturation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the saturation in HSV mode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>c</strong>: Color</li>
+<li><strong>f</strong>: Factor between 0 and 1. Null effect at 0.5.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.change_value">
+<code class="descname">change_value</code><span class="sig-paren">(</span><em>c</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#change_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.change_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change de value in HSV mode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>c</strong>: Color</li>
+<li><strong>f</strong>: Factor between 0 and 1. Null effect at 0.5.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_ajete">
+<code class="descname">cmap_ajete</code><span class="sig-paren">(</span><em>w=0.02</em>, <em>name='vacumm_ajete'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_ajete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_ajete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jet colormap with white at center and extremes, for anomaly plots</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_ajete.png" class="first last" src="../_images/misc-color-vacumm_ajete.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_ajets">
+<code class="descname">cmap_ajets</code><span class="sig-paren">(</span><em>wcol='w'</em>, <em>name='vacumm_ajets'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_ajets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_ajets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jet colormap with smoothed steps and white at center (for anomalies)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>wcol</strong>, optional: color of “white”</li>
+<li>other options are passed to <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_ajets.png" class="first last" src="../_images/misc-color-vacumm_ajets.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_bathy">
+<code class="descname">cmap_bathy</code><span class="sig-paren">(</span><em>start=0.0</em>, <em>stop=1.0</em>, <em>name='vacumm_bathy'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_bathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap for bathymetry maps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_bathy.png" class="first last" src="../_images/misc-color-vacumm_bathy.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_br">
+<code class="descname">cmap_br</code><span class="sig-paren">(</span><em>sep=0.5</em>, <em>name='vacumm_br'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_br"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_br" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blue-&gt;red colormap</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>sep</strong>, optional: relative position of the blue/red transition in the map [default: 0.5]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_br.png" class="first last" src="../_images/misc-color-vacumm_br.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_br2">
+<code class="descname">cmap_br2</code><span class="sig-paren">(</span><em>sep=0.5</em>, <em>white=0.7</em>, <em>name='vacumm_br2'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_br2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_br2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blue-&gt;light blue|light red-&gt; red</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>sep</strong>, optional: relative position of the blue/red transition in the map [default: 0.5]</li>
+<li><strong>white</strong>, optional: Strenght of the whitening (see <a class="reference internal" href="#vacumm.misc.color.whiten" title="vacumm.misc.color.whiten"><code class="xref py py-func docutils literal notranslate"><span class="pre">whiten()</span></code></a>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_br.png" class="first last" src="../_images/misc-color-vacumm_br.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_bwr">
+<code class="descname">cmap_bwr</code><span class="sig-paren">(</span><em>wpos=0.5</em>, <em>wcol='w'</em>, <em>name='vacumm_bwr'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_bwr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_bwr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blue-&gt;white-&gt;red colormap</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>white</em>: relative position of white color in the map [default: 0.5]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_bwr.png" class="first last" src="../_images/misc-color-vacumm_bwr.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_bwre">
+<code class="descname">cmap_bwre</code><span class="sig-paren">(</span><em>wpos=0.5</em>, <em>gap=0.1</em>, <em>wcol='w'</em>, <em>name='vacumm_bwre'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_bwre"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_bwre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a violet-&gt;blue-&gt;white-&gt;red colormap-&gt;yellow</p>
+<ul class="simple">
+<li><strong>white</strong>, optional: relative position of white color in the map [default: 0.5]</li>
+<li><strong>gap</strong>, optional: Relative width of the pure central white gap [default: 0.1]</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_bwre.png" class="first last" src="../_images/misc-color-vacumm_bwre.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_chla">
+<code class="descname">cmap_chla</code><span class="sig-paren">(</span><em>name='vacumm_chla'</em>, <em>smoothed=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_chla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_chla" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap for Chlorophyll A</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_chla.png" class="first" src="../_images/misc-color-vacumm_chla.png" />
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Source:</th><td class="field-body"><p class="first last">IDL code from F. Gohin.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_currents">
+<code class="descname">cmap_currents</code><span class="sig-paren">(</span><em>name='vacumm_currents'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_currents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_currents" title="Permalink to this definition">¶</a></dt>
+<dd><p>A colormap for displaying currents</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_custom">
+<code class="descname">cmap_custom</code><span class="sig-paren">(</span><em>colors</em>, <em>name='mycmap'</em>, <em>ncol=256</em>, <em>ranged=False</em>, <em>register=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_custom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_custom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick colormap creation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>colors</strong>: Like [(color1, position1),(color2, position2), etc…] or
+dict(red=((pos1,r1a,r1b), (pos2,r2a,r2b)),etc…)</li>
+<li><strong>ncol/N</strong>: Discretization.</li>
+<li><strong>register</strong>: Register the colormap into matplotlib to be accessible with its name?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_dynamic_cmyk_hymex">
+<code class="descname">cmap_dynamic_cmyk_hymex</code><span class="sig-paren">(</span><em>name='vacumm_dynamic_cmyk_hymex'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_dynamic_cmyk_hymex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_dynamic_cmyk_hymex" title="Permalink to this definition">¶</a></dt>
+<dd><p>DYNAMIC_CMYK Colormap for HYMEX</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This colormap is registered in matplotlib under the name “vacumm_dynamic_cmyk_hymex”.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_dynamic_cmyk_hymex.png" class="first last" src="../_images/misc-color-vacumm_dynamic_cmyk_hymex.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_eke">
+<code class="descname">cmap_eke</code><span class="sig-paren">(</span><em>name='vacumm_eke'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_eke"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_eke" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap for Eddy Kinetic Energy (from Barnier et al., 2006)</p>
+<p>Added by G. Charria</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_gmt">
+<code class="descname">cmap_gmt</code><span class="sig-paren">(</span><em>name</em>, <em>register=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_gmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_gmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a colormap from GMT</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong>: GMT colormap name OR .cpt file name.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.cmaps_gmt" title="vacumm.misc.color.cmaps_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmaps_gmt()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.print_cmaps_gmt" title="vacumm.misc.color.print_cmaps_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_cmaps_gmt()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.get_cmap" title="vacumm.misc.color.get_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cmap()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_grey">
+<code class="descname">cmap_grey</code><span class="sig-paren">(</span><em>start=0</em>, <em>end=1.0</em>, <em>name='vacumm_grey'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_grey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_grey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grey colormap from position <code class="docutils literal notranslate"><span class="pre">start</span></code> to position <code class="docutils literal notranslate"><span class="pre">end</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_grey.png" class="first last" src="../_images/misc-color-vacumm_grey.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_jet">
+<code class="descname">cmap_jet</code><span class="sig-paren">(</span><em>smoothed=False</em>, <em>name='vacumm_jet'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_jet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_jet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jet colormap</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_jete">
+<code class="descname">cmap_jete</code><span class="sig-paren">(</span><em>name='vacumm_jete'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_jete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_jete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jet colormap with extremes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_jete.png" class="first last" src="../_images/misc-color-vacumm_jete.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_jets">
+<code class="descname">cmap_jets</code><span class="sig-paren">(</span><em>name='vacumm_jets'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_jets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_jets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jet colormap with smoothed steps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><p class="first">Passed to <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Samples:</th><td class="field-body"><ul class="first">
+<li><img alt="../_images/misc-color-vacumm_jets.png" class="first" src="../_images/misc-color-vacumm_jets.png" />
+</li>
+<li><img alt="../_images/misc-color-vacumm_jets+60.png" class="first" src="../_images/misc-color-vacumm_jets+60.png" />
+</li>
+<li><img alt="../_images/misc-color-vacumm_jets-60.png" class="first" src="../_images/misc-color-vacumm_jets-60.png" />
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_land">
+<code class="descname">cmap_land</code><span class="sig-paren">(</span><em>start=0.0</em>, <em>stop=1.0</em>, <em>name='vacumm_land'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_land"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_land" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap for land maps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>start/stop</strong>, optional: Positions for a zoom in colormap.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_land.png" class="first last" src="../_images/misc-color-vacumm_land.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_linear">
+<code class="descname">cmap_linear</code><span class="sig-paren">(</span><em>c</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_linear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_linear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic linear map between colors</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_magic">
+<code class="descname">cmap_magic</code><span class="sig-paren">(</span><em>n=None</em>, <em>stretch=0.4</em>, <em>mode='normal'</em>, <em>white='.95'</em>, <em>name='vacumm_magic'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_magic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_magic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Magic rainbow colormap</p>
+<p>Based upon <a class="reference internal" href="#vacumm.misc.color.cmap_rainbow" title="vacumm.misc.color.cmap_rainbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rainbow()</span></code></a> with specificities:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">n</span></code> may be for example an array of levels.</li>
+<li><code class="docutils literal notranslate"><span class="pre">smoothed</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.</li>
+<li><code class="docutils literal notranslate"><span class="pre">stretch</span></code> is set negative by default (<code class="docutils literal notranslate"><span class="pre">-attenuation</span></code>).</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong>, optional: Number of colors used or
+object with a length (like an array of levels).</li>
+<li>Extra keywords are passed to <a class="reference internal" href="#vacumm.misc.color.rainbow" title="vacumm.misc.color.rainbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">rainbow()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ssta</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">2.6</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap_magic</span><span class="p">(</span><span class="n">ssta</span><span class="p">,</span> <span class="n">anomaly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap_magic</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ssta</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Samples:</th><td class="field-body"><ul class="first last">
+<li><img alt="../_images/misc-color-vacumm_magic.png" class="first" src="../_images/misc-color-vacumm_magic.png" />
+</li>
+<li><img alt="../_images/misc-color-vacumm_magic-n10.png" class="first" src="../_images/misc-color-vacumm_magic-n10.png" />
+</li>
+<li><img alt="../_images/misc-color-vacumm_magic-anom.png" class="first" src="../_images/misc-color-vacumm_magic-anom.png" />
+</li>
+<li><img alt="../_images/misc-color-vacumm_magic-pos.png" class="first" src="../_images/misc-color-vacumm_magic-pos.png" />
+</li>
+<li><img alt="../_images/misc-color-vacumm_magic-neg.png" class="first" src="../_images/misc-color-vacumm_magic-neg.png" />
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_mg">
+<code class="descname">cmap_mg</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_mg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_mg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.color.cmap_magic" title="vacumm.misc.color.cmap_magic"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_magic()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_ncview_rainbow">
+<code class="descname">cmap_ncview_rainbow</code><span class="sig-paren">(</span><em>name='vacumm_ncview_rainbow'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_ncview_rainbow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_ncview_rainbow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap Rainbow from Ncview (<a class="reference external" href="http://fossies.org/dox/ncview-2.1.2/colormaps__rainbow_8h_source.html">http://fossies.org/dox/ncview-2.1.2/colormaps__rainbow_8h_source.html</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Source:</th><td class="field-body"><a class="reference external" href="http://fossies.org/dox/ncview-2.1.2/colormaps__rainbow_8h_source.html">http://fossies.org/dox/ncview-2.1.2/colormaps__rainbow_8h_source.html</a> (ncview-2.1.2, G. Charria)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_nice_gfdl">
+<code class="descname">cmap_nice_gfdl</code><span class="sig-paren">(</span><em>name='vacumm_nice_gfdl'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_nice_gfdl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_nice_gfdl" title="Permalink to this definition">¶</a></dt>
+<dd><p>GFDL colormap (<a class="reference external" href="http://www.gfdl.noaa.gov/visualization">http://www.gfdl.noaa.gov/visualization</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Source:</th><td class="field-body"><a class="reference external" href="http://www.ncl.ucar.edu/Document/Graphics/ColorTables/nice_gfdl.shtml">http://www.ncl.ucar.edu/Document/Graphics/ColorTables/nice_gfdl.shtml</a> (included by G. Charria)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_pe">
+<code class="descname">cmap_pe</code><span class="sig-paren">(</span><em>red=0.8</em>, <em>name='vacumm_pe'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_pe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_pe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colomap for positive extremes (white-&gt;grey-&gt;red)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_pe.png" class="first last" src="../_images/misc-color-vacumm_pe.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_previmer">
+<code class="descname">cmap_previmer</code><span class="sig-paren">(</span><em>name='vacumm_previmer'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_previmer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_previmer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap from PREVIMER Website (<a class="reference external" href="http://www.previmer.org">http://www.previmer.org</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_previmer.png" class="first" src="../_images/misc-color-vacumm_previmer.png" />
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Source:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://www.previmer.org">http://www.previmer.org</a> (F. Lecornu, G. Charria)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_previmer2">
+<code class="descname">cmap_previmer2</code><span class="sig-paren">(</span><em>name='vacumm_previmer2'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_previmer2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_previmer2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap from PREVIMER Website (<a class="reference external" href="http://www.previmer.org">http://www.previmer.org</a>)</p>
+<p>Same as <a class="reference internal" href="#vacumm.misc.color.cmap_previmer" title="vacumm.misc.color.cmap_previmer"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_previmer()</span></code></a> but extremes are used for
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">set_under()</span></code> and :meth`set_over`.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_previmer.png" class="first" src="../_images/misc-color-vacumm_previmer.png" />
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Source:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://www.previmer.org">http://www.previmer.org</a> (F. Lecornu, G. Charria)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_rainbow">
+<code class="descname">cmap_rainbow</code><span class="sig-paren">(</span><em>n=None</em>, <em>name='vacumm_rainbow'</em>, <em>smoothed=True</em>, <em>mode='auto'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_rainbow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_rainbow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rainbow colormap</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong>, optional: Number of colors used (keyword passed to <a class="reference internal" href="#vacumm.misc.color.rainbow" title="vacumm.misc.color.rainbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">rainbow()</span></code></a>).</li>
+<li><strong>stretcher</strong>, <strong>first</strong>, <strong>last</strong>, <strong>middle</strong>, optional: See <a class="reference internal" href="#vacumm.misc.color.rainbow" title="vacumm.misc.color.rainbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">rainbow()</span></code></a>.</li>
+<li><strong>rainbow_&lt;param&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to func:<cite>rainbow</cite></li>
+<li>Extra keywords are passed to <a class="reference internal" href="#vacumm.misc.color.cmap_rs" title="vacumm.misc.color.cmap_rs"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rs()</span></code></a> or <a class="reference internal" href="#vacumm.misc.color.cmap_srs" title="vacumm.misc.color.cmap_srs"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_srs()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap_magic</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="s1">&#39;.5&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap_magic</span><span class="p">([</span><span class="mf">5.</span><span class="p">,</span><span class="mf">6.</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span> <span class="n">stretcher</span><span class="o">=</span><span class="s1">&#39;reduced_green&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_rainbow.png" class="first last" src="../_images/misc-color-vacumm_rainbow.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_rainbow_sst_hymex">
+<code class="descname">cmap_rainbow_sst_hymex</code><span class="sig-paren">(</span><em>name='vacumm_rainbow_sst_hymex'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_rainbow_sst_hymex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_rainbow_sst_hymex" title="Permalink to this definition">¶</a></dt>
+<dd><p>RAINBOW_SST Colormap for HYMEX</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This colormap is registered in matplotlib under the name “vacumm_rainbow_sst_hymex”.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_rainbow_sst_hymex.png" class="first last" src="../_images/misc-color-vacumm_rainbow_sst_hymex.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_rb">
+<code class="descname">cmap_rb</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_rb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_rb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.color.cmap_rainbow" title="vacumm.misc.color.cmap_rainbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_rainbow()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_red_tau_hymex">
+<code class="descname">cmap_red_tau_hymex</code><span class="sig-paren">(</span><em>name='vacumm_red_tau_hymex'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_red_tau_hymex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_red_tau_hymex" title="Permalink to this definition">¶</a></dt>
+<dd><p>RNB2 Colormap for HYMEX</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This colormap is registered in matplotlib under the name “vacumm_red_tau_hymex”.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_red_tau_hymex.png" class="first last" src="../_images/misc-color-vacumm_red_tau_hymex.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_regular_steps">
+<code class="descname">cmap_regular_steps</code><span class="sig-paren">(</span><em>colors</em>, <em>steptype='stair'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_regular_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_regular_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap by regular steps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>cols</strong>: [col1,col2,…]</li>
+<li><strong>stretch</strong>, optional: Color darkening (&lt;0) or whitening within steps [default: -.6]</li>
+<li><strong>steptype</strong>, optional: ‘center’, ‘stair’ or ‘bounds’ [default: ‘center’]</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.color.cmap_steps" title="vacumm.misc.color.cmap_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_steps()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.cmap_steps" title="vacumm.misc.color.cmap_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_steps()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_steps" title="vacumm.misc.color.cmap_smoothed_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_steps()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_rnb2_hymex">
+<code class="descname">cmap_rnb2_hymex</code><span class="sig-paren">(</span><em>name='vacumm_rnb2_hymex'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_rnb2_hymex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_rnb2_hymex" title="Permalink to this definition">¶</a></dt>
+<dd><p>RNB2 Colormap for HYMEX</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This colormap is registered in matplotlib under the name “vacumm_rnb2_hymex”.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_rnb2_hymex.png" class="first last" src="../_images/misc-color-vacumm_rnb2_hymex.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_rs">
+<code class="descname">cmap_rs</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_rs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_rs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.color.cmap_regular_steps" title="vacumm.misc.color.cmap_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_regular_steps()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descname">cmap_rs</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_rs"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.color.cmap_regular_steps" title="vacumm.misc.color.cmap_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_regular_steps()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_smoothed_regular_steps">
+<code class="descname">cmap_smoothed_regular_steps</code><span class="sig-paren">(</span><em>colors</em>, <em>steptype='center'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_smoothed_regular_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smoothed regular steps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>colors</strong>: [(r1,g1,b1),…]</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_steps" title="vacumm.misc.color.cmap_smoothed_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_steps()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.cmap_steps" title="vacumm.misc.color.cmap_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_steps()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_steps" title="vacumm.misc.color.cmap_smoothed_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_steps()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_regular_steps" title="vacumm.misc.color.cmap_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_regular_steps()</span></code></a>
+(<code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_regular_jets()</span></code> for an example)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_smoothed_steps">
+<code class="descname">cmap_smoothed_steps</code><span class="sig-paren">(</span><em>colors</em>, <em>stretch=None</em>, <em>rstretch=0</em>, <em>lstretch=0</em>, <em>name='vacumm_css'</em>, <em>asdict=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_smoothed_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_smoothed_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smoothed steps</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>colors</strong>, optional: Central positions for each colors [(col1,pos1),…]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.color.cmap_steps" title="vacumm.misc.color.cmap_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_steps()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_regular_steps" title="vacumm.misc.color.cmap_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_regular_steps()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_srs">
+<code class="descname">cmap_srs</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_srs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_srs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_ss">
+<code class="descname">cmap_ss</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_ss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_ss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_steps" title="vacumm.misc.color.cmap_smoothed_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_steps()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_ssec">
+<code class="descname">cmap_ssec</code><span class="sig-paren">(</span><em>name='vacumm_ssec'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_ssec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_ssec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap from Ncview (<a class="reference external" href="http://fossies.org/dox/ncview-2.1.2/colormaps__ssec_8h_source.html">http://fossies.org/dox/ncview-2.1.2/colormaps__ssec_8h_source.html</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Source:</th><td class="field-body"><a class="reference external" href="http://fossies.org/dox/ncview-2.1.2/colormaps__ssec_8h_source.html">http://fossies.org/dox/ncview-2.1.2/colormaps__ssec_8h_source.html</a> (ncview-2.1.2, G. Charria)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_steps">
+<code class="descname">cmap_steps</code><span class="sig-paren">(</span><em>cols</em>, <em>stretch=None</em>, <em>lstretch=0.0</em>, <em>rstretch=0.0</em>, <em>keepc=None</em>, <em>name='cmap_steps'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap by steps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cols</strong>: [(col1,pos1),(col2,pos2),…]</li>
+<li><strong>lstretch</strong>, optional: Color darkening (&lt;0) or whitening at start of steps (left)</li>
+<li><strong>rstretch</strong>, optional: Same but at end of steps (right)</li>
+<li><strong>keepc</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">lstretch</span></code> and <code class="docutils literal notranslate"><span class="pre">rstretch</span></code> are both different from zero,
+it keeps center of steps intact, else it becomes a mean
+of left and right.</li>
+<li><strong>ncol/N</strong>: Discretization.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>.See also:</p>
+<blockquote>
+<div><a class="reference internal" href="#vacumm.misc.color.cmap_regular_steps" title="vacumm.misc.color.cmap_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_regular_steps()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_steps" title="vacumm.misc.color.cmap_smoothed_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_steps()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_topo">
+<code class="descname">cmap_topo</code><span class="sig-paren">(</span><em>start=0.0</em>, <em>stop=1.0</em>, <em>name='vacumm_topo'</em>, <em>zero=0.5</em>, <em>over='k'</em>, <em>under='#eeeeff'</em>, <em>bad='0.5'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_topo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_topo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colormap for bathy+land maps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>start/stop</strong>, optional: Positions for a zoom in colormap.</li>
+<li><strong>zero</strong>, optional: Position of 0-depth color.</li>
+<li><strong>over</strong>, optional: Color for values over maximal range
+(see <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.Colormap.html#matplotlib.colors.Colormap.set_over" title="(in Matplotlib v3.0.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_over()</span></code></a>).</li>
+<li><strong>under</strong>, optional: Color for values under maximal range
+(see <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.Colormap.html#matplotlib.colors.Colormap.set_under" title="(in Matplotlib v3.0.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_under()</span></code></a>).</li>
+<li><strong>bad</strong>, optional: Color for bad values
+(see <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.Colormap.html#matplotlib.colors.Colormap.set_bad" title="(in Matplotlib v3.0.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_bad()</span></code></a>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_topo.png" class="first" src="../_images/misc-color-vacumm_topo.png" />
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.cmap_bathy" title="vacumm.misc.color.cmap_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_bathy()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmap_land" title="vacumm.misc.color.cmap_land"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_land()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_white_centered_hymex">
+<code class="descname">cmap_white_centered_hymex</code><span class="sig-paren">(</span><em>name='vacumm_white_centered_hymex'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_white_centered_hymex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_white_centered_hymex" title="Permalink to this definition">¶</a></dt>
+<dd><p>RNB2 Colormap for HYMEX</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This colormap is registered in matplotlib under the name “vacumm_white_centered_hymex”.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_white_centered_hymex.png" class="first last" src="../_images/misc-color-vacumm_white_centered_hymex.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_wjet">
+<code class="descname">cmap_wjet</code><span class="sig-paren">(</span><em>wcol='.95'</em>, <em>smoothed=True</em>, <em>name='vacumm_wjet'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_wjet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_wjet" title="Permalink to this definition">¶</a></dt>
+<dd><p>jet colormap with white (or another color) at beginning</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_wjet.png" class="first last" src="../_images/misc-color-vacumm_wjet.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_wjets">
+<code class="descname">cmap_wjets</code><span class="sig-paren">(</span><em>wcol='.95'</em>, <em>name='vacumm_wjets'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_wjets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_wjets" title="Permalink to this definition">¶</a></dt>
+<dd><p>White jet colormap with smoothed steps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>wcol</strong>, optional: color of “white”</li>
+<li>other options are passed to <a class="reference internal" href="#vacumm.misc.color.cmap_smoothed_regular_steps" title="vacumm.misc.color.cmap_smoothed_regular_steps"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_smoothed_regular_steps()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_wjets.png" class="first last" src="../_images/misc-color-vacumm_wjets.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_wr">
+<code class="descname">cmap_wr</code><span class="sig-paren">(</span><em>name='vacumm_wr'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_wr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_wr" title="Permalink to this definition">¶</a></dt>
+<dd><p>White-&gt;red colormap</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_wr.png" class="first last" src="../_images/misc-color-vacumm_wr.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmap_wre">
+<code class="descname">cmap_wre</code><span class="sig-paren">(</span><em>name='vacumm_wre'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmap_wre"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmap_wre" title="Permalink to this definition">¶</a></dt>
+<dd><p>White-&gt;red-&gt;yellow colormap for positive extremes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sample:</th><td class="field-body"><img alt="../_images/misc-color-vacumm_wre.png" class="first last" src="../_images/misc-color-vacumm_wre.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmaps_gmt">
+<code class="descname">cmaps_gmt</code><span class="sig-paren">(</span><em>names=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmaps_gmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmaps_gmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>List available GMT colormaps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.color.cmap_gmt" title="vacumm.misc.color.cmap_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_gmt()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.print_cmaps_gmt" title="vacumm.misc.color.print_cmaps_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_cmaps_gmt()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.get_cmap" title="vacumm.misc.color.get_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cmap()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmaps_mpl">
+<code class="descname">cmaps_mpl</code><span class="sig-paren">(</span><em>vacumm=True</em>, <em>gmt=True</em>, <em>names=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmaps_mpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmaps_mpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>List available registered colormaps available directly from Matplotlib</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.color.get_cmap" title="vacumm.misc.color.get_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cmap()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmaps_registered">
+<code class="descname">cmaps_registered</code><span class="sig-paren">(</span><em>include=None</em>, <em>exclude=None</em>, <em>names=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmaps_registered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmaps_registered" title="Permalink to this definition">¶</a></dt>
+<dd><p>List colormap registered in matplotlib</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>include</strong>: Include only colormaps that have one of these prefixes.</li>
+<li><strong>include</strong>: Exclude colormaps that have one of these prefixes.</li>
+<li><strong>names</strong>: Return names OR colormaps.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.cmaps_vacumm">
+<code class="descname">cmaps_vacumm</code><span class="sig-paren">(</span><em>names=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#cmaps_vacumm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.cmaps_vacumm" title="Permalink to this definition">¶</a></dt>
+<dd><p>List available VACUMM colormaps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.color.get_cmap" title="vacumm.misc.color.get_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cmap()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.darken">
+<code class="descname">darken</code><span class="sig-paren">(</span><em>c</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#darken"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.darken" title="Permalink to this definition">¶</a></dt>
+<dd><p>Darken a color ‘c’ by a factor ‘f’ (max when f=1)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>c</strong>: Color</li>
+<li><strong>f</strong>: Factor between 0 and 1 with null impact at 0</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">darken</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">(1.0, 0.0, 0.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">darken</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">(0.5, 0.0, 0.0)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.whiten" title="vacumm.misc.color.whiten"><code class="xref py py-func docutils literal notranslate"><span class="pre">whiten()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.color.decimaitre">
+<code class="descname">decimaitre</code><em class="property"> = (0.9609375, 0.87109375, 0.703125)</em><a class="headerlink" href="#vacumm.misc.color.decimaitre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for land color</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.desaturate">
+<code class="descname">desaturate</code><span class="sig-paren">(</span><em>c</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#desaturate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.desaturate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Desaturate a color or a colormap</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.discretise_cmap">
+<code class="descname">discretise_cmap</code><span class="sig-paren">(</span><em>cmap</em>, <em>bounds</em>, <em>name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#discretise_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.discretise_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make discret an existing colormap</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">discretise_cmap</span><span class="p">(</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">.</span><span class="mi">25</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># two not evenly spaced colors</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">discretise_cmap</span><span class="p">(</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1"># ten evenly spaced colors</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmap</strong>: Colormap.</li>
+<li><strong>bounds</strong>: An array of limits that will normalized.
+If a scalar, it is converted into an array of ‘scalar’ values ranging
+from 0 to 1.</li>
+<li><strong>name</strong>, optional: Name of the colormap.</li>
+<li>Other params are passed to <a class="reference internal" href="#vacumm.misc.color.cmap_custom" title="vacumm.misc.color.cmap_custom"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_custom()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.get_cmap">
+<code class="descname">get_cmap</code><span class="sig-paren">(</span><em>cmap=None</em>, <em>errmode=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#get_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.get_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple way to get a VACUMM, GMT or MPL colormap</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>         <span class="c1"># Matplotlib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pylab</span><span class="o">.</span><span class="n">jet</span><span class="p">()</span>             <span class="c1"># Matplotlib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pylab</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>   <span class="c1"># Matplotlib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;cmap_grey&#39;</span><span class="p">,</span><span class="n">start</span><span class="o">=.</span><span class="mi">2</span><span class="p">)</span>   <span class="c1"># VACUMM</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;vacumm_grey&#39;</span><span class="p">)</span>   <span class="c1"># VACUMM (registered in MPL)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cmap_grey</span><span class="p">(</span><span class="n">start</span><span class="o">=.</span><span class="mi">2</span><span class="p">)</span>     <span class="c1"># VACUMM</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;gmt_gebco&#39;</span><span class="p">)</span>   <span class="c1"># GMT (registered in MPL)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cmap_gmt</span><span class="p">(</span><span class="s1">&#39;gebco&#39;</span><span class="p">)</span>       <span class="c1"># GMT (registered in MPL)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.cmap_gmt" title="vacumm.misc.color.cmap_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_gmt()</span></code></a> <code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.get_cmap()</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.color.jean_pierre">
+<code class="descname">jean_pierre</code><em class="property"> = (0.9609375, 0.87109375, 0.703125)</em><a class="headerlink" href="#vacumm.misc.color.jean_pierre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for land color</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.color.land">
+<code class="descname">land</code><em class="property"> = (0.9609375, 0.87109375, 0.703125)</em><a class="headerlink" href="#vacumm.misc.color.land" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for land color</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.color.ocean">
+<code class="descname">ocean</code><em class="property"> = (0.6, 0.8, 1)</em><a class="headerlink" href="#vacumm.misc.color.ocean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ocean color</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.pastelise">
+<code class="descname">pastelise</code><span class="sig-paren">(</span><em>c</em>, <em>s=0.25</em>, <em>v=0.9</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#pastelise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.pastelise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a color more pastel</p>
+<p>Equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">change_value</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">change_saturation</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.plot_cmap">
+<code class="descname">plot_cmap</code><span class="sig-paren">(</span><em>cmap</em>, <em>ncol=None</em>, <em>smoothed=True</em>, <em>ax=None</em>, <em>figsize=(5</em>, <em>0.25)</em>, <em>fig=None</em>, <em>show=True</em>, <em>aspect=0.05</em>, <em>title=None</em>, <em>title_loc=(0.5</em>, <em>0.5)</em>, <em>sa={'bottom': 0.0</em>, <em>'left': 0.0</em>, <em>'right': 1</em>, <em>'top': 1}</em>, <em>savefig=None</em>, <em>savefigs=None</em>, <em>close=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#plot_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.plot_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a colormap</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.plot_cmaps">
+<code class="descname">plot_cmaps</code><span class="sig-paren">(</span><em>cmaps=None</em>, <em>figsize=None</em>, <em>show=True</em>, <em>savefig=None</em>, <em>ncol=5</em>, <em>savefigs=None</em>, <em>aspect=0.05</em>, <em>fig=None</em>, <em>close=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#plot_cmaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.plot_cmaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a list of or all colormaps</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.print_cmaps_gmt">
+<code class="descname">print_cmaps_gmt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#print_cmaps_gmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.print_cmaps_gmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>List available gmt colormaps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.color.cmap_gmt" title="vacumm.misc.color.cmap_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmap_gmt()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.cmaps_gmt" title="vacumm.misc.color.cmaps_gmt"><code class="xref py py-func docutils literal notranslate"><span class="pre">cmaps_gmt()</span></code></a> <a class="reference internal" href="#vacumm.misc.color.get_cmap" title="vacumm.misc.color.get_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cmap()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.rainbow">
+<code class="descname">rainbow</code><span class="sig-paren">(</span><em>n=None</em>, <em>mode='auto'</em>, <em>first=None</em>, <em>last=None</em>, <em>middle=None</em>, <em>stretcher=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#rainbow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.rainbow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of nice rainbow colors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>n</strong>, optional: Number of requested colors. It should be &gt; 1. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Mode for choosing extreme colors.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;strict&quot;</span></code>: Blue and red are first and last colors.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;first&quot;</span></code>: <code class="docutils literal notranslate"><span class="pre">(.5,</span> <span class="pre">0,</span> <span class="pre">1)</span></code> is inserted as first color.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;last&quot;</span></code>: <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">0,</span> <span class="pre">.5)</span></code> is inserted as last color.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> or None: Switch to <code class="docutils literal notranslate"><span class="pre">&quot;extended&quot;</span></code> if <code class="docutils literal notranslate"><span class="pre">n&gt;6</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;extended&quot;</span></code> or anything else: Like <code class="docutils literal notranslate"><span class="pre">&quot;first&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;last&quot;</span></code>.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>stretcher</strong>, optional: Function that alter color steps
+from their range [0.-&gt;1.] to [0.-&gt;1.]. This must be used
+for example to enhance a part of the colormap.
+Its value may also be a predefined function:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;reduced_green&quot;</span></code>: Shrink the green band.</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function must return a monotonic array of increasing
+values included in the [0,1] interval.</p>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.saturate">
+<code class="descname">saturate</code><span class="sig-paren">(</span><em>c</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#saturate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.saturate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saturate a color or a colormap</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.color.sea">
+<code class="descname">sea</code><em class="property"> = (0.6, 0.8, 1)</em><a class="headerlink" href="#vacumm.misc.color.sea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for ocean color</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.show_cmap">
+<code class="descname">show_cmap</code><span class="sig-paren">(</span><em>cmap</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#show_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.show_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.color.plot_cmap" title="vacumm.misc.color.plot_cmap"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_cmap()</span></code></a></p>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.color.simple_colors">
+<code class="descname">simple_colors</code><em class="property"> = ['k', 'b', 'g', 'r', 'c', 'm', 'y']</em><a class="headerlink" href="#vacumm.misc.color.simple_colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic list of colors</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.to_grey">
+<code class="descname">to_grey</code><span class="sig-paren">(</span><em>c</em>, <em>f</em>, <em>g=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#to_grey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.to_grey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pull a color toward a single grey vzlue</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>c</strong>: Color</li>
+<li><strong>f</strong>: Factor between 0 and 1.
+When max, color is converted to medium grey (“0.5”).</li>
+<li><strong>g</strong>: Value of the grey</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">to_grey</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">(1.0, 0.0, 0.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_grey</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">(0.5, 0.5, 0.5)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.whiten" title="vacumm.misc.color.whiten"><code class="xref py py-func docutils literal notranslate"><span class="pre">whiten()</span></code></a> : <a class="reference internal" href="#vacumm.misc.color.darken" title="vacumm.misc.color.darken"><code class="xref py py-func docutils literal notranslate"><span class="pre">darken()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.to_shadow">
+<code class="descname">to_shadow</code><span class="sig-paren">(</span><em>c</em>, <em>att=0.3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#to_shadow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.to_shadow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the shadow color of a color</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is a simple shortcut to <a class="reference internal" href="#vacumm.misc.color.darken" title="vacumm.misc.color.darken"><code class="xref py py-func docutils literal notranslate"><span class="pre">darken()</span></code></a>
+with <code class="docutils literal notranslate"><span class="pre">f=.3</span></code> be default.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>c</strong>: Color.</li>
+<li><strong>att</strong>, optional: Attenuation factor</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.color.whiten">
+<code class="descname">whiten</code><span class="sig-paren">(</span><em>c</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/color.html#whiten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.color.whiten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whiten a color ‘c’ by a factor ‘f’ (max when f=1)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>c</strong>: Color</li>
+<li><strong>f</strong>: Factor between 0 and 1 with null impact at 0</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sample:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">whiten</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">(1.0, 0.5, 0.5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">whiten</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">(1.0, 0.0, 0.0)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.color.darken" title="vacumm.misc.color.darken"><code class="xref py py-func docutils literal notranslate"><span class="pre">darken()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,369 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.5. Test scripts &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.5. Test scripts</a><ul>
+<li><a class="reference internal" href="#misc">3.5.1. Misc</a></li>
+<li><a class="reference internal" href="#grids">3.5.2. Grids</a></li>
+<li><a class="reference internal" href="#graphics">3.5.3. Graphics</a></li>
+<li><a class="reference internal" href="#stats">3.5.4. Stats</a></li>
+<li><a class="reference internal" href="#time">3.5.5. Time</a></li>
+<li><a class="reference internal" href="#regridding">3.5.6. Regridding</a></li>
+<li><a class="reference internal" href="#in-output">3.5.7. In/output</a></li>
+<li><a class="reference internal" href="#masking">3.5.8. Masking</a></li>
+<li><a class="reference internal" href="#config">3.5.9. Config</a></li>
+<li><a class="reference internal" href="#filters">3.5.10. Filters</a></li>
+<li><a class="reference internal" href="#diagnostics">3.5.11. Diagnostics</a></li>
+<li><a class="reference internal" href="#the-cf-module">3.5.12. The <code class="docutils literal notranslate"><span class="pre">cf</span></code> module</a></li>
+<li><a class="reference internal" href="#the-dataset-classes">3.5.13. The <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> classes</a></li>
+<li><a class="reference internal" href="#the-arakawa-module">3.5.14. The <code class="docutils literal notranslate"><span class="pre">arakawa</span></code> module</a></li>
+<li><a class="reference internal" href="#the-ifroco-module">3.5.15. The <code class="docutils literal notranslate"><span class="pre">ifroco</span></code> module</a></li>
+<li><a class="reference internal" href="#pure-cdat">3.5.16. Pure CDAT</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tests/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="test-scripts">
+<span id="appendix-tests"></span><h1>3.5. Test scripts<a class="headerlink" href="#test-scripts" title="Permalink to this headline">¶</a></h1>
+<p>To add a new test, see <a class="reference internal" href="../user.dev.html#user-dev-test"><span class="std std-ref">How to add a new test</span></a>.</p>
+<div class="section" id="misc">
+<h2>3.5.1. Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.misc.html#module-vacumm.misc.misc" title="vacumm.misc.misc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">misc</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_misc_casechecker.html">3.5.1.1. <strong class="program">test_misc_casechecker.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">CaseChecker</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_misc_dicttree_get.html">3.5.1.2. <strong class="program">test_misc_dicttree_get.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">dictree_get</span></code></a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="grids">
+<h2>3.5.2. Grids<a class="headerlink" href="#grids" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.grid.html#module-vacumm.misc.grid" title="vacumm.misc.grid"><code class="xref py py-mod docutils literal notranslate"><span class="pre">grid</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_grid_coord2slice_acad.html">3.5.2.1. <strong class="program">test_grid_coord2slice_acad.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">coord2slice()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_grid_get_distances.html">3.5.2.2. <strong class="program">test_grid_get_distances.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_distances()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_grid_griddedselector.html">3.5.2.3. <strong class="program">test_grid_griddedselector.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">GriddedSelector()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_grid_isrect.html">3.5.2.4. <strong class="program">test_grid_isrect.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">isrect()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_grid_resol.html">3.5.2.5. <strong class="program">test_grid_resol.py</strong> – Test function <code class="docutils literal notranslate"><span class="pre">resol()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_grid_rotate_grid.html">3.5.2.6. <strong class="program">test_grid_rotate_grid.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">rotate_grid()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_grid_subaxis2index.html">3.5.2.7. <strong class="program">test_grid_subaxis2index.py</strong> – m vcmq import create_axis, isaxis, coord2slice, cdms2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_grid_varsel.html">3.5.2.8. <strong class="program">test_grid_varsel.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">varsel()</span></code></a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="graphics">
+<h2>3.5.3. Graphics<a class="headerlink" href="#graphics" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.plot.html#module-vacumm.misc.plot" title="vacumm.misc.plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">plot</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_add_logo.html">3.5.3.1. <strong class="program">test_plot_add_logo.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">add_logo()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_cmap_auto.html">3.5.3.2. <strong class="program">test_plot_cmap_auto.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot2d()</span></code> with automatic colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_core_add_things.html">3.5.3.3. <strong class="program">test_plot_core_add_things.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">add_point()</span></code> and similar <code class="docutils literal notranslate"><span class="pre">Plot</span></code> methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_curve_o.html">3.5.3.4. <strong class="program">test_plot_curve_o.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">curve2()</span></code> with an arbitrary axis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_curve_t.html">3.5.3.5. <strong class="program">test_plot_curve_t.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">curve2()</span></code> with a time axis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_curve_x.html">3.5.3.6. <strong class="program">test_plot_curve_x.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">curve2()</span></code> with a longitude axis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_curve_y.html">3.5.3.7. <strong class="program">test_plot_curve_y.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">curve2()</span></code> with a latitude axis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_curve_z.html">3.5.3.8. <strong class="program">test_plot_curve_z.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">curve2()</span></code> with a depth axis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_hlitvs.html">3.5.3.9. <strong class="program">test_plot_hlitvs.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">curve2()</span></code> with a call to <code class="docutils literal notranslate"><span class="pre">hlitvs()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_hov_tz.html">3.5.3.10. <strong class="program">test_plot_hov_tz.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">hov2()</span></code> with a TZ variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_map_arcgisimage.html">3.5.3.11. <strong class="program">test_plot_map_arcgisimage.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">map()</span></code> with an arcgisimage as background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_plot2d_bounds.html">3.5.3.12. <strong class="program">test_plot_plot2d_bounds.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot2d()</span></code> with specified cell bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_plot2d_oo.html">3.5.3.13. <strong class="program">test_plot_plot2d_oo.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot2d()</span></code> with arbitrary axes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_plot2d_to.html">3.5.3.14. <strong class="program">test_plot_plot2d_to.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot2d()</span></code> with a time axis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_section_quiver.html">3.5.3.15. <strong class="program">test_plot_section_quiver.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">section2()</span></code> in quiver mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_section_zo.html">3.5.3.16. <strong class="program">test_plot_section_zo.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">section2()</span></code> with a Z- variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_streamplot.html">3.5.3.17. <strong class="program">test_plot_streamplot.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot_streamplot()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_plot_taylor.html">3.5.3.18. <strong class="program">test_plot_taylor.py</strong> – Test function <code class="docutils literal notranslate"><span class="pre">taylor()</span></code> in different configurations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_color_anamorph.html">3.5.3.19. <strong class="program">test_color_anamorph.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">anamorph_cmap</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_color_darken.html">3.5.3.20. <strong class="program">test_color_darken.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">darken</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_color_desaturate.html">3.5.3.21. <strong class="program">test_color_desaturate.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">desaturate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_color_pastelise.html">3.5.3.22. <strong class="program">test_color_pastelise.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">pastelise</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_color_saturate.html">3.5.3.23. <strong class="program">test_color_saturate.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">saturate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_color_to_grey.html">3.5.3.24. <strong class="program">test_color_to_grey.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">to_grey</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_color_whiten.html">3.5.3.25. <strong class="program">test_color_whiten.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">whiten</span></code></a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="stats">
+<h2>3.5.4. Stats<a class="headerlink" href="#stats" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.stats.html#module-vacumm.misc.stats" title="vacumm.misc.stats"><code class="xref py py-mod docutils literal notranslate"><span class="pre">stats</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_stats_stataccum_dual.html">3.5.4.1. <strong class="program">test_stats_stataccum_dual.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">StatAccum</span></code> for a pair of variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_stats_stataccum_dumpload.html">3.5.4.2. <strong class="program">test_stats_stataccum_dumpload.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">StatAccum</span></code> with dumping and loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_stats_stataccum_single.html">3.5.4.3. <strong class="program">test_stats_stataccum_single.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">StatAccum</span></code> for a single variable</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="time">
+<h2>3.5.5. Time<a class="headerlink" href="#time" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.atime.html#module-vacumm.misc.atime" title="vacumm.misc.atime"><code class="xref py py-mod docutils literal notranslate"><span class="pre">atime</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_atime_interp_clim.html">3.5.5.1. <strong class="program">test_atime_interp_clim.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">interp_clim()</span></code></a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="regridding">
+<h2>3.5.6. Regridding<a class="headerlink" href="#regridding" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.grid.regridding.html#module-vacumm.misc.grid.regridding" title="vacumm.misc.grid.regridding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regridding</span></code></a> and <a class="reference internal" href="../library/misc.grid.kriging.html#module-vacumm.misc.grid.kriging" title="vacumm.misc.grid.kriging"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kriging</span></code></a> modules.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_curvedinterpolator.html">3.5.6.1. <strong class="program">test_regrid_curvedinterpolator.py</strong> – Test the class <code class="docutils literal notranslate"><span class="pre">CurvedInterpolator</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_extend.html">3.5.6.2. <strong class="program">test_regrid_extend.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">extend1d()</span></code> and <code class="docutils literal notranslate"><span class="pre">extend2d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_bilin.html">3.5.6.3. <strong class="program">test_regrid_fortran_bilin.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">bilin()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_bilin2dto1d.html">3.5.6.4. <strong class="program">test_regrid_fortran_bilin2dto1d.py</strong> – Test fortran function <code class="docutils literal notranslate"><span class="pre">bilin2dto1d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_bilin2dto1dc.html">3.5.6.5. <strong class="program">test_regrid_fortran_bilin2dto1dc.py</strong> – Test fortran function <code class="docutils literal notranslate"><span class="pre">bilin2dto1dc()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_cellerr1d.html">3.5.6.6. <strong class="program">test_regrid_fortran_cellerr1d.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">cellerr1d()</span></code>, <code class="docutils literal notranslate"><span class="pre">cellerr1dx()</span></code> et <code class="docutils literal notranslate"><span class="pre">cellerr1dxx()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_closest2d.html">3.5.6.7. <strong class="program">test_regrid_fortran_closest2d.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">closest2d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_curv2rect.html">3.5.6.8. <strong class="program">test_regrid_fortran_curv2rect.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">curv2rect()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_curv2rel.html">3.5.6.9. <strong class="program">test_regrid_fortran_curv2rel.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">curv2rel()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_curv2rel_single.html">3.5.6.10. <strong class="program">test_regrid_fortran_curv2rel_single.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">curv2rel_single()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_dstwgt.html">3.5.6.11. <strong class="program">test_regrid_fortran_dstwgt.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">bilin()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_dstwgt2dto1d.html">3.5.6.12. <strong class="program">test_regrid_fortran_dstwgt2dto1d.py</strong> – Test fortran function <code class="docutils literal notranslate"><span class="pre">dstwgt2dto1d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_dstwgt2dto1dc.html">3.5.6.13. <strong class="program">test_regrid_fortran_dstwgt2dto1dc.py</strong> – Test fortran function <code class="docutils literal notranslate"><span class="pre">dstwgt2dto1dc()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_extrap1d.html">3.5.6.14. <strong class="program">test_regrid_fortran_extrap1d.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">extrap1d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_interp1d.html">3.5.6.15. <strong class="program">test_regrid_fortran_interp1d.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">interp1d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_interp1dx.html">3.5.6.16. <strong class="program">test_regrid_fortran_interp1dx.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">interp1dx()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_interp1dxx.html">3.5.6.17. <strong class="program">test_regrid_fortran_interp1dxx.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">interp1dxx()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_linear4dto1d.html">3.5.6.18. <strong class="program">test_regrid_fortran_linear4dto1d.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">linear4dto1d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_linear4dto1dxx.html">3.5.6.19. <strong class="program">test_regrid_fortran_linear4dto1dxx.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">linear4dto1dxx()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_nearest2d.html">3.5.6.20. <strong class="program">test_regrid_fortran_nearest2d.py</strong> – Test the fortran function <code class="docutils literal notranslate"><span class="pre">nearest2d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_nearest2dto1d.html">3.5.6.21. <strong class="program">test_regrid_fortran_nearest2dto1d.py</strong> – Test fortran function <code class="docutils literal notranslate"><span class="pre">nearest2dto1d()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_fortran_nearest2dto1dc.html">3.5.6.22. <strong class="program">test_regrid_fortran_nearest2dto1dc.py</strong> – Test fortran function <code class="docutils literal notranslate"><span class="pre">nearest2dto1dc()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_grid2xy.html">3.5.6.23. <strong class="program">test_regrid_grid2xy.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">grid2xy()</span></code> with interpolation in X, Y, Z and T</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_griddata.html">3.5.6.24. <strong class="program">test_regrid_griddata.py</strong> – Test :func:`~vacumm.misc.grid.regridding.griddata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_kriging_cloud_split.html">3.5.6.25. <strong class="program">test_regrid_kriging_cloud_split.py</strong> – Test function <code class="docutils literal notranslate"><span class="pre">cloud_split()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_kriging_krig.html">3.5.6.26. <strong class="program">test_regrid_kriging_krig.py</strong> – Test function <code class="docutils literal notranslate"><span class="pre">krig()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_kriging_ock.html">3.5.6.27. <strong class="program">test_regrid_kriging_ock.py</strong> – Test class <code class="docutils literal notranslate"><span class="pre">OrdinaryCloudKriger()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_kriging_parallel.html">3.5.6.28. <strong class="program">test_regrid_kriging_parallel.py</strong> – Test function <code class="docutils literal notranslate"><span class="pre">OrdinaryKriger()</span></code> in parallel and multifit modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_kriging_regrid.html">3.5.6.29. <strong class="program">test_regrid_kriging_regrid.py</strong> – Test function <code class="docutils literal notranslate"><span class="pre">krig()</span></code> for grid refinement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_kriging_simple_farvalue.html">3.5.6.30. <strong class="program">test_regrid_kriging_simple_farvalue.py</strong> – Test class <code class="docutils literal notranslate"><span class="pre">SimpleCloudkriger()</span></code> with farvalue keyword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_kriging_simple_obserr.html">3.5.6.31. <strong class="program">test_regrid_kriging_simple_obserr.py</strong> – Test class <code class="docutils literal notranslate"><span class="pre">SimpleCloudkriger()</span></code> with observation errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_kriging_variogram.html">3.5.6.32. <strong class="program">test_regrid_kriging_variogram.py</strong> – Test functions <code class="docutils literal notranslate"><span class="pre">variogram()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_regrid1d.html">3.5.6.33. <strong class="program">test_regrid_regrid1d.py</strong> – Test the <code class="docutils literal notranslate"><span class="pre">regrid1d()</span></code> function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_regrid2d.html">3.5.6.34. <strong class="program">test_regrid_regrid2d.py</strong> – Test the <code class="docutils literal notranslate"><span class="pre">regrid2d()</span></code> function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_transect_curvgrid.html">3.5.6.35. <strong class="program">test_regrid_transect_curvgrid.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">transect()</span></code> on a curvilinear grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_transect_mld.html">3.5.6.36. <strong class="program">test_regrid_transect_mld.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">transect()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_transect_xyt.html">3.5.6.37. <strong class="program">test_regrid_transect_xyt.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">transect()</span></code> with interpolation in both time and space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_regrid_xy2xy.html">3.5.6.38. <strong class="program">test_regrid_xy2xy.py</strong> – Test :func:`~vacumm.misc.grid.regridding.xy2xy</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="in-output">
+<h2>3.5.7. In/output<a class="headerlink" href="#in-output" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.io.html#module-vacumm.misc.io" title="vacumm.misc.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">io</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_io_shapes.html">3.5.7.1. <strong class="program">test_io_shapes.py</strong> – Test the <code class="docutils literal notranslate"><span class="pre">Shapes()</span></code> class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_write_netcdf.html">3.5.7.2. <strong class="program">test_write_netcdf.py</strong> – Testing to read/modidy/(re)write NEtCDF files without loosing attributes</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="masking">
+<h2>3.5.8. Masking<a class="headerlink" href="#masking" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.grid.masking.html#module-vacumm.misc.grid.masking" title="vacumm.misc.grid.masking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">masking</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_mask_create_polygon.html">3.5.8.1. <strong class="program">test_mask_create_polygon.py</strong> – Test the <code class="docutils literal notranslate"><span class="pre">create_polygon()</span></code> function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_mask_polygons.html">3.5.8.2. <strong class="program">test_mask_polygons.py</strong> – Test the <code class="docutils literal notranslate"><span class="pre">polygons()</span></code> function</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="config">
+<h2>3.5.9. Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.config.html#module-vacumm.misc.config" title="vacumm.misc.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">config</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_config_cfg2rst.html">3.5.9.1. <strong class="program">test_config_cfg2rst.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">vacumm.misc.config.get_spec()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_config_get_spec.html">3.5.9.2. <strong class="program">test_config_get_spec.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">vacumm.misc.config.get_spec()</span></code></a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="filters">
+<h2>3.5.10. Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/misc.filters.html#module-vacumm.misc.filters" title="vacumm.misc.filters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">filters</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_filters_generic2d.html">3.5.10.1. <strong class="program">test_filters_generic2d.py</strong> – Test function <code class="docutils literal notranslate"><span class="pre">generic2d()</span></code></a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="diagnostics">
+<h2>3.5.11. Diagnostics<a class="headerlink" href="#diagnostics" title="Permalink to this headline">¶</a></h2>
+<p>Testing <a class="reference internal" href="../library/diag.html#module-vacumm.diag" title="vacumm.diag"><code class="xref py py-mod docutils literal notranslate"><span class="pre">diag</span></code></a> module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_diag_thermdyn_mld.html">3.5.11.1. <strong class="program">test_diag_thermdyn_mld.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">mixed_layer_depth()</span></code> on MENOR</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="the-cf-module">
+<h2>3.5.12. The <a class="reference internal" href="../library/data.cf.html#module-vacumm.data.cf" title="vacumm.data.cf"><code class="xref py py-class docutils literal notranslate"><span class="pre">cf</span></code></a> module<a class="headerlink" href="#the-cf-module" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_cf_specs.html">3.5.12.1. <strong class="program">test_cf_specs.py</strong> – Test the <code class="docutils literal notranslate"><span class="pre">VarSpecs</span></code> and <code class="docutils literal notranslate"><span class="pre">AxisSpecs</span></code> classes</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="the-dataset-classes">
+<h2>3.5.13. The <a class="reference internal" href="../library/data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> classes<a class="headerlink" href="#the-dataset-classes" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_asvar_menor.html">3.5.13.1. <strong class="program">test_dataset_get_asvar_menor.py</strong> – Test the asvar keyword of <code class="docutils literal notranslate"><span class="pre">finalize_object()</span></code> on MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_asvar_mfs.html">3.5.13.2. <strong class="program">test_dataset_get_asvar_mfs.py</strong> – Test the asvar keyword of <code class="docutils literal notranslate"><span class="pre">finalize_object()</span></code> on MFS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_at.html">3.5.13.3. <strong class="program">test_dataset_get_at.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_temp()</span></code> with <code class="docutils literal notranslate"><span class="pre">at</span></code> keyword and <code class="docutils literal notranslate"><span class="pre">get_temp_u()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_dens.html">3.5.13.4. <strong class="program">test_dataset_get_dens.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_dens()</span></code> in MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_depth_menor.html">3.5.13.5. <strong class="program">test_dataset_get_depth_menor.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_depth()</span></code> in MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_depth_mfs.html">3.5.13.6. <strong class="program">test_dataset_get_depth_mfs.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_depth()</span></code> in MFS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_grid.html">3.5.13.7. <strong class="program">test_dataset_get_grid.py</strong> – Test method <code class="docutils literal notranslate"><span class="pre">get_grid()</span></code> on MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_mld.html">3.5.13.8. <strong class="program">test_dataset_get_mld.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_mld()</span></code> with deltadens in MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_temp_menor.html">3.5.13.9. <strong class="program">test_dataset_get_temp_menor.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_temp()</span></code> on MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_temp_mfs.html">3.5.13.10. <strong class="program">test_dataset_get_temp_mfs.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_temp()</span></code> on MFS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_uvbt_menor.html">3.5.13.11. <strong class="program">test_dataset_get_uvbt_menor.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_uvgbt()</span></code> on MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_var_seltime.html">3.5.13.12. <strong class="program">test_dataset_get_var_seltime.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_var()</span></code> on multiple files and time selections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_get_variable_levelstring.html">3.5.13.13. <strong class="program">test_dataset_get_variable_levelstring.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">get_variable()</span></code> with level as a string</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_plot_hsection_menor.html">3.5.13.14. <strong class="program">test_dataset_plot_hsection_menor.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot_hsection()</span></code> with MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_plot_hsection_mfs.html">3.5.13.15. <strong class="program">test_dataset_plot_hsection_mfs.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot_hsection()</span></code> with MFS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_plot_transect_menor.html">3.5.13.16. <strong class="program">test_dataset_plot_transect_menor.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot_transect()</span></code> with MENOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_dataset_plot_transect_mfs.html">3.5.13.17. <strong class="program">test_dataset_plot_transect_mfs.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">plot_transect()</span></code> on MFS</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="the-arakawa-module">
+<h2>3.5.14. The <code class="xref py py-mod docutils literal notranslate"><span class="pre">arakawa</span></code> module<a class="headerlink" href="#the-arakawa-module" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_arakawa_gridtransfer.html">3.5.14.1. <strong class="program">test_arakawa_gridtransfer.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa.CGrid.interp()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_arakawa_interp.html">3.5.14.2. <strong class="program">test_arakawa_interp.py</strong> – Test <code class="docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa.CGrid.interp()</span></code></a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="the-ifroco-module">
+<h2>3.5.15. The <a class="reference internal" href="../library/report.ifroco.html#module-vacumm.report.ifroco" title="vacumm.report.ifroco"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ifroco</span></code></a> module<a class="headerlink" href="#the-ifroco-module" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_ifroco_curves.html">3.5.15.1. <strong class="program">test_ifroco_curves.py</strong> – Plot a PREVIMER curve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_ifroco_map.html">3.5.15.2. <strong class="program">test_ifroco_map.py</strong> – Plot a PREVIMER map</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="pure-cdat">
+<h2>3.5.16. Pure CDAT<a class="headerlink" href="#pure-cdat" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test_cdat_regrid_algo.html">3.5.16.1. <strong class="program">test_cdat_regrid_algo.py</strong> – Testing CDAT regridding algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_cdat_regrid_conserv.html">3.5.16.2. <strong class="program">test_cdat_regrid_conserv.py</strong> – Test CDAT conservative regridding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_cdat_regrid_curv2rect.html">3.5.16.3. <strong class="program">test_cdat_regrid_curv2rect.py</strong> – Testing CDAT regridding from curvilinear grid to rectangular grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_cdat_regrid_rect2rect.html">3.5.16.4. <strong class="program">test_cdat_regrid_rect2rect.py</strong> – Compare CDAT regridding speed with rectangular and rectangular grids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_cdat_regrid_regrid2.html">3.5.16.5. <strong class="program">test_cdat_regrid_regrid2.py</strong> – Test the traditionnal CDAT regrid2 regridder</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

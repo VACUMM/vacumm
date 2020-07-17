@@ -1,0 +1,164 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.3.5.1. Informations sur les stations et ports &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/tide.station_info.infos.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="informations-sur-les-stations-et-ports">
+<span id="user-tut-tide-station-info-infos"></span><h1>1.3.5.1. Informations sur les stations et ports<a class="headerlink" href="#informations-sur-les-stations-et-ports" title="Permalink to this headline">¶</a></h1>
+<p>Voir : <a class="reference internal" href="../library/tide.station_info.html#module-vacumm.tide.station_info" title="vacumm.tide.station_info"><code class="xref py py-mod docutils literal notranslate"><span class="pre">station_info</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="c1"># On cherche directement &#39;Bre&#39; pour Brest</span>
+<span class="kn">from</span> <span class="nn">vacumm.tide.station_info</span> <span class="k">import</span> <span class="n">StationInfo</span>
+<span class="n">station</span> <span class="o">=</span> <span class="n">StationInfo</span><span class="p">(</span><span class="s1">&#39;Bre&#39;</span><span class="p">)</span>
+<span class="c1"># -&gt;:</span>
+<span class="c1">#Chargement de la station suivante :</span>
+<span class="c1">#  Nom        : Ile de Brehat (Port-Clos)</span>
+<span class="c1">#  Position   :  3.0°W / 48.9°N</span>
+<span class="c1">#  Zone       : http://www.shom.fr/fr_page/fr_act_oceano/maree/zone6_9.htm</span>
+<span class="c1">#  BM45       : 3.8</span>
+<span class="c1">#  BM95       : 1.35</span>
+<span class="c1">#  NM         : 5.89</span>
+<span class="c1">#  PBM        : 0.1</span>
+<span class="c1">#  PHM        : 11.6</span>
+<span class="c1">#  PM45       : 8</span>
+<span class="c1">#  PM95       : 10.4</span>
+<span class="c1">#  ZERO_HYDRO : -5.4</span>
+<span class="c1">#Definition des termes accessible avec .definitions()</span>
+<span class="c1"># Loupé !</span>
+<span class="c1"># On récupère la première station trouvée lors de l&#39;initialisation</span>
+<span class="c1"># Mais bon, on vérifie quand même</span>
+<span class="nb">print</span> <span class="n">station</span><span class="o">.</span><span class="n">attributes</span><span class="p">()</span>
+<span class="c1"># -&gt; [&#39;igs&#39;, &#39;psmsl&#39;, &#39;uhslc&#39;, &#39;gloss&#39;, &#39;shom&#39;, &#39;legos&#39;, &#39;latitude&#39;, </span>
+<span class="c1">#       &#39;longitude&#39;, &#39;zone&#39;, &#39;phm&#39;, &#39;pm95&#39;, &#39;pm45&#39;, &#39;nm&#39;, &#39;bm45&#39;, </span>
+<span class="c1">#        &#39;bm95&#39;, &#39;pbm&#39;, &#39;zero_hydro&#39;]</span>
+<span class="nb">print</span> <span class="n">station</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">station</span><span class="o">.</span><span class="n">longitude</span>
+<span class="c1"># -&gt; Ile de Brehat (Port-Clos) -3.0</span>
+
+<span class="c1"># On peut se servir de station pour continuer à chercher</span>
+<span class="c1"># car le fichier est déjà chargé</span>
+
+<span class="c1"># On affiche finalement toute les stations contenant &#39;bre&#39;</span>
+<span class="nb">print</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">70</span>
+<span class="n">station</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;bre&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">70</span>
+<span class="c1"># -&gt;</span>
+<span class="c1">#   Nom        : Ile de Brehat (Port-Clos)</span>
+<span class="c1">#...</span>
+<span class="c1">#   Nom        : Les Heaux-de-Brehat</span>
+ <span class="c1">#...</span>
+<span class="c1">#   Nom        : Brest</span>
+
+<span class="c1"># Ok, on récupère Brest et uniquement Brest</span>
+<span class="c1"># - en sélectionnant la station d&#39;identifiant SHOM=&#39;Brest&#39;</span>
+<span class="n">brest</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">shom</span><span class="o">=</span><span class="s1">&#39;Brest&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">brest</span><span class="o">.</span><span class="n">name</span>
+<span class="c1"># -&gt; Brest</span>
+<span class="c1"># - ou par sa position (station la plus proche)</span>
+<span class="n">brest</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">4.5</span><span class="p">,</span><span class="mf">48.4</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">brest</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span> <span class="n">brest</span><span class="o">.</span><span class="n">latitude</span>
+<span class="c1"># -&gt; 2.36777777778 51.0347222222</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

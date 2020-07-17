@@ -1,0 +1,896 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.4. vacumm.config – Configuration of modules &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.4. <code class="docutils literal notranslate"><span class="pre">vacumm.config</span></code> – Configuration of modules</a></li>
+<li><a class="reference internal" href="#overview">2.5. Overview</a></li>
+<li><a class="reference internal" href="#module-vacumm.config">2.6. Content</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/config.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-config-configuration-of-modules">
+<span id="lib-config"></span><h1>2.4. <a class="reference internal" href="#module-vacumm.config" title="vacumm.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.config</span></code></a> – Configuration of modules<a class="headerlink" href="#vacumm-config-configuration-of-modules" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="overview">
+<h1>2.5. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.config.check_data_file" title="vacumm.config.check_data_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_data_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.data_sample" title="vacumm.config.data_sample"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_sample()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.download_file" title="vacumm.config.download_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">download_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.edit_file" title="vacumm.config.edit_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">edit_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.edit_user_conf_file" title="vacumm.config.edit_user_conf_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">edit_user_conf_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_com_conf_dir" title="vacumm.config.get_com_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_com_conf_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_com_conf_file" title="vacumm.config.get_com_conf_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_com_conf_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_config" title="vacumm.config.get_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_config_files" title="vacumm.config.get_config_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config_files()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_config_sections" title="vacumm.config.get_config_sections"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config_sections()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.config.get_config_value" title="vacumm.config.get_config_value"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config_value()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_data_dir" title="vacumm.config.get_data_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_default_config" title="vacumm.config.get_default_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_default_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_dir_dict" title="vacumm.config.get_dir_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dir_dict()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_dist_dir" title="vacumm.config.get_dist_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dist_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_dl_dir" title="vacumm.config.get_dl_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dl_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_home_conf_dir" title="vacumm.config.get_home_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_home_conf_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_lib_dir" title="vacumm.config.get_lib_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_lib_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_scripts_dir" title="vacumm.config.get_scripts_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_scripts_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_tut_dir" title="vacumm.config.get_tut_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tut_dir()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.config.get_user_conf_dir" title="vacumm.config.get_user_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.get_user_conf_file" title="vacumm.config.get_user_conf_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.handle_edit_args" title="vacumm.config.handle_edit_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">handle_edit_args()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.handle_print_args" title="vacumm.config.handle_print_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">handle_print_args()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.load_configs" title="vacumm.config.load_configs"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_configs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.merge_configs" title="vacumm.config.merge_configs"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge_configs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.print_config" title="vacumm.config.print_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.set_config_value" title="vacumm.config.set_config_value"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_config_value()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.config.write_default_config" title="vacumm.config.write_default_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_default_config()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.config.URLLibProgressBar" title="vacumm.config.URLLibProgressBar"><code class="xref py py-class docutils literal notranslate"><span class="pre">URLLibProgressBar</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vacumm.config">
+<span id="content"></span><h1>2.6. Content<a class="headerlink" href="#module-vacumm.config" title="Permalink to this headline">¶</a></h1>
+<p>Utilities to manage VACUMM basic configuration of modules</p>
+<dl class="class">
+<dt id="vacumm.config.URLLibProgressBar">
+<em class="property">class </em><code class="descname">URLLibProgressBar</code><span class="sig-paren">(</span><em>width=80</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#URLLibProgressBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.URLLibProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Progress bar compatible with <a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.urlretrieve" title="(in Python v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">urllib.urlretrieve()</span></code></a></p>
+<p>It looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">=======&gt;</span>        <span class="mi">22</span><span class="o">%</span>                  <span class="p">]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">urllib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mybar</span> <span class="o">=</span> <span class="n">URLProgress</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urllib</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="s2">&quot;http://web.net/file&quot;</span><span class="p">,</span> <span class="s2">&quot;myfile&quot;</span><span class="p">,</span> <span class="n">reporthook</span><span class="o">=</span><span class="n">mybar</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Inspired from:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://code.activestate.com/recipes/168639-progress-bar-class/">http://code.activestate.com/recipes/168639-progress-bar-class/</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.check_data_file">
+<code class="descname">check_data_file</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>parent_section=None</em>, <em>parent_option=None</em>, <em>quiet=None</em>, <em>suffix=None</em>, <em>avail=False</em>, <em>check_license=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#check_data_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.check_data_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the existence of a file whose path is stored in a configuration file</p>
+<p>Two cases are treated:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Path value is accessible from the vacumm configuration (<a class="reference internal" href="#vacumm.config.get_config" title="vacumm.config.get_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config()</span></code></a>),
+using <code class="docutils literal notranslate"><span class="pre">section</span></code> (module name) and <code class="docutils literal notranslate"><span class="pre">option</span></code>.</li>
+<li>Path value is accessible from a secondary configuration file using
+<code class="docutils literal notranslate"><span class="pre">parent_section</span></code> (module name) and <code class="docutils literal notranslate"><span class="pre">parent_option</span></code>, and the
+path value of this config file is accessible from the vacumm configuration
+using <code class="docutils literal notranslate"><span class="pre">section</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code>.</li>
+</ol>
+</div></blockquote>
+<p>If the file is not found, it may download it using an url whose value is
+accessible at the same place as the path and with the same option
+name + ‘_url’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Tasks:</th><td class="field-body"><ol class="first arabic simple">
+<li>If <code class="docutils literal notranslate"><span class="pre">suffix</span></code> is a list, call itself in a loop with <code class="docutils literal notranslate"><span class="pre">suffix</span></code>
+set to each element of the list.</li>
+<li>Get the <code class="docutils literal notranslate"><span class="pre">path</span></code>, <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">license</span></code> of the data file.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">avail</span> <span class="pre">is</span> <span class="pre">True</span></code>, only check the existence and return the status.</li>
+<li>If the file is not found (and <code class="docutils literal notranslate"><span class="pre">quiet</span> <span class="pre">is</span> <span class="pre">False</span></code>), ask the user
+for it. If the path specified is empty, simply go further.
+If is not empty, update the configuration and return
+it, else raise an error.</li>
+<li>If a license info is present, tell the user that he must
+have the authorization to download it. If the user does not agree,
+raise an error.</li>
+<li>Ask the user where to download the file using <a class="reference internal" href="#vacumm.config.get_dl_dir" title="vacumm.config.get_dl_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dl_dir()</span></code></a>.</li>
+<li>Download the file using <a class="reference internal" href="#vacumm.config.download_file" title="vacumm.config.download_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">download_file()</span></code></a>.</li>
+<li>Update the configuration if needed.</li>
+<li>Return the path.</li>
+</ol>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong>: Section where to find the path to data.</li>
+<li><strong>option</strong>: Option to read the path.</li>
+<li><strong>parent_section</strong>, optional: Section of the vacumm configuration
+where to find the path to the secondary configuration file that has
+the path stored within.</li>
+<li><strong>parent_option</strong>, optional: Option of the vacumm configuration
+to read the path to the secondary configuration.</li>
+<li><strong>quiet</strong>, optional: Don’t ask question about where to download the
+file, don’t display any info, don’t ask for authorization.</li>
+<li><strong>suffix</strong>, optional: A suffix or a list of suffixes to append to
+the path and url before using it.</li>
+<li><strong>check_license</strong>, optional: If a license info is found,
+show ot and ask the user if he has autorization for downloading it.</li>
+<li><strong>avail</strong>, optional: Check availability only (see below).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><ul class="first">
+<li><p class="first">A single path or a list of paths.</p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">None</span></code> or a list of them if nothing found.</p>
+</li>
+<li><p class="first">If <code class="docutils literal notranslate"><span class="pre">avail=True</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code>: Data file not on disk and not downloadable
+(however, user can specify the path manually).</li>
+<li><code class="docutils literal notranslate"><span class="pre">1</span></code>: File is not on disk, but downloadable.</li>
+<li><code class="docutils literal notranslate"><span class="pre">2</span></code>: File is on disk.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check_data_file</span><span class="p">(</span><span class="s1">&#39;vacumm.bathy.shorelines&#39;</span><span class="p">,</span> <span class="s1">&#39;shapefile_histolitt&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;.shp&#39;</span><span class="p">,</span> <span class="s1">&#39;.dbf&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_data_file</span><span class="p">(</span><span class="s1">&#39;etopo2&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="n">parent_section</span><span class="o">=</span><span class="s1">&#39;vacumm.bathy.bathy&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="n">parent_option</span><span class="o">=</span><span class="s1">&#39;cfgfile_gridded&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.data_sample">
+<code class="descname">data_sample</code><span class="sig-paren">(</span><em>data_file</em>, <em>mode='all'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#data_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.data_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform the relative path of a sample file to an absolute path</p>
+<p>This can be either in the VACUMM data directory (<a class="reference internal" href="#vacumm.config.get_data_dir" title="vacumm.config.get_data_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data_dir()</span></code></a>),
+or in the UVCDAT data directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>data_file</strong>: File basename.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>: Look first into VACUMM dir then
+and into UVCDAT dir if not found. If finally not found,
+return the VACUMM sample path.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;vacumm&quot;</span></code>: Look only into the VACUMM data dir only.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;uvcdat&quot;</span></code>: Look only into the UVCDAT data dir only.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.download_file">
+<code class="descname">download_file</code><span class="sig-paren">(</span><em>url</em>, <em>locfile</em>, <em>quiet=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#download_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.download_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a file with a progress bar using <a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.urlretrieve" title="(in Python v2.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">urllib.urlretrieve()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.edit_file">
+<code class="descname">edit_file</code><span class="sig-paren">(</span><em>fname</em>, <em>editor=None</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#edit_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.edit_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit a file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong>: File name.</li>
+<li><strong>editor</strong>, optional: Editor to use (default to <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">VISUAL</span></code> or
+<span class="target" id="index-1"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">EDITOR</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Source:</th><td class="field-body"><p class="first last">Mercurial code</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.edit_user_conf_file">
+<code class="descname">edit_user_conf_file</code><span class="sig-paren">(</span><em>fname='vacumm.cfg'</em>, <em>editor=None</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#edit_user_conf_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.edit_user_conf_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit the user configuration file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fname</strong>, optional: Relative file name, which defaults to <code class="file docutils literal notranslate"><span class="pre">vacumm.cfg</span></code>.</li>
+<li><strong>editor</strong>, optional: Editor to use (default to <span class="target" id="index-2"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">VISUAL</span></code> or
+<span class="target" id="index-3"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">EDITOR</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">edit_user_conf_file</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edit_user_conf_file</span><span class="p">(</span><span class="s1">&#39;my_other_config.cfg&#39;</span><span class="p">,</span> <span class="n">editor</span><span class="o">=</span><span class="s1">&#39;gedit&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.config.edit_file" title="vacumm.config.edit_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">edit_file()</span></code></a> and <a class="reference internal" href="#vacumm.config.get_user_conf_file" title="vacumm.config.get_user_conf_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_file()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_com_conf_dir">
+<code class="descname">get_com_conf_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_com_conf_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_com_conf_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get directory of common alternate configuration files</p>
+<p>These files are not included in the distribution.
+They have a similar role to user config files but they
+are accessible to all users.
+This directory can be at two different places, depending on if the library is
+an installed version or developers version.</p>
+<ul class="simple">
+<li>If installed : in <code class="file docutils literal notranslate"><span class="pre">vacumm-config</span></code> subdirectory in the
+installed package directory (see <a class="reference internal" href="#vacumm.config.get_lib_dir" title="vacumm.config.get_lib_dir"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lib_dir()</span></code></a>).</li>
+<li>Else in the <code class="file docutils literal notranslate"><span class="pre">config</span></code> subdirectory of the main distribution tree
+(see <a class="reference internal" href="#vacumm.config.get_dist_dir" title="vacumm.config.get_dist_dir"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_dist_dir()</span></code></a>).</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_com_conf_file">
+<code class="descname">get_com_conf_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_com_conf_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_com_conf_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get common user configuration file</p>
+<p>Shortcut for:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_com_conf_dir</span><span class="p">(),</span> <span class="s1">&#39;vacumm.cfg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.config.get_com_conf_dir" title="vacumm.config.get_com_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_com_conf_dir()</span></code></a>, <a class="reference internal" href="#vacumm.config.get_user_conf_file" title="vacumm.config.get_user_conf_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_file()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><em>section=None</em>, <em>user=True</em>, <em>asstring=False</em>, <em>cfg=None</em>, <em>parent_section=None</em>, <em>parent_option=None</em>, <em>split=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <a class="reference external" href="https://docs.python.org/2/library/configparser.html#ConfigParser.SafeConfigParser" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigParser.SafeConfigParser</span></code></a> instance of current configuration or as a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong>, optional: A module or its name, or <code class="docutils literal notranslate"><span class="pre">&quot;__all__&quot;</span></code>
+to get a full config (config files in module drectories are also scanned).</li>
+<li><strong>user</strong>, optional: Also scan available user configuration files.</li>
+<li><strong>asstring</strong>, optional: Get it as string.</li>
+<li><strong>parent_section/option</strong>, optional: Section (module name) and option of
+the main vacumm configuration that give the path to the target configuration
+file. If not provided, it uses <cite>cfg</cite> the main vacumm configuration.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.config.get_config_files" title="vacumm.config.get_config_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config_files()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_config_files">
+<code class="descname">get_config_files</code><span class="sig-paren">(</span><em>section=None</em>, <em>check=False</em>, <em>user=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_config_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_config_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of configuration files that can be loaded</p>
+<p>It lists all configuration files that should be loaded
+to search for a configuration value. It first list
+default configuration files, then add user specific files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong>, optional: Target section of the configuration files.
+It is generally a module name.
+In this case, user and default configuration files
+located in the where the module is are inserted
+into the list.
+It can also be a list of module name.
+Eventually, if the special value <code class="docutils literal notranslate"><span class="pre">&quot;__all__&quot;</span></code> is passed, it searches
+for all configuration files named <code class="file docutils literal notranslate"><span class="pre">vacumm.cfg</span></code>
+in the whole library tree.</li>
+<li><strong>user</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>, load only default config.
+If <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">True</span></code>, append user configuration files
+to the list. If <code class="docutils literal notranslate"><span class="pre">2</span></code>, list only user config files.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><p class="first">Suppose you are in directory <code class="file docutils literal notranslate"><span class="pre">/home/me/myproject</span></code>,
+<a class="reference internal" href="#vacumm.config.get_config_files" title="vacumm.config.get_config_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config_files()</span></code></a> is called from module
+<a class="reference internal" href="bathy.shorelines.html#module-vacumm.bathy.shorelines" title="vacumm.bathy.shorelines"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.bathy.shorelines</span></code></a>, and your use VACUMM
+as a developper, i.e. the library is not installed but used
+directly in the installation tree whose path is
+<code class="file docutils literal notranslate"><span class="pre">/home/me/python/vacumm</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_config_files</span><span class="p">(</span><span class="s1">&#39;vacumm.bathy.shorelines&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following list is returned :</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>/home/me/python/vacumm/lib/python/vacumm/bathy/shorelines/vacumm.cfg (defaults)</li>
+<li>/home/me/python/vacumm/lib/python/vacumm/vacumm-config/vacumm.cfg (defaults)</li>
+<li>/home/me/.config/vacumm/vacumm.cfg</li>
+</ol>
+</div></blockquote>
+<p><strong>Content of last files overides content of first files.</strong></p>
+<p>Other usages:</p>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_config_files</span><span class="p">(</span><span class="s1">&#39;__all__&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config_files</span><span class="p">([</span><span class="s1">&#39;toto.tutu&#39;</span><span class="p">,</span> <span class="s1">&#39;tutu.tata&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_config_sections">
+<code class="descname">get_config_sections</code><span class="sig-paren">(</span><em>cfg=None</em>, <em>parent_section=None</em>, <em>parent_option=None</em>, <em>getcfg=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_config_sections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_config_sections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get sections names</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>parent_section/option</strong>, optional: Section (module name) and option of
+the main vacumm configuration that give the path to the target configuration
+file. If not provided, it uses <cite>cfg</cite> the main vacumm configuration.</li>
+<li><strong>getcfg</strong>, optional: Also return the configurations object.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_config_value">
+<code class="descname">get_config_value</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>regexp=False</em>, <em>ispath=False</em>, <em>user=True</em>, <em>expand=True</em>, <em>vars=None</em>, <em>raw=False</em>, <em>umode='auto'</em>, <em>cfg=None</em>, <em>getcfg=False</em>, <em>parent_section=None</em>, <em>parent_option=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_config_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_config_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the a config value in available VACUMM configuration files</p>
+<p>The list of possible configuration files is provided by <a class="reference internal" href="#vacumm.config.get_config_files" title="vacumm.config.get_config_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config_files()</span></code></a>.</p>
+<p>Configuration values can use expanded variables in two ways:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">Internal option name are automatically expanded to their value
+if found in the form <code class="docutils literal notranslate"><span class="pre">%(option_name)s</span></code>. In addition to internal
+options, you can provide your own (var_name,value) pairs by
+passing a dictionary to the <code class="docutils literal notranslate"><span class="pre">vars</span></code> keyword.
+Some external options pointing to directory names are provided
+automatically (but can be overidden):</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">lib_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_lib_dir" title="vacumm.config.get_lib_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_lib_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">data_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_data_dir" title="vacumm.config.get_data_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">dist_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_dist_dir" title="vacumm.config.get_dist_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dist_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">tut_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_tut_dir" title="vacumm.config.get_tut_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tut_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">user_conf_dir</span></code> or <code class="docutils literal notranslate"><span class="pre">conf_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_user_conf_dir" title="vacumm.config.get_user_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">scripts_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_scripts_dir" title="vacumm.config.get_scripts_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_scripts_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">mod_dir</span></code> (directory of the module when <code class="docutils literal notranslate"><span class="pre">section</span></code> is a module name)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">User home <code class="docutils literal notranslate"><span class="pre">~</span></code> and environement variable (in the form <code class="docutils literal notranslate"><span class="pre">${HOME}</span></code>
+are expanded if keyword <code class="docutils literal notranslate"><span class="pre">expand</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</li>
+</ol>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>section</strong>: A section in the config, typically a full module name
+(see <a class="reference internal" href="#vacumm.config.get_config_files" title="vacumm.config.get_config_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config_files()</span></code></a>)</p>
+</li>
+<li><p class="first"><strong>option</strong>: Option to read in the section.</p>
+</li>
+<li><p class="first"><strong>regexp</strong>, optional: <code class="docutils literal notranslate"><span class="pre">option</span></code> is interpreted a regular expression.
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, it returns a dictionary of (option,value) items found.</p>
+</li>
+<li><p class="first"><strong>ispath</strong>, optional: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, value is converted using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.distutils.misc_util.allpath()</span></code>.</p>
+</li>
+<li><p class="first"><strong>vars</strong>, optional: Dictionary used to expand variables in the form
+<code class="docutils literal notranslate"><span class="pre">%(var_name)s</span></code>.</p>
+</li>
+<li><p class="first"><strong>user</strong>, optional: Also scan user files. If <code class="docutils literal notranslate"><span class="pre">raw</span></code> is True, value
+with <code class="docutils literal notranslate"><span class="pre">conf_dir</span></code> expanded using <code class="docutils literal notranslate"><span class="pre">user_conf_dir</span></code>, and if differents values
+are found, they are treated depending on <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p>
+</li>
+<li><p class="first"><strong>umode</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">user</span></code> is True, and two possible values are found
+(one with <code class="docutils literal notranslate"><span class="pre">conf_dir</span></code>, one with <code class="docutils literal notranslate"><span class="pre">user_conf_dir</span></code>), they are treated
+depending on <code class="docutils literal notranslate"><span class="pre">umode</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;merge&quot;</span></code>: Value found using <code class="docutils literal notranslate"><span class="pre">user_conf_dir</span></code> has priority
+over value found using <code class="docutils literal notranslate"><span class="pre">conf_dir</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>: A two-element list is returned if elements are different.</li>
+<li>Else, if value seems to be a config file (ending with “.ini”
+or “.cfg”), <code class="docutils literal notranslate"><span class="pre">mode=&quot;all&quot;</span></code> else <code class="docutils literal notranslate"><span class="pre">mode=&quot;merge&quot;</span></code>.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>cfg</strong>, optional: External <a class="reference external" href="https://docs.python.org/2/library/configparser.html#ConfigParser.ConfigParser" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigParser.ConfigParser</span></code></a> instance
+or an external config file. If not provided, configuration is given
+by <a class="reference internal" href="#vacumm.config.get_config" title="vacumm.config.get_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config()</span></code></a> (internal configuration).</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">If <code class="docutils literal notranslate"><span class="pre">regexp</span></code> is `` False``, return the value or None if not found,
+else return a dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">&#39;vacumm.bathy.shorelines&#39;</span><span class="p">,</span> <span class="s1">&#39;shapefile_histolitt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paths</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">&#39;vacumm.bathy.shorelines&#39;</span><span class="p">,</span> <span class="s1">&#39;shapefile_.*&#39;</span><span class="p">,</span> <span class="n">regexp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paths</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">&#39;my.module&#39;</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mydir</span><span class="o">=</span><span class="s1">&#39;/home/me/dir&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_data_dir">
+<code class="descname">get_data_dir</code><span class="sig-paren">(</span><em>raiseerr=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_data_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_data_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the data directory absolute path</p>
+<p>This directory contains data samples and other needed files.
+It can be at two different places, depending on if the library is
+an installed version or a developers version.</p>
+<ul class="simple">
+<li>If installed : in <code class="file docutils literal notranslate"><span class="pre">vacumm-data</span></code> subdirectory in the
+installed package directory (see <a class="reference internal" href="#vacumm.config.get_lib_dir" title="vacumm.config.get_lib_dir"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lib_dir()</span></code></a>).</li>
+<li>Else in the <code class="file docutils literal notranslate"><span class="pre">data</span></code> subdirectory of the main distribution tree
+(see <a class="reference internal" href="#vacumm.config.get_dist_dir" title="vacumm.config.get_dist_dir"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_dist_dir()</span></code></a>).</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">It raises an <code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMError</span></code> error if not found
+and if <code class="docutils literal notranslate"><span class="pre">raiseerr</span></code> is True, else return ‘’.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_default_config">
+<code class="descname">get_default_config</code><span class="sig-paren">(</span><em>section='__all__'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_default_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">get_config</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;__all__&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_dir_dict">
+<code class="descname">get_dir_dict</code><span class="sig-paren">(</span><em>modname=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_dir_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_dir_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the following directory names as a dictionary</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">lib_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_lib_dir" title="vacumm.config.get_lib_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_lib_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">data_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_data_dir" title="vacumm.config.get_data_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">dist_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_dist_dir" title="vacumm.config.get_dist_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dist_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">tut_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_tut_dir" title="vacumm.config.get_tut_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tut_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">com_conf_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_com_conf_dir" title="vacumm.config.get_com_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_com_conf_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">user_conf_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_user_conf_dir" title="vacumm.config.get_user_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">scripts_dir</span></code> (see <a class="reference internal" href="#vacumm.config.get_scripts_dir" title="vacumm.config.get_scripts_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_scripts_dir()</span></code></a>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">mod_dir</span></code> (directory of <code class="docutils literal notranslate"><span class="pre">modname</span></code>)</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>modname</strong>, optional: Module name.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_dist_dir">
+<code class="descname">get_dist_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_dist_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_dist_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upper directory of VACUMM distribution tree or <code class="docutils literal notranslate"><span class="pre">None</span></code> for an installed package</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_dl_dir">
+<code class="descname">get_dl_dir</code><span class="sig-paren">(</span><em>suggest=None</em>, <em>filedesc=None</em>, <em>quiet=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_dl_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_dl_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the download directory</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_home_conf_dir">
+<code class="descname">get_home_conf_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_home_conf_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_home_conf_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the directory which contains the user config dir</p>
+<p>It defaults to <code class="file docutils literal notranslate"><span class="pre">~/.config</span></code> and may be set with the <span class="target" id="index-4"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">XDG_CONFIG_HOME</span></code>
+environmement variable.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_lib_dir">
+<code class="descname">get_lib_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_lib_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_lib_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Directory of the <a class="reference internal" href="vacumm.html#module-vacumm" title="vacumm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm</span></code></a> package</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_scripts_dir">
+<code class="descname">get_scripts_dir</code><span class="sig-paren">(</span><em>subdir=None</em>, <em>raiseerr=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_scripts_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_scripts_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the scripts directory absolute path</p>
+<p>This directory contains examples of script.
+It can be at two different places, depending on if the library is
+an installed version or a developers version.</p>
+<ul class="simple">
+<li>If installed : in <code class="file docutils literal notranslate"><span class="pre">vacumm-scripts</span></code> subdirectory in the
+installed package directory (see <a class="reference internal" href="#vacumm.config.get_lib_dir" title="vacumm.config.get_lib_dir"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lib_dir()</span></code></a>).</li>
+<li>Else in the <code class="file docutils literal notranslate"><span class="pre">scripts</span></code> subdirectory of the main distribution tree
+(see <a class="reference internal" href="#vacumm.config.get_dist_dir" title="vacumm.config.get_dist_dir"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_dist_dir()</span></code></a>).</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">It raises an <code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMError</span></code> error if not found
+and if <code class="docutils literal notranslate"><span class="pre">raiseerr</span></code> is True.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_tut_dir">
+<code class="descname">get_tut_dir</code><span class="sig-paren">(</span><em>raiseerr=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_tut_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_tut_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the tutorials directory absolute path</p>
+<p>This directory contains all tutorials used by the documentation.
+It can be at two different places, depending on if the library is
+an installed version or developers version.</p>
+<ul class="simple">
+<li>If installed : in <code class="file docutils literal notranslate"><span class="pre">vacumm-scripts/tutorials</span></code> subdirectory in the
+installed package directory (see <a class="reference internal" href="#vacumm.config.get_lib_dir" title="vacumm.config.get_lib_dir"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lib_dir()</span></code></a>).</li>
+<li>Else in the <code class="file docutils literal notranslate"><span class="pre">scripts/tutorials</span></code>
+subdirectory of the main distribution tree
+(see <a class="reference internal" href="#vacumm.config.get_dist_dir" title="vacumm.config.get_dist_dir"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_dist_dir()</span></code></a>).</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">It raises an <code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMError</span></code> error if not found
+and if <code class="docutils literal notranslate"><span class="pre">raiseerr</span></code> is True.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_user_conf_dir">
+<code class="descname">get_user_conf_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_user_conf_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_user_conf_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get directory that contains user configuration files</p>
+<p>This directory contains main and secondary configuration files.
+These files are usually referenced in the general configuration file.
+On linux, it should be <code class="file docutils literal notranslate"><span class="pre">~/.config/vacumm</span></code>.
+It may be set with the <span class="target" id="index-5"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">VACUMM_CONFIG_DIR</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.get_user_conf_file">
+<code class="descname">get_user_conf_file</code><span class="sig-paren">(</span><em>fname=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#get_user_conf_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.get_user_conf_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get main user configuration file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fname</strong>, optional: Relative or absolute file name.
+It may be set with the <span class="target" id="index-6"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">VACUMM_CONFIG_FILE</span></code>.
+The config directory is prepended if the file name
+is relative.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Shortcut for:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_user_conf_dir</span><span class="p">(),</span> <span class="n">fname</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.config.get_user_conf_dir" title="vacumm.config.get_user_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_dir()</span></code></a>, <a class="reference internal" href="#vacumm.config.edit_user_conf_file" title="vacumm.config.edit_user_conf_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">edit_user_conf_file()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.handle_edit_args">
+<code class="descname">handle_edit_args</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#handle_edit_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.handle_edit_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle argparse args from <code class="docutils literal notranslate"><span class="pre">vacumm_config.py</span> <span class="pre">edit</span> <span class="pre">...</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.handle_print_args">
+<code class="descname">handle_print_args</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#handle_print_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.handle_print_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle argparse args from <code class="docutils literal notranslate"><span class="pre">vacumm_config.py</span> <span class="pre">print</span> <span class="pre">...</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.load_configs">
+<code class="descname">load_configs</code><span class="sig-paren">(</span><em>cfgfiles</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#load_configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.load_configs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read configuration files in merged and separate configuations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>cfgfiles</strong>: Configuration files.</p>
+<blockquote>
+<div><ul class="simple">
+<li>If a file, simply return the associated <a class="reference external" href="https://docs.python.org/2/library/configparser.html#ConfigParser.SafeConfigParser" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SafeConfigParser</span></code></a>
+instance.</li>
+<li>If a list of files, does the same merging all the files.</li>
+<li>If a tuple, create a configuration for each of its elements.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">load_configs</span><span class="p">(</span><span class="s1">&#39;myfile.cfg&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">load_configs</span><span class="p">([</span><span class="s1">&#39;myfile1.cfg&#39;</span><span class="p">,</span> <span class="s1">&#39;myfile2.cfg&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cfg1</span><span class="p">,</span> <span class="n">cfg2</span> <span class="o">=</span> <span class="n">load_configs</span><span class="p">((</span><span class="s1">&#39;vacumm.cfg&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;myfile1.cfg&#39;</span><span class="p">,</span> <span class="s1">&#39;myfile2.cfg&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.merge_configs">
+<code class="descname">merge_configs</code><span class="sig-paren">(</span><em>cfgs</em>, <em>forprint=True</em>, <em>raw=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#merge_configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.merge_configs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge configurations</p>
+<p>Options of the last config overrides options of the other ones,
+except for config file names (values then end with .ini or .cfg)
+that are store as a tuple.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This makes output config incompatible with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">getint()</span></code>, etc.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.print_config">
+<code class="descname">print_config</code><span class="sig-paren">(</span><em>section='__all__'</em>, <em>system=True</em>, <em>direc=True</em>, <em>config=True</em>, <em>packages=True</em>, <em>extended=False</em>, <em>user=True</em>, <em>headers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#print_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.print_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print current configuration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>system</strong>: print the base of the config.</li>
+<li><strong>direc</strong>: print key directories of vacumm.</li>
+<li><strong>config</strong>: print the vacumm config.</li>
+<li><strong>packages</strong>: print the version of some important packages.</li>
+<li><strong>extended</strong>: force printing everything.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This is equivalent to (if <code class="docutils literal notranslate"><span class="pre">extended=False</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">get_config</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">asstring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.set_config_value">
+<code class="descname">set_config_value</code><span class="sig-paren">(</span><em>section</em>, <em>option</em>, <em>value=None</em>, <em>quiet=False</em>, <em>cfgfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#set_config_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.set_config_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create or update user configuration file</p>
+<p>The directory of this file is given by <a class="reference internal" href="#vacumm.config.get_user_conf_dir" title="vacumm.config.get_user_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_dir()</span></code></a>
+and its name is <code class="file docutils literal notranslate"><span class="pre">vacumm.cfg</span></code>. Therefore it should be:
+<code class="file docutils literal notranslate"><span class="pre">~/.config/vacumm/vacumm.cfg</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>section</strong>: A module or its name.</li>
+<li><strong>option</strong>: Option name.</li>
+<li><strong>value</strong>: Value of the option. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, option is removed.</li>
+<li><strong>cfgfile</strong>, optional: Configuration file. If not provided,
+internal user configuration file is used
+(<code class="file docutils literal notranslate"><span class="pre">vacumm.cfg</span></code> in user config directory – given by <a class="reference internal" href="#vacumm.config.get_user_conf_dir" title="vacumm.config.get_user_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_dir()</span></code></a>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">set_config_value</span><span class="p">(</span><span class="s1">&#39;vacumm.bathy.bathy&#39;</span><span class="p">,</span> <span class="s1">&#39;cfgfile_gridded&#39;</span><span class="p">,</span>
+<span class="go">    &#39;%(mod_dir)s/bathy.gridded.cfg&#39;) # set</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">vacumm.bathy.bathy</span> <span class="k">as</span> <span class="nn">B</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set_config_value</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="s1">&#39;cfgfile_gridded&#39;</span><span class="p">)</span> <span class="c1"># remove</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Output:</th><td class="field-body"><p class="first last">Path of the configuration file</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.config.write_default_config">
+<code class="descname">write_default_config</code><span class="sig-paren">(</span><em>cfgfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/config.html#write_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.config.write_default_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the defaults config (see <a class="reference internal" href="#vacumm.config.get_default_config" title="vacumm.config.get_default_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_default_config()</span></code></a>) to a file</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

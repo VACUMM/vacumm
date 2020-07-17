@@ -1,0 +1,287 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.10.3. vacumm.tide.marigraph – Traitements marégraphiques &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/tide.marigraph.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-vacumm.tide.marigraph">
+<span id="vacumm-tide-marigraph-traitements-maregraphiques"></span><span id="lib-tide-marigraph"></span><h1>2.10.3. <a class="reference internal" href="#module-vacumm.tide.marigraph" title="vacumm.tide.marigraph"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.tide.marigraph</span></code></a> – Traitements marégraphiques<a class="headerlink" href="#module-vacumm.tide.marigraph" title="Permalink to this headline">¶</a></h1>
+<p>Provides a class to perform basic operations on marigraphic sea level data</p>
+<dl class="class">
+<dt id="vacumm.tide.marigraph.Marigraph">
+<em class="property">class </em><code class="descname">Marigraph</code><span class="sig-paren">(</span><em>data</em>, <em>tide_filter='demerliac'</em>, <em>outside_std=3.5</em>, <em>bad_values=None</em>, <em>verbose=False</em>, <em>mean=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A marigraph class that support statistics and plots.</p>
+<blockquote>
+<div><p>You give as input a 1D cdms sea level variable with a suitable time,
+or a tide.StationInfo() object, or simply a 5-letter shom ID.
+The class will design an object with high and low tides,
+and pure tidal and without tidal signal.
+You can optionnally specify a time axis on wich the input signal
+is to be interpolated before any processing.
+You can also restrict the time range and perfom a running average.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first">All parameters are passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">set()</span></code></p>
+<blockquote class="last">
+<div><ul>
+<li><p class="first"><strong>data</strong> : It can be either</p>
+<blockquote>
+<div><ul class="simple">
+<li>A <code class="docutils literal notranslate"><span class="pre">cdms2</span></code> 1D array with a time axis.</li>
+<li>A <code class="xref py py-class docutils literal notranslate"><span class="pre">StationInfo</span></code> instance.</li>
+<li>The name of a station that can be search for using <code class="xref py py-class docutils literal notranslate"><span class="pre">StationInfo</span></code>.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>select</em>: time range for data selection (like (‘1999’,‘2000-01-01’,’co’)). If None, time range is reset [default: None],</p>
+</li>
+<li><p class="first"><em>global_anomaly</em>: First remove the anomaly of the whole signal before any processing [default: False]</p>
+</li>
+<li><p class="first"><em>anomaly</em>: Remove the anomaly of the restricted sample before any processing [default: False]</p>
+</li>
+<li><p class="first"><em>shom_anomaly</em>: Same but removed mean is get from observation at correspondind shom station [default: False]</p>
+</li>
+</ul>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>%s</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.tide</span> <span class="k">import</span> <span class="n">Marigraph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brest</span> <span class="o">=</span> <span class="n">Marigraph</span><span class="p">(</span><span class="s1">&#39;BREST&#39;</span><span class="p">,</span><span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;2006-03&#39;</span><span class="p">,</span><span class="s1">&#39;2006-08&#39;</span><span class="p">),</span><span class="n">hourly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brest</span><span class="o">.</span><span class="n">plot_sea_level</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brest</span><span class="o">.</span><span class="n">plot_low_high</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brest</span><span class="o">.</span><span class="n">plot_cotes</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Change time range</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brest</span><span class="o">.</span><span class="n">set_time_range</span><span class="p">((</span><span class="s1">&#39;2006-07&#39;</span><span class="p">,</span><span class="s1">&#39;2006-08&#39;</span><span class="p">,</span><span class="s1">&#39;co&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Change tide filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brest</span><span class="o">.</span><span class="n">set_tide_filter</span><span class="p">(</span><span class="s1">&#39;godin&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Save</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">cdms</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;mytide.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">brest</span><span class="o">.</span><span class="n">cotes</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">brest</span><span class="o">.</span><span class="n">high</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">brest</span><span class="o">.</span><span class="n">low</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">brest</span><span class="o">.</span><span class="n">zeros</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.anomaly">
+<code class="descname">anomaly</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.anomaly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.anomaly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sea level anomaly</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean out the marigraph object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.cotes">
+<code class="descname">cotes</code><span class="sig-paren">(</span><em>anom=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.cotes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.cotes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sea level without the tide signal (surcotes and decotes). You must specify the filter before using this method.</p>
+<p>%(ref)s</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.highs">
+<code class="descname">highs</code><span class="sig-paren">(</span><em>ref='mean'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.highs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.highs" title="Permalink to this definition">¶</a></dt>
+<dd><p>High tides</p>
+<p>%(ref)s</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.latitude">
+<code class="descname">latitude</code><span class="sig-paren">(</span><em>val=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.latitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.latitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set or return the station latitude</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.longitude">
+<code class="descname">longitude</code><span class="sig-paren">(</span><em>val=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.longitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.longitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set or return the station longitude</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.lows">
+<code class="descname">lows</code><span class="sig-paren">(</span><em>ref='mean'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.lows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.lows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low tides</p>
+<p>%(ref)s</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.mean">
+<code class="descname">mean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mean sea level</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set or return the station name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>var=None</em>, <em>orig=True</em>, <em>tide=True</em>, <em>cotes=True</em>, <em>highs=True</em>, <em>lows=True</em>, <em>zeros=True</em>, <em>legend=True</em>, <em>title=None</em>, <em>savefig=None</em>, <em>savefigs=None</em>, <em>show=True</em>, <em>marker='o'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.sea_level">
+<code class="descname">sea_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.sea_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.sea_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sea level</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.set_tide_filter">
+<code class="descname">set_tide_filter</code><span class="sig-paren">(</span><em>tide_filter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.set_tide_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.set_tide_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the tide filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body">%(tide_filter)s</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.tide">
+<code class="descname">tide</code><span class="sig-paren">(</span><em>anom=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.tide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.tide" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Return the tide signal: this signal is obtained by filtering the original sea level signal</dt>
+<dd>using a demerliac or a godin filer.</dd>
+</dl>
+<p>%(ref)s</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.marigraph.Marigraph.zeros">
+<code class="descname">zeros</code><span class="sig-paren">(</span><em>ref='mean'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/marigraph.html#Marigraph.zeros"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.marigraph.Marigraph.zeros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zeros of sea level anomaly</p>
+<p>%(ref)s</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

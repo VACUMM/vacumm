@@ -1,0 +1,280 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.11. vacumm.misc.namelist – Fortran namelists &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.11. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.namelist</span></code> – Fortran namelists</a><ul>
+<li><a class="reference internal" href="#overview">2.3.11.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.11.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.namelist.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-namelist-fortran-namelists">
+<span id="lib-misc-namelist"></span><h1>2.3.11. <a class="reference internal" href="#module-vacumm.misc.namelist" title="vacumm.misc.namelist"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.namelist</span></code></a> – Fortran namelists<a class="headerlink" href="#vacumm-misc-namelist-fortran-namelists" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.11.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.namelist.Namelist" title="vacumm.misc.namelist.Namelist"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namelist</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.namelist.Namelist.from_file" title="vacumm.misc.namelist.Namelist.from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.namelist.Namelist.from_string" title="vacumm.misc.namelist.Namelist.from_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_string()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.namelist.Namelist.load_file" title="vacumm.misc.namelist.Namelist.load_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.namelist.Namelist.load_string" title="vacumm.misc.namelist.Namelist.load_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_string()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.namelist.Namelist.save_file" title="vacumm.misc.namelist.Namelist.save_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.namelist.Namelist.save_string" title="vacumm.misc.namelist.Namelist.save_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_string()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.11.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vacumm.misc.namelist"></span><p>Load / save fortran namelist string / file.</p>
+<dl class="class">
+<dt id="vacumm.misc.namelist.Namelist">
+<em class="property">class </em><code class="descname">Namelist</code><a class="reference internal" href="../_modules/vacumm/misc/namelist.html#Namelist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.namelist.Namelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<p>Handles the fortran namelist format as below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>! header comment
+
+&amp;namelist1 b=.true. i=0,f=0.1, s=&quot;ab&quot; , ss=&quot;abcd&quot; /    ! inline comment
+
+! standalone comment
+# another &quot;comment&quot;
+
+&amp;namelist2
+integer=1500, float=1.5e3    ! inline comment
+str1=&quot;A : B&quot;
+str2=&quot;/path/to/file.txt&quot;
+array(0)=0
+array(1)=1
+/
+</pre></div>
+</div>
+<p>Empty lines, spaces and comments (from “:”, “!” or “#” characters to the end of line) are allowed.</p>
+<p>Namelists start tag is the “&amp;” character and end tag is “/”, both on their own line or not.</p>
+<p>Variables are delimited with space(s) or comma.</p>
+<p>Namelists (sections) are stored and made accessible in a dictionnary fashion as this class
+inherit from dict.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Keys are the namelists names, values are the variables of the corresponding namelist.</li>
+<li>Namelist variables are also stored in dicts.</li>
+<li>If the variable is an array like variable, values are also stored in a dict.</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>Variables types are automatically handled, available types are:</dt>
+<dd><ul class="first last simple">
+<li>boolean: stored as bool python variable</li>
+<li>integer: as int</li>
+<li>real/scientific: as float</li>
+<li>array: as dict</li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li><strong>Variables cannot be inserted directly into the Namelist</strong>, you must access/setup the namelist level before (see examples)
+that’s because there is no global variable in a namelist file !</li>
+</ul>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="n">Namelist</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># The following is not correct and would results in a ValueError:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;myvar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span><span class="ne">ValueError</span><span class="p">:</span> <span class="n">Cannot</span> <span class="nb">set</span> <span class="n">a</span> <span class="k">global</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">namelist</span><span class="p">,</span> <span class="n">value</span> <span class="n">must</span> <span class="n">be</span> <span class="n">a</span> <span class="nb">dict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># That&#39;s the good way to do things:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;mynamelist&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;mynamelist&#39;</span><span class="p">][</span><span class="s1">&#39;myvar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="n">Namelist</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;namelist1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">n</span><span class="o">.</span><span class="n">save_string</span><span class="p">()</span>
+<span class="gp">... </span><span class="o">&amp;</span><span class="n">namelist1</span>
+<span class="gp">... </span>  <span class="n">real</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">... </span>  <span class="n">integer</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span>  <span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>  <span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span>  <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span>
+<span class="gp">... </span>  <span class="o">/</span>
+</pre></div>
+</div>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="n">Namelist</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s1">&#39;mynamelist.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="vacumm.misc.namelist.Namelist.from_file">
+<em class="property">classmethod </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>filepath</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/namelist.html#Namelist.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.namelist.Namelist.from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method populating the created namelist with a file.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.namelist.Namelist.from_string">
+<em class="property">classmethod </em><code class="descname">from_string</code><span class="sig-paren">(</span><em>string</em>, <em>*a</em>, <em>**k</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/namelist.html#Namelist.from_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.namelist.Namelist.from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method populating the created namelist with a string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.namelist.Namelist.load_file">
+<code class="descname">load_file</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/namelist.html#Namelist.load_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.namelist.Namelist.load_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load namelists from a text file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.namelist.Namelist.load_string">
+<code class="descname">load_string</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/namelist.html#Namelist.load_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.namelist.Namelist.load_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load namelists from a string.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="vacumm.misc.namelist.Namelist.remove_comments">
+<em class="property">static </em><code class="descname">remove_comments</code><span class="sig-paren">(</span><em>s</em>, <em>strip=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/namelist.html#Namelist.remove_comments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.namelist.Namelist.remove_comments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal method for comments filtering.
+Return s without fortran comments.
+If strip is True, also eliminate empty lines and leading and trailing spaces</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.namelist.Namelist.save_file">
+<code class="descname">save_file</code><span class="sig-paren">(</span><em>filename</em>, <em>append=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/namelist.html#Namelist.save_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.namelist.Namelist.save_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the (fortran) formatted namelists to a file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.namelist.Namelist.save_string">
+<code class="descname">save_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/namelist.html#Namelist.save_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.namelist.Namelist.save_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the (fortran) formated namelists</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

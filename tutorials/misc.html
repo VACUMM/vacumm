@@ -1,0 +1,239 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.3.3. Basic generic tool &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/misc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="basic-generic-tool">
+<span id="user-tut-misc"></span><h1>1.3.3. Basic generic tool<a class="headerlink" href="#basic-generic-tool" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="misc.misc.html">1.3.3.1. Misc tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.misc.strings.html">1.3.3.1.1. Strings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.time.html">1.3.3.2. Times</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.time.html#bases">1.3.3.2.1. Bases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.time.bases.cdtime.html">1.3.3.2.1.1. Les temps <code class="docutils literal notranslate"><span class="pre">cdtime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.time.bases.types.html">1.3.3.2.1.2. Les différents types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="misc.time.html#vacumm-time-tools">1.3.3.2.2. VACUMM time tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.time.atime.format.html">1.3.3.2.2.1. Le formatage en ascii</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.time.atime.units.html">1.3.3.2.2.2. Les unités de temps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.time.atime.operations.html">1.3.3.2.2.3. Les opérations sur le temps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.variables.html">1.3.3.3. CDAT variables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.variables.html#bases">1.3.3.3.1. Bases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.variables.bases.mv.html">1.3.3.3.1.1. Numerical variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.variables.bases.axes.html">1.3.3.3.1.2. Axes and variables</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="misc.variables.html#vacumm-tools">1.3.3.3.2. VACUMM tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.variables.axes.html">1.3.3.3.2.1. Manipulate axes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.io.html">1.3.3.4. Inputs/outputs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.netcdf.html">1.3.3.4.1. Les fichiers netcdf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.grib.html">1.3.3.4.2. Les fichiers grib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.ascii.html">1.3.3.4.3. Les fichiers ascii</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.xyz.html">1.3.3.4.4. Les fichiers xyz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.xls.html">1.3.3.4.5. Les fichiers Excel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.config.html">1.3.3.4.6. Les fichiers de config .cfg ou .ini</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.snx.html">1.3.3.4.7. Les fichiers sinusX</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.plot.html">1.3.3.5. Graphics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.plot.html#matplotlib">1.3.3.5.1. Matplotlib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.plot.html#simples-cases">1.3.3.5.2. Simples cases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.basic.map2.html">1.3.3.5.2.1. Tracé de cartes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.basic.vectors.html">1.3.3.5.2.2. Tracé de vecteurs sur carte</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.basic.curve.html">1.3.3.5.2.3. Tracé de courbes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.basic.hov.html">1.3.3.5.2.4. Diagramme de Hovmoller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.basic.stick.html">1.3.3.5.2.5. Stick plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.basic.taylor.html">1.3.3.5.2.6. Diagramme de Taylor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.basic.target.html">1.3.3.5.2.7. Target diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="misc.plot.html#advanced-usages">1.3.3.5.3. Advanced usages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.advanced.add_things.html">1.3.3.5.3.1. Add things to plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.advanced.meteo.html">1.3.3.5.3.2. Weather data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.advanced.meteo2d.html">1.3.3.5.3.3. Sorties météo 2D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.advanced.quiver_anim.html">1.3.3.5.3.4. Animation de courants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.advanced.swan.html">1.3.3.5.3.5. Tracé sur grille oblique de sorties SWAN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.plot.advanced.stepsnorm.html">1.3.3.5.3.6. Utilisation d’une palette à paliers irréguliers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.grid.html">1.3.3.6. Gridded data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.polygons.html">1.3.3.6.1. Les polygones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.masking.html">1.3.3.6.2. Les masques</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.grid.masking.coast.html">1.3.3.6.2.1. Masque d’après traît de côte</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.grid.masking.erode_coast.html">1.3.3.6.2.2. Rognage de la côte</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.grid.masking.lakes.html">1.3.3.6.2.3. Gestion des lacs dans un masque</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.regridding.html">1.3.3.6.3. Regrillage 1D et 2D</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.grid.regridding.html#regrillage-1d">1.3.3.6.3.1. Regrillage 1D</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.interp1d.html">1.3.3.6.3.1.1. Interpolation 1D</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.remap_vs_interp_1d.html">1.3.3.6.3.1.2. Remapping versus interpolation - 1D</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.regrid1dx.html">1.3.3.6.3.1.3. Regrillage 1D étendu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.conserv1d.html">1.3.3.6.3.1.4. Remapping conservatif 1D</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.cellerr1d.html">1.3.3.6.3.1.5. Weigthed interpolation 1D based on errors</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="misc.grid.regridding.html#regrillage-2d">1.3.3.6.3.2. Regrillage 2D</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.griddata.html">1.3.3.6.3.2.1. Interpolation vers grille régulière</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.interp2d.html">1.3.3.6.3.2.2. Interpolation entre deux grilles régulières</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.curv2rect.html">1.3.3.6.3.2.3. D’une grille curvilinéaire vers une grille rectangulaire</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.curv2curv.html">1.3.3.6.3.2.4. D’une grille curvilinéaire vers une grille curvilinéaire</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.grid2xy.html">1.3.3.6.3.2.5. Interpolation de données grillées vers des positions aléatoires</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.xy2xy.html">1.3.3.6.3.2.6. Interpolation entre des positions aléatoires</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="misc.grid.regridding.html#remplissage-des-valeurs-manquantes">1.3.3.6.3.3. Remplissage des valeurs manquantes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.fill1d.html">1.3.3.6.3.3.1. Remplissage 1D</a></li>
+<li class="toctree-l4"><a class="reference internal" href="misc.grid.regridding.fill2d.html">1.3.3.6.3.3.2. Remplissage 2D</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.bases.html">1.3.3.7. Base classes and utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.bases.html#introduction">1.3.3.7.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.bases.html#logging-features">1.3.3.7.2. Logging features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.bases.html#configuration-features">1.3.3.7.3. Configuration features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.bases.html#debugging-features">1.3.3.7.4. Debugging features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.config.html">1.3.3.8. Configuration management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.config.intro.html">1.3.3.8.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.config.optparse.html">1.3.3.8.2. Example with <code class="docutils literal notranslate"><span class="pre">optparse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.config.argparse.html">1.3.3.8.3. Mixing <code class="docutils literal notranslate"><span class="pre">argparse</span></code> and <code class="docutils literal notranslate"><span class="pre">ConfigManager</span></code> in a script</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.file.html">1.3.3.9. File utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.file.html#introduction">1.3.3.9.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.file.html#file-system-traversal-with-depth-support">1.3.3.9.2. File system traversal with depth support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.file.html#file-search">1.3.3.9.3. File search</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.file.html#the-example">1.3.3.9.3.1. The example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="misc.file.html#making-file-backups-called-rollover">1.3.3.9.4. Making file backups (called rollover)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.file.html#displaying-and-analysing-file-sizes">1.3.3.9.5. Displaying and analysing file sizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.file.html#creating-directories">1.3.3.9.6. Creating directories</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.log.html">1.3.3.10. Logging utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.xml.html">1.3.3.11. XML serialization/deserialization</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,165 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.5.16.4. test_cdat_regrid_rect2rect.py – Compare CDAT regridding speed with rectangular and rectangular grids &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tests/test_cdat_regrid_rect2rect.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="test-cdat-regrid-rect2rect-py-compare-cdat-regridding-speed-with-rectangular-and-rectangular-grids">
+<h1>3.5.16.4. <strong class="program">test_cdat_regrid_rect2rect.py</strong> – Compare CDAT regridding speed with rectangular and rectangular grids<a class="headerlink" href="#test-cdat-regrid-rect2rect-py-compare-cdat-regridding-speed-with-rectangular-and-rectangular-grids" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Compare CDAT regridding speed with rectangular and rectangular grids&quot;&quot;&quot;</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s1">&#39;esmf&#39;</span><span class="p">:[</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;patch&#39;</span><span class="p">,</span> <span class="s1">&#39;conserv&#39;</span><span class="p">],</span> 
+   <span class="s1">&#39;libcf&#39;</span><span class="p">:[</span><span class="s1">&#39;linear&#39;</span><span class="p">],</span> 
+<span class="p">}</span>
+
+<span class="c1"># Imports</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">MV2</span><span class="p">,</span> <span class="n">create_grid2d</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">,</span> <span class="n">os</span><span class="p">,</span> <span class="n">CDATRegridder</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">set_grid</span><span class="p">,</span> <span class="n">psinfo</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid</span> <span class="k">import</span> <span class="n">rotate_grid</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">time</span>
+
+<span class="c1"># Input</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">vari</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="o">*</span><span class="n">ny</span><span class="o">*</span><span class="mf">1.</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+<span class="n">gridi</span> <span class="o">=</span> <span class="n">create_grid2d</span><span class="p">(</span><span class="n">vari</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)[:]</span><span class="o">*</span><span class="mi">50</span><span class="o">/</span><span class="n">nx</span><span class="p">,</span>  <span class="n">vari</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)[:]</span><span class="o">*</span><span class="mi">50</span><span class="o">/</span><span class="n">nx</span><span class="p">)</span>
+<span class="n">set_grid</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">gridi</span><span class="p">)</span>
+
+<span class="c1"># Output grid</span>
+<span class="n">gridor</span> <span class="o">=</span> <span class="n">create_grid2d</span><span class="p">(</span><span class="n">vari</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)[:]</span><span class="o">*</span><span class="mf">0.09</span><span class="o">*</span><span class="mi">50</span><span class="o">/</span><span class="n">nx</span><span class="p">,</span>  
+    <span class="n">vari</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)[:]</span><span class="o">*</span><span class="mf">0.09</span><span class="o">*</span><span class="mi">50</span><span class="o">/</span><span class="n">nx</span><span class="p">)</span>
+<span class="n">gridoc</span> <span class="o">=</span> <span class="n">rotate_grid</span><span class="p">(</span><span class="n">gridi</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+
+<span class="c1"># Log</span>
+<span class="n">logfile</span> <span class="o">=</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;NY=</span><span class="si">%(ny)i</span><span class="s1">, NX=</span><span class="si">%(nx)i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">locals</span><span class="p">()</span>
+
+<span class="c1"># Loop on methods</span>
+<span class="k">for</span> <span class="n">tool</span><span class="p">,</span> <span class="n">methods</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+<span class="c1">#        print tool.upper(), method</span>
+        <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="n">tool</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">method</span>
+        
+        <span class="c1"># rect...</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">CDATRegridder</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">gridor</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">tool</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-</span><span class="n">t0</span>
+        <span class="n">varo</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">vari</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span>  <span class="s1">&#39; rect: ini=</span><span class="si">%5.1f</span><span class="s1"> s + reg=</span><span class="si">%5.2f</span><span class="s1"> s </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t1</span><span class="p">,</span> <span class="n">psinfo</span><span class="p">())</span>
+        
+        <span class="c1"># curved</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">CDATRegridder</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">gridoc</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">tool</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">t1</span><span class="o">-</span><span class="n">t0</span>
+        <span class="n">varo</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">vari</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span>  <span class="s1">&#39; curv: ini=</span><span class="si">%5.1f</span><span class="s1"> s + reg=</span><span class="si">%5.2f</span><span class="s1"> s </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t1</span><span class="p">,</span> <span class="n">psinfo</span><span class="p">())</span>
+        
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+<map id="inheritance55b03402e6" name="inheritance55b03402e6">
+<area shape="poly" id="node1" href="data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" target="_top" title="Generic dataset representation." alt="" coords="338,139,331,130,311,122,279,116,240,112,196,111,153,112,113,116,82,122,62,130,55,139,62,148,82,156,113,163,153,167,196,168,240,167,279,163,311,156,331,148"/>
+<area shape="poly" id="node3" href="data.misc.dataset.html#vacumm.data.misc.dataset.OceanSurfaceDataset" target="_top" title="vacumm.data.misc.dataset.OceanSurfaceDataset" alt="" coords="387,245,378,236,351,228,309,221,255,217,196,216,137,217,84,221,42,228,15,236,5,245,15,254,42,262,84,268,137,272,196,273,255,272,309,268,351,262,378,254"/>
+<area shape="poly" id="node2" href="misc.bases.html#vacumm.misc.bases.Object" target="_top" title="Vacumm&#39;s base class proving common usefull features:" alt="" coords="307,34,302,25,286,17,261,11,231,7,196,5,162,7,131,11,107,17,91,25,86,34,91,43,107,51,131,57,162,61,196,63,231,61,261,57,286,51,302,43"/>
+<area shape="poly" id="node4" href="#vacumm.data.model.swan.SWAN" target="_top" title=":class:`~vacumm.data.misc.dataset.Dataset` class to read the" alt="" coords="326,350,320,341,302,333,273,327,237,323,196,321,156,323,120,327,91,333,73,341,66,350,73,359,91,367,120,373,156,377,196,379,237,377,273,373,302,367,320,359"/>
+</map>

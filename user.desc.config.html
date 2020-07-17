@@ -1,0 +1,351 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.5.2. Using advanced configurations &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.5.2. Using advanced configurations</a><ul>
+<li><a class="reference internal" href="#initial-configurations">1.5.2.1. Initial configurations</a></li>
+<li><a class="reference internal" href="#user-configuration">1.5.2.2. User configuration</a></li>
+<li><a class="reference internal" href="#classes-of-configuration">1.5.2.3. Classes of configuration</a><ul>
+<li><a class="reference internal" href="#la-classe-object">1.5.2.3.1. La classe <code class="docutils literal notranslate"><span class="pre">Object</span></code></a></li>
+<li><a class="reference internal" href="#la-classe-catalog">1.5.2.3.2. La classe <code class="docutils literal notranslate"><span class="pre">Catalog</span></code></a><ul>
+<li><a class="reference internal" href="#exemple">1.5.2.3.2.1. Exemple</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#la-classe-dataset">1.5.2.3.3. La classe <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li><a class="reference internal" href="#id1">1.5.2.3.3.1. Exemple</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#la-classe-profilesdataset">1.5.2.3.4. La classe <code class="docutils literal notranslate"><span class="pre">ProfilesDataset</span></code></a></li>
+<li><a class="reference internal" href="#la-classe-colocator">1.5.2.3.5. La classe <code class="docutils literal notranslate"><span class="pre">Colocator</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-of-a-configuration-file">1.5.2.4. Example of a configuration file</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.desc.config.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-advanced-configurations">
+<span id="user-desc-config"></span><h1>1.5.2. Using advanced configurations<a class="headerlink" href="#using-advanced-configurations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="initial-configurations">
+<h2>1.5.2.1. Initial configurations<a class="headerlink" href="#initial-configurations" title="Permalink to this headline">¶</a></h2>
+<p>Certains modules de la librairie utilisent des fichiers de configuration
+pour définir leur comportement par défaut.</p>
+<p>Il s’agit de fichiers proches du format <strong>“.ini”</strong>.
+Les fichiers .ini définissent des sections et variables associées mais
+aussi le type de chacune de ces variables.
+(cf <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code>).</p>
+<p>Ces fichiers se situent par défaut dans le même répertoire que le module
+concerné et portent le même nom, avec l’extension “.py” remplacée par “.ini”.</p>
+<p>La classe <a class="reference internal" href="library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object</span></code></a> a, entre autre, pour but d’automatiser
+le chargement des fichiers de configuration par défaut ainsi que des fichiers
+utilisateur (voir plus bas).</p>
+<p>Chaque classe d’un module qui hérite de la classe <a class="reference internal" href="library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">Object</span></code></a> chargera automatiquement
+sa configuration intiale si le fichier existe, et qu’une section correspondante
+(par défaut de même nom que la classe) est présente.</p>
+<p>Le chargement de cette configuration initiale est réalisé une seule fois pour
+chaque classe, <strong>lors du premier import du module concerné</strong>.</p>
+<p>La configuration initiale, aussi nommée configuration par défaut, est appliquée
+à la classe concernée, et est recopiée par ses objets (instances de cette classe)
+lors de leur création.</p>
+</div>
+<div class="section" id="user-configuration">
+<h2>1.5.2.2. User configuration<a class="headerlink" href="#user-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Les configurations utlisateur <strong>“.cfg”</strong> permettent d’écraser les valeurs
+de la configuration initiale.</p>
+<p>La classe <a class="reference internal" href="library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">Object</span></code></a> permet d’automatiser leur chargement.</p>
+<p>Les script de la librairie proposent généralement l’option <a class="reference internal" href="user.scripts.common_options.html#id1"><code class="xref std std-option docutils literal notranslate"><span class="pre">--cfgfile</span></code></a>
+afin de charger un fichier de configuration.</p>
+<p>Le fichier de configuration peut alors contenir différentes sections
+correspondantes au composants (classes) utilisées par le script.</p>
+</div>
+<div class="section" id="classes-of-configuration">
+<h2>1.5.2.3. Classes of configuration<a class="headerlink" href="#classes-of-configuration" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Les classes concernée sont celles héritant de Object.</p>
+<p>L’héritage est respécté lors des chargements configurations:
+une classe MyObj héritant de Object pourra contenir les mêmes
+configurations que la classe Object, une classe MySubObj pourra
+contenir les mêmes configurations que MyObj et Object, …</p>
+<p class="last">Ainsi, la configuration de la classe Object sera aussi appliquée
+aux classes qui la spécialisent (qui en héritent).</p>
+</div>
+<div class="section" id="la-classe-object">
+<h3>1.5.2.3.1. La classe <a class="reference internal" href="library/misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">Object</span></code></a><a class="headerlink" href="#la-classe-object" title="Permalink to this headline">¶</a></h3>
+<p>Exemple:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[Object]
+    cfg_debug = False
+    log_obj_stats = True
+    [[Logger]]
+        level = &#39;verbose&#39;
+</pre></div>
+</div>
+<p>Variables spécifiques au objets:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>cfg_debug</strong>: Si True, des logs concernant le chargement des configurations seront émis.</li>
+<li><dl class="first docutils">
+<dt><strong>log_obj_stats</strong>: Si True, les valeur min, max, average et count (nombre de valeurs valides)</dt>
+<dd>seront incluses lors des appel à Object.describe(myvar). Une attention
+particulière doit être apportée à cette variable car elle peut avoir un
+impact sur la durée des traitements.</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Variables spécifiques au logging:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>level</strong>: Niveau de log (valeurs possibles: debug,verbose,info,notice,warning,error,critical)</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="la-classe-catalog">
+<h3>1.5.2.3.2. La classe <a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.Catalog" title="vacumm.data.misc.dataset.Catalog"><code class="xref py py-class docutils literal notranslate"><span class="pre">Catalog</span></code></a><a class="headerlink" href="#la-classe-catalog" title="Permalink to this headline">¶</a></h3>
+<p>Cette classe est utilisée pour peupler les objets Dataset.</p>
+<p>Elle permet de spécifier la vue logique des fichiers de données afin de pouvoir traiter
+des aggrégations de fichiers, actuellement:</p>
+<blockquote>
+<div><ul class="simple">
+<li>jeux de données en best estimate (aka best time serie)</li>
+<li>jeux de données de profiles</li>
+</ul>
+</div></blockquote>
+<p>Ces deux types de jeux de données sont actuellement configurable de la même manière
+via les variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>files</strong>: Une liste explicite de fichiers.</li>
+<li><dl class="first docutils">
+<dt><strong>filepattern</strong>: Le motif des fichiers à prendre en compte, pouvant contenir</dt>
+<dd>un ou plusieurs marqueurs de date (%Y: année sur 4 chiffre, %m: mois, …).</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>time</strong>: Une liste de deux chaines de caractères, spécifiant la date</dt>
+<dd>minimale et maximale <strong>des fichiers (et non de la couverture temporelle des données
+qu’ils contiennent)</strong> à prendre en compte.
+Les dates doivent être dans un format compatible avec le module
+<a class="reference internal" href="library/misc.atime.html#module-vacumm.misc.atime" title="vacumm.misc.atime"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.atime</span></code></a></dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Le jeu de données est alors constitué de la liste des fichier <strong>files</strong> à laquelle s’ajoute
+la liste des fichiers établie par la fonction <a class="reference internal" href="library/misc.io.html#vacumm.misc.io.list_forecast_files" title="vacumm.misc.io.list_forecast_files"><code class="xref py py-func docutils literal notranslate"><span class="pre">list_forecast_files()</span></code></a>
+prennant en argument (<strong>filepattern</strong>, <strong>time</strong>)</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">documentation du format des dates de la librairie vacumm</p>
+</div>
+<div class="section" id="exemple">
+<h4>1.5.2.3.2.1. Exemple<a class="headerlink" href="#exemple" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[[Catalog]]
+    files = &#39;file_2004-01.nc&#39;,&#39;file_2004-02.nc&#39;
+    filepattern = &#39;data/file_%Y-%m.nc&#39;
+    time = &#39;2004-01-01&#39;,&#39;2004-03-01&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="la-classe-dataset">
+<h3>1.5.2.3.3. La classe <a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a><a class="headerlink" href="#la-classe-dataset" title="Permalink to this headline">¶</a></h3>
+<p>La classe Dataset peut contenir une section Catalog afin de décrire
+l’accès aux données.</p>
+<p>Dataset exploite la liste des fichier établie par Catalog en utilisant <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.io.NcReadBestEstimate</span></code>.</p>
+<dl class="docutils">
+<dt>Cette classe fourni les fonctionnalités génériques d’exploitation d’un jeu de données:</dt>
+<dd><ul class="first last simple">
+<li>exploitation d’une liste de fichiers de donneés</li>
+<li>récupération de grille</li>
+<li>détermination de la résolution temporelle</li>
+<li>lecture des variables en best estimate</li>
+<li>lecture de l’axe de temps en best estimate</li>
+<li>lecture transparente des données de profondeur (directe ou coordonnées sigma)</li>
+<li>chargement de section, hovmoller, couche à une certaine profondeur, …</li>
+</ul>
+</dd>
+</dl>
+<p>Bien qu’orientée vers l’exploitation de données grillées, Dataset doit pouvoir constituer une base de lecteur
+de données. La classe <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.data.misc.profiles.ProfilesDataset</span></code> redéfinie certaines méthodes afin
+de traiter non plus des données grillées mais de profiles.</p>
+<div class="section" id="id1">
+<h4>1.5.2.3.3.1. Exemple<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[MARS3D]
+    log_obj_stats = True
+    [[Logger]]
+        level = &#39;debug&#39;
+    [[Catalog]]
+        filepattern = &#39;data/champs_%m_BOBI.nc&#39;
+        time = &#39;2004-01-01&#39;,&#39;2004-03-01&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="la-classe-profilesdataset">
+<h3>1.5.2.3.4. La classe <a class="reference internal" href="library/data.misc.profile.html#vacumm.data.misc.profile.ProfilesDataset" title="vacumm.data.misc.profile.ProfilesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProfilesDataset</span></code></a><a class="headerlink" href="#la-classe-profilesdataset" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="la-classe-colocator">
+<h3>1.5.2.3.5. La classe <a class="reference internal" href="library/data.misc.coloc.html#vacumm.data.misc.coloc.Colocator" title="vacumm.data.misc.coloc.Colocator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Colocator</span></code></a><a class="headerlink" href="#la-classe-colocator" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>La classe Colocator permet de colocaliser des données de différents types.</dt>
+<dd><ul class="first last simple">
+<li>Données grillées de modèle</li>
+<li>Données de profiles in situ</li>
+</ul>
+</dd>
+</dl>
+<p>Colocator fourni actuellement une méthode de lecture des données de modèle colocalisées
+en fonction des données de profiles avec deux méthodes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Lecture des données modèle les plus proche en temps et position</li>
+<li>Interpolation spatiale et temporelle</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="example-of-a-configuration-file">
+<h2>1.5.2.4. Example of a configuration file<a class="headerlink" href="#example-of-a-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>Voici un exemple de fichier de configuration minimale premettant de régler le niveau
+de logging et l’accès aux données.</p>
+<p>Ce type de fichier peut être utilisés avec les différents scripts de diagnostiques
+du modèle Mars.</p>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>Etendre cette configuration avec des sections spécifiques à chacun des scripts
+pour affiner les paramétrage (paramètres actuellement obligatoire en arguments des scripts,
+critères pour le calcul de MLD, paramétrage des tracés, …)</li>
+</ul>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[Object]
+    cfg_debug = False
+    log_obj_stats = False
+    [[Logger]]
+        level = &#39;info&#39;
+
+[MARS3D]
+    log_obj_stats = True
+    [[Logger]]
+        level = &#39;debug&#39;
+    [[Catalog]]
+        filepattern = &#39;data/mars_%m_%Y.nc&#39;
+        time = &#39;2007-01-01&#39;,&#39;2007-03-01&#39;
+
+[Satellite]
+    [[Catalog]]
+        files = &#39;data/satellite.nc&#39;
+
+[ProfilesDataset]
+    [[Catalog]]
+        files = &#39;data/merged_profiles_manga_coriolis.nc&#39;,&#39;data/merged_profiles_manga_sismer.nc&#39;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

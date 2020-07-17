@@ -1,0 +1,4 @@
+<map id="inheritance2cb3a363ae" name="inheritance2cb3a363ae">
+<area shape="poly" id="node1" title="Formatter instances are used to convert a LogRecord to text." alt="" coords="217,34,213,25,203,17,186,11,165,7,141,5,118,7,97,11,80,17,69,25,66,34,69,43,80,51,97,57,118,61,141,63,165,61,186,57,203,51,213,43"/>
+<area shape="poly" id="node2" href="#vacumm.misc.io.ColoredFormatter" target="_top" title="Log formatter with colors" alt="" coords="277,139,271,130,251,122,221,116,183,112,141,111,99,112,61,116,31,122,12,130,5,139,12,148,31,156,61,163,99,167,141,168,183,167,221,163,251,156,271,148"/>
+</map>

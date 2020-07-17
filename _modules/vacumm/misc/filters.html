@@ -1,0 +1,844 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.misc.filters &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../index.html"><img src="../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.misc.filters</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Various 1d and 2D filters&quot;&quot;&quot;</span>
+
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2010-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;generic1d&#39;</span><span class="p">,</span> <span class="s1">&#39;shapiro1d&#39;</span><span class="p">,</span> <span class="s1">&#39;gaussian1d&#39;</span><span class="p">,</span> <span class="s1">&#39;hamming1d&#39;</span><span class="p">,</span><span class="s1">&#39;generic2d&#39;</span><span class="p">,</span> <span class="s1">&#39;shapiro2d&#39;</span><span class="p">,</span> <span class="s1">&#39;gaussian2d&#39;</span><span class="p">,</span> <span class="s1">&#39;deriv&#39;</span><span class="p">,</span> <span class="s1">&#39;deriv2d&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;norm_atan&#39;</span><span class="p">,</span><span class="s1">&#39;running_average&#39;</span><span class="p">,</span> <span class="s1">&#39;bartlett1d&#39;</span><span class="p">,</span> <span class="s1">&#39;kaiser1d&#39;</span><span class="p">,</span> <span class="s1">&#39;hanning1d&#39;</span><span class="p">,</span> <span class="s1">&#39;blackman1d&#39;</span><span class="p">]</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span><span class="o">,</span><span class="nn">MV2</span><span class="o">,</span> <span class="nn">cdms2</span>
+<span class="kn">from</span> <span class="nn">genutil.filters</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">MA</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span>
+<span class="n">MV</span> <span class="o">=</span> <span class="n">MV2</span>
+<span class="n">cdms</span> <span class="o">=</span> <span class="n">cdms2</span>
+<span class="kn">import</span> <span class="nn">scipy.signal</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">convolve2d</span>
+
+<span class="kn">from</span> <span class="nn">misc</span> <span class="k">import</span> <span class="n">cp_atts</span>
+<span class="kn">from</span> <span class="nn">phys.units</span> <span class="k">import</span> <span class="n">deg2m</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">meshgrid</span>
+<span class="kn">from</span> <span class="nn">axes</span> <span class="k">import</span> <span class="n">islon</span><span class="p">,</span><span class="n">islat</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">ComplexWarning</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="s1">&#39;Casting complex values&#39;</span><span class="p">,</span> <span class="n">ComplexWarning</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span> <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="generic1d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.generic1d">[docs]</a><span class="k">def</span> <span class="nf">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generic 1D filter applied to :mod:`MV2` variables using convolution.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: Atleast 1D :mod:`MV2` variable.</span>
+<span class="sd">        - **weights**: integer, 1D weights.</span>
+<span class="sd">          They are expected to be symmetric and of odd sizes.</span>
+<span class="sd">        - **axis**, optional: axis on which to operate</span>
+<span class="sd">        - **mask**, optional: mode of masking.</span>
+<span class="sd">          The mask is also filtered, and its value helps</span>
+<span class="sd">          defining the new mask, depending on this parameter:</span>
+
+<span class="sd">            - If a float is provided, data are masked if the mask value</span>
+<span class="sd">              is greater than this parameter.</span>
+<span class="sd">            - ``&quot;minimal&quot;``: Equivalent to ``1.``. Data is not masked</span>
+<span class="sd">              if a valid value was used to compute data.</span>
+<span class="sd">            - ``&quot;maximal&quot;``: Equivalent to ``0.``. Data is masked</span>
+<span class="sd">              if a invalid value was used to compute data.</span>
+<span class="sd">            - ``&quot;same&quot;``: Mask is the same as input mask.</span>
+
+<span class="sd">        - **copy**, optional: Copy variable before filtering it.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - The filtered :mod:`MV2` variable.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; generic1d(data, 3.) # running mean using a 3-points block</span>
+<span class="sd">        &gt;&gt;&gt; generic1d(data, [1.,2.,1], axis=2) # shapiro filter on third axis</span>
+
+<span class="sd">    :See also: :func:`scipy.signal.convolve2d`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Setup</span>
+    <span class="c1"># - data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s1">&#39;Input data array must be at least 1D&#39;</span>
+    <span class="k">if</span> <span class="n">axis</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">axis</span> <span class="o">+=</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span><span class="o">!=</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">init_order</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getOrder</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="s1">&#39;...</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">datan</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">datan</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nx</span>
+    <span class="c1"># - weights</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">weights</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s1">&#39;Input weights array must be at least 1D&#39;</span>
+    <span class="k">assert</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Shape of weights must be of odd size&#39;</span>
+    <span class="n">ww</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)</span> <span class="c1">#  = good 2D</span>
+    <span class="n">nw</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">nw2</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">weights</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">ww</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">datan</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MV2</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+        <span class="n">one2d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Cyclic case</span>
+    <span class="k">if</span> <span class="n">cyclic</span><span class="p">:</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;valid&#39;</span>
+        <span class="n">fdatan</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">datan</span><span class="p">[:,</span> <span class="o">-</span><span class="n">nw2</span><span class="p">:],</span> <span class="n">datan</span><span class="p">,</span> <span class="n">datan</span><span class="p">[:,</span> <span class="p">:</span><span class="n">nw2</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fww</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">ww</span><span class="p">[:,</span> <span class="o">-</span><span class="n">nw2</span><span class="p">:],</span> <span class="n">ww</span><span class="p">,</span> <span class="n">ww</span><span class="p">[:,</span> <span class="p">:</span><span class="n">nw2</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">one1d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">nw2</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;same&#39;</span>
+        <span class="n">fdatan</span> <span class="o">=</span> <span class="n">datan</span>
+        <span class="n">fww</span> <span class="o">=</span> <span class="n">ww</span>
+        <span class="n">one1d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;i&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Filter</span>
+    <span class="n">kwf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+    <span class="n">datan</span> <span class="o">=</span> <span class="n">convolve2d</span><span class="p">(</span><span class="n">fdatan</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwf</span><span class="p">)</span>
+    <span class="n">one2d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">one1d</span><span class="p">,</span> <span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwf</span><span class="p">),</span> <span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">one1d</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="n">MV2</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+        <span class="n">ww</span> <span class="o">=</span> <span class="n">one2d</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ww</span> <span class="o">=</span> <span class="n">convolve2d</span><span class="p">(</span><span class="n">fww</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwf</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">fdatan</span><span class="p">,</span> <span class="n">fww</span>
+    <span class="n">bad</span> <span class="o">=</span> <span class="n">ww</span><span class="o">==</span><span class="mi">0</span>
+    <span class="n">ww</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">datan</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">bad</span><span class="p">,</span> <span class="n">datan</span><span class="p">,</span> <span class="n">datan</span><span class="o">/</span><span class="n">ww</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">))</span>
+    <span class="n">ww</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Set</span>
+    <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+        <span class="n">datao</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">datao</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">datan</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">bad</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MV2</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+        <span class="n">ww</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">one2d</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="s1">&#39;same&#39;</span><span class="p">:</span>
+            <span class="n">bad</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="o">==</span> <span class="s1">&#39;minimal&#39;</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="k">elif</span> <span class="n">mask</span> <span class="o">==</span> <span class="s1">&#39;maximal&#39;</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+            <span class="n">bad</span> <span class="o">|=</span> <span class="p">(</span><span class="n">ww</span><span class="o">/</span><span class="n">one2d</span><span class="p">)</span><span class="o">&lt;</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mask</span><span class="p">)</span> <span class="c1"># threshold</span>
+        <span class="n">datao</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">bad</span><span class="p">,</span> <span class="n">datan</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">ww</span><span class="p">,</span> <span class="n">one2d</span><span class="p">,</span> <span class="n">bad</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">datao</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">datan</span>
+
+    <span class="k">if</span> <span class="n">axis</span><span class="o">!=</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">init_order</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">order2index</span><span class="p">(</span><span class="n">datao</span><span class="o">.</span><span class="n">getAxisList</span><span class="p">(),</span> <span class="n">init_order</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datao</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">init_order</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datao</span></div>
+
+<div class="viewcode-block" id="shapiro1d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.shapiro1d">[docs]</a><span class="k">def</span> <span class="nf">shapiro1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shapiro (121) 1D filter</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: A :mod:`MV2` variable.</span>
+<span class="sd">        - Keywords are passed to :func:`generic1d`.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - A :mod:`MV2` variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">1.</span><span class="p">],</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="hamming1d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.hamming1d">[docs]</a><span class="k">def</span> <span class="nf">hamming1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hamming 1D filter</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: A :mod:`MV2` variable.</span>
+<span class="sd">        - **M**: Size of the Hamming window.</span>
+<span class="sd">        - Keywords are passed to :func:`generic1d`.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - A :mod:`MV2` variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">hamming</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="hanning1d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.hanning1d">[docs]</a><span class="k">def</span> <span class="nf">hanning1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hanning 1D filter</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: A :mod:`MV2` variable.</span>
+<span class="sd">        - **M**: Size of the Hanning window.</span>
+<span class="sd">        - Keywords are passed to :func:`generic1d`.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - A :mod:`MV2` variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bartlett1d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.bartlett1d">[docs]</a><span class="k">def</span> <span class="nf">bartlett1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bartlett 1D filter</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: A :mod:`MV2` variable.</span>
+<span class="sd">        - **M**: Size of the Bartlett window.</span>
+<span class="sd">        - Keywords are passed to :func:`generic1d`.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - A :mod:`MV2` variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">bartlett</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="blackman1d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.blackman1d">[docs]</a><span class="k">def</span> <span class="nf">blackman1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Blackman 1D filter</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: A :mod:`MV2` variable.</span>
+<span class="sd">        - **M**: Size of the Blackman window.</span>
+<span class="sd">        - Keywords are passed to :func:`generic1d`.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - A :mod:`MV2` variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">blackman</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="kaiser1d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.kaiser1d">[docs]</a><span class="k">def</span> <span class="nf">kaiser1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Kaiser 1D filter</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: A :mod:`MV2` variable.</span>
+<span class="sd">        - **M**: Size of the Kaiser window.</span>
+<span class="sd">        - **beta**: Shape of the window.</span>
+<span class="sd">        - Keywords are passed to :func:`generic1d`.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - A :mod:`MV2` variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">kaiser</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="gaussian1d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.gaussian1d">[docs]</a><span class="k">def</span> <span class="nf">gaussian1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">nxw</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gaussian 1D filter</span>
+
+<span class="sd">    - **data**: Data array</span>
+<span class="sd">    - **nxw**: Size of gaussian weights array along X</span>
+<span class="sd">    - Other keywords are passed to :func:`generic1d`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">nxw</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">,</span> <span class="s1">&#39;nxw must be an odd number&#39;</span>
+    <span class="n">tc</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nxw</span><span class="p">)</span><span class="o">-</span><span class="n">nxw</span><span class="o">/</span><span class="mf">2.</span>
+    <span class="k">return</span> <span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">xx</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">nxw</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="generic2d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.generic2d">[docs]</a><span class="k">def</span> <span class="nf">generic2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generic 2D filter applied to 2D (or more) :mod:`MV2` variables using convolution.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: Atleast 2D :mod:`MV2` variable.</span>
+<span class="sd">        - **weights**: integer, 2D weights.</span>
+<span class="sd">          They are expected to be symmetric and of odd sizes.</span>
+<span class="sd">          If an integer is provided, a ``(weights,weights)``</span>
+<span class="sd">          array of ones is used.</span>
+<span class="sd">        - **mask**, optional: mode of masking.</span>
+<span class="sd">          The mask is also filtered, and its value helps</span>
+<span class="sd">          defining the new mask, depending on this parameter:</span>
+
+<span class="sd">            - If a float is provided, data are masked if the mask value</span>
+<span class="sd">              is greater than this parameter.</span>
+<span class="sd">            - ``&quot;minimal&quot;``: Equivalent to ``1.``. Data is not masked</span>
+<span class="sd">              if a valid value was used to compute data.</span>
+<span class="sd">            - ``&quot;maximal&quot;``: Equivalent to ``0.``. Data is masked</span>
+<span class="sd">              if a invalid value was used to compute data.</span>
+<span class="sd">            - ``&quot;same&quot;``: Mask is the same as input mask.</span>
+
+<span class="sd">        - **copy**, optional: Copy variable before filtering it.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - The filtered :mod:`MV2` variable.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; generic2d(data, 3.) # running mean using a 3x3 block</span>
+<span class="sd">        &gt;&gt;&gt; generic2d(data, N.ones(3,3)) # the same</span>
+<span class="sd">        &gt;&gt;&gt; generic2d(data, N.ones(3,3), weights, mode=&#39;minimal&#39;) # crop coasts</span>
+
+<span class="sd">    :See also: :func:`scipy.signal.convolve2d`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Setup</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Input data array must be at least 2D&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">weights</span><span class="p">,</span> <span class="n">weights</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">weights</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s1">&#39;Input weights array must be at least 2D&#39;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> \
+            <span class="s1">&#39;Shape of weights must be of odd size in the two directions&#39;</span>
+    <span class="n">ww</span> <span class="o">=</span> <span class="o">-</span><span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    <span class="n">datan</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">datan</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">datan</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">datan</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="p">(</span><span class="n">nx</span><span class="o">*</span><span class="n">ny</span><span class="p">),</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span>
+    <span class="k">elif</span> <span class="n">datan</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">datan</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="n">ww</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">datan</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">one2d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span>
+
+    <span class="c1"># Filter</span>
+    <span class="n">kwf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="s1">&#39;fill&#39;</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span> <span class="c1"># TODO: multiproc filter2d</span>
+        <span class="n">datan</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">convolve2d</span><span class="p">(</span><span class="n">datan</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="n">MV2</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+            <span class="n">ww</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">convolve2d</span><span class="p">(</span><span class="n">one2d</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwf</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ww</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">convolve2d</span><span class="p">(</span><span class="n">ww</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwf</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span>  <span class="n">MV2</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+        <span class="n">one3d</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">convolve2d</span><span class="p">(</span><span class="n">one2d</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwf</span><span class="p">)</span>
+        <span class="n">one3d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">one3d</span><span class="p">,</span> <span class="n">datan</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">bad</span> <span class="o">=</span> <span class="n">ww</span><span class="o">==</span><span class="mi">0</span>
+    <span class="n">ww</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span><span class="o">=</span><span class="mf">1.</span>
+    <span class="n">datan</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">bad</span><span class="p">,</span> <span class="n">datan</span><span class="p">,</span> <span class="n">datan</span><span class="o">/</span><span class="n">ww</span><span class="p">)</span>
+    <span class="n">ww</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+<span class="c1">#    del bad</span>
+
+    <span class="c1"># Set</span>
+    <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+        <span class="n">datao</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">datao</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">datan</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MV2</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+        <span class="n">ww</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">bad</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">one3d</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+<span class="c1">#       print &#39;mask crit&#39;, ww/one3d</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="s1">&#39;same&#39;</span><span class="p">:</span>
+            <span class="n">bad</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="o">==</span> <span class="s1">&#39;minimal&#39;</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="k">elif</span> <span class="n">mask</span> <span class="o">==</span> <span class="s1">&#39;maximal&#39;</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+            <span class="n">bad</span> <span class="o">|=</span> <span class="p">(</span><span class="n">ww</span><span class="o">/</span><span class="n">one3d</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">datao</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">bad</span><span class="p">,</span> <span class="n">datan</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">ww</span><span class="p">,</span> <span class="n">one3d</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">datao</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">datan</span>
+        <span class="k">del</span> <span class="n">one2d</span>
+    <span class="k">return</span> <span class="n">datao</span></div>
+
+<span class="k">def</span> <span class="nf">generic2d_old</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">weights</span><span class="p">,</span><span class="n">fast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">min_valid</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generic 2D filter</span>
+
+<span class="sd">    - **data**: 2D variable.</span>
+<span class="sd">    - **weights**: Weights of the filter as 2D array of odd sizes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cdms</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;You need a 2D data set&#39;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;You need to apply 2D weights&#39;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> \
+            <span class="s1">&#39;Shape of weights must be of odd size in the two directions&#39;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="n">nyw</span><span class="p">,</span><span class="n">nxw</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dxw</span> <span class="o">=</span> <span class="n">nxw</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">dyw</span> <span class="o">=</span> <span class="n">nyw</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">ny</span><span class="p">,</span><span class="n">nx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">data_filt</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="n">MV</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+        <span class="n">fast</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">data_min</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">data_max</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">fast</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fill_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">getMissing</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">setMissing</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mf">1.e20</span><span class="p">)</span>
+                <span class="n">fill_value</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getMissing</span><span class="p">()</span>
+            <span class="n">data_to_use</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_to_use</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="n">N</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_to_use</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="n">MV</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+        <span class="n">yyrange</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">([</span><span class="n">j</span><span class="o">-</span><span class="n">dyw</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="n">dyw</span><span class="p">],</span><span class="mi">0</span><span class="p">,</span><span class="n">ny</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">jminw</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">yyrange</span><span class="p">)</span><span class="o">-</span><span class="n">j</span><span class="o">+</span><span class="n">dyw</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">jmaxw</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">yyrange</span><span class="p">)</span><span class="o">-</span><span class="n">j</span><span class="o">+</span><span class="n">dyw</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
+            <span class="n">xxrange</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">([</span><span class="n">i</span><span class="o">-</span><span class="n">dxw</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="n">dxw</span><span class="p">],</span><span class="mi">0</span><span class="p">,</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">this_data</span> <span class="o">=</span> <span class="n">data_to_use</span><span class="p">[</span><span class="n">yyrange</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">yyrange</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">xxrange</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">xxrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">min_valid</span> <span class="ow">and</span> <span class="n">MV</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">this_data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_valid</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">fast</span><span class="p">:</span>
+                    <span class="n">data_filt</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">data_filt</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_value</span>
+                <span class="k">continue</span>
+            <span class="n">iminw</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">xxrange</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="o">+</span><span class="n">dxw</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">imaxw</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">xxrange</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="o">+</span><span class="n">dxw</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">data_filt</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">this_data</span><span class="p">,</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">jminw</span><span class="p">:</span><span class="n">jmaxw</span><span class="p">,</span><span class="n">iminw</span><span class="p">:</span><span class="n">imaxw</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">fast</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked</span><span class="p">:</span>
+        <span class="n">data_filt</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_greater</span><span class="p">(</span><span class="n">data_filt</span><span class="p">,</span><span class="n">data_max</span><span class="p">)</span>
+        <span class="n">data_filt</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_less</span><span class="p">(</span><span class="n">data_filt</span><span class="p">,</span><span class="n">data_min</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MV</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+        <span class="n">data_filt</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">data_filt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_filt</span>
+
+<div class="viewcode-block" id="shapiro2d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.shapiro2d">[docs]</a><span class="k">def</span> <span class="nf">shapiro2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">corners</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shapiro (121) 2D filter</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data**: A :mod:`MV2` variable.</span>
+<span class="sd">        - **corner**, optional: Value in (4) corners.</span>
+<span class="sd">        - Keywords are passed to :func:`generic2d`.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - A :mod:`MV2` variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="n">weights</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">corners</span>
+    <span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">1.</span><span class="p">]</span>
+    <span class="n">weights</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">1.</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">generic2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">shapiro2d_old</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shapiro (121) 2D filter</span>
+
+<span class="sd">    - **data**: Data array</span>
+<span class="sd">    - Keywords are passed to :func:`generic2d`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c1">##  print &#39;shap2d&#39;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+    <span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">1.</span><span class="p">]</span>
+    <span class="n">weights</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">1.</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">shap</span> <span class="o">=</span> <span class="n">generic2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">weights</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">shap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">shap</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">shap</span>
+
+<div class="viewcode-block" id="gaussian2d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.gaussian2d">[docs]</a><span class="k">def</span> <span class="nf">gaussian2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nxw</span><span class="p">,</span> <span class="n">nyw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sxw</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="n">syw</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="n">rmax</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gaussian 2D filter</span>
+
+<span class="sd">    - **data**: Data array</span>
+<span class="sd">    - **nxw**: Size of gaussian weights array along X (and Y if nyw not given)</span>
+<span class="sd">    - *nyw*: Size of gaussian weights array along Y [default: nxw]</span>
+<span class="sd">    - *sxw*: Standard deviation of the gaussian distribution along X.</span>
+<span class="sd">      If &lt;1, its size is relative to nxw. If &gt; 1, it is directly expressed in grid</span>
+<span class="sd">      steps.</span>
+<span class="sd">    - *syw*: Same as sxw for Y direction.</span>
+<span class="sd">    - *rmax*: Distance relative to sqrt(sxw**2+syw**2) after with weights are</span>
+<span class="sd">      nullified.</span>
+<span class="sd">    - Other keywords are passed to :func:`generic2d`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">nyw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">nyw</span> <span class="o">=</span> <span class="n">nxw</span>
+    <span class="k">assert</span> <span class="n">nxw</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">nyw</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;nxw and nyw must be odd numbers&#39;</span>
+    <span class="k">assert</span> <span class="n">sxw</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">syw</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>  <span class="s1">&#39;sxw and syw must be positive&#39;</span>
+
+    <span class="n">xx</span><span class="p">,</span><span class="n">yy</span> <span class="o">=</span> <span class="n">meshgrid</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nxw</span><span class="p">)</span><span class="o">-</span><span class="n">nxw</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nyw</span><span class="p">)</span><span class="o">-</span><span class="n">nyw</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sxw</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">sxw</span> <span class="o">*=</span> <span class="n">nxw</span><span class="o">/</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="n">syw</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">syw</span> <span class="o">*=</span> <span class="n">nyw</span><span class="o">/</span><span class="mi">2</span>
+
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">xx</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">sxw</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">yy</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">syw</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">weights</span><span class="p">[</span><span class="n">weights</span><span class="o">&lt;</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">rmax</span><span class="o">**</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="k">return</span> <span class="n">generic2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="deriv"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.deriv">[docs]</a><span class="k">def</span> <span class="nf">deriv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">physical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Derivative along a given axis</span>
+
+<span class="sd">    - **data**: Data array (converted to MV array if needed)</span>
+
+<span class="sd">    - *axis*: Axis on which the derivative is performed [default: 0]</span>
+<span class="sd">    - *fast*: Filled masked array before derivating, so use Numeric which is faster than MA or MV [*WARNING* default: True]</span>
+<span class="sd">    - *physical*: Try physical derivative, taking axis units into account [default: True]</span>
+<span class="sd">    - *lat*: Latitude for geographical deriviative to convert positions in degrees to meters</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c1">##  print &#39;deriv2d&#39;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Reordering if needed</span>
+    <span class="k">if</span> <span class="n">axis</span><span class="p">:</span>
+        <span class="n">init_order</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getOrder</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;...&#39;</span><span class="p">)</span>
+    <span class="n">data_deriv</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="n">data_deriv</span><span class="o">.</span><span class="n">id</span> <span class="o">+=</span> <span class="s1">&#39;_deriv</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">axis</span>
+
+    <span class="c1"># cdms or Numeric variable  to work on?</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">mask</span> <span class="ow">is</span> <span class="n">MV</span><span class="o">.</span><span class="n">nomask</span><span class="p">:</span>
+        <span class="n">fast</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">fast</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fill_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_to_use</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_to_use</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_to_use</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="c1"># Derivative</span>
+    <span class="n">data_deriv</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_to_use</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="n">data_to_use</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">data_deriv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_to_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">data_to_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">data_deriv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_to_use</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">data_to_use</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1">#   if not fast:</span>
+<span class="c1">#       for i in 0,-1: data_deriv[i] = MV.masked</span>
+
+    <span class="c1"># Physical derivative</span>
+    <span class="k">if</span> <span class="n">physical</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)[:],</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">islon</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">lat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">lataxis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">getAxisList</span><span class="p">()):</span>
+                    <span class="k">if</span> <span class="n">islat</span><span class="p">(</span><span class="n">lataxis</span><span class="p">):</span>
+                        <span class="n">sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">olen</span> <span class="o">=</span> <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lataxis</span><span class="p">)</span>
+                            <span class="n">sh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">olen</span>
+                            <span class="n">lat</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">lataxis</span><span class="p">[:],</span><span class="n">sh</span><span class="p">),</span><span class="n">i</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">lat</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">lataxis</span><span class="p">[:],</span><span class="n">sh</span><span class="p">)</span>
+                        <span class="k">break</span>
+        <span class="k">if</span> <span class="n">islon</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="ow">or</span> <span class="n">islat</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">deg2m</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="n">lat</span><span class="p">)</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;m-1&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="s1">&#39;units&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">data_deriv</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">-</span><span class="n">pos</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">data_deriv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">data_deriv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">pos</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_deriv</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_deriv</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="o">.</span><span class="mi">5</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Mask</span>
+    <span class="k">if</span> <span class="n">fast</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">dmask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">dmask</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span><span class="n">mask</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+<span class="c1">#       for i in 0,-1: dmask[i] = 1</span>
+        <span class="n">data_deriv</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">data_deriv</span><span class="p">,</span><span class="n">mask</span><span class="o">=</span><span class="n">dmask</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="n">data_deriv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked</span>
+
+    <span class="c1"># Reordering back</span>
+    <span class="k">if</span> <span class="n">axis</span><span class="p">:</span>
+        <span class="n">init_order</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">order2index</span><span class="p">(</span><span class="n">data_deriv</span><span class="o">.</span><span class="n">getAxisList</span><span class="p">(),</span> <span class="n">init_order</span><span class="p">)</span>
+        <span class="n">data_deriv</span> <span class="o">=</span> <span class="n">data_deriv</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">init_order</span><span class="p">)</span>
+
+    <span class="c1"># Units</span>
+    <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_units</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data_deriv</span><span class="p">,</span><span class="s1">&#39;units&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_deriv</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_deriv</span><span class="o">.</span><span class="n">units</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">units</span>
+            <span class="k">if</span> <span class="n">data_deriv</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;m m-1&#39;</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">data_deriv</span><span class="o">.</span><span class="n">units</span>
+
+    <span class="k">return</span> <span class="n">data_deriv</span></div>
+
+<div class="viewcode-block" id="deriv2d"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.deriv2d">[docs]</a><span class="k">def</span> <span class="nf">deriv2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Derivative in a 2D space</span>
+
+<span class="sd">    - **data**: 2D variable</span>
+
+<span class="sd">    - *direction*: If not None, derivative is computed in this direction, else the module is returned [default: None]</span>
+<span class="sd">    - Other keywords are passed to deriv()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">data_deriv</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="n">data_deriv</span><span class="o">.</span><span class="n">id</span> <span class="o">+=</span> <span class="s1">&#39;_deriv&#39;</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;You need a 2D data set&#39;</span>
+    <span class="n">xdata_deriv</span> <span class="o">=</span> <span class="n">deriv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">ydata_deriv</span> <span class="o">=</span> <span class="n">deriv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="c1">##  print &#39;2d der&#39;</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_deriv</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">xdata_deriv</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">ydata_deriv</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">aa</span> <span class="o">=</span> <span class="n">direction</span><span class="o">*</span><span class="n">MV</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+        <span class="n">data_deriv</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">xdata_deriv</span><span class="o">*</span><span class="n">MV</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">aa</span><span class="p">)</span> <span class="o">+</span> <span class="n">ydata_deriv</span><span class="o">*</span><span class="n">MV</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">aa</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">xdata_deriv</span><span class="p">,</span><span class="s1">&#39;units&#39;</span><span class="p">):</span>
+        <span class="n">data_deriv</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">xdata_deriv</span><span class="o">.</span><span class="n">units</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_deriv</span><span class="p">,</span><span class="s1">&#39;units&#39;</span><span class="p">):</span>
+        <span class="k">del</span> <span class="n">data_deriv</span><span class="o">.</span><span class="n">units</span>
+    <span class="k">return</span> <span class="n">data_deriv</span></div>
+
+
+<div class="viewcode-block" id="norm_atan"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.norm_atan">[docs]</a><span class="k">def</span> <span class="nf">norm_atan</span><span class="p">(</span><span class="n">var</span><span class="p">,</span><span class="n">stretch</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Normalize using arctan (arctan(strecth*var/std(var))</span>
+
+<span class="sd">    - *stretch*: If stretch close to 1, saturates values [default: 1]</span>
+
+<span class="sd">    Return: Value in [-1,1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+        <span class="n">var_norm</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="n">var_norm</span><span class="o">.</span><span class="n">id</span>  <span class="o">+=</span> <span class="s1">&#39;_norm&#39;</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="n">MV</span>
+    <span class="k">elif</span> <span class="n">MA</span><span class="o">.</span><span class="n">isMA</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+        <span class="n">var_norm</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="n">MA</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">var_norm</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="n">N</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+    <span class="n">var_norm</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">stretch</span><span class="o">*</span><span class="n">var</span><span class="o">/</span><span class="n">var</span><span class="o">.</span><span class="n">std</span><span class="p">())</span><span class="o">*</span><span class="mf">2.</span><span class="o">/</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">return</span> <span class="n">var_norm</span></div>
+
+
+
+<div class="viewcode-block" id="running_average"><a class="viewcode-back" href="../../../library/misc.filters.html#vacumm.misc.filters.running_average">[docs]</a><span class="k">def</span> <span class="nf">running_average</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_mask</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Perform a running average on an masked array. Average is linearly reduced near bounds, so that the input and output have the same size.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **x**: Masked array</span>
+<span class="sd">        - **l**: Window size</span>
+
+<span class="sd">        - *d*: Dimension over which the average is performed (0)</span>
+<span class="sd">        - *w*: Weights (1...)</span>
+<span class="sd">        - *keep_mask*: Apply mask from x to output array</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; running_average(x, l, d = 0, w = None, keep_mask = 1)</span>
+
+<span class="sd">        Returns Average array (same size as x)</span>
+
+<span class="sd">    .. warning:: This function deprecated. Please use :func:`generic1d` instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">s</span><span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">cdms</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="n">AV</span> <span class="o">=</span> <span class="n">MV</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">AV</span> <span class="o">=</span> <span class="n">N</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+        <span class="n">keep_mask</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">ns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">ns</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="s1">&#39;[running_average] bad dimension&#39;</span><span class="p">,</span> <span class="n">d</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">d</span><span class="p">]</span>
+    <span class="c1">#if w is None:</span>
+    <span class="c1">#   w = N.ones(n,&#39;f&#39;)</span>
+
+    <span class="n">ii</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">io</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ns</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">==</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">ii</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;imin:imax&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ii</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">imin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span>  <span class="n">i</span><span class="o">-</span><span class="n">l</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">imax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="n">l</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">exec</span> <span class="s1">&#39;out[&#39;</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;] = AV.average(x[&#39;</span><span class="o">+</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">io</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;], d)&#39;</span>
+
+    <span class="k">if</span> <span class="n">keep_mask</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="n">mask</span><span class="o">=</span><span class="n">MV</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
+<span class="c1">#print &#39;importing filters 1&#39;</span>
+
+
+<span class="c1">#def smooth1d(var):</span>
+<span class="c1">#       # Smooth</span>
+<span class="c1">#   varan = vara.filled()</span>
+<span class="c1">#   try:</span>
+<span class="c1">#       len(smooth)</span>
+<span class="c1">#   except:</span>
+<span class="c1">#       smooth = [1., 2., 1.]</span>
+<span class="c1">#   vara[:] = N.convolve(varan, smooth,  mode=&#39;same&#39;)</span>
+<span class="c1">#   vara[:] /= N.convolve(N.ones(len(vara)), smooth, mode=&#39;same&#39;)</span>
+<span class="c1">#   if vara.mask is not MV2.nomask:</span>
+<span class="c1">#       mask = N.convolve(vara.mask.astype(&#39;f&#39;), smooth, mode=&#39;same&#39;)</span>
+<span class="c1">#       vara[:] = MV2.masked_where(mask!=0., vara, copy=0)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

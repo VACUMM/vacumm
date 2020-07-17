@@ -1,0 +1,1780 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.1. vacumm.misc.misc– Very generic tools &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.1. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.misc</span></code>– Very generic tools</a><ul>
+<li><a class="reference internal" href="#overview">2.3.1.1. Overview</a></li>
+<li><a class="reference internal" href="#module-vacumm.misc.misc">2.3.1.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.misc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-misc-very-generic-tools">
+<span id="lib-misc-misc"></span><h1>2.3.1. <a class="reference internal" href="#module-vacumm.misc.misc" title="vacumm.misc.misc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.misc</span></code></a>– Very generic tools<a class="headerlink" href="#vacumm-misc-misc-very-generic-tools" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.1.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.Cfg2Att" title="vacumm.misc.misc.Cfg2Att"><code class="xref py py-func docutils literal notranslate"><span class="pre">Cfg2Att()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.MV2_axisConcatenate" title="vacumm.misc.misc.MV2_axisConcatenate"><code class="xref py py-func docutils literal notranslate"><span class="pre">MV2_axisConcatenate()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.MV2_concatenate" title="vacumm.misc.misc.MV2_concatenate"><code class="xref py py-func docutils literal notranslate"><span class="pre">MV2_concatenate()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.N_choose" title="vacumm.misc.misc.N_choose"><code class="xref py py-func docutils literal notranslate"><span class="pre">N_choose()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.auto_scale" title="vacumm.misc.misc.auto_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">auto_scale()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.basic_auto_scale" title="vacumm.misc.misc.basic_auto_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">basic_auto_scale()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.bivariate_normal" title="vacumm.misc.misc.bivariate_normal"><code class="xref py py-func docutils literal notranslate"><span class="pre">bivariate_normal()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.bound_ops" title="vacumm.misc.misc.bound_ops"><code class="xref py py-func docutils literal notranslate"><span class="pre">bound_ops()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.broadcast" title="vacumm.misc.misc.broadcast"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadcast()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.check_case" title="vacumm.misc.misc.check_case"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_case()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.check_def_atts" title="vacumm.misc.misc.check_def_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_def_atts()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.checkdir" title="vacumm.misc.misc.checkdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">checkdir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.closeto" title="vacumm.misc.misc.closeto"><code class="xref py py-func docutils literal notranslate"><span class="pre">closeto()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.cp_atts" title="vacumm.misc.misc.cp_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">cp_atts()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.cp_props" title="vacumm.misc.misc.cp_props"><code class="xref py py-func docutils literal notranslate"><span class="pre">cp_props()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.create_selector" title="vacumm.misc.misc.create_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_selector()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.deg2str" title="vacumm.misc.misc.deg2str"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2str()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.deg_from_dec" title="vacumm.misc.misc.deg_from_dec"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg_from_dec()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.deplab" title="vacumm.misc.misc.deplab"><code class="xref py py-func docutils literal notranslate"><span class="pre">deplab()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.dict_aliases" title="vacumm.misc.misc.dict_aliases"><code class="xref py py-func docutils literal notranslate"><span class="pre">dict_aliases()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.dict_check_defaults" title="vacumm.misc.misc.dict_check_defaults"><code class="xref py py-func docutils literal notranslate"><span class="pre">dict_check_defaults()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.dict_copy_items" title="vacumm.misc.misc.dict_copy_items"><code class="xref py py-func docutils literal notranslate"><span class="pre">dict_copy_items()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.dict_filter" title="vacumm.misc.misc.dict_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">dict_filter()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.dict_filter_out" title="vacumm.misc.misc.dict_filter_out"><code class="xref py py-func docutils literal notranslate"><span class="pre">dict_filter_out()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.dict_merge" title="vacumm.misc.misc.dict_merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">dict_merge()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.dicttree_get" title="vacumm.misc.misc.dicttree_get"><code class="xref py py-func docutils literal notranslate"><span class="pre">dicttree_get()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.dicttree_set" title="vacumm.misc.misc.dicttree_set"><code class="xref py py-func docutils literal notranslate"><span class="pre">dicttree_set()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.dirsize" title="vacumm.misc.misc.dirsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">dirsize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.filter_level_selector" title="vacumm.misc.misc.filter_level_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_level_selector()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.filter_selector" title="vacumm.misc.misc.filter_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_selector()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.geo_scale" title="vacumm.misc.misc.geo_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">geo_scale()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.geodir" title="vacumm.misc.misc.geodir"><code class="xref py py-func docutils literal notranslate"><span class="pre">geodir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.get_atts" title="vacumm.misc.misc.get_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_atts()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.get_svn_revision" title="vacumm.misc.misc.get_svn_revision"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_svn_revision()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.grow_depth" title="vacumm.misc.misc.grow_depth"><code class="xref py py-func docutils literal notranslate"><span class="pre">grow_depth()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.grow_lat" title="vacumm.misc.misc.grow_lat"><code class="xref py py-func docutils literal notranslate"><span class="pre">grow_lat()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.grow_variables" title="vacumm.misc.misc.grow_variables"><code class="xref py py-func docutils literal notranslate"><span class="pre">grow_variables()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.history" title="vacumm.misc.misc.history"><code class="xref py py-func docutils literal notranslate"><span class="pre">history()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.indices2slices" title="vacumm.misc.misc.indices2slices"><code class="xref py py-func docutils literal notranslate"><span class="pre">indices2slices()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.intersect" title="vacumm.misc.misc.intersect"><code class="xref py py-func docutils literal notranslate"><span class="pre">intersect()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.is_iterable" title="vacumm.misc.misc.is_iterable"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_iterable()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.isempty" title="vacumm.misc.misc.isempty"><code class="xref py py-func docutils literal notranslate"><span class="pre">isempty()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.ismasked" title="vacumm.misc.misc.ismasked"><code class="xref py py-func docutils literal notranslate"><span class="pre">ismasked()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.isnumber" title="vacumm.misc.misc.isnumber"><code class="xref py py-func docutils literal notranslate"><span class="pre">isnumber()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.iterable" title="vacumm.misc.misc.iterable"><code class="xref py py-func docutils literal notranslate"><span class="pre">iterable()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.kwfilter" title="vacumm.misc.misc.kwfilter"><code class="xref py py-func docutils literal notranslate"><span class="pre">kwfilter()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.kwfilterout" title="vacumm.misc.misc.kwfilterout"><code class="xref py py-func docutils literal notranslate"><span class="pre">kwfilterout()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.latlab" title="vacumm.misc.misc.latlab"><code class="xref py py-func docutils literal notranslate"><span class="pre">latlab()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.lonlab" title="vacumm.misc.misc.lonlab"><code class="xref py py-func docutils literal notranslate"><span class="pre">lonlab()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.lunique" title="vacumm.misc.misc.lunique"><code class="xref py py-func docutils literal notranslate"><span class="pre">lunique()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.main_geodir" title="vacumm.misc.misc.main_geodir"><code class="xref py py-func docutils literal notranslate"><span class="pre">main_geodir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.makeiter" title="vacumm.misc.misc.makeiter"><code class="xref py py-func docutils literal notranslate"><span class="pre">makeiter()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.mask_nan" title="vacumm.misc.misc.mask_nan"><code class="xref py py-func docutils literal notranslate"><span class="pre">mask_nan()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.match_atts" title="vacumm.misc.misc.match_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">match_atts()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.match_string" title="vacumm.misc.misc.match_string"><code class="xref py py-func docutils literal notranslate"><span class="pre">match_string()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.minbox" title="vacumm.misc.misc.minbox"><code class="xref py py-func docutils literal notranslate"><span class="pre">minbox()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.numod" title="vacumm.misc.misc.numod"><code class="xref py py-func docutils literal notranslate"><span class="pre">numod()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.phaselab" title="vacumm.misc.misc.phaselab"><code class="xref py py-func docutils literal notranslate"><span class="pre">phaselab()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.rm_html_tags" title="vacumm.misc.misc.rm_html_tags"><code class="xref py py-func docutils literal notranslate"><span class="pre">rm_html_tags()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.scalebox" title="vacumm.misc.misc.scalebox"><code class="xref py py-func docutils literal notranslate"><span class="pre">scalebox()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.scan_format_string" title="vacumm.misc.misc.scan_format_string"><code class="xref py py-func docutils literal notranslate"><span class="pre">scan_format_string()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.selector2str" title="vacumm.misc.misc.selector2str"><code class="xref py py-func docutils literal notranslate"><span class="pre">selector2str()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.set_atts" title="vacumm.misc.misc.set_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_atts()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.set_lang" title="vacumm.misc.misc.set_lang"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_lang()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.set_lang_fr" title="vacumm.misc.misc.set_lang_fr"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_lang_fr()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.split_selector" title="vacumm.misc.misc.split_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">split_selector()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.splitidx" title="vacumm.misc.misc.splitidx"><code class="xref py py-func docutils literal notranslate"><span class="pre">splitidx()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.squarebox" title="vacumm.misc.misc.squarebox"><code class="xref py py-func docutils literal notranslate"><span class="pre">squarebox()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.squeeze_variable" title="vacumm.misc.misc.squeeze_variable"><code class="xref py py-func docutils literal notranslate"><span class="pre">squeeze_variable()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.tunique" title="vacumm.misc.misc.tunique"><code class="xref py py-func docutils literal notranslate"><span class="pre">tunique()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.write_ascii_time1d" title="vacumm.misc.misc.write_ascii_time1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_ascii_time1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.xls_style" title="vacumm.misc.misc.xls_style"><code class="xref py py-func docutils literal notranslate"><span class="pre">xls_style()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.zoombox" title="vacumm.misc.misc.zoombox"><code class="xref py py-func docutils literal notranslate"><span class="pre">zoombox()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.misc.ArgList" title="vacumm.misc.misc.ArgList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArgList</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.ArgList.get" title="vacumm.misc.misc.ArgList.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.ArgList.put" title="vacumm.misc.misc.ArgList.put"><code class="xref py py-meth docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.misc.ArgTuple" title="vacumm.misc.misc.ArgTuple"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArgTuple</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.ArgTuple.get" title="vacumm.misc.misc.ArgTuple.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.ArgTuple.put" title="vacumm.misc.misc.ArgTuple.put"><code class="xref py py-meth docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.misc.Att" title="vacumm.misc.misc.Att"><code class="xref py py-class docutils literal notranslate"><span class="pre">Att</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.misc.CaseChecker" title="vacumm.misc.misc.CaseChecker"><code class="xref py py-class docutils literal notranslate"><span class="pre">CaseChecker</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.CaseChecker.check" title="vacumm.misc.misc.CaseChecker.check"><code class="xref py py-meth docutils literal notranslate"><span class="pre">check()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.CaseChecker.error" title="vacumm.misc.misc.CaseChecker.error"><code class="xref py py-meth docutils literal notranslate"><span class="pre">error()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.CaseChecker.isvalid" title="vacumm.misc.misc.CaseChecker.isvalid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">isvalid()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.misc.FileTree" title="vacumm.misc.misc.FileTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileTree</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.FileTree.default_patterns" title="vacumm.misc.misc.FileTree.default_patterns"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_patterns</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.FileTree.file_list" title="vacumm.misc.misc.FileTree.file_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">file_list()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.FileTree.scan" title="vacumm.misc.misc.FileTree.scan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scan()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.FileTree.set_exclude" title="vacumm.misc.misc.FileTree.set_exclude"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_exclude()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.misc.FileTree.set_include" title="vacumm.misc.misc.FileTree.set_include"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_include()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.misc.FileTree.set_patterns" title="vacumm.misc.misc.FileTree.set_patterns"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_patterns()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vacumm.misc.misc">
+<span id="content"></span><h2>2.3.1.2. Content<a class="headerlink" href="#module-vacumm.misc.misc" title="Permalink to this headline">¶</a></h2>
+<p>Misc tools</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>You can import it directly for example like this:</p>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc</span> <span class="k">import</span> <span class="n">auto_scale</span>
+</pre></div>
+</div>
+</div>
+<dl class="class">
+<dt id="vacumm.misc.misc.ArgList">
+<em class="property">class </em><code class="descname">ArgList</code><span class="sig-paren">(</span><em>argsi</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#ArgList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.ArgList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Utility to always manage arguments as list and return results as input</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span> <span class="o">=</span> <span class="n">ArgList</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="c1"># input for function as list</span>
+<span class="go">[&#39;a&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="s1">&#39;aa&#39;</span><span class="p">])</span> <span class="c1"># output as input</span>
+<span class="go">&#39;aa&#39;</span>
+</pre></div>
+</div>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span> <span class="o">=</span> <span class="n">ArgList</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;a&#39;, &#39;b&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="s1">&#39;aa&#39;</span><span class="p">])</span>
+<span class="go">[&#39;aa&#39;]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.misc.ArgList.get">
+<code class="descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#ArgList.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.ArgList.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.ArgList.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>argso</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#ArgList.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.ArgList.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.misc.ArgTuple">
+<em class="property">class </em><code class="descname">ArgTuple</code><span class="sig-paren">(</span><em>argsi</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#ArgTuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.ArgTuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Utility to always manage arguments as tuple and return results as input</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span> <span class="o">=</span> <span class="n">ArgTuple</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="c1"># input for function as tuple</span>
+<span class="go">[&#39;a&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="s1">&#39;aa&#39;</span><span class="p">])</span> <span class="c1"># output as input</span>
+<span class="go">&#39;aa&#39;</span>
+</pre></div>
+</div>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span> <span class="o">=</span> <span class="n">ArgTuple</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;a&#39;, &#39;b&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">al</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="s1">&#39;aa&#39;</span><span class="p">])</span>
+<span class="go">[&#39;aa&#39;]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.misc.ArgTuple.get">
+<code class="descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#ArgTuple.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.ArgTuple.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.ArgTuple.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>argso</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#ArgTuple.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.ArgTuple.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.misc.Att">
+<em class="property">class </em><code class="descname">Att</code><a class="reference internal" href="../_modules/vacumm/misc/misc.html#Att"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.Att" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<p>Class to create a dictionnary and access and set keys as attributes.</p>
+<p>You initialize and manage it as using <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span> <span class="o">=</span> <span class="n">Att</span><span class="p">(</span><span class="n">toto</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">dd</span><span class="p">[</span><span class="s1">&#39;toto&#39;</span><span class="p">]</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">dd</span><span class="o">.</span><span class="n">toto</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span><span class="o">.</span><span class="n">toto</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">dd</span><span class="p">[</span><span class="s1">&#39;toto&#39;</span><span class="p">]</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.misc.CaseChecker">
+<em class="property">class </em><code class="descname">CaseChecker</code><span class="sig-paren">(</span><em>valid_cases</em>, <em>errmode='raise'</em>, <em>ic=True</em>, <em>casename='parameter'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#CaseChecker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.CaseChecker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Check that a string that represents a “case” is valid</p>
+<dl class="method">
+<dt id="vacumm.misc.misc.CaseChecker.check">
+<code class="descname">check</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#CaseChecker.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.CaseChecker.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that case is a valid string or None and make an error if not</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.CaseChecker.error">
+<code class="descname">error</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#CaseChecker.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.CaseChecker.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exit with an error</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.CaseChecker.isvalid">
+<code class="descname">isvalid</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#CaseChecker.isvalid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.CaseChecker.isvalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that case is a valid string or None</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.Cfg2Att">
+<code class="descname">Cfg2Att</code><span class="sig-paren">(</span><em>cfg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#Cfg2Att"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.Cfg2Att" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> object to an arborescence of <a class="reference internal" href="#vacumm.misc.misc.Att" title="vacumm.misc.misc.Att"><code class="xref py py-class docutils literal notranslate"><span class="pre">Att</span></code></a> objects</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.misc.FileTree">
+<em class="property">class </em><code class="descname">FileTree</code><span class="sig-paren">(</span><em>input_dir</em>, <em>relative=False</em>, <em>scan=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#FileTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.FileTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Build a file tree</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_dir</strong>: Input directory.</li>
+<li><strong>patterns</strong>, optional: A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match (using glob.glob) [default: ‘.*’]</li>
+<li><strong>exclude</strong>, optional:: A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must not match (using re.search) [default: [‘CVS/’,’.svn/’]]</li>
+<li><strong>include</strong>, optional:: A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match if they are excluded by ‘exclude’ patterns (using re.search) [default: None]</li>
+<li><strong>relative</strong>, optional:: Return file names relative to input_dir [default: False]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="vacumm.misc.misc.FileTree.default_patterns">
+<code class="descname">default_patterns</code><em class="property"> = {'exclude': ['~$', '^CVS$/', '^\\.svn$/', '^\\.DS_Store$', '\\.db$', '\\.ini$'], 'include': [], 'patterns': ['.*']}</em><a class="headerlink" href="#vacumm.misc.misc.FileTree.default_patterns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.FileTree.file_list">
+<code class="descname">file_list</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#FileTree.file_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.FileTree.file_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.FileTree.scan">
+<code class="descname">scan</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#FileTree.scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.FileTree.scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursive scan to list files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.FileTree.set_exclude">
+<code class="descname">set_exclude</code><span class="sig-paren">(</span><em>value</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#FileTree.set_exclude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.FileTree.set_exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.FileTree.set_include">
+<code class="descname">set_include</code><span class="sig-paren">(</span><em>value</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#FileTree.set_include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.FileTree.set_include" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.misc.FileTree.set_patterns">
+<code class="descname">set_patterns</code><span class="sig-paren">(</span><em>value</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#FileTree.set_patterns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.FileTree.set_patterns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.MV2_axisConcatenate">
+<code class="descname">MV2_axisConcatenate</code><span class="sig-paren">(</span><em>axes</em>, <em>id=None</em>, <em>attributes=None</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#MV2_axisConcatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.MV2_axisConcatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenate multiple axes including boundaries.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>axes:</dt>
+<dd>Axes to concatenate</dd>
+<dt>id:</dt>
+<dd>New axis identification (default None)</dd>
+<dt>attributes:</dt>
+<dd>Attributes to attached to the new Axis</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div>Transient axis.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.MV2_concatenate">
+<code class="descname">MV2_concatenate</code><span class="sig-paren">(</span><em>arrays</em>, <em>axis=0</em>, <em>axisid=None</em>, <em>axisattributes=None</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#MV2_concatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.MV2_concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenate the arrays along the given axis. Give the extended axis the id and
+attributes provided - by default, those of the first array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.N_choose">
+<code class="descname">N_choose</code><span class="sig-paren">(</span><em>a</em>, <em>choices</em>, <em>out=None</em>, <em>mode='raise'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#N_choose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.N_choose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Robust version to <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.choose()</span></code> valid also
+for masked arrays.</p>
+<p>The func:<cite>numpy.choose</cite> function fails when length of
+choices is greater than 32!
+You can verify it with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; numpy.choose([0], numpy.zeros((50, 1))) ! FAIL
+&gt;&gt;&gt; N_choose([0], numpy.zeros((50, 1))) ! SUCCESS
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Performances of this function can be improved, even
+if it should not take alot of time to run in the vast
+majority of cases.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.auto_scale">
+<code class="descname">auto_scale</code><span class="sig-paren">(</span><em>data=None</em>, <em>nmax=None</em>, <em>vmin=None</em>, <em>vmax=None</em>, <em>separators=None</em>, <em>fractions=False</em>, <em>symetric=False</em>, <em>keepminmax=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#auto_scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.auto_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes levels according to a dataset and its range of values. Locators are on a 10-base. Different scaling can be used with this version.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><strong>data</strong>: The dataset</li>
+<li><strong>vmax</strong>, optional: Replaces max(data)</li>
+<li><strong>vmin</strong>, optional:   //   min(data)</li>
+<li><strong>symetric</strong>, optional: min_value and max_value are made symetric with respect to zero [default: False]</li>
+<li><strong>nmax</strong>, optional:  Maximal number of levels</li>
+<li><strong>separators</strong>, optional: Subdivision for irregular levels</li>
+<li><strong>fractions</strong>, optional: Consider separators as fractions (]0.,1.[)</li>
+<li><strong>steps</strong>, optional: Base 10 steps for finding levels [default: [1,2,2.5,5,10]]</li>
+<li><strong>geo</strong>, optional: Treat levels as geographical degrees [default: False]</li>
+<li>Other parameters are given to MaxNLocator</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body">Array of levels</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.misc.basic_auto_scale" title="vacumm.misc.misc.basic_auto_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">basic_auto_scale()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.geo_scale" title="vacumm.misc.misc.geo_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">geo_scale()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.basic_auto_scale">
+<code class="descname">basic_auto_scale</code><span class="sig-paren">(</span><em>vmin, vmax, nmax=7, steps=[1, 2, 2.5, 5, 10], geo=False, minutes=False, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#basic_auto_scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.basic_auto_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes levels according to a dataset and its range of values. Locators are on a 10-base.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>vmin/vmax</strong>: Find levels around this range.</li>
+<li><strong>nmax</strong>, optional: Maximal number of steps.</li>
+<li><strong>steps</strong>, optional: Base 10 steps for finding levels [default: [1,2,2.5,5,10]]</li>
+<li><strong>geo</strong>, optional: Assume longitude or latitude degrees [default: False].</li>
+<li><strong>minutes</strong>, optional: If geo, find suitable levels to match nice minutes locations when locations have floating values (like 1.2) [default: False].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.misc.auto_scale" title="vacumm.misc.misc.auto_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">auto_scale()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.geo_scale" title="vacumm.misc.misc.geo_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">geo_scale()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.bivariate_normal">
+<code class="descname">bivariate_normal</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>sigmax=1.0</em>, <em>sigmay=1.0</em>, <em>mux=0.0</em>, <em>muy=0.0</em>, <em>sigmaxy=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#bivariate_normal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.bivariate_normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bivariate Gaussian distribution for equal shape <em>X</em>, <em>Y</em>.
+See <a class="reference external" href="http://mathworld.wolfram.com/BivariateNormalDistribution.html">bivariate normal</a>
+at mathworld.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.bound_ops">
+<code class="descname">bound_ops</code><span class="sig-paren">(</span><em>bounds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#bound_ops"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.bound_ops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get operators that must be used for checking inclusion within boundaries.
+Returned operators (ops) must be used in the following way to return True if value is inside bounds:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>bounds</strong>: Boundary closing indicator (like ‘co’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ops</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">value</span><span class="p">,</span><span class="n">lower_bound</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ops</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">value</span><span class="p">,</span><span class="n">upper_bound</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A 2-element tuple of operators taken within (operator.ge,operator.gt,operator.le,operator.lt).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.broadcast">
+<code class="descname">broadcast</code><span class="sig-paren">(</span><em>set</em>, <em>n</em>, <em>mode='last'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#broadcast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.broadcast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Broadcast <code class="docutils literal notranslate"><span class="pre">set</span></code> to the specified length <code class="docutils literal notranslate"><span class="pre">n</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>set</strong>: A single element or a sequence.</p>
+</li>
+<li><p class="first"><strong>n</strong>: Final requested length.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Filling mode.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;last&quot;</span></code>: Use the last element.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;first&quot;</span></code>: Use the first element.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cycle&quot;</span></code>: Cycle through set.</li>
+<li>if <code class="docutils literal notranslate"><span class="pre">fillvalue</span></code> is passed as a keyword, it is used to fill.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">broadcast</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">broadcast</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">broadcast</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">broadcast</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;first&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">broadcast</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="mi">999</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.check_case">
+<code class="descname">check_case</code><span class="sig-paren">(</span><em>cases</em>, <em>case</em>, <em>mode='isvalid'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#check_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.check_case" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that case is valid using :class:<a href="#id1"><span class="problematic" id="id2">``</span></a>CaseChecker` and allowed cases</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.check_def_atts">
+<code class="descname">check_def_atts</code><span class="sig-paren">(</span><em>obj</em>, <em>**defaults</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#check_def_atts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.check_def_atts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check defaults attributes and set them if empty</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.misc.get_atts" title="vacumm.misc.misc.get_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_atts()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.cp_atts" title="vacumm.misc.misc.cp_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">cp_atts()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.set_atts" title="vacumm.misc.misc.set_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_atts()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.checkdir">
+<code class="descname">checkdir</code><span class="sig-paren">(</span><em>path</em>, <em>asfile=None</em>, <em>chmod=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#checkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.checkdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure that a directory exists and has right access</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><blockquote class="first">
+<div><ul class="simple">
+<li><strong>path</strong>: Directory of file path.</li>
+<li><strong>asfile</strong>, optional: Interpret <code class="docutils literal notranslate"><span class="pre">path</span></code> as file name instead of a
+directory name. When <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> if it has a dot
+(<code class="docutils literal notranslate"><span class="pre">&quot;.&quot;</span></code>) inside.</li>
+</ul>
+</div></blockquote>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body">The directory name.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.closeto">
+<code class="descname">closeto</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>rtol=1e-05</em>, <em>atol=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#closeto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.closeto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check which values of a numeric array are close to those of another array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong>: A <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> variable.</li>
+<li><strong>b</strong>: Another array.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><code class="xref py py-func docutils literal notranslate"><span class="pre">allclose()</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.cp_atts">
+<code class="descname">cp_atts</code><span class="sig-paren">(</span><em>var1</em>, <em>var2</em>, <em>overwrite=True</em>, <em>select=None</em>, <em>exclude=None</em>, <em>extra=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#cp_atts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.cp_atts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy all atributes from one variable to another</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var1/var2</strong>: Copy var1 attributes to var2</li>
+<li><strong>id</strong>, optional: Also copy id [default: False]</li>
+<li><strong>overwrite</strong>, optional: Overwrite attributes of <code class="docutils literal notranslate"><span class="pre">var2</span></code>?</li>
+<li><strong>select</strong>, optional: Copy only these attributes.</li>
+<li><strong>exclude</strong>, optional: Attributes that must be excuded from copy.</li>
+<li>Other keywords are set as attributes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.misc.get_atts" title="vacumm.misc.misc.get_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_atts()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.set_atts" title="vacumm.misc.misc.set_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_atts()</span></code></a>  <a class="reference internal" href="#vacumm.misc.misc.check_def_atts" title="vacumm.misc.misc.check_def_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_def_atts()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.cp_props">
+<code class="descname">cp_props</code><span class="sig-paren">(</span><em>var1</em>, <em>var2</em>, <em>axes=None</em>, <em>grid=True</em>, <em>atts=None</em>, <em>exaxes=None</em>, <em>exatts=None</em>, <em>owatts=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#cp_props"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.cp_props" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy properties of a variable to another variabes</p>
+<p>Proporties are attributes, axes and grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var1/var2</strong>: cdms variables.</li>
+<li><strong>axes</strong>, optional: Position of axes to copy. Positions are
+converted to relative position to that last dimension to handle
+the case of variables that don’t have the same number of dimensions.
+Set it to <code class="docutils literal notranslate"><span class="pre">False</span></code> to not copy axes.</li>
+<li><strong>exaxes</strong>, optional: Position of axes to not copy.</li>
+<li><strong>grid</strong>, optional: Also copy the grid?</li>
+<li><strong>atts</strong>, optional: Attributes to copy. Set it to <code class="docutils literal notranslate"><span class="pre">False</span></code> to not
+copy attributes.</li>
+<li><strong>exatts</strong>, optional: Attributes to exclude from copy.</li>
+<li><strong>owatts</strong>, optional: Overwrite attributes?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cp_props</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">atts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cp_props</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">atts</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">,</span><span class="s1">&#39;long_name&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cp_props</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">exaxes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cp_props</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exatts</span><span class="o">=</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">owatts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.create_selector">
+<code class="descname">create_selector</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#create_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.create_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <code class="xref py py-class docutils literal notranslate"><span class="pre">cdms2.selectors.Selector</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>args</strong>: Each item of args is treated in a special way:</p>
+<blockquote>
+<div><ul class="simple">
+<li>A dictionary is treated using: <code class="docutils literal notranslate"><span class="pre">selector.refine(**args[i])</span></code></li>
+<li>A list  is treated using: <code class="docutils literal notranslate"><span class="pre">selector.refine(*args[i])</span></code></li>
+<li>Else (single slice, tuple, etc): <code class="docutils literal notranslate"><span class="pre">selector.refine(args[i])</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>kwargs</strong>: Items are integrated using: <code class="docutils literal notranslate"><span class="pre">selector.refine(**kwargs)</span></code></p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">create_selector</span><span class="p">((</span><span class="n">time1</span><span class="p">,</span><span class="n">time2</span><span class="p">),</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="n">lat1</span><span class="p">,</span><span class="n">lat2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_selector</span><span class="p">([(</span><span class="n">time1</span><span class="p">,</span><span class="n">time2</span><span class="p">),(</span><span class="n">lat1</span><span class="p">,</span><span class="n">lat2</span><span class="p">)],(</span><span class="n">lon1</span><span class="p">,</span><span class="n">lon2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">selector2</span> <span class="o">=</span> <span class="n">create_selector</span><span class="p">(</span><span class="n">selector1</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="n">lon1</span><span class="p">,</span><span class="n">lon2</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.deg2str">
+<code class="descname">deg2str</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#deg2str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.deg2str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.deg_from_dec">
+<code class="descname">deg_from_dec</code><span class="sig-paren">(</span><em>dec</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#deg_from_dec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.deg_from_dec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from decimal degrees to degrees,minutes,seconds</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.deplab">
+<code class="descname">deplab</code><span class="sig-paren">(</span><em>depths</em>, <em>fmt='%gm'</em>, <em>auto=False</em>, <em>nosign=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#deplab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.deplab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return well formatted depth labels</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>depths</strong>: Numerical depths</li>
+<li><strong>fmt</strong>, optional: Numeric format of the string (including units) [default: ‘%gm’]</li>
+<li><strong>auto</strong>, optional: If True, find the ticks according to the range of depths [default: False]</li>
+<li><strong>nosign</strong>, optional: Absolute values are used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.misc.lonlab" title="vacumm.misc.misc.lonlab"><code class="xref py py-func docutils literal notranslate"><span class="pre">lonlab()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.latlab" title="vacumm.misc.misc.latlab"><code class="xref py py-func docutils literal notranslate"><span class="pre">latlab()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dict_aliases">
+<code class="descname">dict_aliases</code><span class="sig-paren">(</span><em>kwargs</em>, <em>aliases</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dict_aliases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dict_aliases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove duplicate entries in a dictionnary according to a list of aliases.
+The first alias has priority over the following.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Title&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Label&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dict_aliases</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">])</span>
+<span class="go">{&#39;min&#39;: 4, &#39;label&#39;: &#39;Label&#39;}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dict_check_defaults">
+<code class="descname">dict_check_defaults</code><span class="sig-paren">(</span><em>kwargs</em>, <em>**defs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dict_check_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dict_check_defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that a dictionary has some default values</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dict_copy_items">
+<code class="descname">dict_copy_items</code><span class="sig-paren">(</span><em>ddi</em>, <em>ddo</em>, <em>keys</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dict_copy_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dict_copy_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy existing items of an array to another one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ddi</strong>: Dictionary from which items are taken.</li>
+<li><strong>ddo</strong>: Dictionary in which items are put.</li>
+<li><strong>keys</strong>: single or list of keys.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dict_filter">
+<code class="descname">dict_filter</code><span class="sig-paren">(</span><em>kwargs</em>, <em>filters</em>, <em>defaults=None</em>, <em>copy=False</em>, <em>short=False</em>, <em>keep=False</em>, <em>**kwadd</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dict_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dict_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter out kwargs (typically extra calling keywords)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>kwargs</strong>: Dictionnary to filter.</li>
+<li><strong>filters</strong>: Single or list of prefixes.</li>
+<li><em>defaults</em>: dictionnary of default values for output fictionnary.</li>
+<li><em>copy</em>: Simply copy items, do not remove them from kwargs.</li>
+<li><em>short</em>: Allow prefixes to not end with <code class="docutils literal notranslate"><span class="pre">&quot;_&quot;</span></code>.</li>
+<li><em>keep</em>: Keep prefix filter in output keys.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;basemap&#39;</span><span class="p">:</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;basemap_fillcontinents&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;quiet&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">,</span><span class="s1">&#39;basemap_plot&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="s1">&#39;basemap&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">drawcoastlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span><span class="n">good</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">{&#39;plot&#39;: False, &#39;fillcontinents&#39;: True, &#39;good&#39;: True, &#39;basemap&#39;: &#39;f&#39;, &#39;drawcoastlines&#39;: True}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">kwargs</span>
+<span class="go">{&#39;quiet&#39;: False}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dict_filter_out">
+<code class="descname">dict_filter_out</code><span class="sig-paren">(</span><em>kwargs</em>, <em>filters</em>, <em>copy=False</em>, <em>mode='start'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dict_filter_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dict_filter_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove entries from a dictionary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>kwargs</strong>: Valid dictionary.</p>
+</li>
+<li><p class="first"><strong>filters</strong>: Single or list of prefixes. Entries with a key starting with
+one of these filters are removed.</p>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Create a copy or work on original dict?</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Matching mode.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code>: remove if key starts with filter.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;end&quot;</span></code>: remove if key ends with filter.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;regexp&quot;</span></code>: remove if key match regexp match filter.</li>
+<li>else remove if key is exactly filter.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dict_merge">
+<code class="descname">dict_merge</code><span class="sig-paren">(</span><em>*dd</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dict_merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dict_merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge dictionaries</p>
+<p>First dictionaries have priority over next</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>dd</strong>: Argument are interpreted as dictionary to merge.
+Those who are not dictionaries are skipped.</li>
+<li><strong>mergesubdicts</strong>, optional: Also merge dictionary items
+(like in a tree) [default: True].</li>
+<li><strong>mergetuples</strong>, optional: Also merge tuple items [default: False].</li>
+<li><strong>mergelists</strong>, optional: Also merge list items [default: False].</li>
+<li><strong>unique</strong>, optional: Uniquify lists and tuples [default: True].</li>
+<li><strong>skipnones</strong>, optional: Skip Nones [default: True].</li>
+<li><strong>skipempty</strong>, optional: Skip everything that is not converted to False
+using bool [default: False].</li>
+<li><strong>cls</strong>, optional: Class to use. Default to the first class found in arguments
+that is not a <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, else defaults to <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d1</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d2</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">dict_merge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="n">d2</span><span class="p">)</span>
+<span class="go">{&#39;a&#39;: 3, &#39;c&#39;: 7, &#39;b&#39;: 5}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dicttree_get">
+<code class="descname">dicttree_get</code><span class="sig-paren">(</span><em>dd</em>, <em>*keys</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dicttree_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dicttree_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get value of tree of dicts</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dicttree_set">
+<code class="descname">dicttree_set</code><span class="sig-paren">(</span><em>dd</em>, <em>*keys</em>, <em>**items</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dicttree_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dicttree_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set values in a tree of dicts</p>
+<dl class="docutils">
+<dt>dd: dict</dt>
+<dd>Dict of dicts to fill</dd>
+</dl>
+<p>keys: strings
+items: dict</p>
+<blockquote>
+<div>To set</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dd</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dicttree_set</span><span class="p">(</span><span class="n">dd</span><span class="p">,</span> <span class="s1">&#39;sec&#39;</span><span class="p">,</span> <span class="s1">&#39;subsec&#39;</span><span class="p">,</span> <span class="s1">&#39;subsubsec&#39;</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dicttree_set</span><span class="p">(</span><span class="n">dd</span><span class="p">,</span> <span class="n">value1</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">value2</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.dirsize">
+<code class="descname">dirsize</code><span class="sig-paren">(</span><em>folder</em>, <em>units='b'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#dirsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.dirsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the size of a directory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>folder</strong>: path of the directory</p>
+</li>
+<li><p class="first"><strong>units</strong>, optional:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;b&quot;</span></code>: bytes</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;k&quot;</span></code>: Kb</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;m&quot;</span></code>: Mb</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;g&quot;</span></code>: Gb</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;t&quot;</span></code>: Tb</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.filter_level_selector">
+<code class="descname">filter_level_selector</code><span class="sig-paren">(</span><em>selector</em>, <em>ids=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#filter_level_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.filter_level_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter a <code class="xref py py-class docutils literal notranslate"><span class="pre">cdms2.selectors.Selector</span></code> instance to keep or remove z dimension</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.filter_selector">
+<code class="descname">filter_selector</code><span class="sig-paren">(</span><em>selector</em>, <em>ids=None</em>, <em>copy=True</em>, <em>out=False</em>, <em>keeppos=False</em>, <em>noslice=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#filter_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.filter_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter a <code class="xref py py-class docutils literal notranslate"><span class="pre">cdms2.selectors.Selector</span></code> instance to keep or remove only a list of ids</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>selector</strong>: A <code class="xref py py-class docutils literal notranslate"><span class="pre">cdms2.selectors.Selector</span></code> instance.</li>
+<li><strong>ids</strong>, optional: Allowed ids.</li>
+<li><strong>copy</strong>, optional: Filter original or copy?</li>
+<li><strong>out</strong>, optional: Filter in (keep target selections)
+or out(remove target selections)?</li>
+<li><strong>keeppos</strong>, optional: Keep positional components?</li>
+<li><strong>noslice</strong>, optional: Remove slices?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.geo_scale">
+<code class="descname">geo_scale</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#geo_scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.geo_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#vacumm.misc.misc.auto_scale" title="vacumm.misc.misc.auto_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">auto_scale()</span></code></a> with geo=True</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.misc.basic_auto_scale" title="vacumm.misc.misc.basic_auto_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">basic_auto_scale()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.auto_scale" title="vacumm.misc.misc.auto_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">auto_scale()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.geodir">
+<code class="descname">geodir</code><span class="sig-paren">(</span><em>direction</em>, <em>from_north=True</em>, <em>inverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#geodir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.geodir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a direction in degrees in the form ‘WNW’</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.get_atts">
+<code class="descname">get_atts</code><span class="sig-paren">(</span><em>var</em>, <em>id=True</em>, <em>extra=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#get_atts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.get_atts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all attributes from a variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong>: Target variable</li>
+<li><strong>id</strong>, optional: Get also id [default: False]</li>
+<li>Other keywords are set as attributes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.misc.cp_atts" title="vacumm.misc.misc.cp_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">cp_atts()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.set_atts" title="vacumm.misc.misc.set_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_atts()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.check_def_atts" title="vacumm.misc.misc.check_def_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_def_atts()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.get_svn_revision">
+<code class="descname">get_svn_revision</code><span class="sig-paren">(</span><em>path</em>, <em>max=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#get_svn_revision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.get_svn_revision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the revision number of a path</p>
+<p>Adapted from <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.disutils.misc_util.Configuration</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.grow_depth">
+<code class="descname">grow_depth</code><span class="sig-paren">(</span><em>var</em>, <em>depth=None</em>, <em>mode=None</em>, <em>default=0.0</em>, <em>getvar=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#grow_depth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.grow_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make depth and variable have the same shape</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>var</strong>: A MV2 array with a depth dimension.</p>
+</li>
+<li><p class="first"><strong>depth</strong>, optional: Depth axis or array. If None,
+it is guessed from var. If not found, it defaults to <code class="docutils literal notranslate"><span class="pre">default</span></code>.</p>
+</li>
+<li><p class="first"><strong>default</strong>, optional: Default value for depth if not found.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: How to handle case where shape of var
+is changed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: Nothing happens</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code>: A warning with <a class="reference external" href="https://docs.python.org/dev/library/warnings.html#warnings.warn" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">warn()</span></code></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code>: Raise a <a class="reference internal" href="vacumm.html#vacumm.VACUMMError" title="vacumm.VACUMMError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">VACUMMError</span></code></a> exception.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">var,</span> <span class="pre">depth</span></code> where <code class="docutils literal notranslate"><span class="pre">depth</span></code> may be a scalar equal to <code class="docutils literal notranslate"><span class="pre">default</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.grow_lat">
+<code class="descname">grow_lat</code><span class="sig-paren">(</span><em>var</em>, <em>lat=None</em>, <em>mode=None</em>, <em>default=None</em>, <em>getvar=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#grow_lat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.grow_lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make latitude and variable have the same shape</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>var</strong>: A MV2 array with a lat dimension.</p>
+</li>
+<li><p class="first"><strong>depth</strong>, optional: Latitude axis or array. If None,
+it is guessed from var.</p>
+</li>
+<li><p class="first"><strong>default</strong>, optional: Default value for lat if not found.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: How to handle case where shape of var
+is changed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: Nothing happens</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code>: A warning with <a class="reference external" href="https://docs.python.org/dev/library/warnings.html#warnings.warn" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">warn()</span></code></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code>: Raise a <a class="reference internal" href="vacumm.html#vacumm.VACUMMError" title="vacumm.VACUMMError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">VACUMMError</span></code></a> exception.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">var,</span> <span class="pre">lat</span> <span class="pre">where</span> <span class="pre">lat</span> <span class="pre">may</span> <span class="pre">be</span> <span class="pre">``None</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.grow_variables">
+<code class="descname">grow_variables</code><span class="sig-paren">(</span><em>var1</em>, <em>var2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#grow_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.grow_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grow dimensions of var1 and var2 until their match</p>
+<p>It is an improved version <code class="xref py py-func docutils literal notranslate"><span class="pre">genutil.grower.grower()</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.history">
+<code class="descname">history</code><span class="sig-paren">(</span><em>nbcommand=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the command history for the interactive python.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.indices2slices">
+<code class="descname">indices2slices</code><span class="sig-paren">(</span><em>indices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#indices2slices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.indices2slices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a list of indices to a list of slices</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.intersect">
+<code class="descname">intersect</code><span class="sig-paren">(</span><em>seg1</em>, <em>seg2</em>, <em>length=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#intersect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Intersection of two segments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">intersect</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">],(</span><span class="mi">5</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
+<span class="go">[5, 10]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.is_iterable">
+<code class="descname">is_iterable</code><span class="sig-paren">(</span><em>obj</em>, <em>nostr=True</em>, <em>nogen=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#is_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.is_iterable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is iterable or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong>: Object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">True/False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.isempty">
+<code class="descname">isempty</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#isempty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.isempty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if empty</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.ismasked">
+<code class="descname">ismasked</code><span class="sig-paren">(</span><em>arr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#ismasked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.ismasked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.isnumber">
+<code class="descname">isnumber</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#isnumber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.isnumber" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.iterable">
+<code class="descname">iterable</code><span class="sig-paren">(</span><em>obj</em>, <em>nostr=True</em>, <em>nogen=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.misc.iterable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is iterable or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong>: Object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">True/False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.kwfilter">
+<code class="descname">kwfilter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#kwfilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.kwfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.misc.dict_filter" title="vacumm.misc.misc.dict_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">dict_filter()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.kwfilterout">
+<code class="descname">kwfilterout</code><span class="sig-paren">(</span><em>kwargs</em>, <em>filters</em>, <em>copy=False</em>, <em>mode='start'</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.misc.kwfilterout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove entries from a dictionary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>kwargs</strong>: Valid dictionary.</p>
+</li>
+<li><p class="first"><strong>filters</strong>: Single or list of prefixes. Entries with a key starting with
+one of these filters are removed.</p>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Create a copy or work on original dict?</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Matching mode.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code>: remove if key starts with filter.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;end&quot;</span></code>: remove if key ends with filter.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;regexp&quot;</span></code>: remove if key match regexp match filter.</li>
+<li>else remove if key is exactly filter.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.latlab">
+<code class="descname">latlab</code><span class="sig-paren">(</span><em>latitudes</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#latlab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.latlab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return nice latitude labels</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>latitudes</strong>: Value of latitudes</li>
+<li><strong>decimal</strong>, optional: Use decimal representation</li>
+<li><strong>fmt</strong>, optional: Format for decimal representation</li>
+<li><strong>no_seconds</strong>, optional: Do not add seconds to degrees representation</li>
+<li><strong>tex</strong>, optional: Use Tex degree symbol
+(depends on <code class="docutils literal notranslate"><span class="pre">rcParams['text.usetex']</span></code> by default)</li>
+<li><strong>no_symbol</strong>, optional: Don’t use degree symbol</li>
+<li><strong>no_zeros</strong>, optional: Don’t insert zeros when integer &lt; 10</li>
+<li><strong>auto</strong>, optional: If True, find the ticks according to the range of values</li>
+<li><strong>auto_minutes</strong>, optional: Automatically suppress degrees if value is not exactly a degree (just display minutes and seconds) else display degree</li>
+<li><strong>bfdeg</strong>, optional: Use bold face for degrees when alone if auto_minutes and
+<code class="docutils literal notranslate"><span class="pre">rcParams['text.usetex']</span></code> are True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.misc.phaselab" title="vacumm.misc.misc.phaselab"><code class="xref py py-func docutils literal notranslate"><span class="pre">phaselab()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.lonlab" title="vacumm.misc.misc.lonlab"><code class="xref py py-func docutils literal notranslate"><span class="pre">lonlab()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.deplab" title="vacumm.misc.misc.deplab"><code class="xref py py-func docutils literal notranslate"><span class="pre">deplab()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.lonlab">
+<code class="descname">lonlab</code><span class="sig-paren">(</span><em>longitudes</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#lonlab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.lonlab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return nice longitude labels</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>longitudes</strong>: Value of longitudes</li>
+<li><strong>decimal</strong>, optional: Use decimal representation</li>
+<li><strong>fmt</strong>, optional: Format for decimal representation</li>
+<li><strong>no_seconds</strong>, optional: Do not add seconds to degrees representation</li>
+<li><strong>tex</strong>, optional: Use Tex degree symbol
+(depends on <code class="docutils literal notranslate"><span class="pre">rcParams['text.usetex']</span></code> by default)</li>
+<li><strong>no_symbol</strong>, optional: Don’t use degree symbol</li>
+<li><strong>no_zeros</strong>, optional: Don’t insert zeros when integer &lt; 10</li>
+<li><strong>auto</strong>, optional: If True, find the ticks according to the range of values</li>
+<li><strong>auto_minutes</strong>, optional: Automatically suppress degrees if value is not exactly a degree (just display minutes and seconds) else display degree</li>
+<li><strong>bfdeg</strong>, optional: Use bold face for degrees when alone if auto_minutes and
+<code class="docutils literal notranslate"><span class="pre">rcParams['text.usetex']</span></code> are True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.misc.phaselab" title="vacumm.misc.misc.phaselab"><code class="xref py py-func docutils literal notranslate"><span class="pre">phaselab()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.latlab" title="vacumm.misc.misc.latlab"><code class="xref py py-func docutils literal notranslate"><span class="pre">latlab()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.deplab" title="vacumm.misc.misc.deplab"><code class="xref py py-func docutils literal notranslate"><span class="pre">deplab()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.lunique">
+<code class="descname">lunique</code><span class="sig-paren">(</span><em>mylist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#lunique"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.lunique" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uniquify a list to a new list</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.main_geodir">
+<code class="descname">main_geodir</code><span class="sig-paren">(</span><em>directions</em>, <em>amp=None</em>, <em>num=False</em>, <em>res=22.5</em>, <em>getamp=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#main_geodir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.main_geodir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dominant direction from a set of directions in degrees</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.makeiter">
+<code class="descname">makeiter</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#makeiter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.makeiter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make var iterable as a list if not ietrable or a string</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.mask_nan">
+<code class="descname">mask_nan</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#mask_nan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.mask_nan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask NaN from a variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input</strong>: Array (numpy, numpy.ma or MV2)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If input is pure numpy, it is converted to numpy.ma</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">var</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">mask_nan</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="go">[1.0 --]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.match_atts">
+<code class="descname">match_atts</code><span class="sig-paren">(</span><em>obj</em>, <em>checks</em>, <em>id=True</em>, <em>ignorecase=True</em>, <em>transform=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#match_atts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.match_atts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that at least one of the attributes of an object matches check list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>obj</strong>: An object</li>
+<li><strong>checks</strong>: A dictionary of (attributes name, checklist)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.match_string">
+<code class="descname">match_string</code><span class="sig-paren">(</span><em>ss</em>, <em>checks</em>, <em>ignorecase=True</em>, <em>transform=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#match_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.match_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that a string verify a check list that consists of
+a list of either strings or callables</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.minbox">
+<code class="descname">minbox</code><span class="sig-paren">(</span><em>box</em>, <em>dxmin=None</em>, <em>dymin=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#minbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.minbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that a box as minimal extents</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.numod">
+<code class="descname">numod</code><span class="sig-paren">(</span><em>*vv</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#numod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.numod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the needed numeric module to be able to handle all specified variables</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body">Scalars or numeric arrays.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy.ma</span></code> or <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.phaselab">
+<code class="descname">phaselab</code><span class="sig-paren">(</span><em>vals</em>, <em>fmt='%.5g'</em>, <em>label=None</em>, <em>decimal=True</em>, <em>tex=None</em>, <em>auto_minutes=False</em>, <em>no_seconds=False</em>, <em>no_symbol=False</em>, <em>no_zeros=False</em>, <em>auto=False</em>, <em>bfdeg=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#phaselab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.phaselab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a nice label for degrees</p>
+<p>Inspired from Basemap toolkit of Matplotlib</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.rm_html_tags">
+<code class="descname">rm_html_tags</code><span class="sig-paren">(</span><em>str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#rm_html_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.rm_html_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove html tags from a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>str</strong>: A string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">Cleaned string</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rm_html_tags</span><span class="p">(</span><span class="s1">&#39;&lt;title&gt;My title&lt;/title&gt;&#39;</span><span class="p">)</span>
+<span class="go">My title</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.scalebox">
+<code class="descname">scalebox</code><span class="sig-paren">(</span><em>box</em>, <em>factor</em>, <em>square=False</em>, <em>xmargin=None</em>, <em>ymargin=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#scalebox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.scalebox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alter box limits with a zoom factor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>box</strong>: A list of <code class="docutils literal notranslate"><span class="pre">[xmin,ymin,xmax,ymax]</span></code>.</li>
+<li><strong>factor</strong>: Zoom factor where 1 means no change,
+and a factor &lt; 1 means a smaller box.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scalebox</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="go">[-0.55, -1.10, 1.55, 2.55]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.scan_format_string">
+<code class="descname">scan_format_string</code><span class="sig-paren">(</span><em>format_string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#scan_format_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.scan_format_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan a format string using <a class="reference external" href="https://docs.python.org/dev/library/string.html#string.Formatter" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string.Formatter</span></code></a></p>
+<p>Source: SONAT</p>
+<p>format_string: string</p>
+<dl class="docutils">
+<dt>dict:</dt>
+<dd>Positional and keyword fields with their properties in a dict</dd>
+<dt>dict:</dt>
+<dd>Dictionary of properties with the following keys:
+- positional: list of positional field keys
+- keyword: list of keyword field keys
+- with_time: list of keys that have a date pattern format</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.selector2str">
+<code class="descname">selector2str</code><span class="sig-paren">(</span><em>selector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#selector2str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.selector2str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a selector to a generic string where &lt;obj …&gt; labels are removed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">selectors</span><span class="o">.</span><span class="n">Selector</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">selector2str</span><span class="p">(</span><span class="n">sel</span><span class="p">)</span>
+<span class="go">&#39;((slice(2, 5, None)),(&quot;time&quot;, (4, 6)))&#39;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.set_atts">
+<code class="descname">set_atts</code><span class="sig-paren">(</span><em>var</em>, <em>atts=None</em>, <em>overwrite=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#set_atts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.set_atts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set attributes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong>: Change attributes of var</li>
+<li><strong>atts</strong>, optional: A dictionary of attributes</li>
+<li><strong>overwrite</strong>, optional: Overwrite attributes of <code class="docutils literal notranslate"><span class="pre">var2</span></code>?</li>
+<li>Other keywords are set as attributes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.misc.cp_atts" title="vacumm.misc.misc.cp_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">cp_atts()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.get_atts" title="vacumm.misc.misc.get_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_atts()</span></code></a> <a class="reference internal" href="#vacumm.misc.misc.check_def_atts" title="vacumm.misc.misc.check_def_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_def_atts()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.set_lang">
+<code class="descname">set_lang</code><span class="sig-paren">(</span><em>default='en_US.UTF-8'</em>, <em>num=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#set_lang"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.set_lang" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the default and numeric languages</p>
+<p>The numeric language defaults to the default language.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.set_lang_fr">
+<code class="descname">set_lang_fr</code><span class="sig-paren">(</span><em>ennum=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#set_lang_fr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.set_lang_fr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set lang to french, except the numeric lang which is set to english by default</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.split_selector">
+<code class="descname">split_selector</code><span class="sig-paren">(</span><em>selector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#split_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.split_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split a selector into (positionalComponents, axisComponents).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>selector</strong>: cdms2.selectors.Selector</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">a tuple of:
+- the list of positionalComponents
+- the <a class="reference external" href="https://docs.python.org/dev/library/collections.html#collections.OrderedDict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrderedDict</span></code></a> of axisComponents</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Exemple:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">selector</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">selectors</span><span class="o">.</span><span class="n">Selector</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">split_selector</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span>
+<span class="go">((slice(2, 5, None),), {&#39;time&#39;: (4, 6)})</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.splitidx">
+<code class="descname">splitidx</code><span class="sig-paren">(</span><em>arr</em>, <em>crit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#splitidx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.splitidx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of split indices for a 1d array according to a criteria</p>
+<p>arr: 1D array
+crit: int, list of int, int array, float</p>
+<blockquote>
+<div>If a positive int, it refers to the number of almost equal intervals.
+If a negative int, it refers to the max number of item per interval.
+If a list or array of int, it is directly intepreted as split indices,
+with some checks.
+If a float, the input array is monotically increasing and the intervals
+are at least of size crit.</div></blockquote>
+<dl class="docutils">
+<dt>idx: list of ints</dt>
+<dd>Indices that are compatible ith <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.array_split()</span></code>.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.squarebox">
+<code class="descname">squarebox</code><span class="sig-paren">(</span><em>box</em>, <em>scale=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#squarebox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.squarebox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an approximate <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax]</span></code> that is square in meters</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.squeeze_variable">
+<code class="descname">squeeze_variable</code><span class="sig-paren">(</span><em>var</em>, <em>spec=True</em>, <em>asmv=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#squeeze_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.squeeze_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove singleton axes from a MV2 variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>var</strong>: MV2 array.</p>
+</li>
+<li><p class="first"><strong>spec</strong>, optional: Squeeze specification.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>: Simply squeeze out all singletons.</li>
+<li><code class="docutils literal notranslate"><span class="pre">False</span></code>: Does nothing (return the same variable).</li>
+<li>A string containing geo letters like ‘xyzt’ to remove
+axes according to their type.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>asmv</strong>, optional: If True and input is a MV2 array,
+always return a MV2 array, even if all
+result is a scalar value or masked.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">squeeze_variable</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">squeeze_variable</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">spec</span><span class="o">=</span><span class="s1">&#39;tx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.tunique">
+<code class="descname">tunique</code><span class="sig-paren">(</span><em>mytuple</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#tunique"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.tunique" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uniquify a tuple to a new tuple</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.write_ascii_time1d">
+<code class="descname">write_ascii_time1d</code><span class="sig-paren">(</span><em>var</em>, <em>file</em>, <em>fmt='%g'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#write_ascii_time1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.write_ascii_time1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write an ascii file in the following format: YYY/MM/DD HH:MN:SS DATA where DATA is one column.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var</strong>: a cdms variable WITH A TIME AXIS</li>
+<li><strong>file</strong>: output file name</li>
+<li><strong>fmt</strong>, optional: format of DATA [default: ‘%g’]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.xls_style">
+<code class="descname">xls_style</code><span class="sig-paren">(</span><em>style=None</em>, <em>b=None</em>, <em>i=None</em>, <em>u=None</em>, <em>c=None</em>, <em>o=None</em>, <em>bd=None</em>, <em>fmt=None</em>, <em>va=None</em>, <em>ha=None</em>, <em>f=None</em>, <em>s=None</em>, <em>n=None</em>, <em>copy=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#xls_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.xls_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Excel style sheet for pyExcelerator cell objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>style</strong>, optional: Style object to update.</li>
+<li><strong>scopy</strong>, optional: Make a copy of <code class="docutils literal notranslate"><span class="pre">style</span></code> if passed.</li>
+<li><strong>b</strong>, optional: Bold [True/False].</li>
+<li><strong>i</strong>, optional: italic[True/False].</li>
+<li><strong>u</strong>, optional: Underline [True/False].</li>
+<li><strong>c</strong>, optional: Colour index [from 0 to 82!, with 0=black, 1=white, 2=red, 3=green, 4=blue, 5=yellow, 6=magenta, 7=cyan].</li>
+<li><strong>o</strong>, optional: Outline [True/False].</li>
+<li><strong>bd</strong>, optional: Borders [True/int/False/dict(top=int…)].</li>
+<li><strong>fmt</strong>, optional: Format [‘general’,‘0.0’,…].</li>
+<li><strong>va</strong>, optional: Vertical alignment [‘top’,’bottom’,’center’,’justified’].</li>
+<li><strong>ha</strong>, optional: Horizontal alignment [‘left’,’right’,’center’,’justified’].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">style_num</span> <span class="o">=</span> <span class="n">xls_style</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;0.00&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">style_num_left</span> <span class="o">=</span> <span class="n">xls_style</span><span class="p">(</span><span class="n">style_num</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">style_full</span> <span class="o">=</span> <span class="n">xls_style</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;justified&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Tutorial:</th><td class="field-body"><p class="first last"><a class="reference internal" href="../tutorials/misc.io.xls.html#user-tut-misc-io-xls"><span class="std std-ref">Les fichiers Excel</span></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.misc.zoombox">
+<code class="descname">zoombox</code><span class="sig-paren">(</span><em>box</em>, <em>factor</em>, <em>square=False</em>, <em>xmargin=None</em>, <em>ymargin=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/misc.html#zoombox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.misc.zoombox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.misc.scalebox" title="vacumm.misc.misc.scalebox"><code class="xref py py-func docutils literal notranslate"><span class="pre">scalebox()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">1/factor</span></code> as zoom factor.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

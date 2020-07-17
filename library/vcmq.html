@@ -1,0 +1,396 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.1. vcmq – VACUMM Quick &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/vcmq.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-vcmq">
+<span id="vcmq-vacumm-quick"></span><span id="lib-vcmq"></span><h1>2.1. <a class="reference internal" href="#module-vcmq" title="vcmq"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vcmq</span></code></a> – VACUMM Quick<a class="headerlink" href="#module-vcmq" title="Permalink to this headline">¶</a></h1>
+<p>Use this module to quickly important useful content
+from VACUMM and other packages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>Here is the content to show what is imported from where.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Module for quickly loading VACUMM content&quot;&quot;&quot;</span>
+
+<span class="c1"># System</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">format_exc</span>
+
+<span class="c1"># Numeric</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="n">npy</span> <span class="o">=</span> <span class="n">N</span> <span class="o">=</span> <span class="n">np</span> <span class="o">=</span> <span class="n">numpy</span>
+<span class="n">testing</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">testing</span>
+<span class="n">assert_allclose</span> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span>
+<span class="n">assert_raises</span> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><span class="n">assert_raises</span>
+
+<span class="c1"># CDAT</span>
+
+<span class="kn">import</span> <span class="nn">MV2</span>
+<span class="kn">import</span> <span class="nn">cdms2</span>
+<span class="kn">import</span> <span class="nn">cdtime</span>
+<span class="kn">import</span> <span class="nn">cdutil</span>
+<span class="kn">from</span> <span class="nn">cdutil</span> <span class="k">import</span> <span class="n">averager</span>
+<span class="kn">from</span> <span class="nn">genutil</span> <span class="k">import</span> <span class="n">minmax</span>
+
+<span class="c1"># Matplotlib</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">P</span>
+<span class="n">mp</span> <span class="o">=</span> <span class="n">P</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">use</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">rcdefaults</span><span class="p">,</span> <span class="n">rcParams</span>
+<span class="kn">from</span> <span class="nn">matplotlib.dates</span> <span class="k">import</span> <span class="n">DayLocator</span><span class="p">,</span> <span class="n">HourLocator</span><span class="p">,</span> <span class="n">WeekdayLocator</span><span class="p">,</span> <span class="n">MinuteLocator</span><span class="p">,</span>  \
+    <span class="n">YearLocator</span><span class="p">,</span> <span class="n">MonthLocator</span><span class="p">,</span> <span class="n">DateFormatter</span><span class="p">,</span> <span class="n">SecondLocator</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="k">import</span> <span class="n">AutoLocator</span><span class="p">,</span> <span class="n">MaxNLocator</span><span class="p">,</span> <span class="n">FixedLocator</span><span class="p">,</span> <span class="n">IndexLocator</span><span class="p">,</span> \
+    <span class="n">LinearLocator</span><span class="p">,</span> <span class="n">LogLocator</span><span class="p">,</span> <span class="n">MultipleLocator</span><span class="p">,</span> <span class="n">AutoMinorLocator</span>
+
+<span class="c1"># VACUMM</span>
+
+<span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="p">(</span><span class="n">VACUMMError</span><span class="p">,</span> <span class="n">VACUMMWarning</span><span class="p">,</span> <span class="n">help</span> <span class="k">as</span> <span class="n">vchelp</span><span class="p">,</span> <span class="n">vacumm_warning</span><span class="p">,</span>
+    <span class="n">vacumm_warn</span><span class="p">,</span> <span class="n">vcwarn</span><span class="p">)</span>
+
+
+<span class="c1"># - config</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.config</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">edit_user_conf_file</span><span class="p">,</span> <span class="n">print_config</span><span class="p">,</span> <span class="n">get_config_value</span><span class="p">,</span> <span class="n">data_sample</span>
+    <span class="p">)</span>
+
+<span class="c1"># - misc</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.misc</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">lonlab</span><span class="p">,</span> <span class="n">latlab</span><span class="p">,</span> <span class="n">deplab</span><span class="p">,</span> <span class="n">kwfilter</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">,</span> <span class="n">ArgList</span><span class="p">,</span> <span class="n">closeto</span><span class="p">,</span> <span class="n">dict_merge</span><span class="p">,</span>
+    <span class="n">dict_check_defaults</span><span class="p">,</span> <span class="n">cp_atts</span><span class="p">,</span> <span class="n">dict_filter</span><span class="p">,</span>  <span class="n">cp_props</span><span class="p">,</span> <span class="n">numod</span><span class="p">,</span> <span class="n">set_atts</span><span class="p">,</span> <span class="n">get_atts</span><span class="p">,</span>
+    <span class="n">set_lang</span><span class="p">,</span> <span class="n">geodir</span><span class="p">,</span> <span class="n">auto_scale</span><span class="p">,</span> <span class="n">MV2_concatenate</span><span class="p">,</span> <span class="n">MV2_axisConcatenate</span><span class="p">,</span> <span class="n">phaselab</span><span class="p">,</span>
+    <span class="n">zoombox</span><span class="p">,</span> <span class="n">squeeze_variable</span><span class="p">,</span> <span class="n">set_lang_fr</span><span class="p">,</span> <span class="n">scalebox</span><span class="p">,</span> <span class="n">checkdir</span><span class="p">,</span> <span class="n">create_selector</span><span class="p">,</span>
+    <span class="n">numod</span><span class="p">,</span> <span class="n">deg2str</span><span class="p">,</span> <span class="n">deg_from_dec</span><span class="p">,</span> <span class="n">dict_filter_out</span><span class="p">,</span> <span class="n">dict_copy_items</span><span class="p">,</span> <span class="n">geo_scale</span><span class="p">,</span>
+    <span class="n">grow_depth</span><span class="p">,</span> <span class="n">grow_lat</span><span class="p">,</span> <span class="n">grow_variables</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">intersect</span><span class="p">,</span> <span class="n">is_iterable</span><span class="p">,</span>
+    <span class="n">isempty</span><span class="p">,</span> <span class="n">isnumber</span><span class="p">,</span> <span class="n">lunique</span><span class="p">,</span> <span class="n">main_geodir</span><span class="p">,</span> <span class="n">selector2str</span><span class="p">,</span> <span class="n">rm_html_tags</span><span class="p">,</span>
+    <span class="n">tunique</span><span class="p">,</span> <span class="n">split_selector</span><span class="p">,</span> <span class="n">xls_style</span><span class="p">,</span> <span class="n">Att</span><span class="p">,</span> <span class="n">splitidx</span><span class="p">,</span> <span class="n">CaseChecker</span><span class="p">,</span> <span class="n">check_case</span><span class="p">,</span>
+    <span class="n">indices2slices</span><span class="p">,</span> <span class="n">filter_level_selector</span><span class="p">,</span> <span class="n">filter_selector</span><span class="p">,</span> <span class="n">match_atts</span><span class="p">,</span>
+    <span class="n">match_string</span><span class="p">,</span> <span class="n">ArgTuple</span><span class="p">,</span> <span class="n">dicttree_get</span><span class="p">,</span> <span class="n">dicttree_set</span><span class="p">,</span> <span class="n">minbox</span><span class="p">,</span>
+    <span class="n">bound_ops</span><span class="p">,</span> <span class="n">squarebox</span><span class="p">,</span> <span class="n">scan_format_string</span><span class="p">,</span> <span class="n">bivariate_normal</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.axes</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">create_lon</span><span class="p">,</span> <span class="n">create_lat</span><span class="p">,</span> <span class="n">create_time</span><span class="p">,</span> <span class="n">create_depth</span><span class="p">,</span>
+    <span class="n">create_dep</span><span class="p">,</span> <span class="n">islon</span><span class="p">,</span> <span class="n">islat</span><span class="p">,</span> <span class="n">isdep</span><span class="p">,</span> <span class="n">isaxis</span><span class="p">,</span> <span class="n">istime</span><span class="p">,</span> <span class="n">create_axis</span><span class="p">,</span>
+    <span class="n">check_axes</span><span class="p">,</span> <span class="n">check_id</span><span class="p">,</span> <span class="n">check_order</span><span class="p">,</span> <span class="n">get_axis_type</span><span class="p">,</span> <span class="n">get_checker</span><span class="p">,</span>
+    <span class="n">guess_timeid</span><span class="p">,</span> <span class="n">is_geo_axis</span><span class="p">,</span> <span class="n">is_geo_axis_type</span><span class="p">,</span> <span class="n">merge_orders</span><span class="p">,</span>
+    <span class="n">order_match</span><span class="p">,</span> <span class="n">set_order</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">comptime</span><span class="p">,</span> <span class="n">strftime</span><span class="p">,</span> <span class="n">strptime</span><span class="p">,</span> <span class="n">Intervals</span><span class="p">,</span> <span class="n">IterDates</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">Gaps</span><span class="p">,</span> <span class="n">DateSorter</span><span class="p">,</span>
+    <span class="n">time_split</span><span class="p">,</span> <span class="n">time_split_nmax</span><span class="p">,</span> <span class="n">to_utc</span><span class="p">,</span> <span class="n">tz_to_tz</span><span class="p">,</span> <span class="n">utc_to_paris</span><span class="p">,</span> <span class="n">paris_to_utc</span><span class="p">,</span>
+    <span class="n">lindates</span><span class="p">,</span> <span class="n">ch_units</span><span class="p">,</span> <span class="n">add_margin</span><span class="p">,</span> <span class="n">round_date</span><span class="p">,</span> <span class="n">midnight_date</span><span class="p">,</span> <span class="n">midnight_interval</span><span class="p">,</span>
+    <span class="n">mpl</span><span class="p">,</span> <span class="n">tic</span><span class="p">,</span> <span class="n">toc</span><span class="p">,</span> <span class="n">pat2freq</span><span class="p">,</span> <span class="n">pat2glob</span><span class="p">,</span> <span class="n">has_time_pattern</span><span class="p">,</span>
+    <span class="n">is_interval</span><span class="p">,</span> <span class="n">is_time</span><span class="p">,</span> <span class="n">is_axistime</span><span class="p">,</span> <span class="n">is_cdtime</span><span class="p">,</span> <span class="n">is_datetime</span><span class="p">,</span> <span class="n">is_in_time_interval</span><span class="p">,</span>
+    <span class="n">is_numtime</span><span class="p">,</span> <span class="n">is_strtime</span><span class="p">,</span> <span class="n">itv_intersect</span><span class="p">,</span> <span class="n">itv_union</span><span class="p">,</span> <span class="n">julday</span><span class="p">,</span> <span class="n">reltime</span><span class="p">,</span>
+    <span class="n">are_valid_units</span><span class="p">,</span> <span class="n">SpecialDateFormatter</span><span class="p">,</span> <span class="n">check_range</span><span class="p">,</span> <span class="n">numtime</span><span class="p">,</span>
+    <span class="n">daily</span><span class="p">,</span> <span class="n">daily_bounds</span><span class="p">,</span> <span class="n">day_of_the_year</span><span class="p">,</span> <span class="n">unit_type</span><span class="p">,</span> <span class="n">toc</span><span class="p">,</span>
+    <span class="n">hourly</span><span class="p">,</span> <span class="n">hourly_bounds</span><span class="p">,</span> <span class="n">hourly_exact</span><span class="p">,</span> <span class="n">monthly</span><span class="p">,</span> <span class="n">tsel2slice</span><span class="p">,</span>
+    <span class="n">reduce</span><span class="p">,</span> <span class="n">yearly</span><span class="p">,</span> <span class="n">are_same_units</span><span class="p">,</span> <span class="n">ascii_to_num</span><span class="p">,</span> <span class="n">detrend</span><span class="p">,</span> <span class="n">from_utc</span><span class="p">,</span>
+    <span class="n">time_selector</span><span class="p">,</span> <span class="n">selector</span><span class="p">,</span> <span class="n">filter_time_selector</span><span class="p">,</span>
+    <span class="n">plot_dt</span><span class="p">,</span> <span class="n">strtime</span><span class="p">,</span> <span class="n">interp_clim</span><span class="p">,</span> <span class="n">round_interval</span><span class="p">,</span>
+    <span class="n">datetime</span> <span class="k">as</span> <span class="n">adatetime</span><span class="p">,</span> <span class="n">compress</span> <span class="k">as</span> <span class="n">compress</span><span class="p">,</span>
+    <span class="n">add</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">datetime_</span> <span class="o">=</span> <span class="n">adatetime</span>
+<span class="n">add_time</span> <span class="o">=</span> <span class="n">add</span>
+<span class="n">is_time_interval</span> <span class="o">=</span> <span class="n">is_interval</span>
+<span class="n">tcompress</span> <span class="o">=</span> <span class="n">compress</span>
+<span class="n">round_time_interval</span> <span class="o">=</span> <span class="n">round_interval</span>
+<span class="n">round_time</span> <span class="o">=</span> <span class="n">round_date</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.bases</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">psinfo</span><span class="p">,</span> <span class="n">code_base_name</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">,</span> <span class="n">code_dir_name</span><span class="p">,</span> <span class="n">describe</span><span class="p">,</span> <span class="n">Class</span><span class="p">,</span> <span class="n">Object</span><span class="p">,</span>
+    <span class="n">add_logging_proxies</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">get_noconflict_metaclass</span><span class="p">,</span> <span class="n">get_prog_dir</span><span class="p">,</span>
+    <span class="n">remove_redundant</span><span class="p">,</span> <span class="n">skip_redundant</span><span class="p">,</span> <span class="n">stack_trace</span><span class="p">,</span> <span class="n">classmaker</span><span class="p">,</span>
+    <span class="n">classinstancemethod</span><span class="p">,</span> <span class="n">isfreezed</span><span class="p">,</span> <span class="n">prog</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.io</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">list_forecast_files</span><span class="p">,</span> <span class="n">netcdf3</span><span class="p">,</span> <span class="n">netcdf4</span><span class="p">,</span> <span class="n">ncread_files</span><span class="p">,</span> <span class="n">ncread_var</span><span class="p">,</span>
+    <span class="n">ncread_axis</span><span class="p">,</span> <span class="n">ncget_var</span><span class="p">,</span> <span class="n">ncget_axis</span><span class="p">,</span> <span class="n">ncfind_var</span><span class="p">,</span> <span class="n">ncfind_axis</span><span class="p">,</span> <span class="n">NcIterBestEstimate</span><span class="p">,</span>
+    <span class="n">ncget_fgrid</span><span class="p">,</span> <span class="n">grib2nc</span><span class="p">,</span> <span class="n">grib_get_names</span><span class="p">,</span> <span class="n">ncfind_obj</span><span class="p">,</span> <span class="n">ncget_grid</span><span class="p">,</span> <span class="n">ncget_level</span><span class="p">,</span>
+    <span class="n">ncget_lon</span><span class="p">,</span> <span class="n">ncget_lat</span><span class="p">,</span> <span class="n">ncget_time</span><span class="p">,</span> <span class="n">ncget_var</span><span class="p">,</span> <span class="n">ncmatch_obj</span><span class="p">,</span> <span class="n">ncread_best_estimate</span><span class="p">,</span>
+    <span class="n">XYZ</span><span class="p">,</span> <span class="n">XYZMerger</span><span class="p">,</span> <span class="n">Shapes</span><span class="p">,</span> <span class="n">NcIterBestEstimate</span><span class="p">,</span> <span class="n">NcIterBestEstimateError</span><span class="p">,</span>
+    <span class="n">NcFileObj</span><span class="p">,</span> <span class="n">ColoredFormatter</span><span class="p">,</span> <span class="n">TermColors</span><span class="p">,</span>
+    <span class="n">Logger</span> <span class="k">as</span> <span class="n">SimpleLogger</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.filters</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">generic1d</span><span class="p">,</span> <span class="n">generic2d</span><span class="p">,</span> <span class="n">shapiro1d</span><span class="p">,</span> <span class="n">shapiro2d</span><span class="p">,</span> <span class="n">blackman1d</span><span class="p">,</span>
+    <span class="n">bartlett1d</span><span class="p">,</span> <span class="n">kaiser1d</span><span class="p">,</span> <span class="n">hanning1d</span><span class="p">,</span> <span class="n">blackman1d</span><span class="p">,</span> <span class="n">gaussian1d</span><span class="p">,</span> <span class="n">gaussian2d</span><span class="p">,</span>
+    <span class="n">deriv</span><span class="p">,</span> <span class="n">deriv2d</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.remote</span> <span class="k">import</span> <span class="n">InputWorkFiles</span><span class="p">,</span> <span class="n">OutputWorkFile</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.log</span> <span class="k">import</span> <span class="p">(</span><span class="n">Logger</span><span class="p">,</span> <span class="n">ColoredStreamHandler</span><span class="p">,</span> <span class="n">LoggerAdapter</span><span class="p">,</span>
+    <span class="n">StreamLogWrapper</span><span class="p">,</span> <span class="n">get_str_level</span><span class="p">,</span> <span class="n">get_int_level</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.config</span> <span class="k">import</span> <span class="p">(</span><span class="n">ConfigManager</span><span class="p">,</span> <span class="n">cfgargparse</span><span class="p">,</span> <span class="n">ConfigException</span><span class="p">,</span>
+    <span class="n">ValidationWarning</span><span class="p">,</span> <span class="n">cfg2rst</span><span class="p">,</span> <span class="n">cfgoptparse</span><span class="p">,</span> <span class="n">filter_section</span><span class="p">,</span> <span class="n">get_secnames</span><span class="p">,</span>
+    <span class="n">get_spec</span><span class="p">,</span> <span class="n">list_options</span><span class="p">,</span> <span class="n">opt2rst</span><span class="p">,</span> <span class="n">option2rst</span><span class="p">,</span> <span class="n">print_short_help</span><span class="p">,</span>
+    <span class="n">register_config_validator</span><span class="p">,</span> <span class="n">get_validator</span><span class="p">,</span>
+    <span class="n">get_spec</span> <span class="k">as</span> <span class="n">getspec</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.stats</span> <span class="k">import</span> <span class="p">(</span><span class="n">StatAccum</span><span class="p">,</span> <span class="n">qtmax</span><span class="p">,</span> <span class="n">qtmin</span><span class="p">,</span> <span class="n">qtminmax</span><span class="p">,</span> <span class="n">ensrank</span><span class="p">,</span>
+    <span class="n">corr_proba</span><span class="p">,</span> <span class="n">StatAccumError</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.phys.units</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">convert_units</span><span class="p">,</span> <span class="n">kt2ms</span><span class="p">,</span> <span class="n">ms2kt</span><span class="p">,</span> <span class="n">deg2m</span><span class="p">,</span> <span class="n">m2deg</span><span class="p">,</span> <span class="n">ms2bf</span><span class="p">,</span> <span class="n">dms2deg</span><span class="p">,</span> <span class="n">deg2dms</span><span class="p">,</span> <span class="n">mph2ms</span><span class="p">,</span>
+    <span class="n">ms2mph</span><span class="p">,</span> <span class="n">tometric</span><span class="p">,</span> <span class="n">kel2degc</span><span class="p">,</span> <span class="n">degc2kel</span><span class="p">,</span> <span class="n">basic_proj</span><span class="p">,</span> <span class="n">rad2deg</span><span class="p">,</span> <span class="n">uuconvert</span><span class="p">,</span>
+    <span class="n">vect2dir</span><span class="p">,</span> <span class="n">vect2mod</span><span class="p">,</span> <span class="n">vect2moddir</span><span class="p">,</span> <span class="n">moddir2vectx</span><span class="p">,</span> <span class="n">moddir2vecty</span><span class="p">,</span> <span class="n">moddir2vectxy</span><span class="p">,</span>
+    <span class="n">strfsize</span><span class="p">,</span> <span class="n">strpsize</span><span class="p">,</span> <span class="n">basic_proj</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.phys.constants</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">EARTH_RADIUS</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">GRAVITATIONAL_CONSTANT</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">EARTH_MASS</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">GRAVITY</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.file</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">mkdirs</span><span class="p">,</span> <span class="n">mkfdirs</span><span class="p">,</span> <span class="n">rollover</span><span class="p">,</span> <span class="n">strfsize</span><span class="p">,</span> <span class="n">strpsize</span><span class="p">,</span> <span class="n">walk</span><span class="p">,</span> <span class="n">xefind</span><span class="p">,</span> <span class="n">xfind</span><span class="p">,</span> <span class="n">find</span><span class="p">,</span> <span class="n">efind</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.namelist</span> <span class="k">import</span> <span class="n">Namelist</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.xml</span> <span class="k">import</span> <span class="p">(</span><span class="n">XmlConfig</span><span class="p">,</span> <span class="n">XmlConfigDict</span><span class="p">,</span> <span class="n">XmlConfigList</span><span class="p">)</span>
+
+<span class="c1"># - plot</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">map2</span><span class="p">,</span> <span class="n">section2</span><span class="p">,</span> <span class="n">hov2</span><span class="p">,</span> <span class="n">curve2</span><span class="p">,</span> <span class="n">bar2</span><span class="p">,</span> <span class="n">plot2d</span><span class="p">,</span> <span class="n">stick2</span><span class="p">,</span> <span class="n">make_movie</span><span class="p">,</span>
+    <span class="n">savefigs</span><span class="p">,</span> <span class="n">add_grid</span><span class="p">,</span> <span class="n">xhide</span><span class="p">,</span> <span class="n">yhide</span><span class="p">,</span> <span class="n">xrotate</span><span class="p">,</span> <span class="n">yrotate</span><span class="p">,</span> <span class="n">add_key</span><span class="p">,</span> <span class="n">taylor</span><span class="p">,</span> <span class="n">dtaylor</span><span class="p">,</span> <span class="n">dtarget</span><span class="p">,</span>
+    <span class="n">add_shadow</span><span class="p">,</span> <span class="n">add_glow</span><span class="p">,</span> <span class="n">add_map_lines</span><span class="p">,</span> <span class="n">add_map_line</span><span class="p">,</span> <span class="n">add_map_point</span><span class="p">,</span> <span class="n">minimap</span><span class="p">,</span>
+    <span class="n">add_logo</span><span class="p">,</span> <span class="n">add_left_label</span><span class="p">,</span> <span class="n">add_right_label</span><span class="p">,</span> <span class="n">add_top_label</span><span class="p">,</span> <span class="n">add_bottom_label</span><span class="p">,</span>
+    <span class="n">ellipsis</span><span class="p">,</span> <span class="n">get_cls</span><span class="p">,</span> <span class="n">hldays</span><span class="p">,</span> <span class="n">rotate_xlabels</span><span class="p">,</span> <span class="n">rotate_ylabels</span><span class="p">,</span>
+    <span class="n">scale_xlim</span><span class="p">,</span> <span class="n">scale_ylim</span><span class="p">,</span> <span class="n">wedge</span><span class="p">,</span> <span class="n">set_major_locator</span><span class="p">,</span> <span class="n">set_minor_locator</span><span class="p">,</span>
+    <span class="n">xdate</span><span class="p">,</span> <span class="n">ydate</span><span class="p">,</span> <span class="n">get_quiverkey_value</span><span class="p">,</span> <span class="n">add_lightshading</span><span class="p">,</span>
+    <span class="n">add_param_label</span><span class="p">,</span> <span class="n">add_map_box</span>
+    <span class="p">)</span>
+<span class="n">curve</span> <span class="o">=</span> <span class="n">curve2</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">map2</span>
+<span class="n">hov</span> <span class="o">=</span> <span class="n">hov2</span>
+<span class="n">stick</span> <span class="o">=</span> <span class="n">stick2</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">section2</span>
+<span class="n">bar</span> <span class="o">=</span> <span class="n">bar2</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.core_plot</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Plot</span><span class="p">,</span> <span class="n">Plot1D</span><span class="p">,</span> <span class="n">Plot2D</span><span class="p">,</span> <span class="n">ScalarMappable</span><span class="p">,</span> <span class="n">Stick</span><span class="p">,</span> <span class="n">Bar</span><span class="p">,</span> <span class="n">Hov</span><span class="p">,</span> <span class="n">Curve</span><span class="p">,</span> <span class="n">Map</span><span class="p">,</span> <span class="n">Section</span><span class="p">,</span>
+    <span class="n">loc2align</span><span class="p">,</span> <span class="n">loc2tuple</span><span class="p">,</span> <span class="n">loc2offset</span><span class="p">,</span> <span class="n">best_loc_map</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.color</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">plot_cmap</span><span class="p">,</span> <span class="n">show_cmap</span><span class="p">,</span> <span class="n">get_cmap</span><span class="p">,</span> <span class="n">simple_colors</span><span class="p">,</span> <span class="n">RGB</span><span class="p">,</span> <span class="n">RGBA</span><span class="p">,</span>
+    <span class="n">cmap_srs</span><span class="p">,</span> <span class="n">Scalar2RGB</span><span class="p">,</span> <span class="n">darken</span><span class="p">,</span> <span class="n">whiten</span><span class="p">,</span> <span class="n">cmaps_mpl</span><span class="p">,</span>
+    <span class="n">cmap_gmt</span><span class="p">,</span> <span class="n">cmaps_registered</span><span class="p">,</span> <span class="n">cmaps_vacumm</span><span class="p">,</span> <span class="n">print_cmaps_gmt</span><span class="p">,</span> <span class="n">plot_cmaps</span><span class="p">,</span>
+    <span class="n">anamorph_cmap</span><span class="p">,</span> <span class="n">discretise_cmap</span><span class="p">,</span> <span class="n">StepsNorm</span><span class="p">,</span>
+    <span class="n">cmap_ajete</span><span class="p">,</span> <span class="n">cmap_ajets</span><span class="p">,</span> <span class="n">cmap_bathy</span><span class="p">,</span> <span class="n">cmap_br</span><span class="p">,</span> <span class="n">cmap_bwr</span><span class="p">,</span> <span class="n">cmap_bwre</span><span class="p">,</span> <span class="n">cmap_custom</span><span class="p">,</span>
+    <span class="n">cmap_chla</span><span class="p">,</span> <span class="n">cmap_currents</span><span class="p">,</span> <span class="n">cmap_dynamic_cmyk_hymex</span><span class="p">,</span> <span class="n">cmap_eke</span><span class="p">,</span> <span class="n">cmap_jet</span><span class="p">,</span>
+    <span class="n">cmap_jete</span><span class="p">,</span> <span class="n">cmap_jets</span><span class="p">,</span> <span class="n">cmap_land</span><span class="p">,</span> <span class="n">cmap_linear</span><span class="p">,</span> <span class="n">cmap_magic</span><span class="p">,</span> <span class="n">cmap_mg</span><span class="p">,</span>
+    <span class="n">cmap_ncview_rainbow</span><span class="p">,</span> <span class="n">cmap_nice_gfdl</span><span class="p">,</span> <span class="n">cmap_pe</span><span class="p">,</span> <span class="n">cmap_previmer</span><span class="p">,</span> <span class="n">cmap_previmer2</span><span class="p">,</span>
+    <span class="n">cmap_rainbow</span><span class="p">,</span> <span class="n">cmap_rainbow_sst_hymex</span><span class="p">,</span> <span class="n">cmap_rb</span><span class="p">,</span> <span class="n">cmap_red_tau_hymex</span><span class="p">,</span>
+    <span class="n">cmap_regular_steps</span><span class="p">,</span> <span class="n">cmap_rnb2_hymex</span><span class="p">,</span> <span class="n">cmap_rs</span><span class="p">,</span> <span class="n">cmap_smoothed_regular_steps</span><span class="p">,</span>
+    <span class="n">cmap_smoothed_steps</span><span class="p">,</span> <span class="n">cmap_ss</span><span class="p">,</span> <span class="n">cmap_ssec</span><span class="p">,</span> <span class="n">cmap_steps</span><span class="p">,</span> <span class="n">cmap_topo</span><span class="p">,</span>
+    <span class="n">cmap_white_centered_hymex</span><span class="p">,</span> <span class="n">cmap_wjet</span><span class="p">,</span> <span class="n">cmap_wjets</span><span class="p">,</span> <span class="n">cmap_wr</span><span class="p">,</span> <span class="n">cmap_wre</span><span class="p">,</span>
+    <span class="n">to_shadow</span><span class="p">,</span> <span class="n">to_grey</span><span class="p">,</span> <span class="n">saturate</span><span class="p">,</span> <span class="n">desaturate</span><span class="p">,</span> <span class="n">change_saturation</span><span class="p">,</span>
+    <span class="n">change_luminosity</span><span class="p">,</span> <span class="n">change_value</span><span class="p">,</span> <span class="n">pastelise</span><span class="p">,</span>
+    <span class="n">discretise_cmap</span> <span class="k">as</span> <span class="n">discretize_cmap</span><span class="p">,</span>
+    <span class="n">pastelise</span> <span class="k">as</span> <span class="n">pastelize</span><span class="p">,</span>
+    <span class="n">bistre</span><span class="p">,</span> <span class="n">land</span><span class="p">,</span> <span class="n">ocean</span><span class="p">,</span> <span class="n">sea</span><span class="p">,</span>
+    <span class="n">land</span> <span class="k">as</span> <span class="n">land_color</span><span class="p">,</span>
+    <span class="n">ocean</span> <span class="k">as</span> <span class="n">ocean_color</span><span class="p">,</span>
+    <span class="n">sea</span> <span class="k">as</span> <span class="n">sea_color</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="c1"># - grid</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.misc</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">get_grid</span><span class="p">,</span> <span class="n">set_grid</span><span class="p">,</span> <span class="n">create_grid</span><span class="p">,</span> <span class="n">create_grid2d</span><span class="p">,</span> <span class="n">resol</span><span class="p">,</span> <span class="n">monotonic</span><span class="p">,</span> <span class="n">isdepthup</span><span class="p">,</span> <span class="n">depth2dz</span><span class="p">,</span>
+    <span class="n">meshcells</span><span class="p">,</span> <span class="n">meshbounds</span><span class="p">,</span> <span class="n">meshgrid</span><span class="p">,</span> <span class="n">bounds1d</span><span class="p">,</span> <span class="n">bounds2d</span><span class="p">,</span> <span class="n">coord2slice</span><span class="p">,</span> <span class="n">isregular</span><span class="p">,</span>
+    <span class="n">isrect</span><span class="p">,</span> <span class="n">curv2rect</span><span class="p">,</span> <span class="n">isgrid</span><span class="p">,</span> <span class="n">get_xy</span><span class="p">,</span> <span class="n">create_axes2d</span><span class="p">,</span> <span class="n">gridsel</span><span class="p">,</span> <span class="n">varsel</span><span class="p">,</span> <span class="n">xshift</span><span class="p">,</span> <span class="n">rotate_grid</span><span class="p">,</span>
+    <span class="n">get_closest</span><span class="p">,</span> <span class="n">get_closest_depth</span><span class="p">,</span> <span class="n">makedepthup</span><span class="p">,</span> <span class="n">get_axis</span><span class="p">,</span> <span class="n">transect_specs</span><span class="p">,</span>
+    <span class="n">get_axis_slices</span><span class="p">,</span> <span class="n">get_distances</span><span class="p">,</span> <span class="n">dz2depth</span><span class="p">,</span> <span class="n">meshweights</span><span class="p">,</span> <span class="n">axis1d_from_bounds</span><span class="p">,</span>
+    <span class="n">bounds2mesh</span><span class="p">,</span> <span class="n">cells2grid</span><span class="p">,</span> <span class="n">check_xy_shape</span><span class="p">,</span> <span class="n">curv_grid</span><span class="p">,</span> <span class="n">create_var2d</span><span class="p">,</span>
+    <span class="n">get_geo_area</span><span class="p">,</span> <span class="n">get_grid_axes</span><span class="p">,</span> <span class="n">get_resolution</span><span class="p">,</span> <span class="n">get_zdim</span><span class="p">,</span> <span class="n">isoslice</span><span class="p">,</span> <span class="n">mask2ind</span><span class="p">,</span>
+    <span class="n">merge_axis_slice</span><span class="p">,</span> <span class="n">merge_axis_slices</span><span class="p">,</span> <span class="n">num2axes2d</span><span class="p">,</span> <span class="n">t2uvgrids</span><span class="p">,</span> <span class="n">xextend</span><span class="p">,</span>
+    <span class="n">xshift</span><span class="p">,</span> <span class="n">clone_grid</span><span class="p">,</span> <span class="n">haversine</span><span class="p">,</span> <span class="n">are_same_grids</span><span class="p">,</span>
+    <span class="n">get_tri</span><span class="p">,</span> <span class="n">get_tri_mask</span><span class="p">,</span> <span class="n">get_tri_type</span><span class="p">,</span> <span class="n">create_ugrid</span><span class="p">,</span>
+    <span class="n">create_curv_grid</span><span class="p">,</span> <span class="n">create_aux_axes</span><span class="p">,</span> <span class="n">issgrid</span><span class="p">,</span> <span class="n">isugrid</span><span class="p">,</span> <span class="n">get_grid_type</span><span class="p">,</span>
+    <span class="n">get_unstruct_indices</span><span class="p">,</span> <span class="n">GriddedSelector</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.regridding</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">regrid1d</span><span class="p">,</span> <span class="n">regrid2d</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">,</span> <span class="n">interp2d</span><span class="p">,</span> <span class="n">cellave1d</span><span class="p">,</span> <span class="n">cellave2d</span><span class="p">,</span> <span class="n">cellerr1d</span><span class="p">,</span>
+    <span class="n">cargen</span><span class="p">,</span> <span class="n">xy2xy</span><span class="p">,</span> <span class="n">shift1d</span><span class="p">,</span> <span class="n">shift2d</span><span class="p">,</span> <span class="n">extend1d</span><span class="p">,</span> <span class="n">extend2d</span><span class="p">,</span> <span class="n">regrid_method</span><span class="p">,</span>
+    <span class="n">transect</span><span class="p">,</span> <span class="n">griddata</span><span class="p">,</span> <span class="n">CDATRegridder</span><span class="p">,</span> <span class="n">grid2xy</span><span class="p">,</span> <span class="n">cubic1d</span><span class="p">,</span>
+    <span class="n">nearest1d</span><span class="p">,</span> <span class="n">shiftgrid</span><span class="p">,</span> <span class="n">extendgrid</span><span class="p">,</span> <span class="n">fill1d</span><span class="p">,</span> <span class="n">fill2d</span><span class="p">,</span> <span class="n">CurvedInterpolator</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.basemap</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">merc</span><span class="p">,</span> <span class="n">create_map</span><span class="p">,</span> <span class="n">get_proj</span><span class="p">,</span> <span class="n">reset_cache</span><span class="p">,</span> <span class="n">gshhs_autores</span><span class="p">,</span> <span class="n">GSHHS_RESLIST</span><span class="p">,</span>
+    <span class="n">RSHPERE_WGS84</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.masking</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">erode_coast</span><span class="p">,</span> <span class="n">polygon_mask</span><span class="p">,</span> <span class="n">GetLakes</span><span class="p">,</span> <span class="n">get_coast</span><span class="p">,</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">polygon_select</span><span class="p">,</span> <span class="n">zcompress</span><span class="p">,</span>
+    <span class="n">envelop</span><span class="p">,</span> <span class="n">get_coastal_indices</span><span class="p">,</span> <span class="n">grid_envelop</span><span class="p">,</span> <span class="n">create_polygon</span><span class="p">,</span> <span class="n">clip_shape</span><span class="p">,</span> <span class="n">proj_shape</span><span class="p">,</span>
+    <span class="n">plot_polygon</span><span class="p">,</span> <span class="n">merge_masks</span><span class="p">,</span> <span class="n">masked_polygon</span><span class="p">,</span> <span class="n">mask2d</span><span class="p">,</span> <span class="n">get_dist_to_coast</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.kriging</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">OrdinaryCloudKriger</span><span class="p">,</span> <span class="n">variogram</span><span class="p">,</span> <span class="n">variogram_fit</span><span class="p">,</span> <span class="n">variogram_model</span><span class="p">,</span>
+    <span class="n">variogram_model_type</span><span class="p">,</span> <span class="n">variogram_multifit</span><span class="p">,</span> <span class="n">cloud_split</span><span class="p">,</span>
+    <span class="n">KrigingError</span><span class="p">,</span> <span class="n">VariogramModel</span><span class="p">,</span> <span class="n">VariogramModelError</span><span class="p">,</span> <span class="n">SimpleCloudKriger</span><span class="p">,</span>
+    <span class="n">VARIOGRAM_MODEL_TYPES</span><span class="p">,</span> <span class="n">DEFAULT_VARIOGRAM_MODEL_TYPE</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="c1"># - data</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.data</span> <span class="k">import</span> <span class="n">setup_dataset</span><span class="p">,</span> <span class="n">DS</span><span class="p">,</span> <span class="n">register_dataset</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.data.cf</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">format_var</span><span class="p">,</span> <span class="n">format_axis</span><span class="p">,</span> <span class="n">format_grid</span><span class="p">,</span> <span class="n">match_var</span><span class="p">,</span> <span class="n">change_loc</span><span class="p">,</span> <span class="n">match_obj</span><span class="p">,</span>
+    <span class="n">set_loc</span><span class="p">,</span> <span class="n">get_loc</span><span class="p">,</span> <span class="n">GENERIC_NAMES</span><span class="p">,</span> <span class="n">GENERIC_AXIS_NAMES</span><span class="p">,</span> <span class="n">GENERIC_VAR_NAMES</span><span class="p">,</span>
+    <span class="n">AXIS_SPECS</span><span class="p">,</span> <span class="n">VAR_SPECS</span><span class="p">,</span> <span class="n">GRID_SPECS</span><span class="p">,</span> <span class="n">ARAKAWA_SUFFIXES</span><span class="p">,</span> <span class="n">HIDDEN_CF_ATTS</span><span class="p">,</span>
+    <span class="n">match_known_var</span><span class="p">,</span> <span class="n">match_known_axis</span><span class="p">,</span> <span class="n">get_cf_cmap</span><span class="p">,</span> <span class="n">CF_AXIS_SPECS</span><span class="p">,</span> <span class="n">CF_VAR_SPECS</span><span class="p">,</span>
+    <span class="n">register_cf_variable</span><span class="p">,</span> <span class="n">register_cf_variables_from_cfg</span><span class="p">,</span>
+    <span class="n">register_cf_axis</span><span class="p">,</span> <span class="n">register_cf_axes_from_cfg</span><span class="p">,</span>
+    <span class="n">CF_VAR_NAMES</span><span class="p">,</span> <span class="n">CF_AXIS_NAMES</span><span class="p">,</span> <span class="n">is_cf_known</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.data.misc.sigma</span> <span class="k">import</span> <span class="n">NcSigma</span><span class="p">,</span> <span class="n">sigma2depths</span><span class="p">,</span> <span class="n">SigmaGeneralized</span><span class="p">,</span> <span class="n">SigmaStandard</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.data.misc.arakawa</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">ArakawaGrid</span><span class="p">,</span> <span class="n">ARAKAWA_LOCATIONS</span> <span class="k">as</span> <span class="n">arakawa_locations</span><span class="p">,</span>
+    <span class="n">CGrid</span><span class="p">,</span> <span class="n">AGrid</span><span class="p">,</span> <span class="n">ArakawaGridTransfer</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.data.misc.dataset</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Dataset</span><span class="p">,</span> <span class="n">OceanDataset</span><span class="p">,</span> <span class="n">AtmosDataset</span><span class="p">,</span> <span class="n">GenericDataset</span><span class="p">)</span>
+
+<span class="c1"># - diag</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.diag.thermdyn</span> <span class="k">import</span> <span class="n">density</span><span class="p">,</span> <span class="n">mixed_layer_depth</span>
+
+<span class="kn">from</span> <span class="nn">vacumm.diag.dynamics</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">barotropic_geostrophic_velocity</span><span class="p">,</span> <span class="n">coriolis_parameter</span><span class="p">,</span> <span class="n">kinetic_energy</span>
+    <span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

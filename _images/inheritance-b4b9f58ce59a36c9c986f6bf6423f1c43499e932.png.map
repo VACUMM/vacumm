@@ -1,0 +1,5 @@
+<map id="inheritance6fbf50d09f" name="inheritance6fbf50d09f">
+<area shape="poly" id="node1" href="data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" target="_top" title="Generic dataset representation." alt="" coords="288,139,282,130,262,122,230,116,191,112,147,111,104,112,64,116,33,122,13,130,6,139,13,148,33,156,64,163,104,167,147,168,191,167,230,163,262,156,282,148"/>
+<area shape="poly" id="node3" href="#vacumm.data.misc.satellite.Satellite" target="_top" title=".. todo:: Remove this generic satellite class as it already exists in vacumm.data.satellite" alt="" coords="289,245,282,236,262,228,231,221,191,217,147,216,103,217,64,221,32,228,12,236,5,245,12,254,32,262,64,268,103,272,147,273,191,272,231,268,262,262,282,254"/>
+<area shape="poly" id="node2" href="misc.bases.html#vacumm.misc.bases.Object" target="_top" title="Vacumm&#39;s base class proving common usefull features:" alt="" coords="258,34,253,25,237,17,212,11,181,7,147,5,113,7,82,11,58,17,42,25,37,34,42,43,58,51,82,57,113,61,147,63,181,61,212,57,237,51,253,43"/>
+</map>

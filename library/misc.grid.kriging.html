@@ -1,0 +1,699 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.8.7. vacumm.misc.grid.kriging – Kriging &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.8.7. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.kriging</span></code> – Kriging</a></li>
+<li><a class="reference internal" href="#overview">2.3.8.8. Overview</a></li>
+<li><a class="reference internal" href="#module-vacumm.misc.grid.kriging">2.3.8.9. Content</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.grid.kriging.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-grid-kriging-kriging">
+<span id="lib-misc-grid-kriging"></span><h1>2.3.8.7. <a class="reference internal" href="#module-vacumm.misc.grid.kriging" title="vacumm.misc.grid.kriging"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid.kriging</span></code></a> – Kriging<a class="headerlink" href="#vacumm-misc-grid-kriging-kriging" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="overview">
+<h1>2.3.8.8. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.DEFAULT_VARIOGRAM_MODEL_TYPE" title="vacumm.misc.grid.kriging.DEFAULT_VARIOGRAM_MODEL_TYPE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DEFAULT_VARIOGRAM_MODEL_TYPE</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.VARIOGRAM_MODEL_TYPES" title="vacumm.misc.grid.kriging.VARIOGRAM_MODEL_TYPES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">VARIOGRAM_MODEL_TYPES</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">blas_dgemv</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">dgemm</span></code></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.cloud_split" title="vacumm.misc.grid.kriging.cloud_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">cloud_split()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.dgemv" title="vacumm.misc.grid.kriging.dgemv"><code class="xref py py-func docutils literal notranslate"><span class="pre">dgemv()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.gauss3" title="vacumm.misc.grid.kriging.gauss3"><code class="xref py py-func docutils literal notranslate"><span class="pre">gauss3()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.get_blas_func" title="vacumm.misc.grid.kriging.get_blas_func"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_blas_func()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.gridded_gauss3" title="vacumm.misc.grid.kriging.gridded_gauss3"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridded_gauss3()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.krig" title="vacumm.misc.grid.kriging.krig"><code class="xref py py-func docutils literal notranslate"><span class="pre">krig()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.random_gauss3" title="vacumm.misc.grid.kriging.random_gauss3"><code class="xref py py-func docutils literal notranslate"><span class="pre">random_gauss3()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.random_points" title="vacumm.misc.grid.kriging.random_points"><code class="xref py py-func docutils literal notranslate"><span class="pre">random_points()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.syminv" title="vacumm.misc.grid.kriging.syminv"><code class="xref py py-func docutils literal notranslate"><span class="pre">syminv()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.symm" title="vacumm.misc.grid.kriging.symm"><code class="xref py py-func docutils literal notranslate"><span class="pre">symm()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.variogram" title="vacumm.misc.grid.kriging.variogram"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_fit" title="vacumm.misc.grid.kriging.variogram_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_fit()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model" title="vacumm.misc.grid.kriging.variogram_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model_type" title="vacumm.misc.grid.kriging.variogram_model_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model_type()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_multifit" title="vacumm.misc.grid.kriging.variogram_multifit"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_multifit()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger" title="vacumm.misc.grid.kriging.CloudKriger"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloudKriger</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.Ainv" title="vacumm.misc.grid.kriging.CloudKriger.Ainv"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Ainv</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.sill" title="vacumm.misc.grid.kriging.CloudKriger.sill"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sill</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.variogram_func" title="vacumm.misc.grid.kriging.CloudKriger.variogram_func"><code class="xref py py-attr docutils literal notranslate"><span class="pre">variogram_func</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.del_Ainv" title="vacumm.misc.grid.kriging.CloudKriger.del_Ainv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">del_Ainv()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.del_variogram_func" title="vacumm.misc.grid.kriging.CloudKriger.del_variogram_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">del_variogram_func()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.get_Ainv" title="vacumm.misc.grid.kriging.CloudKriger.get_Ainv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_Ainv()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.get_sill" title="vacumm.misc.grid.kriging.CloudKriger.get_sill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_sill()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.get_variogram_func" title="vacumm.misc.grid.kriging.CloudKriger.get_variogram_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_variogram_func()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.interp" title="vacumm.misc.grid.kriging.CloudKriger.interp"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interp()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.plot_clouds" title="vacumm.misc.grid.kriging.CloudKriger.plot_clouds"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_clouds()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.set_Ainv" title="vacumm.misc.grid.kriging.CloudKriger.set_Ainv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_Ainv()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.set_variogram_func" title="vacumm.misc.grid.kriging.CloudKriger.set_variogram_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_variogram_func()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.variogram_fit" title="vacumm.misc.grid.kriging.CloudKriger.variogram_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">variogram_fit()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.kriging.KrigingError" title="vacumm.misc.grid.kriging.KrigingError"><code class="xref py py-class docutils literal notranslate"><span class="pre">KrigingError</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.kriging.OrdinaryCloudKriger" title="vacumm.misc.grid.kriging.OrdinaryCloudKriger"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrdinaryCloudKriger</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.kriging.OrdinaryKriger" title="vacumm.misc.grid.kriging.OrdinaryKriger"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrdinaryKriger</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.kriging.SimpleCloudKriger" title="vacumm.misc.grid.kriging.SimpleCloudKriger"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleCloudKriger</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.kriging.VariogramModel" title="vacumm.misc.grid.kriging.VariogramModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariogramModel</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.VariogramModel.param_names" title="vacumm.misc.grid.kriging.VariogramModel.param_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">param_names</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.VariogramModel.get_all_kwargs" title="vacumm.misc.grid.kriging.VariogramModel.get_all_kwargs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_all_kwargs()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.VariogramModel.get_var_args" title="vacumm.misc.grid.kriging.VariogramModel.get_var_args"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_var_args()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.kriging.VariogramModel.get_variogram_model" title="vacumm.misc.grid.kriging.VariogramModel.get_variogram_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_variogram_model()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.kriging.VariogramModelError" title="vacumm.misc.grid.kriging.VariogramModelError"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariogramModelError</span></code></a></p>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vacumm.misc.grid.kriging">
+<span id="content"></span><h1>2.3.8.9. Content<a class="headerlink" href="#module-vacumm.misc.grid.kriging" title="Permalink to this headline">¶</a></h1>
+<p>Kriging utilities inspired from the AMBHAS library (<a class="reference external" href="http://www.ambhas.com/">http://www.ambhas.com/</a>).</p>
+<dl class="class">
+<dt id="vacumm.misc.grid.kriging.CloudKriger">
+<em class="property">class </em><code class="descname">CloudKriger</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>krigtype</em>, <em>mtype=None</em>, <em>vgf=None</em>, <em>npmax=1000</em>, <em>nproc=None</em>, <em>exact=False</em>, <em>distfunc='simple'</em>, <em>errfunc=None</em>, <em>mean=None</em>, <em>farvalue=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Ordinary kriger using mutliclouds of points</p>
+<p>Big input cloud of points (size &gt; <code class="docutils literal notranslate"><span class="pre">npmax</span></code>)
+are split into smaller
+clouds using cluster analysis of distance with
+function <a class="reference internal" href="#vacumm.misc.grid.kriging.cloud_split" title="vacumm.misc.grid.kriging.cloud_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">cloud_split()</span></code></a>.</p>
+<p>The problem is solved in this way:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Input points are split in clouds if necessary.</li>
+<li>The input variogram matrix is inverted
+for each cloud, possibly using
+<a class="reference external" href="https://docs.python.org/dev/library/multiprocessing.html#module-multiprocessing" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code></a> if <code class="docutils literal notranslate"><span class="pre">nproc&gt;1</span></code>.</li>
+<li>Value are computed at output positions
+using each the inverted matrix of cloud.</li>
+<li>Final value is a weighted average of
+the values estimated using each cloud.
+Weights are inversely proportional to the inverse
+of the squared error.</li>
+</ol>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>x/y/z</strong>: Input positions and data (masked array).</li>
+<li><strong>mtype</strong>, optional: Variogram model type (defaults to ‘exp’).
+See <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model_type" title="vacumm.misc.grid.kriging.variogram_model_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model_type()</span></code></a> and <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model_type" title="vacumm.misc.grid.kriging.variogram_model_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model_type()</span></code></a>.</li>
+<li><strong>vgf</strong>, optional: Variogram function. If not set,
+it is estimated using <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_fit" title="vacumm.misc.grid.kriging.variogram_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">variogram_fit()</span></code></a>.</li>
+<li><strong>npmax</strong>, optional: Maxima size of cloud.</li>
+<li><strong>nproc</strong>, optional: Number of processes to use
+to invert matrices. Set it to a number &lt;2 to switch off
+parallelisation.</li>
+<li><strong>exact</strong>, optional: If True, variogram is exactly zero when distance is zero.</li>
+<li><strong>distfunc</strong>: Function to compute distances, or a mode argument to
+<a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.get_distances" title="vacumm.misc.grid.misc.get_distances"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_distances()</span></code></a>.</li>
+<li><strong>errfunc</strong>, optional: Callable function to compute “errors” like square
+root difference between to z values. It take two arguments and
+defaults to <img class="math" src="../_images/math/b5c6094185ea0d52acecae3c519e74e9f0a97703.png" alt="\sqrt(z1^2-z0^2)/2"/>.</li>
+<li>Extra keywords are  parameters to the <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model" title="vacumm.misc.grid.kriging.variogram_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model()</span></code></a> that must not be
+optimized by <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model" title="vacumm.misc.grid.kriging.variogram_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model()</span></code></a>. For instance <code class="docutils literal notranslate"><span class="pre">n=0</span></code> fix the</li>
+<li>Extra keywords are the parameters to the <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model" title="vacumm.misc.grid.kriging.variogram_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model()</span></code></a> that must not be
+optimized by <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model" title="vacumm.misc.grid.kriging.variogram_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model()</span></code></a>. For instance <code class="docutils literal notranslate"><span class="pre">n=0</span></code> fixes the
+nugget to zero.
+This is used only if <code class="docutils literal notranslate"><span class="pre">vfg</span></code> is not passed as an argument.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><p class="first"><a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.x" title="vacumm.misc.grid.kriging.CloudKriger.x"><code class="xref py py-attr docutils literal notranslate"><span class="pre">x</span></code></a>, <a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.y" title="vacumm.misc.grid.kriging.CloudKriger.y"><code class="xref py py-attr docutils literal notranslate"><span class="pre">y</span></code></a>, <a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.z" title="vacumm.misc.grid.kriging.CloudKriger.z"><code class="xref py py-attr docutils literal notranslate"><span class="pre">z</span></code></a>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">np</span></code>,
+<a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.xc" title="vacumm.misc.grid.kriging.CloudKriger.xc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xc</span></code></a>, <a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.yc" title="vacumm.misc.grid.kriging.CloudKriger.yc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">yc</span></code></a>, <a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.zc" title="vacumm.misc.grid.kriging.CloudKriger.zc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">zc</span></code></a>,  <code class="xref py py-attr docutils literal notranslate"><span class="pre">npc</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">variogram_function</span></code>, <a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger.Ainv" title="vacumm.misc.grid.kriging.CloudKriger.Ainv"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Ainv</span></code></a>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">npmax</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">nproc</span></code>.</p>
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.x">
+<code class="descname">x</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all input x positions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.y">
+<code class="descname">y</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all input y positions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.z">
+<code class="descname">z</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all input data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.xc">
+<code class="descname">xc</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.xc" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of input x positions of each cloud.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.yc">
+<code class="descname">yc</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.yc" title="Permalink to this definition">¶</a></dt>
+<dd><p>List input of y positions of each cloud.</p>
+</dd></dl>
+
+<dl class="last attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.zc">
+<code class="descname">zc</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.zc" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of input data of each cloud.</p>
+</dd></dl>
+
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.Ainv">
+<code class="descname">Ainv</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.Ainv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invert of A</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.del_Ainv">
+<code class="descname">del_Ainv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.del_Ainv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.del_Ainv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the invert of A</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.del_variogram_func">
+<code class="descname">del_variogram_func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.del_variogram_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.del_variogram_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the variogram function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.get_Ainv">
+<code class="descname">get_Ainv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.get_Ainv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.get_Ainv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the inverse of A</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.get_sill">
+<code class="descname">get_sill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.get_sill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.get_sill" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.get_variogram_func">
+<code class="descname">get_variogram_func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.get_variogram_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.get_variogram_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the variogram function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.interp">
+<code class="descname">interp</code><span class="sig-paren">(</span><em>xo</em>, <em>yo</em>, <em>geterr=False</em>, <em>blockr=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.interp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate to positions xo,yo</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xo/yo</strong>: Output positions.</li>
+<li><strong>geterr</strong>, optional: Also return errors.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">zo</span></code> or <code class="docutils literal notranslate"><span class="pre">zo,eo</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.plot_clouds">
+<code class="descname">plot_clouds</code><span class="sig-paren">(</span><em>marker='o'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.plot_clouds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.plot_clouds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quickly Plot inputs points splitted in clouds</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.set_Ainv">
+<code class="descname">set_Ainv</code><span class="sig-paren">(</span><em>Ainv</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.set_Ainv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.set_Ainv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the invert of A</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.set_variogram_func">
+<code class="descname">set_variogram_func</code><span class="sig-paren">(</span><em>vgf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.set_variogram_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.set_variogram_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the variogram function</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.sill">
+<code class="descname">sill</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.sill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sill</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.variogram_fit">
+<code class="descname">variogram_fit</code><span class="sig-paren">(</span><em>x=None</em>, <em>y=None</em>, <em>z=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#CloudKriger.variogram_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.variogram_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the variogram function by using <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_fit" title="vacumm.misc.grid.kriging.variogram_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_fit()</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.CloudKriger.variogram_func">
+<code class="descname">variogram_func</code><a class="headerlink" href="#vacumm.misc.grid.kriging.CloudKriger.variogram_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variogram function</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.grid.kriging.DEFAULT_VARIOGRAM_MODEL_TYPE">
+<code class="descname">DEFAULT_VARIOGRAM_MODEL_TYPE</code><em class="property"> = 'exponential'</em><a class="headerlink" href="#vacumm.misc.grid.kriging.DEFAULT_VARIOGRAM_MODEL_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default variogram model type</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.misc.grid.kriging.KrigingError">
+<em class="property">exception </em><code class="descname">KrigingError</code><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#KrigingError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.KrigingError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Exception" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.grid.kriging.OrdinaryCloudKriger">
+<em class="property">class </em><code class="descname">OrdinaryCloudKriger</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>mtype=None</em>, <em>vgf=None</em>, <em>npmax=1000</em>, <em>nproc=None</em>, <em>exact=False</em>, <em>distfunc='simple'</em>, <em>errfunc=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#OrdinaryCloudKriger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.OrdinaryCloudKriger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger" title="vacumm.misc.grid.kriging.CloudKriger"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.grid.kriging.CloudKriger</span></code></a></p>
+<p>Ordinary kriger using cloud splitting</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.OrdinaryKriger">
+<code class="descname">OrdinaryKriger</code><a class="headerlink" href="#vacumm.misc.grid.kriging.OrdinaryKriger" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#vacumm.misc.grid.kriging.OrdinaryCloudKriger" title="vacumm.misc.grid.kriging.OrdinaryCloudKriger"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.grid.kriging.OrdinaryCloudKriger</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.grid.kriging.SimpleCloudKriger">
+<em class="property">class </em><code class="descname">SimpleCloudKriger</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>mtype=None</em>, <em>vgf=None</em>, <em>npmax=1000</em>, <em>nproc=None</em>, <em>exact=False</em>, <em>distfunc='simple'</em>, <em>errfunc=None</em>, <em>mean=None</em>, <em>farvalue=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#SimpleCloudKriger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.SimpleCloudKriger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.misc.grid.kriging.CloudKriger" title="vacumm.misc.grid.kriging.CloudKriger"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.grid.kriging.CloudKriger</span></code></a></p>
+<p>Simple kriger using cloud splitting</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.grid.kriging.VARIOGRAM_MODEL_TYPES">
+<code class="descname">VARIOGRAM_MODEL_TYPES</code><em class="property"> = ['linear', 'exponential', 'spherical', 'gaussian']</em><a class="headerlink" href="#vacumm.misc.grid.kriging.VARIOGRAM_MODEL_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variogram model types</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.grid.kriging.VariogramModel">
+<em class="property">class </em><code class="descname">VariogramModel</code><span class="sig-paren">(</span><em>mtype</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#VariogramModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.VariogramModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class used when fitting a variogram model to data to better control params</p>
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.VariogramModel.get_all_kwargs">
+<code class="descname">get_all_kwargs</code><span class="sig-paren">(</span><em>pp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#VariogramModel.get_all_kwargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.VariogramModel.get_all_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get arguments list to <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model" title="vacumm.misc.grid.kriging.variogram_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model()</span></code></a> by merging variable params <cite>p</cite>
+and <code class="xref py py-attr docutils literal notranslate"><span class="pre">fixed_params</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.VariogramModel.get_var_args">
+<code class="descname">get_var_args</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#VariogramModel.get_var_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.VariogramModel.get_var_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get variable arguments list from specified params</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Result cannot contain <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.kriging.VariogramModel.get_variogram_model">
+<code class="descname">get_variogram_model</code><span class="sig-paren">(</span><em>pp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#VariogramModel.get_variogram_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.VariogramModel.get_variogram_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the variogram model function using <cite>pp</cite> variable arguments</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.kriging.VariogramModel.param_names">
+<code class="descname">param_names</code><em class="property"> = ['n', 's', 'r']</em><a class="headerlink" href="#vacumm.misc.grid.kriging.VariogramModel.param_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.misc.grid.kriging.VariogramModelError">
+<em class="property">exception </em><code class="descname">VariogramModelError</code><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#VariogramModelError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.VariogramModelError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.misc.grid.kriging.KrigingError" title="vacumm.misc.grid.kriging.KrigingError"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.grid.kriging.KrigingError</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.cloud_split">
+<code class="descname">cloud_split</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>npmax=1000</em>, <em>getdist=True</em>, <em>getcent=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#cloud_split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.cloud_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split data intot cloud of points of max size npmax:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><code class="docutils literal notranslate"><span class="pre">None</span></code> if <code class="docutils literal notranslate"><span class="pre">len(x)&lt;=npmax</span></code></p>
+<p class="last">Else <code class="docutils literal notranslate"><span class="pre">indices</span></code>
+or <code class="docutils literal notranslate"><span class="pre">(indices,</span> <span class="pre">global_distorsion,</span> <span class="pre">distortions)</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.dgemv">
+<code class="descname">dgemv</code><span class="sig-paren">(</span><em>a</em>, <em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#dgemv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.dgemv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.gauss3">
+<code class="descname">gauss3</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>x0=-1</em>, <em>y0=0.5</em>, <em>dx0=1</em>, <em>dy0=1</em>, <em>f0=1.0</em>, <em>x1=1</em>, <em>y1=1</em>, <em>dx1=2</em>, <em>dy1=0.5</em>, <em>f1=-1</em>, <em>x2=0</em>, <em>y2=-1.5</em>, <em>dx2=0.5</em>, <em>dy2=0.5</em>, <em>f2=-0.3</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#gauss3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.gauss3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create data sample as function position and 3-gaussian function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.get_blas_func">
+<code class="descname">get_blas_func</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#get_blas_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.get_blas_func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.gridded_gauss3">
+<code class="descname">gridded_gauss3</code><span class="sig-paren">(</span><em>nx=100</em>, <em>ny=100</em>, <em>xmin=-3</em>, <em>xmax=3</em>, <em>ymin=-3</em>, <em>ymax=3</em>, <em>mesh=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#gridded_gauss3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.gridded_gauss3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a data sample on a grid using <a class="reference internal" href="#vacumm.misc.grid.kriging.gauss3" title="vacumm.misc.grid.kriging.gauss3"><code class="xref py py-func docutils literal notranslate"><span class="pre">gauss3()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.krig">
+<code class="descname">krig</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>xo</em>, <em>yo</em>, <em>vgf=None</em>, <em>geterr=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#krig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.krig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quickly krig data</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.random_gauss3">
+<code class="descname">random_gauss3</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#random_gauss3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.random_gauss3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a data sample of random points using <a class="reference internal" href="#vacumm.misc.grid.kriging.gauss3" title="vacumm.misc.grid.kriging.gauss3"><code class="xref py py-func docutils literal notranslate"><span class="pre">gauss3()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.random_points">
+<code class="descname">random_points</code><span class="sig-paren">(</span><em>np=200</em>, <em>xmin=-3</em>, <em>xmax=3</em>, <em>ymin=-3</em>, <em>ymax=3</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#random_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.random_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate random coordinates of points</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.syminv">
+<code class="descname">syminv</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#syminv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.syminv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invert a symetric matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong>: (np+1,np+1) for variogram matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first"><code class="docutils literal notranslate"><span class="pre">Ainv(np+1,np+1)</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raise:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.grid.kriging.KrigingError" title="vacumm.misc.grid.kriging.KrigingError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KrigingError</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.symm">
+<code class="descname">symm</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#symm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.symm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.variogram">
+<code class="descname">variogram</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>binned=None</em>, <em>nmax=1500</em>, <em>nbindef=30</em>, <em>nbin0=None</em>, <em>nbmin=10</em>, <em>distmax=None</em>, <em>distfunc='simple'</em>, <em>errfunc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#variogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.variogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate variogram from data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x/y/z</strong>: 1D arrays of positions and data.</li>
+<li><strong>nmax</strong>, optional: Above this number, size of
+the sampe is reduced using undersampling.</li>
+<li><strong>binned</strong>, optional: If set to a number,
+data are arranged in bins to estimate
+variogram. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, data are
+arranged in bins if the number of pairs
+of points is greater than <code class="docutils literal notranslate"><span class="pre">nbindef*nbmin</span></code>.</li>
+<li><strong>nbindef</strong>, optional: Default number
+of bins (not used if <code class="docutils literal notranslate"><span class="pre">binned</span></code> is a number).</li>
+<li><strong>nbin0</strong>, optional: If set to a number &gt; 1,
+the first bin is split into nbin0 sub-bins.
+If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is evaluated with
+<code class="docutils literal notranslate"><span class="pre">min(bins[1]/nbmin,</span> <span class="pre">nbin)</span></code>.</li>
+<li><strong>nbmin</strong>, optional: Minimal number of points
+in a bin.</li>
+<li><strong>distmax</strong>, optional: Max distance to consider.</li>
+<li><strong>distfunc</strong>: Function to compute distances, or a mode argument to
+<a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.get_distances" title="vacumm.misc.grid.misc.get_distances"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_distances()</span></code></a>.</li>
+<li><strong>errfunc</strong>, optional: Callable function to compute “errors” like square
+root difference between to z values. It take two arguments and
+defaults to <img class="math" src="../_images/math/175eccf27b009421dac5eeb6e24c179d33da1760.png" alt="(z1-z0)^2/2"/>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.variogram_fit">
+<code class="descname">variogram_fit</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>mtype=None</em>, <em>getall=False</em>, <em>getp=False</em>, <em>geterr=False</em>, <em>distfunc='simple'</em>, <em>errfunc=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#variogram_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.variogram_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit a variogram model to data and return the function</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vm</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">variogram_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">distmax</span><span class="o">=</span><span class="mf">30e3</span><span class="p">,</span> <span class="n">geterr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>x/y/z</strong>: Position and data.</p>
+</li>
+<li><p class="first"><strong>mtype</strong>: Variogram model type (see ::<cite>variogram_model_type</cite>).</p>
+</li>
+<li><p class="first"><strong>getall</strong>: Get verything in a dictionary whose keys are</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;func&quot;</span></code>: model function,</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;err&quot;</span></code>: fitting error,</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;params&quot;</span></code>: all parameters has a dictionary,</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;popt&quot;</span></code>: parameters than where optimised,</li>
+<li><code class="docutils literal notranslate"><span class="pre">vm&quot;</span></code>: <a class="reference internal" href="#vacumm.misc.grid.kriging.VariogramModel" title="vacumm.misc.grid.kriging.VariogramModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariogramModel</span></code></a> instance,</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;mtype&quot;</span></code>: variogram model type.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>getp</strong>, optional: Only return model parameters. Return them as
+a <cite>class:`dict</cite> if equal to <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+</li>
+<li><p class="first"><strong>variogram_&lt;param&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">param</span></code> is passed to <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram" title="vacumm.misc.grid.kriging.variogram"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram()</span></code></a>.</p>
+</li>
+<li><p class="first"><strong>distfunc</strong>: Function to compute distances, or a mode argument to
+<a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.get_distances" title="vacumm.misc.grid.misc.get_distances"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_distances()</span></code></a>.</p>
+</li>
+<li><p class="first"><strong>errfunc</strong>, optional: Callable function to compute “errors” like square
+root difference between to z values. It take two arguments and
+defaults to <img class="math" src="../_images/math/b5c6094185ea0d52acecae3c519e74e9f0a97703.png" alt="\sqrt(z1^2-z0^2)/2"/>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">use “haversine” if input coordinates are in degrees.</p>
+</div>
+</li>
+<li><p class="first">Extra keywords are those of <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_model" title="vacumm.misc.grid.kriging.variogram_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_model()</span></code></a>.
+They can be used to freeze some of the parameters.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">variogram_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># fix the nugget</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.variogram_model">
+<code class="descname">variogram_model</code><span class="sig-paren">(</span><em>mtype</em>, <em>n</em>, <em>s</em>, <em>r</em>, <em>nrelmax=0.2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#variogram_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.variogram_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the variogram model function from its name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.variogram_model_type">
+<code class="descname">variogram_model_type</code><span class="sig-paren">(</span><em>mtype=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#variogram_model_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.variogram_model_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the the variogram model type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mtype</strong>, optional: <code class="docutils literal notranslate"><span class="pre">None</span></code>, and index or a string matching
+an element of <a class="reference internal" href="#vacumm.misc.grid.kriging.VARIOGRAM_MODEL_TYPES" title="vacumm.misc.grid.kriging.VARIOGRAM_MODEL_TYPES"><code class="xref py py-data docutils literal notranslate"><span class="pre">VARIOGRAM_MODEL_TYPES</span></code></a>.
+If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, it defaults to <a class="reference internal" href="#vacumm.misc.grid.kriging.DEFAULT_VARIOGRAM_MODEL_TYPE" title="vacumm.misc.grid.kriging.DEFAULT_VARIOGRAM_MODEL_TYPE"><code class="xref py py-data docutils literal notranslate"><span class="pre">DEFAULT_VARIOGRAM_MODEL_TYPE</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.kriging.variogram_multifit">
+<code class="descname">variogram_multifit</code><span class="sig-paren">(</span><em>xx</em>, <em>yy</em>, <em>zz</em>, <em>mtype=None</em>, <em>getall=False</em>, <em>getp=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/kriging.html#variogram_multifit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.kriging.variogram_multifit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="#vacumm.misc.grid.kriging.variogram_fit" title="vacumm.misc.grid.kriging.variogram_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">variogram_fit()</span></code></a> but with several samples</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

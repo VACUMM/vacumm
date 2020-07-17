@@ -1,0 +1,216 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.5.6.34. test_regrid_regrid2d.py – Test the regrid2d() function &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tests/test_regrid_regrid2d.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="test-regrid-regrid2d-py-test-the-regrid2d-function">
+<h1>3.5.6.34. <strong class="program">test_regrid_regrid2d.py</strong> – Test the <a class="reference internal" href="../library/misc.grid.regridding.html#vacumm.misc.grid.regridding.regrid2d" title="vacumm.misc.grid.regridding.regrid2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid2d()</span></code></a> function<a class="headerlink" href="#test-regrid-regrid2d-py-test-the-regrid2d-function" title="Permalink to this headline">¶</a></h1>
+<div class="figure">
+<img alt="../_images/test_regrid_regrid2d.png" src="../_images/test_regrid_regrid2d.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Test the :func:`~vacumm.misc.grid.regridding.regrid2d` function&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">MV2</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">,</span> <span class="n">os</span><span class="p">,</span> <span class="n">add_grid</span><span class="p">,</span> <span class="n">rotate_grid</span><span class="p">,</span> <span class="n">set_grid</span><span class="p">,</span>
+    <span class="n">create_grid</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">rcdefaults</span><span class="p">,</span> <span class="n">plot2d</span><span class="p">,</span> <span class="n">regrid2d</span><span class="p">,</span> <span class="n">create_time</span><span class="p">)</span>
+
+
+<span class="c1"># Input grid and data</span>
+<span class="n">nxi</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">nyi</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">nt</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># - rect</span>
+<span class="n">xi</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nxi</span><span class="o">*</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">yi</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nyi</span><span class="o">*</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">ti</span> <span class="o">=</span> <span class="n">create_time</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="p">),</span> <span class="s1">&#39;years since 2000&#39;</span><span class="p">)</span>
+<span class="n">gridri</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
+<span class="n">xxri</span><span class="p">,</span> <span class="n">yyri</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
+<span class="n">zzri</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">yyri</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nyi</span><span class="p">,</span> <span class="n">nxi</span><span class="p">))</span>
+<span class="n">zzri</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">nyi</span><span class="o">*</span><span class="mf">0.3</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">nyi</span><span class="o">*</span><span class="mf">0.6</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">nxi</span><span class="o">*</span><span class="mf">0.3</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">nxi</span><span class="o">*</span><span class="mf">0.6</span><span class="p">)]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked</span>
+<span class="n">zzri</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked</span>
+<span class="n">varri</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">zzri</span><span class="p">)</span>
+<span class="n">varri</span><span class="o">.</span><span class="n">setAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ti</span><span class="p">)</span>
+<span class="n">set_grid</span><span class="p">(</span><span class="n">varri</span><span class="p">,</span> <span class="n">gridri</span><span class="p">)</span>
+<span class="c1"># - curv</span>
+<span class="n">gridci</span> <span class="o">=</span> <span class="n">rotate_grid</span><span class="p">(</span><span class="n">gridri</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">xxci</span> <span class="o">=</span> <span class="n">gridci</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
+<span class="n">yyci</span> <span class="o">=</span> <span class="n">gridci</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
+<span class="n">zzci</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">yyci</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nyi</span><span class="p">,</span> <span class="n">nxi</span><span class="p">))</span>
+<span class="n">zzci</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">nyi</span><span class="o">*</span><span class="mf">0.3</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">nyi</span><span class="o">*</span><span class="mf">0.6</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">nxi</span><span class="o">*</span><span class="mf">0.3</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">nxi</span><span class="o">*</span><span class="mf">0.6</span><span class="p">)]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked</span>
+<span class="n">zzci</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked</span>
+<span class="n">varci</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">zzci</span><span class="p">)</span>
+<span class="n">varci</span><span class="o">.</span><span class="n">setAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ti</span><span class="p">)</span>
+<span class="n">set_grid</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridci</span><span class="p">)</span>
+
+<span class="c1"># Output positions</span>
+<span class="n">nxo</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">nyo</span> <span class="o">=</span> <span class="mi">18</span>
+<span class="c1"># - rect</span>
+<span class="n">dxi</span> <span class="o">=</span> <span class="n">xi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">xi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">dyi</span> <span class="o">=</span> <span class="n">yi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">yi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">xro</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">dxi</span><span class="o">*</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">xi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">dxi</span><span class="o">*</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">nxo</span><span class="p">)</span>
+<span class="n">yro</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">yi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">dyi</span><span class="o">*</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">yi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">dyi</span><span class="o">*</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">nyo</span><span class="p">)</span>
+<span class="n">gridro</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">(</span><span class="n">xro</span><span class="p">,</span> <span class="n">yro</span><span class="p">)</span>
+<span class="c1"># - curv</span>
+<span class="n">xco</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nxo</span><span class="p">)</span>
+<span class="n">yco</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">yi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nyo</span><span class="p">)</span>
+<span class="n">gridco</span> <span class="o">=</span> <span class="n">rotate_grid</span><span class="p">((</span><span class="n">xco</span><span class="p">,</span> <span class="n">yco</span><span class="p">),</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># Interpolate and Plot</span>
+<span class="c1"># - original</span>
+<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;axes&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">axes_aspect</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=.</span><span class="mi">3</span><span class="p">,</span>
+          <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">kwg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ip</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varri</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Original rectangular&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varci</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Original curvilinear&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="c1"># - nearest</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridco</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;vacumm&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;VACUMM / Nearest&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridci</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - bilin r2r / vacumm</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varri</span><span class="p">,</span> <span class="n">gridro</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;vacumm&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;VACUMM / Bilinear&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - bilin c2c / vacumm</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridco</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;vacumm&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;VACUMM / Bilinear&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridci</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - bilin c2c / emsf</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridco</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;esmf&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;ESMF / Bilinear&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridci</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - bilin c2c / libcf</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridco</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;libcf&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;LibCF / Bilinear&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridci</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - dstwgt c2c / vacumm</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridco</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dstwgt&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;vacumm&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;VACUMM / Dstwgt&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridci</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - patch c2c / emsf</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridco</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;patch&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;esmf&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;ESMF / Patch&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridci</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - cellave r2r / regrid2</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varri</span><span class="p">,</span> <span class="n">gridro</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;regrid2&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Regrid2 / Cellave&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - cellave c2c / esmf</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridco</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;esmf&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;ESMF / Cellave&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridci</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="c1"># - conserv c2c / esmf</span>
+<span class="n">varo</span> <span class="o">=</span> <span class="n">regrid2d</span><span class="p">(</span><span class="n">varci</span><span class="p">,</span> <span class="n">gridco</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;conserv&#39;</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s1">&#39;esmf&#39;</span><span class="p">)</span>
+<span class="n">plot2d</span><span class="p">(</span><span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;ESMF / Conserv&#39;</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">ip</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">);</span><span class="n">ip</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">add_grid</span><span class="p">(</span><span class="n">gridci</span><span class="p">,</span> <span class="o">**</span><span class="n">kwg</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">P</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+<span class="n">rcdefaults</span><span class="p">()</span>
+<span class="n">P</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

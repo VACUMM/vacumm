@@ -1,0 +1,248 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.8.15. Leçon sur les bathymétries &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.8.15. Leçon sur les bathymétries</a><ul>
+<li><a class="reference internal" href="#lecon-1-les-bathymetries-grillees">3.8.15.1. Leçon 1 : les bathymétries grillées</a></li>
+<li><a class="reference internal" href="#lecon-2-les-semis-de-points">3.8.15.2. Leçon 2 : les semis de points</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/courses/bathy.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lecon-sur-les-bathymetries">
+<h1>3.8.15. Leçon sur les bathymétries<a class="headerlink" href="#lecon-sur-les-bathymetries" title="Permalink to this headline">¶</a></h1>
+<p>Voir <code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.bathy</span></code>.</p>
+<div class="section" id="lecon-1-les-bathymetries-grillees">
+<h2>3.8.15.1. Leçon 1 : les bathymétries grillées<a class="headerlink" href="#lecon-1-les-bathymetries-grillees" title="Permalink to this headline">¶</a></h2>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_bathy_gridded.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Manipulation de bathymetrie sur grille (:mod:`vacumm.bathy.bathy`)&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">cdms2</span><span class="p">,</span> <span class="n">data_sample</span><span class="p">,</span> <span class="n">create_grid</span>
+<span class="kn">from</span> <span class="nn">vacumm.bathy.bathy</span> <span class="k">import</span> <span class="n">GriddedBathy</span><span class="p">,</span> <span class="n">NcGriddedBathy</span><span class="p">,</span> <span class="n">bathy_list</span><span class="p">,</span> <span class="n">GriddedBathyMerger</span><span class="p">,</span> <span class="n">plot_bathy</span>
+
+<span class="c1"># Lecture d&#39;une variable dans un fichier</span>
+<span class="n">cdms2</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">latitude_aliases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">cdms2</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">longitude_aliases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="s1">&#39;ETOPO2v2g_flt.grd&#39;</span><span class="p">))</span>
+<span class="n">var</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">6.1</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mf">47.8</span><span class="p">,</span> <span class="mf">48.6</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># Creation de l&#39;objet de bathy grillee</span>
+<span class="n">bathy</span> <span class="o">=</span> <span class="n">GriddedBathy</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+<span class="c1"># Versions masquees</span>
+<span class="n">bathy_masked1</span> <span class="o">=</span> <span class="n">bathy</span><span class="o">.</span><span class="n">masked_bathy</span><span class="p">()</span>                        <span class="c1"># -&gt; nb de points masques ?</span>
+<span class="n">bathy</span><span class="o">.</span><span class="n">set_shoreline</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>                                    <span class="c1"># -&gt; essayer &#39;i&#39;</span>
+<span class="n">bathy_masked2</span> <span class="o">=</span> <span class="n">bathy</span><span class="o">.</span><span class="n">masked_bathy</span><span class="p">()</span>                        <span class="c1"># -&gt; nb de points masques ?</span>
+
+<span class="c1"># Plot</span>
+<span class="n">bathy</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Direct&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># Bathy standard</span>
+<span class="kn">from</span> <span class="nn">vacumm.bathy.bathy</span> <span class="k">import</span> <span class="n">NcGriddedBathy</span><span class="p">,</span> <span class="n">bathy_list</span>
+<span class="nb">print</span> <span class="n">bathy_list</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="n">sbathy</span> <span class="o">=</span> <span class="n">NcGriddedBathy</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">5.2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mf">48.</span><span class="p">,</span> <span class="mf">48.9</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;etopo2&#39;</span><span class="p">)</span>
+<span class="n">sbathy</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Bathy par defaut&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># Fusion de bathy</span>
+<span class="n">mgrid</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">((</span><span class="o">-</span><span class="mf">6.1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">),</span> <span class="p">(</span><span class="mf">47.8</span><span class="p">,</span> <span class="mf">48.9</span><span class="p">,</span> <span class="o">.</span><span class="mi">006</span><span class="p">))</span>   <span class="c1"># -&gt; changer la grille</span>
+<span class="kn">from</span> <span class="nn">vacumm.bathy.bathy</span> <span class="k">import</span> <span class="n">GriddedBathyMerger</span>
+<span class="n">merger</span> <span class="o">=</span> <span class="n">GriddedBathyMerger</span><span class="p">(</span><span class="n">mgrid</span><span class="p">)</span>
+<span class="n">merger</span> <span class="o">+=</span> <span class="n">sbathy</span>
+<span class="n">merger</span> <span class="o">+=</span> <span class="n">bathy</span>
+<span class="n">merger</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Fusion / plot direct&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot via plot_bathy</span>
+<span class="n">mbathy</span> <span class="o">=</span> <span class="n">merger</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
+<span class="n">plot_bathy</span><span class="p">(</span><span class="n">mbathy</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Fusion / plot via plot_bathy&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># Regrillage</span>
+<span class="n">rgrid</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">((</span><span class="o">-</span><span class="mf">6.1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span> <span class="p">(</span><span class="mf">47.8</span><span class="p">,</span> <span class="mf">48.9</span><span class="p">,</span> <span class="o">.</span><span class="mi">02</span><span class="p">))</span>
+<span class="n">Mbathy</span> <span class="o">=</span> <span class="n">GriddedBathy</span><span class="p">(</span><span class="n">mbathy</span><span class="p">)</span>
+<span class="n">rbathy</span> <span class="o">=</span> <span class="n">Mbathy</span><span class="o">.</span><span class="n">regrid</span><span class="p">(</span><span class="n">rgrid</span><span class="p">)</span>
+<span class="n">plot_bathy</span><span class="p">(</span><span class="n">rbathy</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Regrillee&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<div class="section" id="lecon-2-les-semis-de-points">
+<h2>3.8.15.2. Leçon 2 : les semis de points<a class="headerlink" href="#lecon-2-les-semis-de-points" title="Permalink to this headline">¶</a></h2>
+<p>Fichier : <code class="file docutils literal notranslate"><span class="pre">courses_bathy_xyz.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Manipulation de bathymetrie en semis de points (:mod:`vacumm.bathy.bathy`)&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">N</span><span class="p">,</span> <span class="n">os</span><span class="p">,</span> <span class="n">merc</span><span class="p">,</span> <span class="n">create_grid</span><span class="p">,</span> <span class="n">resol</span><span class="p">,</span> <span class="n">map2</span><span class="p">,</span> <span class="n">P</span>
+<span class="kn">from</span> <span class="nn">vacumm.bathy.bathy</span> <span class="k">import</span> <span class="n">XYZBathy</span><span class="p">,</span> <span class="n">XYZBathyMerger</span>
+
+<span class="c1"># Creation de fausses bathymetries xyz</span>
+<span class="c1"># - fonction generatrice</span>
+<span class="k">def</span> <span class="nf">gene_bathy</span><span class="p">(</span><span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mf">30.</span><span class="p">):</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">2</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">xc</span> <span class="o">+</span> <span class="n">xr</span><span class="o">*</span><span class="n">r</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">yc</span> <span class="o">+</span> <span class="n">yr</span><span class="o">*</span><span class="n">r</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">xc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">xr</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">yc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">yr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">amp</span><span class="o">+</span><span class="n">noise</span><span class="p">])</span>
+<span class="c1"># - creations</span>
+<span class="n">xyz1</span> <span class="o">=</span> <span class="n">XYZBathy</span><span class="p">(</span><span class="n">gene_bathy</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mf">48.3</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">15</span><span class="p">))</span> <span class="c1"># top right</span>
+<span class="n">xyz2</span> <span class="o">=</span> <span class="n">XYZBathy</span><span class="p">(</span><span class="n">gene_bathy</span><span class="p">(</span><span class="o">-</span><span class="mf">5.45</span><span class="p">,</span> <span class="mf">48.1</span><span class="p">,</span> <span class="o">.</span><span class="mi">45</span><span class="p">,</span> <span class="o">.</span><span class="mi">25</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span> <span class="n">transp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># bot left</span>
+
+<span class="c1"># Recuperation de donnees</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">x</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">y</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">z</span>
+
+<span class="c1"># Exclusions/selections</span>
+<span class="n">xyz1</span><span class="o">.</span><span class="n">select</span><span class="p">([[</span><span class="o">-</span><span class="mf">5.4</span><span class="p">,</span> <span class="mf">48.1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.8</span><span class="p">,</span> <span class="mf">48.1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">5.1</span><span class="p">,</span> <span class="mf">48.5</span><span class="p">]])</span>
+<span class="n">xyz1</span><span class="o">.</span><span class="n">exclude</span><span class="p">([</span><span class="o">-</span><span class="mf">5.2</span><span class="p">,</span> <span class="mf">48.</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mf">48.25</span><span class="p">])</span>
+
+
+<span class="c1"># Infos</span>
+<span class="nb">print</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">xmin</span>                                         <span class="c1"># -&gt; essayer get_xmin avec mask</span>
+<span class="nb">print</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">resol</span><span class="p">()</span>                                      <span class="c1"># -&gt; essayer avec deg=...</span>
+
+<span class="c1"># Plot</span>
+<span class="n">kwp</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">map_res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">masked_alpha</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">xyz1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwp</span><span class="p">)</span>                           <span class="c1"># -&gt; essayer autre mode</span>
+
+<span class="c1"># Fichier</span>
+<span class="n">fbathy</span> <span class="o">=</span> <span class="vm">__file__</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;xyz&#39;</span>
+<span class="n">xyz1</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fbathy</span><span class="p">)</span>
+<span class="n">xyz3</span> <span class="o">=</span> <span class="n">XYZBathy</span><span class="p">(</span><span class="n">fbathy</span><span class="p">)</span>                             
+<span class="n">xyz3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;XYZ3&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwp</span><span class="p">)</span>
+
+
+<span class="c1"># Fusions</span>
+<span class="n">xyz</span> <span class="o">=</span> <span class="n">xyz1</span> <span class="o">+</span> <span class="n">xyz2</span>
+<span class="n">merger</span> <span class="o">=</span> <span class="n">XYZBathyMerger</span><span class="p">()</span>
+<span class="n">merger</span> <span class="o">+=</span> <span class="n">xyz1</span>                                          <span class="c1"># -&gt; supprimer/ajouter</span>
+<span class="n">merger</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xyz2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">merger</span><span class="p">):</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Niveau : </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">i</span> <span class="c1"># Pour les legendes</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">set_transp</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Opacite</span>
+<span class="n">merger</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cluster&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwp</span><span class="p">)</span>                      <span class="c1"># -&gt; essayer autre mode</span>
+<span class="n">xyz</span> <span class="o">=</span> <span class="n">merger</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">(</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;Merged&#39;</span><span class="p">)</span>
+<span class="n">xyz</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">**</span><span class="n">kwp</span><span class="p">)</span>
+
+
+<span class="c1"># Regrillage</span>
+<span class="n">grid_auto</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">grid</span>
+<span class="n">grid_manual</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">((</span><span class="o">-</span><span class="mf">5.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.91</span><span class="p">,</span> <span class="o">.</span><span class="mi">01</span><span class="p">),</span> <span class="p">(</span><span class="mf">48.1</span><span class="p">,</span> <span class="mf">48.41</span><span class="p">,</span> <span class="o">.</span><span class="mi">01</span><span class="p">))</span>
+<span class="n">gridded</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">togrid</span><span class="p">(</span><span class="n">grid_manual</span><span class="p">)</span>
+<span class="n">map2</span><span class="p">(</span><span class="n">gridded</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

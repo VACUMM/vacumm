@@ -1,0 +1,285 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.3.3. profile.py &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.6.3.3. <strong class="program">profile.py</strong></a><ul>
+<li><a class="reference internal" href="#prealables">1.6.3.3.1. Préalables</a></li>
+<li><a class="reference internal" href="#fonctionnement">1.6.3.3.2. Fonctionnement</a></li>
+<li><a class="reference internal" href="#utilisation">1.6.3.3.3. Utilisation</a><ul>
+<li><a class="reference internal" href="#definition-des-polygones">1.6.3.3.3.1. Définition des polygones</a></li>
+<li><a class="reference internal" href="#conversion-d-un-fichier-de-profils">1.6.3.3.3.2. Conversion d’un fichier de profils</a></li>
+<li><a class="reference internal" href="#usage">1.6.3.3.3.3. Usage</a></li>
+<li><a class="reference internal" href="#apercu-des-sorties">1.6.3.3.3.4. Aperçu des sorties</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.profile.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="profile-py">
+<span id="user-scripts-profile"></span><h1>1.6.3.3. <strong class="program">profile.py</strong><a class="headerlink" href="#profile-py" title="Permalink to this headline">¶</a></h1>
+<p>Ce script permet l’affichage d’informations sur un fichier de profils (histogramme, carte, distribution, profil)</p>
+<p>Ce script permet également de convertir un fichier de profil dans le format attendu, voir plus bas.</p>
+<div class="section" id="prealables">
+<h2>1.6.3.3.1. Préalables<a class="headerlink" href="#prealables" title="Permalink to this headline">¶</a></h2>
+<p>Les profils pris en charge doivent respecter les conditions suivantes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>avoir les dimensions ou variables représentant le code plateforme, le temps, la position et la profondeur.</li>
+<li>les variables à traiter doivent être représentées sur deux dimensions, la première
+correspondant au profil, la seconde à la profondeur.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="fonctionnement">
+<h2>1.6.3.3.2. Fonctionnement<a class="headerlink" href="#fonctionnement" title="Permalink to this headline">¶</a></h2>
+<p>Ce script permet d’afficher:</p>
+<blockquote>
+<div><ul class="simple">
+<li>les informations générales sur une liste de profils.</li>
+<li>le tracé d’un ou plusieurs profils.</li>
+<li>le tracé de l’histogramme des profils.</li>
+<li>le tracé d’une carte affichant les positions des profils.</li>
+<li>le tracé d’une carte affichant la distribution des profils (nombre par polygone).</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="utilisation">
+<h2>1.6.3.3.3. Utilisation<a class="headerlink" href="#utilisation" title="Permalink to this headline">¶</a></h2>
+<p>Les options –time et –variables permettent respectivement la sélection d’une période de temps et les variables (par alias) à considérer.</p>
+<p>L’attribut bbox est spécifique au tracé de carte, il définit l’emprise de la zone visualisée et n’agit pas sur la sélection des donnée.</p>
+<p>La restriction de zone peut être réalisée par un ou plusieurs polygones.
+Dans le cas du tracé de carte:</p>
+<blockquote>
+<div><ul class="simple">
+<li>si aucun polygone n’est fourni, la carte affiche simplement la position des profils</li>
+<li>si un ou plusieurs polygones sont fourni, la carte affiche ceux ci avec la distribution des profils de chacun d’entre eux représenté par une couleur.</li>
+</ul>
+</div></blockquote>
+<div class="section" id="definition-des-polygones">
+<h3>1.6.3.3.3.1. Définition des polygones<a class="headerlink" href="#definition-des-polygones" title="Permalink to this headline">¶</a></h3>
+<p>Un polygone est défini par un ensemble de cordonnées x,y (longitude,latitude).</p>
+<p>L’option -p permet de spécifier un polygone sur ligne de coommande
+Exemple:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-p x1,y1,x2,y2,x3,y3,...
+</pre></div>
+</div>
+<p>L’option –polyfile permet de spécifier un fichier de polygone</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-3 50 -6 49
+-6 48.5 -3 48.5
+</pre></div>
+</div>
+<p>L’option –polysfile permet de spécifier un fichier de polygones avec un polygone par ligne</p>
+<p>Exemple:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#-3 50 -6 49 -6 48 -3 47
+-3 50 -6 49 -6 48.5 -3 48.5
+-3 48.5 -6 48.5 -6 48 -3 47
+</pre></div>
+</div>
+<p>Les lignes vides ou commencant par le caractère ‘#’ sont ignorées.</p>
+<p>Les coordonées de polygone sont délimitées par des espaces ou virgules ‘,’</p>
+<p>La partie décimale des coordonées est séparée de la partie entière par un point ‘.’</p>
+<p>Toutes ces options de polygones peuvent être répétées.</p>
+</div>
+<div class="section" id="conversion-d-un-fichier-de-profils">
+<h3>1.6.3.3.3.2. Conversion d’un fichier de profils<a class="headerlink" href="#conversion-d-un-fichier-de-profils" title="Permalink to this headline">¶</a></h3>
+<p>profiles.py permet aussi de mettre en forme un fichier de profil dans un format attendu pour les tracés.</p>
+<p>Les formats d’entrée et de sortie sont les même que ceux de merge_profiles.py.</p>
+<p>Cependant, les fonctionnalités de cette conversion sont moindres que celles de merge_profiles.py.</p>
+<dl class="docutils">
+<dt>L’exemple suivant montre comment convertir un fichier, en specifiant:</dt>
+<dd><ul class="first last simple">
+<li>que les variables en sortie sont temperature et salinity, à partir de TEMP et PSAL</li>
+<li>force a utiliser la variable DEPH comme etant la variable de profondeur</li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>profile.py input.nc -v temperature,TEMP -v salinity,PSAL -v depth,DEPH --convert output.nc
+</pre></div>
+</div>
+<p>TODO: permettre de forcer l’utilisation d’une variable de pression pour le calcul des profondeurs</p>
+</div>
+<div class="section" id="usage">
+<h3>1.6.3.3.3.3. Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Usage: profile.py [options] [file1] [file2] [...]
+
+Show profiles informations
+
+Examples:
+  This will produce a map with the profiles position for the given variable:
+    profile.py profiles.nc -v temperature --dist
+  This will produce a map with the profiles distribution for the given variable and set of polygons:
+    profile.py profiles.nc -v temperature -t 2000,2005 --hist --dist -P data/polygon_manga/polygon_manga.txt
+
+Options:
+  --version             show program&#39;s version number and exit
+  -h, --help            show this help message and exit
+  --cfgfile=CFGFILE     Configuration file
+  --hist=n,units        Plot profiles histogram with interval n,units (ex:
+                        &quot;1,month&quot; , &quot;2,weeks&quot; , ...)
+  --dist                Plot profiles distribution (position and, if polygons
+                        are specified, the colored count of profiles per
+                        polygon)
+  --drawpro             Plot profiles position in distribution plot
+  --pro=PRO             Plot a profile at specified comma separated indexes.
+                        Ranges may also be specified using start:stop[:step]
+                        notation, resulting in [start,...,stop[ indexes.
+                        Example: 0,1,2:5,5:11:1 would plot profiles 0 to 10
+  -t TIME, --time=TIME  Restrict timerange to be processed, format is
+                        &quot;datemin,datemax&quot; with date format: &quot;YYYY-mm-
+                        ddTHH:MM:SS&quot;
+  -b BBOX, --bbox=BBOX  Set the map bounding box, format is
+                        lon_min,lat_min,lon_max,lat_max
+  -v VARIABLES, --variables=VARIABLES
+                        Variables to be processed. Ex: -v temperature.
+                        Aliases may be specified using comma separated names
+                        Ex: -v temperature,TEMP
+                        Repeat this option for each required variable.
+  -p POLY, --poly=POLY  Add a polygon for profile restriction and accounting,
+                        polygon format is x1,y1,x2,y2,x3,y3,x4,y4... At least
+                        4 couples must be set, otherwise if 4 values are set,
+                        it is considered as lonmin,latmin,lonmax,latmax
+  --polyfile=POLYFILE   Specify a polygon file containing couples coordinates
+                        (in lat, lon order), with values separated by a
+                        whitespace or coma
+  -P POLYSFILE, --polysfile=POLYSFILE
+                        Specify a polygons file (one per line)
+  -o pattern, --output=pattern
+                        Output files pattern  (default: %(plot)s.png)
+  --convert=converted_profiles.nc
+                        Convert given profile file(s) into a standard netcdf
+                        output file. Variables must be specified using the -v
+                        option.
+  --show                Show figures
+  --nonetdcf3           Do not force saving converted file in NetCDF version 3
+  --debug               Debug mode
+</pre></div>
+</div>
+<p><strong>Exemples d’utilisation:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>Production d’une carte avec le positionnement des profils:</li>
+</ul>
+<ul class="simple">
+<li>Production d’une carte avec la distribution des profils dans des polygones:</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="apercu-des-sorties">
+<h3>1.6.3.3.3.4. Aperçu des sorties<a class="headerlink" href="#apercu-des-sorties" title="Permalink to this headline">¶</a></h3>
+<p><strong>Profiles:</strong></p>
+<a class="reference internal image-reference" href="_images/profiles.png"><img alt="_images/profiles.png" src="_images/profiles.png" style="width: 90%;" /></a>
+<p><strong>Histogramme:</strong></p>
+<a class="reference internal image-reference" href="_images/profiles_hist.png"><img alt="_images/profiles_hist.png" src="_images/profiles_hist.png" style="width: 90%;" /></a>
+<p><strong>Distribution (position):</strong></p>
+<a class="reference internal image-reference" href="_images/profiles_dist.png"><img alt="_images/profiles_dist.png" src="_images/profiles_dist.png" style="width: 90%;" /></a>
+<p><strong>Distribution (polygones):</strong></p>
+<a class="reference internal image-reference" href="_images/profiles_dist_polygons.png"><img alt="_images/profiles_dist_polygons.png" src="_images/profiles_dist_polygons.png" style="width: 90%;" /></a>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

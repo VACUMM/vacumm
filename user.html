@@ -1,0 +1,174 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1. User guide &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="user-guide">
+<span id="user"></span><h1>1. User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user.intro.html">1.1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user.install.html">1.2. Installation and configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user.install.prereq.html">1.2.1. Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.install.download.html">1.2.2. Download</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.install.installs.html">1.2.3. Installations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.install.installer.html">1.2.4. Conda installer script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.install.modenv.html">1.2.5. Using environment modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.install.config.html">1.2.6. Library configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">1.3. Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/warning.html">1.3.1. Avertissement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/general.html">1.3.2. General</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/misc.html">1.3.3. Basic generic tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/bathy.html">1.3.4. Bathymetric tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tide.html">1.3.5. Outils marégraphiques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/data.html">1.3.6. Outils pour l’exploitation des données</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user.faq.html">1.4. FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user.faq.misc.html">1.4.1. Misc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.faq.install.html">1.4.2. Installations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.faq.config.html">1.4.3. Configuration of the librairy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.faq.graphics.html">1.4.4. Graphiques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.faq.contrib.html">1.4.5. Contribute to VACUMM</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user.desc.html">1.5. Description of some components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user.desc.fond.html">1.5.1. Basis of the librairy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.desc.config.html">1.5.2. Using advanced configurations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.desc.cf.html">1.5.3. CF conventions usage and extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.desc.dataset.html">1.5.4. Using the generic data classes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user.scripts.html">1.6. Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user.scripts.html#vacumm-configuration">1.6.1. VACUMM configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.scripts.html#technical-scripts">1.6.2. Technical scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.scripts.html#physics-french">1.6.3. Physics (french)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.scripts.html#validation-french">1.6.4. Validation (french)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.scripts.html#misc">1.6.5. Misc</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user.todo.html">1.7. What remains to be done</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user.todo.html#generic-list">1.7.1. Generic list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.todo.html#stabilisation-of-the-code">1.7.2. Stabilisation of the code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.todo.html#supplements">1.7.3. Supplements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user.dev.html">1.8. For developpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#use-your-own-version">1.8.1. Use your own version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#coding-rules">1.8.2. Coding rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#architecture">1.8.3. Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#generation-of-the-sphinx-documentation">1.8.4. Generation of the sphinx documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#how-to-add-a-new-tutorial">1.8.5. How to add a new tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#how-to-add-a-new-test">1.8.6. How to add a new test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#tagging-of-versions">1.8.7. Tagging of versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#working-with-branches">1.8.8. Working with branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.dev.html#distributing-the-library-as-a-package">1.8.9. Distributing the library as a package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

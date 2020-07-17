@@ -1,0 +1,181 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.3.3.6.1. Les polygones &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/misc.grid.polygons.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="les-polygones">
+<span id="user-tut-misc-grid-polygons"></span><h1>1.3.3.6.1. Les polygones<a class="headerlink" href="#les-polygones" title="Permalink to this headline">¶</a></h1>
+<p>Fait appel au module externe : <a class="reference external" href="http://trac.osgeo.org/geos/">geoslib</a>.</p>
+<div class="figure" id="id1">
+<span id="fig-misc-grid-polygons"></span><img alt="../_images/misc-grid-polygons.png" src="../_images/misc-grid-polygons.png" />
+<p class="caption"><span class="caption-text">On se sert de la librarie de manipulation des formes (points, lignes, polygones)
+pour calculer des intersections, des aires, savoir quelle forme contient quel autre.</span></p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importation des formes depuis la libraire de polygones</span>
+<span class="kn">from</span> <span class="nn">_geoslib</span> <span class="k">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Polygon</span>
+
+<span class="c1"># Polygone</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="c1"># - points sous la forme [[x1,y1],[x2,y2],...]</span>
+<span class="n">pp</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span> <span class="p">[</span><span class="mf">25.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span> <span class="p">[</span><span class="mf">25.</span><span class="p">,</span> <span class="mf">25.</span><span class="p">],</span> <span class="p">[</span><span class="mf">15.</span><span class="p">,</span> <span class="mf">25.</span><span class="p">]])</span>
+<span class="c1"># - transformation de numpy a Polygon</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+<span class="c1"># - calcul de l&#39;aire</span>
+<span class="nb">print</span> <span class="n">poly</span><span class="o">.</span><span class="n">area</span><span class="p">()</span>
+<span class="c1">#  -&gt; 300.0</span>
+<span class="c1"># - plot grace a &#39;boundary&#39;=&#39;get_coord()&#39; (= pp)</span>
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">P</span>
+<span class="n">P</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">boundary</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">poly</span><span class="o">.</span><span class="n">boundary</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">))</span>
+
+<span class="c1"># Points aleatoires et inclusion</span>
+<span class="c1"># - coordonnees</span>
+<span class="n">xpts</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="o">*</span><span class="mi">30</span>
+<span class="n">ypts</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="o">*</span><span class="mi">30</span>
+<span class="c1"># - transformation en Points</span>
+<span class="n">pts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span>  <span class="nb">zip</span><span class="p">(</span><span class="n">xpts</span><span class="p">,</span> <span class="n">ypts</span><span class="p">):</span>
+    <span class="n">pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Point</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)))</span>
+<span class="c1"># - plot avec couleur differente si dans polygone</span>
+<span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">pts</span><span class="p">:</span>
+    <span class="c1"># - utilisation de &#39;within()&#39;</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">)[</span><span class="n">pt</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">poly</span><span class="p">)]</span>
+    <span class="c1"># - plot grace a &#39;boundary&#39;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">boundary</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">y</span><span class="p">],</span> <span class="s1">&#39;o&#39;</span><span class="o">+</span><span class="n">color</span><span class="p">)</span>
+
+<span class="c1"># Ligne de points et intersection</span>
+<span class="c1"># - coordonnees</span>
+<span class="n">xy</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">,</span> <span class="mf">26.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">28.</span><span class="p">,</span> <span class="mf">28.</span><span class="p">]])</span>
+<span class="c1"># - LineString</span>
+<span class="n">line</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+<span class="c1"># - plot</span>
+<span class="n">P</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-r&#39;</span><span class="p">)</span>
+<span class="c1"># - intersection (via &#39;intersects()&#39;) ?</span>
+<span class="nb">print</span> <span class="n">line</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+<span class="c1">#  -&gt; True</span>
+<span class="c1"># - plot des intersections (via intersection)</span>
+<span class="k">for</span> <span class="n">subline</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">poly</span><span class="p">):</span> <span class="c1"># = poly.intersection(line)</span>
+    <span class="n">xyl</span> <span class="o">=</span> <span class="n">subline</span><span class="o">.</span><span class="n">boundary</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xyl</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyl</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># Autre polygone</span>
+<span class="c1"># - creation et plot</span>
+<span class="n">xyp</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">22.</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mf">25.</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">28</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="n">triangle</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">xyp</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">xyp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+<span class="c1"># - intersections</span>
+<span class="k">if</span> <span class="n">triangle</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">poly</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">pol</span> <span class="ow">in</span> <span class="n">triangle</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">poly</span><span class="p">):</span>
+        <span class="n">xyp</span> <span class="o">=</span> <span class="n">pol</span><span class="o">.</span><span class="n">boundary</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">xyp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+<span class="c1"># Trace</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="n">savefigs</span>
+<span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+<span class="n">savefigs</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="n">pdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

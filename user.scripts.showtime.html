@@ -1,0 +1,182 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.2.1. showtime.py – Display information of a netcdf time axis &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.showtime.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="showtime-py-display-information-of-a-netcdf-time-axis">
+<span id="user-scripts-showtime"></span><h1>1.6.2.1. <strong class="program">showtime.py</strong> – Display information of a netcdf time axis<a class="headerlink" href="#showtime-py-display-information-of-a-netcdf-time-axis" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"><div class="first highlight-bash notranslate"><div class="highlight"><pre><span></span>showtime.py <span class="o">[</span>options<span class="o">]</span> ncfile
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Show time axis dates of a netcdf file.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Options:</th><td class="field-body"><dl class="first cmdoption">
+<dt id="cmdoption-showtime-py-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showtime-py-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showtime-py-t">
+<code class="descname">-t</code><code class="descclassname"> TNAME</code><code class="descclassname">, </code><code class="descname">--time</code><code class="descclassname">=TNAME</code><a class="headerlink" href="#cmdoption-showtime-py-t" title="Permalink to this definition">¶</a></dt>
+<dd><p>name of the time axis or variable</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showtime-py-v">
+<code class="descname">-v</code><code class="descclassname"> VNAME</code><code class="descclassname">, </code><code class="descname">--var</code><code class="descclassname">=VNAME</code><a class="headerlink" href="#cmdoption-showtime-py-v" title="Permalink to this definition">¶</a></dt>
+<dd><p>name of the variable from which to guess time</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showtime-py-s">
+<code class="descname">-s</code><code class="descclassname"> TSLICE</code><code class="descclassname">, </code><code class="descname">--slice</code><code class="descclassname">=TSLICE</code><a class="headerlink" href="#cmdoption-showtime-py-s" title="Permalink to this definition">¶</a></dt>
+<dd><p>time slice (examples: “2”, “:-2:4”)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showtime-py-m">
+<code class="descname">-m</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--minmax</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showtime-py-m" title="Permalink to this definition">¶</a></dt>
+<dd><p>show min/max only (default: False)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showtime-py-n">
+<code class="descname">-n</code><code class="descclassname"> NCOL</code><code class="descclassname">, </code><code class="descname">--ncol</code><code class="descclassname">=NCOL</code><a class="headerlink" href="#cmdoption-showtime-py-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of comlumns for output (default: 5)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showtime-py-f">
+<code class="descname">-f</code><code class="descclassname"> FORMAT</code><code class="descclassname">, </code><code class="descname">--format</code><code class="descclassname">=FORMAT</code><a class="headerlink" href="#cmdoption-showtime-py-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>date format (default: %Y-%m-%d %H:%M:%S)</p>
+</dd></dl>
+
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><p class="first">These examples are executed from the <code class="file docutils literal notranslate"><span class="pre">bin</span></code> directory of the distribution.</p>
+<div class="last highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; showtime.py -v high_tides --ncol<span class="o">=</span><span class="m">3</span> ../data/tide.sealevel.BREST.mars.nc
+<span class="m">276</span> values:
+<span class="m">2006</span>-07-15 <span class="m">06</span>:15:15, <span class="m">2006</span>-07-15 <span class="m">18</span>:45:15, <span class="m">2006</span>-07-16 <span class="m">07</span>:15:16
+<span class="m">2006</span>-07-16 <span class="m">19</span>:30:16, <span class="m">2006</span>-07-17 <span class="m">08</span>:15:17, <span class="m">2006</span>-07-17 <span class="m">20</span>:30:17
+<span class="m">2006</span>-07-18 <span class="m">09</span>:15:18, <span class="m">2006</span>-07-18 <span class="m">21</span>:45:18, <span class="m">2006</span>-07-19 <span class="m">10</span>:45:19
+...
+$&gt; showtime.py --format<span class="o">=</span><span class="s1">&#39;%b %m %Y&#39;</span> --minmax ../data/mars3d.t.nc
+min: <span class="m">07</span> Jan <span class="m">2008</span>
+max: <span class="m">09</span> Jan <span class="m">2008</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

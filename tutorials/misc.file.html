@@ -1,0 +1,557 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.3.3.9. File utilities &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.3.3.9. File utilities</a><ul>
+<li><a class="reference internal" href="#introduction">1.3.3.9.1. Introduction</a></li>
+<li><a class="reference internal" href="#file-system-traversal-with-depth-support">1.3.3.9.2. File system traversal with depth support</a></li>
+<li><a class="reference internal" href="#file-search">1.3.3.9.3. File search</a><ul>
+<li><a class="reference internal" href="#the-example">1.3.3.9.3.1. The example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#making-file-backups-called-rollover">1.3.3.9.4. Making file backups (called rollover)</a></li>
+<li><a class="reference internal" href="#displaying-and-analysing-file-sizes">1.3.3.9.5. Displaying and analysing file sizes</a></li>
+<li><a class="reference internal" href="#creating-directories">1.3.3.9.6. Creating directories</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/misc.file.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-utilities">
+<span id="user-tut-misc-file"></span><h1>1.3.3.9. File utilities<a class="headerlink" href="#file-utilities" title="Permalink to this headline">¶</a></h1>
+<p>See also the api documentation: <a class="reference internal" href="../library/misc.file.html#module-vacumm.misc.file" title="vacumm.misc.file"><code class="xref py py-mod docutils literal notranslate"><span class="pre">file</span></code></a></p>
+<div class="section" id="introduction">
+<h2>1.3.3.9.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>The <a class="reference internal" href="../library/misc.file.html#module-vacumm.misc.file" title="vacumm.misc.file"><code class="xref py py-mod docutils literal notranslate"><span class="pre">file</span></code></a> module provides various file system related features such as:</dt>
+<dd><ul class="first last simple">
+<li>filesystem traversal with depth support</li>
+<li>file search, wildcard or regex based</li>
+<li>file rollover (backup)</li>
+<li>size parsing and formatting</li>
+<li>directory creation without error on existing directory</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="file-system-traversal-with-depth-support">
+<h2>1.3.3.9.2. File system traversal with depth support<a class="headerlink" href="#file-system-traversal-with-depth-support" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.walk" title="vacumm.misc.file.walk"><code class="xref py py-func docutils literal notranslate"><span class="pre">walk()</span></code></a></p>
+</div>
+<div class="section" id="file-search">
+<h2>1.3.3.9.3. File search<a class="headerlink" href="#file-search" title="Permalink to this headline">¶</a></h2>
+<p>The find/xfind/efind/xefind functions are intended to provide flexible file or
+directories lookup.</p>
+<p>xfind and xefind are generator functions their call do not build a potentially
+huge file/directory list so that you can process the result in a loop or use the
+optionnal callbacks described below.</p>
+<p>find and efind simply call xfind and xefind to return the lokkup result as a list.</p>
+<p>The simpliest way to make a search is done by using wildcard pattern (?*[seq][!seq])
+with find/xfind. See <a class="reference external" href="https://docs.python.org/dev/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fnmatch</span></code></a> for wildcard patterns details, how they work and
+are supported.</p>
+<p>Sometimes the need for a more precise lookup appear, the regular expression are a
+very powerfull way for that goal although they need a bit of understanding. See
+<a class="reference external" href="https://docs.python.org/dev/library/re.html#module-re" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">re</span></code></a> and <a class="reference external" href="http://www.expreg.com/">http://www.expreg.com/</a>.
+Another advantage to the regex method is that you can extract parts of the file path
+you selected by using the getmatch parameters with efind/xefind.</p>
+<dl class="docutils">
+<dt>find and efind have nearly common features but few differences exists:</dt>
+<dd><ul class="first last simple">
+<li>find/xfind support single or list of pattern/exclude, efind/xefind do not,
+this should not be needed because of the regular expression capabilities.</li>
+<li>efind/xefind support returning (matching path, match object) couples, find/xfind do not</li>
+</ul>
+</dd>
+</dl>
+<p>Using wildcard expressions: See <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.xfind" title="vacumm.misc.file.xfind"><code class="xref py py-func docutils literal notranslate"><span class="pre">xfind()</span></code></a> and <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.find" title="vacumm.misc.file.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">find()</span></code></a></p>
+<p>Using regular expressions: See <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.xefind" title="vacumm.misc.file.xefind"><code class="xref py py-func docutils literal notranslate"><span class="pre">xefind()</span></code></a> and <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.efind" title="vacumm.misc.file.efind"><code class="xref py py-func docutils literal notranslate"><span class="pre">efind()</span></code></a></p>
+<div class="section" id="the-example">
+<h3>1.3.3.9.3.1. The example<a class="headerlink" href="#the-example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">vacumm.misc.file</span> <span class="kn">as</span> <span class="nn">F</span>
+
+
+<span class="k">print</span> <span class="s1">&#39;Changing the working directory to vacumm</span><span class="se">\&#39;</span><span class="s1">s root directory&#39;</span>
+<span class="k">print</span>
+<span class="n">PWD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))))</span>
+<span class="n">searchdir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+<span class="n">fkw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">abspath</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c1"># Using wildcard expressions</span>
+<span class="c1"># ==========================</span>
+
+<span class="c1"># A simple example</span>
+<span class="k">print</span> <span class="s1">&#39;Searching any file starting with &quot;setup.&quot; (depth=0):</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="k">print</span> <span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;setup*&#39;</span><span class="p">,</span> <span class="n">searchdir</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">fkw</span><span class="p">))</span>
+<span class="k">print</span>
+
+
+<span class="c1"># Controlling the search depth</span>
+<span class="k">print</span> <span class="s1">&#39;Searching any file starting with &quot;misc.file.&quot; (depth=None):</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="k">print</span> <span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;misc.file.*&#39;</span><span class="p">,</span> <span class="n">searchdir</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*/build/*&#39;</span><span class="p">,</span> <span class="p">),</span> <span class="o">**</span><span class="n">fkw</span><span class="p">))</span>
+<span class="k">print</span>
+<span class="c1"># we&#39;ve set the depth to None to supress the limit in recursion (which defaults</span>
+<span class="c1"># to 0 meaning 0 levels from the search directory)</span>
+
+
+<span class="c1"># Multiple patterns</span>
+<span class="k">print</span> <span class="s1">&#39;Searching any file starting with &quot;misc.config*&quot; and ending with &quot;.py&quot;, &quot;.ini&quot; or &quot;.cfg&quot;:</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="k">print</span> <span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">find</span><span class="p">((</span><span class="s1">&#39;misc.config*.py&#39;</span><span class="p">,</span> <span class="s1">&#39;misc.config*.ini&#39;</span><span class="p">,</span> <span class="s1">&#39;misc.config*.cfg&#39;</span><span class="p">,),</span> <span class="n">searchdir</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">fkw</span><span class="p">))</span>
+<span class="k">print</span>
+
+
+<span class="c1"># How to exclude</span>
+<span class="k">print</span> <span class="s1">&#39;Searching any file starting with &quot;misc.file.&quot;, excluding &quot;library&quot; and &quot;.svn&quot; directories and &quot;*.rst&quot; files:</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="k">print</span> <span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;*/misc.file.*&#39;</span><span class="p">,</span> <span class="n">searchdir</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*/library/*&#39;</span><span class="p">,</span> <span class="s1">&#39;*/.svn/*&#39;</span><span class="p">,</span> <span class="s1">&#39;*.rst&#39;</span><span class="p">),</span> <span class="n">matchall</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">fkw</span><span class="p">))</span>
+<span class="k">print</span>
+<span class="c1"># by default only file names are evaluated</span>
+<span class="c1"># we&#39;ve set matchall to True because .svn is part of the whole paths to be evaluated</span>
+<span class="c1"># also note that we had to change the pattern no match whole paths</span>
+
+
+<span class="c1"># Search directories only</span>
+<span class="c1"># By default only files are looked up</span>
+<span class="k">print</span> <span class="s1">&#39;Searching any directory named misc:</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="k">print</span> <span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;misc&#39;</span><span class="p">,</span> <span class="n">searchdir</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dirs</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">fkw</span><span class="p">))</span>
+<span class="k">print</span>
+
+
+<span class="c1"># Using callbacks</span>
+<span class="c1"># ===============</span>
+
+<span class="c1"># Controlling the search depth</span>
+<span class="k">print</span> <span class="s1">&#39;Showing search results with callbacks:</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="k">def</span> <span class="nf">ondir</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="c1"># we want to limit the outputs of this tutorial...</span>
+    <span class="k">if</span> <span class="s1">&#39;/.svn&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e</span> <span class="ow">and</span> <span class="s1">&#39;/.git&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e</span> <span class="ow">and</span> <span class="s1">&#39;/build&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s1">&#39;  + evaluating directory:&#39;</span><span class="p">,</span> <span class="n">e</span>
+<span class="k">def</span> <span class="nf">onfile</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="c1"># we want to limit the outputs of this tutorial...</span>
+    <span class="k">if</span> <span class="s1">&#39;/.svn&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e</span> <span class="ow">and</span> <span class="s1">&#39;misc.file.&#39;</span> <span class="ow">in</span> <span class="n">e</span> <span class="ow">and</span> <span class="s1">&#39;/.git&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e</span> <span class="ow">and</span> <span class="s1">&#39;/build&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s1">&#39;  - evaluating file:&#39;</span><span class="p">,</span> <span class="n">e</span>
+<span class="k">def</span> <span class="nf">onmatch</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s1">&#39;  * matching entry:&#39;</span><span class="p">,</span> <span class="n">e</span>
+<span class="n">F</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;*/misc.file.*&#39;</span><span class="p">,</span> <span class="n">searchdir</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*/library/*&#39;</span><span class="p">,</span> <span class="s1">&#39;*/.svn/*&#39;</span><span class="p">,</span> <span class="s1">&#39;*.rst&#39;</span><span class="p">,</span> <span class="s1">&#39;*/.??*&#39;</span><span class="p">,</span> <span class="s1">&#39;*/build/*&#39;</span><span class="p">),</span>
+    <span class="n">matchall</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ondir</span><span class="o">=</span><span class="n">ondir</span><span class="p">,</span> <span class="n">onfile</span><span class="o">=</span><span class="n">onfile</span><span class="p">,</span> <span class="n">onmatch</span><span class="o">=</span><span class="n">onmatch</span><span class="p">,</span> <span class="o">**</span><span class="n">fkw</span><span class="p">)</span>
+<span class="k">print</span>
+<span class="c1"># note that ondir and onfile callbacks are called even if the path does not matches</span>
+
+
+<span class="c1"># Using regular expressions</span>
+<span class="c1"># =========================</span>
+
+<span class="c1"># A simple example</span>
+<span class="k">print</span> <span class="s1">&#39;Searching any file starting with &quot;misc.file.&quot;:</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="k">print</span> <span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">efind</span><span class="p">(</span><span class="s1">&#39;misc\.file\..*&#39;</span><span class="p">,</span> <span class="n">searchdir</span><span class="p">,</span> <span class="o">**</span><span class="n">fkw</span><span class="p">))</span>
+<span class="k">print</span>
+
+
+<span class="c1"># An advanced example which uses regex match results</span>
+<span class="k">print</span> <span class="s1">&#39;Searching any file starting with &quot;misc.file.&quot; and show matching groups:</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="k">for</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">matchobj</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">xefind</span><span class="p">(</span><span class="s1">&#39;misc\.file\.(.*)\.(?:py|rst)&#39;</span><span class="p">,</span> <span class="n">searchdir</span><span class="p">,</span> <span class="n">getmatch</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">fkw</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s1">&#39;  file path: </span><span class="si">%s</span><span class="s1">, match groups: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">matchobj</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+<span class="k">print</span>
+<span class="c1"># grouping is done with parenthesis (), we could also have used named group (?P&lt;groupname1&gt;groupexp) and matchobj.groupdict()</span>
+<span class="c1"># note that the second group is a non capturing one, we needed this to include both &#39;.py&#39; and &#39;.rst&#39; files</span>
+<span class="c1"># also note that we use xefind instead of efind, this way we could avoid buildnig a huge list of (filepath,matchobj) couples</span>
+<span class="c1"># this is not the case here, just an example</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">PWD</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Changing the working directory to vacumm&#39;s root directory
+
+Searching any file starting with &quot;setup.&quot; (depth=0):
+
+  ./setup.py
+  ./setup.cfg.omp
+  ./setup.cfg.simple
+  ./setup.cfg
+  ./setup.pyc
+
+Searching any file starting with &quot;misc.file.&quot; (depth=None):
+
+  ./doc/sphinx/source/library/misc.file.rst
+  ./doc/sphinx/source/tutorials/misc.file.rst
+  ./doc/sphinx/build/html/_sources/library/misc.file.rst.txt
+  ./doc/sphinx/build/html/_sources/tutorials/misc.file.rst.txt
+  ./doc/sphinx/build/html/library/misc.file.html
+  ./doc/sphinx/build/html/tutorials/misc.file.html
+  ./doc/sphinx/build/doctrees/library/misc.file.doctree
+  ./doc/sphinx/build/doctrees/tutorials/misc.file.doctree
+  ./scripts/tutorials/misc.file.find.py
+  ./scripts/tutorials/misc.file.mkdirs.py
+  ./scripts/tutorials/misc.file.rollover.py
+  ./scripts/tutorials/misc.file.strfsize.py
+
+Searching any file starting with &quot;misc.config*&quot; and ending with &quot;.py&quot;, &quot;.ini&quot; or &quot;.cfg&quot;:
+
+  ./scripts/tutorials/misc.config.argparse.cfg
+  ./scripts/tutorials/misc.config.argparse.ini
+  ./scripts/tutorials/misc.config.argparse.py
+  ./scripts/tutorials/misc.config.cfg
+  ./scripts/tutorials/misc.config.ini
+  ./scripts/tutorials/misc.config.py
+
+Searching any file starting with &quot;misc.file.&quot;, excluding &quot;library&quot; and &quot;.svn&quot; directories and &quot;*.rst&quot; files:
+
+  ./doc/sphinx/build/html/_sources/tutorials/misc.file.rst.txt
+  ./doc/sphinx/build/html/tutorials/misc.file.html
+  ./doc/sphinx/build/doctrees/tutorials/misc.file.doctree
+  ./scripts/tutorials/misc.file.find.py
+  ./scripts/tutorials/misc.file.mkdirs.py
+  ./scripts/tutorials/misc.file.rollover.py
+  ./scripts/tutorials/misc.file.strfsize.py
+
+Searching any directory named misc:
+
+  ./bin/testdev/misc
+  ./doc/sphinx/build/html/_modules/vacumm/misc
+  ./doc/sphinx/build/html/_modules/vacumm/data/misc
+  ./lib/python/vacumm/misc
+  ./lib/python/vacumm/data/misc
+  ./build/src.linux-x86_64-2.7/vacumm/misc
+  ./build/src.linux-x86_64-2.7/build/src.linux-x86_64-2.7/vacumm/misc
+  ./build/temp.linux-x86_64-2.7/build/src.linux-x86_64-2.7/vacumm/misc
+  ./build/temp.linux-x86_64-2.7/build/src.linux-x86_64-2.7/build/src.linux-x86_64-2.7/vacumm/misc
+  ./build/temp.linux-x86_64-2.7/lib/python/vacumm/misc
+
+Showing search results with callbacks:
+
+  + evaluating directory: ./bin
+  + evaluating directory: ./data
+  + evaluating directory: ./doc
+  + evaluating directory: ./etc
+  + evaluating directory: ./lib
+  + evaluating directory: ./scripts
+  + evaluating directory: ./test
+  + evaluating directory: ./.spyproject
+  + evaluating directory: ./.pytest_cache
+  + evaluating directory: ./.circleci
+  + evaluating directory: ./dist
+  + evaluating directory: ./bin/testdev
+  + evaluating directory: ./bin/testdev/matlab_testdev
+  + evaluating directory: ./bin/testdev/misc
+  + evaluating directory: ./bin/testdev/scripts
+  + evaluating directory: ./bin/testdev/misc/coloc
+  + evaluating directory: ./bin/testdev/misc/stat
+  + evaluating directory: ./bin/testdev/scripts/examples
+  + evaluating directory: ./bin/testdev/scripts/scripts_old_chaine_sst
+  + evaluating directory: ./data/ne_110m_land
+  + evaluating directory: ./data/sea_level
+  + evaluating directory: ./doc/sphinx
+  + evaluating directory: ./doc/sphinx/source
+  + evaluating directory: ./doc/sphinx/source/courses
+  + evaluating directory: ./doc/sphinx/source/library
+  + evaluating directory: ./doc/sphinx/source/sphinxext
+  + evaluating directory: ./doc/sphinx/source/static
+  + evaluating directory: ./doc/sphinx/source/templates
+  + evaluating directory: ./doc/sphinx/source/tests
+  + evaluating directory: ./doc/sphinx/source/tutorials
+  + evaluating directory: ./doc/sphinx/source/bin
+  + evaluating directory: ./doc/sphinx/source/images
+  - evaluating file: ./doc/sphinx/source/library/misc.file.rst
+  - evaluating file: ./doc/sphinx/source/tutorials/misc.file.rst
+  + evaluating directory: ./etc/modulefiles
+  + evaluating directory: ./lib/fortran
+  + evaluating directory: ./lib/python
+  + evaluating directory: ./lib/python/vacumm
+  + evaluating directory: ./lib/python/vacumm/bathy
+  + evaluating directory: ./lib/python/vacumm/data
+  + evaluating directory: ./lib/python/vacumm/diag
+  + evaluating directory: ./lib/python/vacumm/markup
+  + evaluating directory: ./lib/python/vacumm/misc
+  + evaluating directory: ./lib/python/vacumm/report
+  + evaluating directory: ./lib/python/vacumm/sphinxext
+  + evaluating directory: ./lib/python/vacumm/tide
+  + evaluating directory: ./lib/python/vacumm/validator
+  + evaluating directory: ./lib/python/vacumm/data/in_situ
+  + evaluating directory: ./lib/python/vacumm/data/misc
+  + evaluating directory: ./lib/python/vacumm/data/model
+  + evaluating directory: ./lib/python/vacumm/data/satellite
+  + evaluating directory: ./lib/python/vacumm/data/model/mars
+  + evaluating directory: ./lib/python/vacumm/markup/markup-1.7
+  + evaluating directory: ./lib/python/vacumm/markup/markup-1.7/doc
+  + evaluating directory: ./lib/python/vacumm/misc/axml
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui
+  + evaluating directory: ./lib/python/vacumm/misc/cpt
+  + evaluating directory: ./lib/python/vacumm/misc/grid
+  + evaluating directory: ./lib/python/vacumm/misc/phys
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui/controllers
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui/models
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui/resources
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui/tests
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui/utils
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui/views
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui/resources/ui
+  + evaluating directory: ./lib/python/vacumm/misc/cfgui/tests/__pycache__
+  + evaluating directory: ./lib/python/vacumm/report/ifroco
+  + evaluating directory: ./lib/python/vacumm/validator/valid
+  + evaluating directory: ./scripts/courses
+  + evaluating directory: ./scripts/install
+  + evaluating directory: ./scripts/test
+  + evaluating directory: ./scripts/tutorials
+  + evaluating directory: ./scripts/my
+  + evaluating directory: ./scripts/test/__pycache__
+  - evaluating file: ./scripts/tutorials/misc.file.find.py
+  - evaluating file: ./scripts/tutorials/misc.file.mkdirs.py
+  - evaluating file: ./scripts/tutorials/misc.file.rollover.py
+  - evaluating file: ./scripts/tutorials/misc.file.strfsize.py
+  * matching entry: ./scripts/tutorials/misc.file.find.py
+  * matching entry: ./scripts/tutorials/misc.file.mkdirs.py
+  * matching entry: ./scripts/tutorials/misc.file.rollover.py
+  * matching entry: ./scripts/tutorials/misc.file.strfsize.py
+  + evaluating directory: ./test/__pycache__
+  + evaluating directory: ./.pytest_cache/v
+  + evaluating directory: ./.pytest_cache/v/cache
+
+Searching any file starting with &quot;misc.file.&quot;:
+
+  
+
+Searching any file starting with &quot;misc.file.&quot; and show matching groups:
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="making-file-backups-called-rollover">
+<h2>1.3.3.9.4. Making file backups (called rollover)<a class="headerlink" href="#making-file-backups-called-rollover" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.rollover" title="vacumm.misc.file.rollover"><code class="xref py py-func docutils literal notranslate"><span class="pre">rollover()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">rmtree</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">mkdtemp</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+
+<span class="kn">import</span> <span class="nn">vacumm.misc.file</span> <span class="kn">as</span> <span class="nn">F</span>
+
+<span class="n">tmpdir</span> <span class="o">=</span> <span class="n">mkdtemp</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+<span class="n">afile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="s1">&#39;afile&#39;</span><span class="p">)</span>
+<span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;.backup</span><span class="si">%d</span><span class="s1">&#39;</span>
+
+<span class="k">try</span><span class="p">:</span>
+
+    <span class="n">F</span><span class="o">.</span><span class="n">rollover</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="c1"># nothing done, afile does not exists</span>
+    <span class="k">with</span> <span class="nb">file</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    <span class="c1"># we created afile</span>
+    <span class="c1"># afile contains 0</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">rollover</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="c1"># did a copy of afile to afile.backup1</span>
+    <span class="k">with</span> <span class="nb">file</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+    <span class="c1"># afile contains 1</span>
+    <span class="c1"># afile.backup1 contains 0</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">rollover</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="c1"># did a copy of afile.backup1 to afile.backup2, and a copy of afile to afile.backup2</span>
+    <span class="k">with</span> <span class="nb">file</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+    <span class="c1"># afile contains 2</span>
+    <span class="c1"># afile.backup1 contains 1</span>
+    <span class="c1"># afile.backup2 contains 0</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">rollover</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="c1"># afile.backup2 removed, copy of afile.backup1 to afile.backup2, copy of afile to afile.backup2</span>
+    <span class="c1"># afile contains 2</span>
+    <span class="c1"># afile.backup1 contains 2</span>
+    <span class="c1"># afile.backup2 contains 1</span>
+
+<span class="k">finally</span><span class="p">:</span>
+    <span class="c1"># cleaning</span>
+    <span class="n">rmtree</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+<span class="k">print</span> <span class="s1">&#39;Empty output&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="displaying-and-analysing-file-sizes">
+<h2>1.3.3.9.5. Displaying and analysing file sizes<a class="headerlink" href="#displaying-and-analysing-file-sizes" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.strfsize" title="vacumm.misc.file.strfsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">strfsize()</span></code></a> and <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.strpsize" title="vacumm.misc.file.strpsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">strpsize()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">vacumm.misc.file</span> <span class="kn">as</span> <span class="nn">F</span>
+
+<span class="n">sizes</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**</span><span class="mi">10</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**</span><span class="mi">30</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">12</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**</span><span class="mi">40</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">15</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**</span><span class="mi">50</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
+    <span class="n">fsize</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">strfsize</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">si</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">fsisize</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">strfsize</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">si</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s1">&#39;size: </span><span class="si">%(size)14d</span><span class="s1">, formatted: </span><span class="si">%(fsize)8s</span><span class="s1"> (CEI, SI: </span><span class="si">%(fsisize)8s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="nb">vars</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>size:           1000, formatted:  1000 io (CEI, SI:     1 Ko)
+size:           1024, formatted:    1 Kio (CEI, SI: 1.024 Ko)
+size:        1000000, formatted: 976.562 Kio (CEI, SI:     1 Mo)
+size:        1048576, formatted:    1 Mio (CEI, SI: 1.049 Mo)
+size:     1000000000, formatted: 953.674 Mio (CEI, SI:     1 Go)
+size:     1073741824, formatted:    1 Gio (CEI, SI: 1.074 Go)
+size:  1000000000000, formatted: 931.323 Gio (CEI, SI:     1 To)
+size:  1099511627776, formatted:    1 Tio (CEI, SI: 1.100 To)
+size: 1000000000000000, formatted: 909.495 Tio (CEI, SI:     1 Po)
+size: 1125899906842624, formatted:    1 Pio (CEI, SI: 1.126 Po)
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-directories">
+<h2>1.3.3.9.6. Creating directories<a class="headerlink" href="#creating-directories" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.mkdirs" title="vacumm.misc.file.mkdirs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mkdirs()</span></code></a> and <a class="reference internal" href="../library/misc.file.html#vacumm.misc.file.mkfdirs" title="vacumm.misc.file.mkfdirs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mkfdirs()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">join</span><span class="p">,</span> <span class="n">realpath</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">rmtree</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">mkdtemp</span>
+
+<span class="kn">import</span> <span class="nn">vacumm.misc.file</span> <span class="kn">as</span> <span class="nn">F</span>
+
+<span class="n">tmpdir</span> <span class="o">=</span> <span class="n">mkdtemp</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+<span class="n">adir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="s1">&#39;path/to/adir&#39;</span><span class="p">)</span>
+<span class="n">afile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">adir</span><span class="p">,</span> <span class="s1">&#39;afile&#39;</span><span class="p">)</span>
+
+<span class="n">anotherdir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="s1">&#39;path/to/anotherdir&#39;</span><span class="p">)</span>
+<span class="n">anotherfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">anotherdir</span><span class="p">,</span> <span class="s1">&#39;anotherfile&#39;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    
+    <span class="k">print</span> <span class="s1">&#39;Created directory:&#39;</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">adir</span><span class="p">)</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">mkfdirs</span><span class="p">(</span><span class="n">afile</span><span class="p">)</span> <span class="c1"># no effect, already created</span>
+    <span class="k">print</span> <span class="s1">&#39;Created directories:&#39;</span><span class="p">,</span>  <span class="n">F</span><span class="o">.</span><span class="n">mkfdirs</span><span class="p">((</span><span class="n">afile</span><span class="p">,</span> <span class="n">anotherfile</span><span class="p">))</span>
+    <span class="n">F</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">((</span><span class="n">adir</span><span class="p">,</span> <span class="n">anotherdir</span><span class="p">))</span> <span class="c1"># no effect, already created</span>
+    
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">rmtree</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Created directory: ./tmpWwq3u2/path/to/adir
+Created directories: [&#39;./tmpWwq3u2/path/to/anotherdir&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,363 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.7. What remains to be done &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.7. What remains to be done</a><ul>
+<li><a class="reference internal" href="#generic-list">1.7.1. Generic list</a></li>
+<li><a class="reference internal" href="#stabilisation-of-the-code">1.7.2. Stabilisation of the code</a></li>
+<li><a class="reference internal" href="#supplements">1.7.3. Supplements</a><ul>
+<li><a class="reference internal" href="#interpolations-and-reggridding">1.7.3.1. Interpolations and reggridding</a></li>
+<li><a class="reference internal" href="#dataset-classes">1.7.3.2. <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> classes</a></li>
+<li><a class="reference internal" href="#vacumm-diag-and-grid-staggering">1.7.3.3. <code class="docutils literal notranslate"><span class="pre">vacumm.diag</span></code> and grid staggering</a></li>
+<li><a class="reference internal" href="#tidal-tools">1.7.3.4. Tidal tools</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.todo.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="what-remains-to-be-done">
+<span id="user-todo"></span><h1>1.7. What remains to be done<a class="headerlink" href="#what-remains-to-be-done" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="generic-list">
+<span id="user-todo-gen"></span><h2>1.7.1. Generic list<a class="headerlink" href="#generic-list" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>also load and return profile data here</li>
+<li>exclude coords where profile data is masked (no data for specified depth)</li>
+<li>return time coordinates</li>
+<li>return depth and vars with shape (profile,level)</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.misc.coloc.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/misc/coloc.py:docstring of vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro, line 22.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>Ensure returned dataset order (by (run)date)</li>
+<li>Add a tutorial about <a class="reference internal" href="#vacumm.data.misc.dataset.Catalog" title="vacumm.data.misc.dataset.Catalog"><code class="xref py py-class docutils literal notranslate"><span class="pre">Catalog</span></code></a></li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.misc.dataset.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/misc/dataset.py:docstring of vacumm.data.misc.dataset.Catalog.get_datasets, line 10.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>add lat/lon position lines indicator</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.misc.dataset.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/misc/dataset.py:docstring of vacumm.data.misc.dataset.OceanDataset.plot_section, line 12.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>replace this method usage by vacumm.misc.plot.add_map_lines</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.misc.dataset.html#index-2"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/misc/dataset.py:docstring of vacumm.data.misc.dataset.OceanDataset.plot_trajectory_map, line 6.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>add a way to plug external profiles types (from other modules)</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.misc.profile.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/misc/profile.py:docstring of vacumm.data.misc.profile.AbstractProfiles.get_types, line 6.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>fix load of single depth profile file</li>
+<li>check depth quality test</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.misc.profile.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/misc/profile.py:docstring of vacumm.data.misc.profile.Profiles, line 51.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>allow to load files with different depth size</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.misc.profile.html#index-2"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/misc/profile.py:docstring of vacumm.data.misc.profile.ProfilesDataset, line 3.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Remove this generic satellite class as it already exists in vacumm.data.satellite</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.misc.satellite.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/misc/satellite.py:docstring of vacumm.data.misc.satellite.Satellite, line 1.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>add lat/lon position lines indicator</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.model.hycom.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/model/hycom.py:docstring of vacumm.data.model.hycom.HYCOMZ.plot_section, line 12.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>replace this method usage by vacumm.misc.plot.add_map_lines</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.model.hycom.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/model/hycom.py:docstring of vacumm.data.model.hycom.HYCOMZ.plot_trajectory_map, line 6.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>add lat/lon position lines indicator</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.model.mars.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/model/mars3d.py:docstring of vacumm.data.model.mars3d.Mars3D.plot_section, line 12.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>replace this method usage by vacumm.misc.plot.add_map_lines</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.model.mars.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/model/mars3d.py:docstring of vacumm.data.model.mars3d.Mars3D.plot_trajectory_map, line 6.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>add lat/lon position lines indicator</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.model.nemo.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/model/nemo.py:docstring of vacumm.data.model.nemo.Nemo.plot_section, line 12.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>replace this method usage by vacumm.misc.plot.add_map_lines</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/data.model.nemo.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/data/model/nemo.py:docstring of vacumm.data.model.nemo.Nemo.plot_trajectory_map, line 6.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Rewrite it using <a class="reference internal" href="data.misc.arakawa.html#module-vacumm.data.misc.arakawa" title="vacumm.data.misc.arakawa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa</span></code></a> and defining
+a limited number of algorithms for different staggering configurations.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/diag.dynamics.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/diag/dynamics.py:docstring of vacumm.diag.dynamics.barotropic_geostrophic_velocity, line 7.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Rewrite it using <a class="reference internal" href="data.misc.arakawa.html#module-vacumm.data.misc.arakawa" title="vacumm.data.misc.arakawa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa</span></code></a> and defining
+a limited number of algorithms for different staggering configurations.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/diag.dynamics.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/diag/dynamics.py:docstring of vacumm.diag.dynamics.eddy_kinetic_energy, line 3.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Rewrite it using <a class="reference internal" href="data.misc.arakawa.html#module-vacumm.data.misc.arakawa" title="vacumm.data.misc.arakawa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa</span></code></a> and defining
+a limited number of algorithms for different staggering configurations.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/diag.dynamics.html#index-2"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/diag/dynamics.py:docstring of vacumm.diag.dynamics.kinetic_energy, line 3.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">DualDateFormatter: verify if dual_fmt is really used</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/misc.core_plot.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/misc/core_plot.py:docstring of vacumm.misc.core_plot.DualDateFormatter, line 6.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Merge <a class="reference internal" href="#vacumm.misc.grid.basemap.get_map" title="vacumm.misc.grid.basemap.get_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_map()</span></code></a> with <a class="reference internal" href="#vacumm.misc.grid.basemap.create_map" title="vacumm.misc.grid.basemap.create_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_map()</span></code></a></p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/misc.grid.basemap.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/misc/grid/basemap.py:docstring of vacumm.misc.grid.basemap.create_map, line 3.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Merge with <a class="reference internal" href="#vacumm.misc.grid.basemap.create_map" title="vacumm.misc.grid.basemap.create_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_map()</span></code></a></p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/misc.grid.basemap.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/misc/grid/basemap.py:docstring of vacumm.misc.grid.basemap.get_map, line 11.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">get_geo_area: treat 2D grid + use standard projection</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/misc.grid.misc.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/misc/grid/misc.py:docstring of vacumm.misc.grid.misc.get_geo_area, line 10.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Make possible to use 2D axes with <a class="reference internal" href="#vacumm.misc.grid.misc.xextend" title="vacumm.misc.grid.misc.xextend"><code class="xref py py-func docutils literal notranslate"><span class="pre">xextend()</span></code></a></p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/misc.grid.misc.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/misc/grid/misc.py:docstring of vacumm.misc.grid.misc.xextend, line 5.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Make possible to use 2D axes with <a class="reference internal" href="#vacumm.misc.grid.misc.xshift" title="vacumm.misc.grid.misc.xshift"><code class="xref py py-func docutils literal notranslate"><span class="pre">xshift()</span></code></a></p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/misc.grid.misc.html#index-2"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/misc/grid/misc.py:docstring of vacumm.misc.grid.misc.xshift, line 5.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Make two versions of <code class="xref py py-func docutils literal notranslate"><span class="pre">target()</span></code>, as for Taylor
+diagrams: one like with direct statistics, one with
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variables as arguments.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/misc.plot.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/misc/plot.py:docstring of vacumm.misc.plot.dtarget, line 18.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">This must be rewritten using <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/misc.stats.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/misc/stats.py:docstring of vacumm.misc.stats.corr_proba, line 7.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Use <a class="reference external" href="https://docs.python.org/dev/library/inspect.html#inspect.getclasstree" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">inspect.getclasstree()</span></code></a> or at least <code class="xref py py-func docutils literal notranslate"><span class="pre">inspect.classify_class_attrs()</span></code> in <code class="xref py py-class docutils literal notranslate"><span class="pre">Overview</span></code></p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="library/sphinxext.overview.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/lib/python/vacumm/sphinxext/overview.py:docstring of vacumm.sphinxext.overview.OverView.format_classes, line 3.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">documentation du format des dates de la librairie vacumm</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="user.desc.config.html#index-0"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/doc/sphinx/source/user.desc.config.rst, line 121.)</p>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>Etendre cette configuration avec des sections spécifiques à chacun des scripts
+pour affiner les paramétrage (paramètres actuellement obligatoire en arguments des scripts,
+critères pour le calcul de MLD, paramétrage des tracés, …)</li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="user.desc.config.html#index-1"><em>original entry</em></a> is located in /usr/site/data/cmo/rec/sraynaud/vacumm-fixes/doc/sphinx/source/user.desc.config.rst, line 196.)</p>
+</div>
+<div class="section" id="stabilisation-of-the-code">
+<h2>1.7.2. Stabilisation of the code<a class="headerlink" href="#stabilisation-of-the-code" title="Permalink to this headline">¶</a></h2>
+<p>You can refer to <a class="reference internal" href="appendix.risks.html#appendix-risks"><span class="std std-ref">Unstable routines</span></a>  for a list of routines that require special attention, and therefore such improvements.</p>
+</div>
+<div class="section" id="supplements">
+<span id="user-todo-more"></span><h2>1.7.3. Supplements<a class="headerlink" href="#supplements" title="Permalink to this headline">¶</a></h2>
+<p>This section lists important improvements needed to the library, and possibly the key to achieve or possible ways.</p>
+<div class="section" id="interpolations-and-reggridding">
+<h3>1.7.3.1. Interpolations and reggridding<a class="headerlink" href="#interpolations-and-reggridding" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The <a class="reference internal" href="library/misc.grid.kriging.html#module-vacumm.misc.grid.kriging" title="vacumm.misc.grid.kriging"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kriging</span></code></a> module must
+be used by the <a class="reference internal" href="library/misc.grid.regridding.html#module-vacumm.misc.grid.regridding" title="vacumm.misc.grid.regridding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regridding</span></code></a> module, and especially the
+<a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.GridData" title="vacumm.misc.grid.regridding.GridData"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridData</span></code></a> class.</li>
+<li>The <a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.regrid2d" title="vacumm.misc.grid.regridding.regrid2d"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regrid2d</span></code></a> must better handle masks, especially
+in the case of curcilinear grids handled by
+the <a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CDATRegridder</span></code></a> class.</li>
+<li>The <a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.GriddedMerger" title="vacumm.misc.grid.regridding.GriddedMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">GriddedMerger</span></code></a> must be checked.</li>
+</ul>
+</div>
+<div class="section" id="dataset-classes">
+<h3>1.7.3.2. <a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> classes<a class="headerlink" href="#dataset-classes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>A special <code class="xref py py-class docutils literal notranslate"><span class="pre">GriddedDataset</span></code> class must be created.</li>
+<li>Vertical levels treatments must be generalized to be usable for
+<a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.AtmosDataset" title="vacumm.data.misc.dataset.AtmosDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AtmosDataset</span></code></a>,
+and a <code class="xref py py-class docutils literal notranslate"><span class="pre">ZDataset</span></code> must be created for that.</li>
+<li>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ZGridded</span></code> like class must be implemented to serve as base class
+for <a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.AtmosDataset" title="vacumm.data.misc.dataset.AtmosDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AtmosDataset</span></code></a> and
+<a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.OceanDataset" title="vacumm.data.misc.dataset.OceanDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">OceanDataset</span></code></a>.</li>
+</ul>
+</div>
+<div class="section" id="vacumm-diag-and-grid-staggering">
+<h3>1.7.3.3. <a class="reference internal" href="library/diag.html#module-vacumm.diag" title="vacumm.diag"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.diag</span></code></a> and grid staggering<a class="headerlink" href="#vacumm-diag-and-grid-staggering" title="Permalink to this headline">¶</a></h3>
+<p>All diagnostics on grids must properly handle grid staggering.
+Different schemes can be proposed depending on the grid type and
+the grid point location of variables.
+One way is to handle a limited number of configurations,
+like for instance for kinetic energy :</p>
+<ul class="simple">
+<li>The case of a C grid with u and v and U and V locations recpectively.</li>
+<li>The case of a C grid with u and v and V and U locations recpectively (geostrophic currents).</li>
+<li>The generic case of an A grid when there is no staggering.</li>
+</ul>
+<p>If the configuration is not explicitly specified, it must be guessed
+using <a class="reference internal" href="library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGrid.factory" title="vacumm.data.misc.arakawa.ArakawaGrid.factory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa.ArakawaGrid.factory()</span></code></a> for the grid type,
+and <a class="reference internal" href="library/data.cf.html#vacumm.data.cf.get_loc" title="vacumm.data.cf.get_loc"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm.data.cf.get_loc()</span></code></a> for the location.
+Another option is to estimate grid staggering from coordinates.</p>
+</div>
+<div class="section" id="tidal-tools">
+<h3>1.7.3.4. Tidal tools<a class="headerlink" href="#tidal-tools" title="Permalink to this headline">¶</a></h3>
+<p>These must use the Tidal toolbox thanks to f2py,
+and integrate analysis and prediction capabilities.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,175 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.8.18.6. Leçon sur la gestion des configurations avancées &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/courses/cfgm.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lecon-sur-la-gestion-des-configurations-avancees">
+<span id="courses-cfgm"></span><h1>3.8.18.6. Leçon sur la gestion des configurations avancées<a class="headerlink" href="#lecon-sur-la-gestion-des-configurations-avancees" title="Permalink to this headline">¶</a></h1>
+<p>Voir <a class="reference internal" href="../library/misc.config.html#module-vacumm.misc.config" title="vacumm.misc.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.config</span></code></a>, <code class="xref py py-mod docutils literal notranslate"><span class="pre">configObj</span></code> (<a class="reference external" href="http://www.voidspace.org.uk/python/configobj.html">http://www.voidspace.org.uk/python/configobj.html</a>),
+<a class="reference internal" href="../tutorials/general.scripts.html#user-tut-generic-scripts"><span class="std std-ref">How to write a script</span></a>.</p>
+<p>Le but est de pouvoir gérer des fichiers de configuration plus évolués qu’avec <a class="reference external" href="https://docs.python.org/2/library/configparser.html#module-ConfigParser" title="(in Python v2.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ConfigParser</span></code></a> :</p>
+<ul class="simple">
+<li>Sections imbriquées.</li>
+<li>Valeurs par défaut via le fichier de spécification.</li>
+<li>Vérification des valeurs.</li>
+<li>Accès comme un dictionnaire.</li>
+</ul>
+<p>Le module <a class="reference internal" href="../library/misc.config.html#module-vacumm.misc.config" title="vacumm.misc.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.config</span></code></a> offre une interface pratique pour gérer ces configurations,
+et des outils pour les exploiter encore plus loin (ex: utilisation avec <a class="reference external" href="https://docs.python.org/dev/library/argparse.html#module-argparse" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code></a>).</p>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_advanced_cfgm.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Gestion de configurations avancées&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">ConfigManager</span>
+<span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="k">import</span> <span class="n">SafeConfigParser</span>
+
+
+<span class="c1"># Initialisation avec fichier de specifications</span>
+<span class="n">cfgm</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="s1">&#39;courses_advanced_cfgm.ini&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># Valeurs par défaut</span>
+<span class="nb">print</span> <span class="n">cfgm</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>                           <span class="c1"># -&gt; CHANGER LE .INI</span>
+
+
+<span class="c1"># Chargement de sa configuration personnelle</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfgm</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;courses_advanced_cfgm.cfg&#39;</span><span class="p">)</span>    <span class="c1"># -&gt; CHANGER LE .CFG</span>
+<span class="nb">print</span> <span class="n">cfg</span>
+<span class="nb">print</span> <span class="nb">type</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+
+<span class="c1"># Modification</span>
+<span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;plot&#39;</span><span class="p">][</span><span class="s1">&#39;linewidth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="nb">print</span> <span class="n">cfg</span>
+
+
+<span class="c1"># -&gt; AJOUTEZ UNE SOUS-SECTION AUX .INI ET .CFG</span>
+
+
+<span class="c1"># Via ConfigParser</span>
+<span class="n">cfg2</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
+<span class="n">cfg2</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;courses_advanced_cfgm.cfg&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">cfg2</span> 
+<span class="nb">print</span> <span class="n">cfg2</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;plot&#39;</span><span class="p">,</span> <span class="s1">&#39;linewidth&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">cfg2</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;plot&#39;</span><span class="p">,</span> <span class="s1">&#39;linewidth&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Fichier de spécifications <code class="file docutils literal notranslate"><span class="pre">courses_advanced_cfgm.ini</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">logger</span><span class="p">]</span>
+<span class="n">level</span><span class="o">=</span><span class="n">option</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">plot</span><span class="p">]</span>
+<span class="n">linewidth</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Fichier de configuration <code class="file docutils literal notranslate"><span class="pre">courses_advanced_cfgm.cfg</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">plot</span><span class="p">]</span>
+<span class="n">linewidth</span><span class="o">=</span><span class="mf">1.3</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

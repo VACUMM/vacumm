@@ -1,0 +1,939 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.misc.axes &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../index.html"><img src="../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.misc.axes</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Generic tools dealing with information about longitude, latitude, depth and time axes</span>
+
+
+<span class="sd">.. seealso::</span>
+
+<span class="sd">    Tutorials: :ref:`user.tut.misc.variables.axes`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2010-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model of IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span><span class="o">,</span> <span class="nn">cdms2</span><span class="o">,</span> <span class="nn">MV2</span>
+<span class="n">cdms</span> <span class="o">=</span> <span class="n">cdms2</span>
+<span class="kn">from</span> <span class="nn">cdms2.axis</span> <span class="k">import</span> <span class="n">AbstractAxis</span><span class="p">,</span> <span class="n">FileAxis</span>
+<span class="kn">from</span> <span class="nn">cdms2.coord</span> <span class="k">import</span> <span class="n">TransientAxis2D</span>
+
+<span class="kn">from</span> <span class="nn">re</span> <span class="k">import</span> <span class="n">match</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">isSequenceType</span><span class="p">,</span><span class="n">isNumberType</span>
+<span class="kn">from</span> <span class="nn">fnmatch</span> <span class="k">import</span> <span class="n">fnmatch</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">VACUMMError</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="k">import</span> <span class="n">check_def_atts</span><span class="p">,</span> <span class="n">dict_check_defaults</span><span class="p">,</span> <span class="n">match_atts</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;isaxis&#39;</span><span class="p">,</span> <span class="s1">&#39;islon&#39;</span><span class="p">,</span> <span class="s1">&#39;islat&#39;</span><span class="p">,</span> <span class="s1">&#39;islev&#39;</span><span class="p">,</span> <span class="s1">&#39;isdep&#39;</span><span class="p">,</span> <span class="s1">&#39;istime&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;check_axes&#39;</span><span class="p">,</span> <span class="s1">&#39;is_geo_axis&#39;</span><span class="p">,</span> <span class="s1">&#39;check_axis&#39;</span><span class="p">,</span> <span class="s1">&#39;get_axis_type&#39;</span><span class="p">,</span> <span class="s1">&#39;check_id&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;get_checker&#39;</span><span class="p">,</span> <span class="s1">&#39;is_geo_axis_type&#39;</span><span class="p">,</span> <span class="s1">&#39;axis_type&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;create_time&#39;</span><span class="p">,</span> <span class="s1">&#39;create_lon&#39;</span><span class="p">,</span> <span class="s1">&#39;create_lat&#39;</span><span class="p">,</span> <span class="s1">&#39;create_dep&#39;</span><span class="p">,</span> <span class="s1">&#39;create_depth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;guess_timeid&#39;</span><span class="p">,</span> <span class="s1">&#39;get_order&#39;</span><span class="p">,</span> <span class="s1">&#39;set_order&#39;</span><span class="p">,</span> <span class="s1">&#39;order_match&#39;</span><span class="p">,</span> <span class="s1">&#39;merge_orders&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;check_order&#39;</span><span class="p">,</span>  <span class="s1">&#39;create_axis&#39;</span><span class="p">,</span> <span class="s1">&#39;BASIC_AXIS_SPECS&#39;</span><span class="p">,</span> <span class="s1">&#39;BASIC_AXIS_DEFAULTS&#39;</span><span class="p">]</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+<span class="n">BASIC_AXIS_SPECS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;lon&#39;</span><span class="p">,</span>
+        <span class="n">standard_name</span> <span class="o">=</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;degrees_east&#39;</span><span class="p">,</span> <span class="s1">&#39;degree_east&#39;</span><span class="p">,</span> <span class="s1">&#39;degree_e&#39;</span><span class="p">,</span> <span class="s1">&#39;degrees_e&#39;</span><span class="p">,</span> <span class="s1">&#39;degreee&#39;</span><span class="p">,</span> <span class="s1">&#39;degreese&#39;</span><span class="p">],</span>
+        <span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span>
+        <span class="n">standard_name</span> <span class="o">=</span> <span class="s1">&#39;latitude&#39;</span><span class="p">,</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;degrees_north&#39;</span><span class="p">,</span> <span class="s1">&#39;degree_north&#39;</span><span class="p">,</span> <span class="s1">&#39;degree_n&#39;</span><span class="p">,</span> <span class="s1">&#39;degrees_n&#39;</span><span class="p">,</span> <span class="s1">&#39;degreen&#39;</span><span class="p">,</span> <span class="s1">&#39;degreesn&#39;</span><span class="p">],</span>
+        <span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s1">&#39;lev&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;dep&#39;</span><span class="p">,</span><span class="s1">&#39;lev&#39;</span><span class="p">,</span><span class="s1">&#39;plev&#39;</span><span class="p">],</span>
+        <span class="n">standard_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;pressure_level&#39;</span><span class="p">],</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">,</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span><span class="s1">&#39;hpa&#39;</span><span class="p">],</span>
+        <span class="n">long_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;pressure level&#39;</span><span class="p">,</span><span class="s1">&#39;profondeur&#39;</span><span class="p">,</span><span class="s1">&#39;pression&#39;</span><span class="p">,</span><span class="s1">&#39;sigma&#39;</span><span class="p">,</span><span class="s1">&#39;geopotential&#39;</span><span class="p">],</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s1">&#39;dep&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;dep&#39;</span><span class="p">],</span>
+        <span class="n">standard_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">],</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">,</span><span class="s1">&#39;meters&#39;</span><span class="p">],</span>
+        <span class="n">long_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;profondeur&#39;</span><span class="p">],</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">],</span>
+        <span class="n">standard_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">long_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;temps&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">],</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+
+<span class="n">BASIC_AXIS_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;degrees_east&#39;</span><span class="p">,</span><span class="n">standard_name</span><span class="o">=</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;Longitude&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;degrees_north&#39;</span><span class="p">,</span><span class="n">standard_name</span><span class="o">=</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;Latitude&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;Y&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;lev&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;Levels&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;dep&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;Depth&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">standard_name</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="isaxis"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.isaxis">[docs]</a><span class="k">def</span> <span class="nf">isaxis</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;isAbstractCoordinate&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">isAbstractCoordinate</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,(</span><span class="n">AbstractAxis</span><span class="p">,</span> <span class="n">FileAxis</span><span class="p">,</span> <span class="n">TransientAxis2D</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="islon"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.islon">[docs]</a><span class="k">def</span> <span class="nf">islon</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">checkaxis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if an object is of longitude type&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">BASIC_AXIS_DEFAULTS</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">attchecks</span><span class="p">,</span> <span class="o">**</span><span class="n">BASIC_AXIS_SPECS</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">is_geo_axis_type</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="n">ro</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="n">checkatts</span><span class="p">,</span>
+        <span class="n">checkaxis</span><span class="o">=</span><span class="n">checkaxis</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="islat"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.islat">[docs]</a><span class="k">def</span> <span class="nf">islat</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">checkaxis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if an object is of latitude type&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">BASIC_AXIS_DEFAULTS</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">attchecks</span><span class="p">,</span> <span class="o">**</span><span class="n">BASIC_AXIS_SPECS</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">is_geo_axis_type</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="n">ro</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="n">checkatts</span><span class="p">,</span>
+        <span class="n">checkaxis</span><span class="o">=</span><span class="n">checkaxis</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="islev"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.islev">[docs]</a><span class="k">def</span> <span class="nf">islev</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">checkaxis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if an object is of level type&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">BASIC_AXIS_DEFAULTS</span><span class="p">[</span><span class="s1">&#39;lev&#39;</span><span class="p">]</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">attchecks</span><span class="p">,</span> <span class="o">**</span><span class="n">BASIC_AXIS_SPECS</span><span class="p">[</span><span class="s1">&#39;lev&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">checkaxis</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;units&#39;</span> <span class="ow">in</span> <span class="n">attchecks</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">attchecks</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;long_name&#39;</span> <span class="ow">in</span> <span class="n">attchecks</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">attchecks</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">is_geo_axis_type</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="n">ro</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="n">checkatts</span><span class="p">,</span>
+        <span class="n">checkaxis</span><span class="o">=</span><span class="n">checkaxis</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">)</span></div>
+<span class="n">islevel</span> <span class="o">=</span> <span class="n">islev</span>
+
+<div class="viewcode-block" id="isdep"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.isdep">[docs]</a><span class="k">def</span> <span class="nf">isdep</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">checkaxis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if an object is of depth type&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">BASIC_AXIS_DEFAULTS</span><span class="p">[</span><span class="s1">&#39;lev&#39;</span><span class="p">]</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">attchecks</span><span class="p">,</span> <span class="o">**</span><span class="n">BASIC_AXIS_SPECS</span><span class="p">[</span><span class="s1">&#39;dep&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">checkaxis</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;units&#39;</span> <span class="ow">in</span> <span class="n">attchecks</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">attchecks</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;long_name&#39;</span> <span class="ow">in</span> <span class="n">attchecks</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">attchecks</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">is_geo_axis_type</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="n">ro</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="n">checkatts</span><span class="p">,</span>
+        <span class="n">checkaxis</span><span class="o">=</span><span class="n">checkaxis</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">)</span></div>
+<span class="n">isdepth</span> <span class="o">=</span> <span class="n">isdep</span>
+
+<div class="viewcode-block" id="istime"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.istime">[docs]</a><span class="k">def</span> <span class="nf">istime</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">checkaxis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if an object is of time type&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">BASIC_AXIS_DEFAULTS</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">attchecks</span><span class="p">,</span> <span class="o">**</span><span class="n">BASIC_AXIS_SPECS</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="n">attchecks</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">units</span><span class="p">]</span>
+    <span class="kn">from</span> <span class="nn">.atime</span> <span class="k">import</span> <span class="n">are_good_units</span>
+    <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">are_good_units</span><span class="p">)</span>
+    <span class="n">attchecks</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span>
+    <span class="n">myistime</span> <span class="o">=</span> <span class="n">is_geo_axis_type</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="n">ro</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="n">checkatts</span><span class="p">,</span>
+        <span class="n">checkaxis</span><span class="o">=</span><span class="n">checkaxis</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">myistime</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ro</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">calendar</span> <span class="o">=</span> <span class="s1">&#39;gregorian&#39;</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">myistime</span></div>
+
+
+<div class="viewcode-block" id="get_checker"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.get_checker">[docs]</a><span class="k">def</span> <span class="nf">get_checker</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the function that checks if an axis of required type</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **name**: Generic name of the axis.</span>
+
+<span class="sd">    :Returns:</span>
+
+<span class="sd">        :func:`islon`, :func:`islat`, :func:`islevel`, :func:`istime`</span>
+<span class="sd">        or raises :exc:`TypeError`</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; get_checker(&#39;x&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; get_checker(&#39;lon&#39;)(myaxis)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">errmsg</span> <span class="o">=</span> <span class="s1">&#39;Input must be a generic name axis, like &quot;x&quot; or &quot;lon&quot;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">islon</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">islat</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;dep&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">islev</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">istime</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="is_geo_axis_type"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.is_geo_axis_type">[docs]</a><span class="k">def</span> <span class="nf">is_geo_axis_type</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">atype</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">checkaxis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checkatts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">attchecks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if an object is of a specific type</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **obj**: CDAT 1D or 2D axis or other object.</span>
+<span class="sd">        - **atype**: Axis type as one of &#39;x&#39;, &#39;y&#39;, &#39;z&#39; or &#39;z&#39;.</span>
+<span class="sd">        - **ids**, optional: List od ids to check.</span>
+<span class="sd">        - **standard_names**, optional: List of standard_names to check.</span>
+<span class="sd">        - **long_names**, optional: List of long_names to check.</span>
+<span class="sd">        - **units**, optional: List of units to check.</span>
+<span class="sd">        - **ro**, optional: Read-only mode?</span>
+<span class="sd">        - **checkatts**, optional: If False, do not check units and long_name attributes.</span>
+<span class="sd">        - **attchecks**: Extra keywords are attributes name and checklist that</span>
+<span class="sd">          will checks using :func:`~vacumm.misc.misc.match_atts`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Pure axis checks</span>
+    <span class="k">if</span> <span class="n">checkaxis</span><span class="p">:</span>
+
+        <span class="c1"># Is it an axis?</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isaxis</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Use for instance obj.isLongitude()</span>
+        <span class="k">if</span> <span class="n">atype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">]:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Time&#39;</span>
+        <span class="k">elif</span> <span class="n">atype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;lev&#39;</span><span class="p">,</span> <span class="s1">&#39;dep&#39;</span><span class="p">]:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Level&#39;</span>
+        <span class="k">elif</span> <span class="n">atype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">]:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Latitude&#39;</span>
+        <span class="k">elif</span> <span class="n">atype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">]:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Longitude&#39;</span>
+            <span class="n">atype</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;axis&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">atype</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">isfunc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">valfunc</span><span class="p">():</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;designate&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">)()</span>
+            <span class="n">check_id</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">check_def_atts</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">defaults</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isfunc</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ro</span><span class="p">:</span>
+                <span class="n">valfunc</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Check axis attribute</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s1">&#39;axis&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">atype</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ro</span><span class="p">:</span>
+                <span class="n">valfunc</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># Check from attributes</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">checkatts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1">#TODO: merge with ncmatch_obj</span>
+    <span class="n">valid</span> <span class="o">=</span> <span class="n">match_atts</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attchecks</span><span class="p">,</span> <span class="n">ignorecase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ss</span><span class="p">:</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span><span class="o">.</span><span class="n">match</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">))</span> <span class="c1"># transform=startswith</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ro</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ro</span> <span class="ow">and</span> <span class="n">checkaxis</span><span class="p">:</span>
+            <span class="n">valfunc</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+<span class="n">_isgeoaxis_</span> <span class="o">=</span> <span class="n">is_geo_axis_type</span> <span class="c1"># Backward compat</span>
+
+<div class="viewcode-block" id="check_axes"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.check_axes">[docs]</a><span class="k">def</span> <span class="nf">check_axes</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the format of all axes of a cdms variable&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cdms</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">getAxisList</span><span class="p">():</span>
+            <span class="n">check_axis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="is_geo_axis"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.is_geo_axis">[docs]</a><span class="k">def</span> <span class="nf">is_geo_axis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if axis is time, level, lat or lon&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">istime</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="ow">or</span> <span class="n">islev</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="ow">or</span> <span class="n">islat</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="ow">or</span> <span class="n">islon</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="check_axis"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.check_axis">[docs]</a><span class="k">def</span> <span class="nf">check_axis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the format an axis&quot;&quot;&quot;</span>
+    <span class="n">is_geo_axis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_axis_type"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.get_axis_type">[docs]</a><span class="k">def</span> <span class="nf">get_axis_type</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">genname</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the axis type as a signle letter (CDAT standards): -, t, z, y, or x</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **axis**: CDAT axis.</span>
+<span class="sd">        - **genname**, optional: Return a generic name or None.</span>
+<span class="sd">        - Other keywords are passed to checking functions (:func:`islon`...).</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; get_axis_type(create_time((5,),&#39;days since 2000&#39;))</span>
+<span class="sd">        &#39;t&#39;</span>
+<span class="sd">        &gt;&gt;&gt; get_axis_type(axis, genname=True, ro=True, checkatts=False)</span>
+<span class="sd">        &#39;time&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">islon</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">at</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+    <span class="k">elif</span> <span class="n">islat</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">at</span> <span class="o">=</span>  <span class="s2">&quot;y&quot;</span>
+    <span class="k">elif</span> <span class="n">islev</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">at</span> <span class="o">=</span>  <span class="s2">&quot;z&quot;</span>
+    <span class="k">elif</span> <span class="n">istime</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">at</span> <span class="o">=</span>  <span class="s2">&quot;t&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">at</span> <span class="o">=</span>  <span class="s1">&#39;-&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">genname</span><span class="p">:</span> <span class="k">return</span> <span class="n">at</span>
+    <span class="k">if</span> <span class="n">at</span><span class="o">==</span><span class="s1">&#39;-&#39;</span><span class="p">:</span> <span class="k">return</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span><span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">:</span><span class="s1">&#39;time&#39;</span><span class="p">}[</span><span class="n">at</span><span class="p">]</span></div>
+
+<span class="n">axis_type</span> <span class="o">=</span> <span class="n">get_axis_type</span> <span class="c1"># Backward compat</span>
+
+<div class="viewcode-block" id="check_id"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.check_id">[docs]</a><span class="k">def</span> <span class="nf">check_id</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Verify that an axis has a suitable id (not like &#39;axis_3&#39; but &#39;lon&#39;)&quot;&quot;&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="n">Y</span><span class="o">=</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="n">Z</span><span class="o">=</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="n">T</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+    <span class="n">aliases</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span><span class="s1">&#39;axis&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">match</span><span class="p">(</span><span class="s1">&#39;^axis_\d+$&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">match</span><span class="p">(</span><span class="s1">&#39;^variable_\d+$&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">aliases</span><span class="p">[</span><span class="n">axis</span><span class="o">.</span><span class="n">axis</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="create_axis"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.create_axis">[docs]</a><span class="k">def</span> <span class="nf">create_axis</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">atype</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">atts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Quickly create a :mod:`cdms2` axis</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **values**: Numerical values.</span>
+<span class="sd">        - **atype**, optional: axis type within &#39;x&#39;,&#39;y&#39;,&#39;z&#39;,&#39;t&#39;,&#39;-&#39; [default: &#39;-&#39;]</span>
+<span class="sd">        - Other keywords are passed as attributes to the axis.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; lon = create_axis(N.arange(-10., 0, 2), &#39;x&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; lon = create_axis((-10., 0, 2), &#39;t&#39;, id=&#39;temps&#39;, units=&#39;seconds since 2000&#39;)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">vacumm.misc</span> <span class="k">import</span> <span class="n">cp_atts</span>
+    <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s1">&#39;dtype&#39;</span><span class="p">:</span><span class="s1">&#39;d&#39;</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">atts</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="o">*</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isaxis</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">values</span>
+    <span class="k">for</span> <span class="n">att</span><span class="p">,</span><span class="n">val</span> <span class="ow">in</span> <span class="n">atts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">att</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">atype</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">check_axis</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span><span class="o">.</span><span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">axis</span><span class="o">.</span><span class="n">axis</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
+
+<span class="n">create</span> <span class="o">=</span> <span class="n">create_axis</span>
+
+<div class="viewcode-block" id="create_time"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.create_time">[docs]</a><span class="k">def</span> <span class="nf">create_time</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">atts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a time axis</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **values**: Numeric values, or list of date objects</span>
+<span class="sd">          (:class:`~datetime.datetime`, :func:`~cdtime.comptime`, :func:`~cdtime.reltime`).</span>
+<span class="sd">        - **units**, optional: Time units like &#39;days since 2000-01-01&#39;.</span>
+<span class="sd">        - Other keywords are passed as attributes to the axis.</span>
+
+<span class="sd">    .. note:: Units must be provided explicitly if no date are passed.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; from vacumm.misc.atime import create_time</span>
+<span class="sd">        &gt;&gt;&gt; from datetime import datetime</span>
+<span class="sd">        &gt;&gt;&gt; import cdtime</span>
+<span class="sd">        &gt;&gt;&gt; taxis = create_time([1,2],units=&#39;months since 2000&#39;,long_name=&#39;My time axis&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; taxis = create_time(taxis)</span>
+<span class="sd">        &gt;&gt;&gt; create_time([datetime(2000,1,1),&#39;2000-2-1&#39;],units=&#39;months since 2000&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; create_time([cdtime.reltime(1,&#39;months since 2000&#39;),cdtime.comptime(2000,1)])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">atime</span> <span class="k">import</span> <span class="n">are_good_units</span><span class="p">,</span><span class="n">comptime</span><span class="p">,</span><span class="n">strftime</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">values</span><span class="p">,</span> <span class="n">units</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">):</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">are_good_units</span><span class="p">(</span><span class="n">units</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Bad time units: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span><span class="n">units</span><span class="p">)</span>
+
+
+    <span class="n">istuple</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">istuple</span> <span class="ow">or</span> <span class="p">(</span><span class="n">istuple</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">isSequenceType</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;next&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">]</span>
+        <span class="n">newvalues</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">isNumberType</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="n">newvalues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">):</span>
+                    <span class="n">units</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">units</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">comptime</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">units</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;hours since %Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">newvalues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">torel</span><span class="p">(</span><span class="n">units</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">newvalues</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">,</span><span class="s1">&#39;Unable to guess units. You must specify them.&#39;</span>
+
+    <span class="k">return</span> <span class="n">create_axis</span><span class="p">(</span><span class="n">newvalues</span><span class="p">,</span><span class="s1">&#39;t&#39;</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span><span class="o">**</span><span class="n">atts</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="create_lon"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.create_lon">[docs]</a><span class="k">def</span> <span class="nf">create_lon</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="o">**</span><span class="n">atts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a longitude axis</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **values**: Numeric values</span>
+<span class="sd">        - Keywords are passed as attributes to the axis.</span>
+
+<span class="sd">    :Example:</span>
+<span class="sd">        &gt;&gt;&gt; create_lon(numpy.arange(-18., -5.))</span>
+<span class="sd">        &gt;&gt;&gt; create_lon(numpy.arange(-18., -5.),long_name=&#39;original_longitude&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isaxis</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">grid.misc</span> <span class="k">import</span> <span class="n">create_axes2d</span>
+        <span class="n">atts</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Longitude&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_axes2d</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">lonid</span><span class="o">=</span><span class="n">atts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">xatts</span><span class="o">=</span><span class="n">atts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">create_axis</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">atts</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="create_lat"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.create_lat">[docs]</a><span class="k">def</span> <span class="nf">create_lat</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="o">**</span><span class="n">atts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a latitude axis</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **values**: Numeric values</span>
+<span class="sd">        - Keywords are passed as attributes to the axis.</span>
+
+<span class="sd">    :Example:</span>
+<span class="sd">        &gt;&gt;&gt; create_lat(numpy.arange(40., 48., 1.5))</span>
+<span class="sd">        &gt;&gt;&gt; create_lat(numpy.arange(40., 48., 1.5),long_name=&#39;strange_latitude&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">isaxis</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">grid.misc</span> <span class="k">import</span> <span class="n">create_axes2d</span>
+        <span class="n">atts</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Latitude&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_axes2d</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">latid</span><span class="o">=</span><span class="n">atts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">yatts</span><span class="o">=</span><span class="n">atts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">create_axis</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">atts</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="create_dep"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.create_dep">[docs]</a><span class="k">def</span> <span class="nf">create_dep</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="o">**</span><span class="n">atts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a depthaxis</span>
+
+<span class="sd">     :Params:</span>
+
+<span class="sd">        - **values**: Numeric values</span>
+<span class="sd">        - Keywords are passed as attributes to the axis.</span>
+
+<span class="sd">    :Example:</span>
+<span class="sd">        &gt;&gt;&gt; create_dep(numpy.arange(-1000., -500., 10.))</span>
+<span class="sd">        &gt;&gt;&gt; create_dep(numpy.arange(-1000., -500., 10.),long_name=&#39;deep_depth&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">create_axis</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">atts</span><span class="p">)</span></div>
+<span class="n">create_depth</span> <span class="o">=</span> <span class="n">create_dep</span>
+
+
+<div class="viewcode-block" id="guess_timeid"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.guess_timeid">[docs]</a><span class="k">def</span> <span class="nf">guess_timeid</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">vnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Guess the id of the time axis in a netcdf file</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **ncfile**: Netcdf file name or descriptor.</span>
+<span class="sd">        - **vnames**, optional: List of variables to look for</span>
+<span class="sd">          a time axis (defaults to all variables)</span>
+
+<span class="sd">    :Return: The id as a string, or ``None`` if not found.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; tid = guess_timeid(&#39;file.nc&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; f = cdms2.open(&#39;file.nc&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; tid = guess_timeid(f)</span>
+<span class="sd">        &gt;&gt;&gt; f.close()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">vacumm.misc.io</span> <span class="k">import</span> <span class="n">NcFileObj</span>
+    <span class="n">nfo</span> <span class="o">=</span> <span class="n">NcFileObj</span><span class="p">(</span><span class="n">ncfile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">vnames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">vnames</span> <span class="o">=</span> <span class="n">nfo</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">listvariables</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">vnames</span><span class="p">:</span>
+       <span class="n">time</span> <span class="o">=</span> <span class="n">nfo</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="n">vv</span><span class="p">]</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
+       <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+           <span class="k">break</span>
+    <span class="n">nfo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="set_order"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.set_order">[docs]</a><span class="k">def</span> <span class="nf">set_order</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Restore axis order of cdms variable</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **var**: A cdms array.</span>
+<span class="sd">        - **order**: A cdms order  string(like &#39;tx&#39;)</span>
+<span class="sd">        - **replace**: Erase existing axis types?</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; set_order(temp, &#39;tyx&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">current_order</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">getOrder</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_order</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">),</span> \
+        <span class="s1">&#39;Specified order must have length </span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">current_order</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">co</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">current_order</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">lower</span><span class="p">())):</span>
+        <span class="k">if</span> <span class="n">co</span><span class="o">==</span><span class="n">o</span> <span class="ow">or</span> <span class="p">(</span><span class="n">co</span><span class="o">!=</span><span class="s1">&#39;-&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">replace</span><span class="p">):</span> <span class="k">continue</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">o</span><span class="o">==</span><span class="s1">&#39;x&#39;</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">designateLongitude</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">o</span><span class="o">==</span><span class="s1">&#39;y&#39;</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">designateLatitude</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">o</span><span class="o">==</span><span class="s1">&#39;z&#39;</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">o</span><span class="o">==</span><span class="s1">&#39;t&#39;</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">designateTime</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">o</span><span class="o">==</span><span class="s1">&#39;-&#39;</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="s1">&#39;axis&#39;</span><span class="p">):</span>
+            <span class="k">del</span> <span class="n">axis</span><span class="o">.</span><span class="n">axis</span>
+
+
+    <span class="k">return</span> <span class="n">var</span></div>
+
+<div class="viewcode-block" id="get_order"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.get_order">[docs]</a><span class="k">def</span> <span class="nf">get_order</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Enhanced version of getOrder() method that handles 2D axes</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **var**: axis or cdms variable.</span>
+
+<span class="sd">    :Output: string containing letters x, y, z, t or -</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; get_order(var)</span>
+<span class="sd">        &quot;-yx&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Already an order</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">var</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="c1"># Axis</span>
+    <span class="k">if</span> <span class="n">isaxis</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">get_axis_type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span> <span class="ow">and</span> <span class="n">order</span> <span class="ow">in</span> <span class="s1">&#39;xy&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;yx&#39;</span>
+        <span class="k">return</span> <span class="n">order</span>
+
+    <span class="c1"># Variable</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">var</span><span class="p">):</span> <span class="k">return</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">getOrder</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span>  <span class="s1">&#39;_nogridorder&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">or</span> \
+        <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]:</span> <span class="k">return</span> <span class="n">order</span>
+    <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+        <span class="s1">&#39;z&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="ow">and</span> <span class="s1">&#39;t&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;-&#39;</span> <span class="ow">and</span> <span class="s1">&#39;x&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+<span class="c1">#            lon = var.getLongitude()</span>
+<span class="c1">#            if len(lon.shape)==2:</span>
+            <span class="n">order</span><span class="o">=</span> <span class="n">order</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;x&#39;</span>
+        <span class="k">if</span> <span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;-&#39;</span> <span class="ow">and</span> <span class="s1">&#39;y&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+<span class="c1">#            lat = var.getLatitude()</span>
+<span class="c1">#            if len(lat.shape)==2:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;y&#39;</span><span class="o">+</span><span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">order</span></div>
+
+<div class="viewcode-block" id="order_match"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.order_match">[docs]</a><span class="k">def</span> <span class="nf">order_match</span><span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">,</span> <span class="n">asscore</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check that to axis orders are compatible</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **order1/2**: Order strings containing ``x``, ``y``, ``z``, ``t`` or ``-`` chars.</span>
+<span class="sd">        - **asscore**, optional: Return the total level of matching, where, for one char:</span>
+
+<span class="sd">            - 0: no matching,</span>
+<span class="sd">            - 1: matching with ``-``,</span>
+<span class="sd">            - 2: letters equal.</span>
+
+<span class="sd">        - **strict**, optional: Be more strict.</span>
+
+<span class="sd">            - ``False``: Not strict.</span>
+<span class="sd">            - ``True`` or ``&quot;both&quot;``: Fail even with ``-``.</span>
+<span class="sd">            - ``&quot;left&quot;`` or ``&quot;right&quot;``: Designate the reference order, where</span>
+<span class="sd">              the other one is not allowed to be different, except when the former</span>
+<span class="sd">              has a ``-``.</span>
+
+<span class="sd">    :Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; order_match(&#39;y&#39;, &#39;x&#39;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; order_match(&#39;x-&#39;, &#39;xy&#39;)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; order_match(&#39;x-&#39;, &#39;xy&#39;, strict=&quot;right&quot;)</span>
+<span class="sd">        False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">order1</span> <span class="o">=</span> <span class="n">get_order</span><span class="p">(</span><span class="n">order1</span><span class="p">)</span>
+    <span class="n">order2</span> <span class="o">=</span> <span class="n">get_order</span><span class="p">(</span><span class="n">order2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">order1</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="n">order2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">asscore</span><span class="p">:</span> <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Both orders must have the same length (</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">strict</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span> <span class="n">strict</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span>
+    <span class="k">for</span> <span class="n">ic</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">order1</span><span class="p">)):</span>
+        <span class="n">o1</span> <span class="o">=</span> <span class="n">order1</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span>
+        <span class="n">o2</span> <span class="o">=</span> <span class="n">order2</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;-&#39;</span> <span class="ow">in</span> <span class="n">o1</span><span class="o">+</span><span class="n">o2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">o1</span><span class="o">!=</span><span class="n">o2</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">strict</span><span class="o">==</span><span class="s2">&quot;both&quot;</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="n">strict</span><span class="o">==</span><span class="s1">&#39;left&#39;</span> <span class="ow">and</span> <span class="n">o1</span><span class="o">!=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="n">strict</span><span class="o">==</span><span class="s1">&#39;right&#39;</span> <span class="ow">and</span> <span class="n">o2</span><span class="o">!=</span><span class="s1">&#39;-&#39;</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">asscore</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">o1</span><span class="o">==</span><span class="n">o2</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">*=</span><span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">asscore</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">score</span> <span class="k">if</span> <span class="n">asscore</span> <span class="k">else</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="merge_orders"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.merge_orders">[docs]</a><span class="k">def</span> <span class="nf">merge_orders</span><span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">,</span> <span class="n">raiseerr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Merge two axis orders</span>
+
+<span class="sd">    When two orders doesn&#39;t have the same length,</span>
+<span class="sd">    they are right adjusted.</span>
+
+<span class="sd">    :Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; merge_orders(&#39;t-x&#39;, &#39;y-&#39;)</span>
+<span class="sd">        &#39;tyx&#39;, &#39;yx&#39;</span>
+<span class="sd">        &gt;&gt;&gt; merge_orders(&#39;yx&#39;, &#39;tz&#39;)</span>
+<span class="sd">        &#39;yx&#39;, &#39;tz&#39;</span>
+<span class="sd">        &gt;&gt;&gt; merge_orders(myvar, zaxis)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">order1</span> <span class="o">=</span> <span class="n">get_order</span><span class="p">(</span><span class="n">order1</span><span class="p">)</span>
+    <span class="n">order2</span> <span class="o">=</span> <span class="n">get_order</span><span class="p">(</span><span class="n">order2</span><span class="p">)</span>
+    <span class="n">rev</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">order2</span><span class="p">)</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">order1</span><span class="p">)))</span>
+    <span class="n">order1</span><span class="p">,</span> <span class="n">order2</span> <span class="o">=</span> <span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">)[</span><span class="n">rev</span><span class="p">]</span>
+
+    <span class="c1"># Inner loop</span>
+    <span class="n">ishift</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">order1</span><span class="p">)</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">order2</span><span class="p">)</span>
+    <span class="n">n12</span> <span class="o">=</span> <span class="n">n2</span><span class="o">-</span><span class="n">n1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n12</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">n12</span><span class="o">-</span><span class="n">i</span>
+        <span class="k">if</span> <span class="n">order_match</span><span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">n1</span><span class="p">]):</span>
+            <span class="n">i1</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">i2</span> <span class="o">=</span> <span class="n">j</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">n1</span>
+            <span class="k">break</span>
+
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># Outerloops</span>
+
+        <span class="k">for</span> <span class="n">ishift</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)):</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span><span class="o">-</span><span class="n">ishift</span>
+            <span class="k">if</span> <span class="n">order_match</span><span class="p">(</span><span class="n">order1</span><span class="p">[:</span><span class="n">l</span><span class="p">],</span> <span class="n">order2</span><span class="p">[</span><span class="n">ishift</span><span class="p">:</span><span class="n">ishift</span><span class="o">+</span><span class="n">l</span><span class="p">]):</span>
+                <span class="n">i1</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">i2</span> <span class="o">=</span> <span class="n">ishift</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">order_match</span><span class="p">(</span><span class="n">order2</span><span class="p">[:</span><span class="n">l</span><span class="p">],</span> <span class="n">order1</span><span class="p">[</span><span class="n">ishift</span><span class="p">:</span><span class="n">ishift</span><span class="o">+</span><span class="n">l</span><span class="p">]):</span>
+                <span class="n">i1</span> <span class="o">=</span> <span class="n">ishift</span>
+                <span class="n">i2</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">raiseerr</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s1">&#39;orders are incompatible and cannot be safely merged: </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">)[</span><span class="n">rev</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">)[</span><span class="n">rev</span><span class="p">]</span>
+
+    <span class="c1"># Merge</span>
+    <span class="n">neworder1</span> <span class="o">=</span> <span class="n">order1</span><span class="p">[:</span><span class="n">i1</span><span class="p">]</span>
+    <span class="n">neworder2</span> <span class="o">=</span> <span class="n">order2</span><span class="p">[:</span><span class="n">i2</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">order1</span><span class="p">[</span><span class="n">i1</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="n">order2</span><span class="p">[</span><span class="n">i2</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">c1</span><span class="o">==</span><span class="n">c2</span> <span class="ow">or</span> <span class="n">c2</span><span class="o">==</span><span class="s1">&#39;-&#39;</span><span class="p">:</span>
+            <span class="n">neworder1</span> <span class="o">+=</span> <span class="n">c1</span>
+            <span class="n">neworder2</span> <span class="o">+=</span> <span class="n">c1</span>
+        <span class="k">elif</span> <span class="n">c1</span><span class="o">==</span><span class="s1">&#39;-&#39;</span><span class="p">:</span>
+            <span class="n">neworder1</span> <span class="o">+=</span> <span class="n">c2</span>
+            <span class="n">neworder2</span> <span class="o">+=</span> <span class="n">c2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">raiseerr</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s1">&#39;orders are incompatible and cannot be safely merged: </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">)[</span><span class="n">rev</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">)[</span><span class="n">rev</span><span class="p">]</span>
+    <span class="n">neworder1</span> <span class="o">+=</span> <span class="n">order1</span><span class="p">[</span><span class="n">i1</span><span class="o">+</span><span class="n">l</span><span class="p">:]</span>
+    <span class="n">neworder2</span> <span class="o">+=</span> <span class="n">order2</span><span class="p">[</span><span class="n">i2</span><span class="o">+</span><span class="n">l</span><span class="p">:]</span>
+
+    <span class="c1"># Check multiples</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s1">&#39;xyztd&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">neworder1</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span> <span class="ow">or</span> <span class="n">neworder2</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Merging of orders (</span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1">) may have not &#39;</span><span class="o">%</span><span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">)</span> <span class="o">+</span> \
+                <span class="s1">&#39;properly worked (multiple axes are of the same type)&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">neworder1</span><span class="p">,</span> <span class="n">neworder2</span><span class="p">)[</span><span class="n">rev</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="check_order"><a class="viewcode-back" href="../../../library/misc.axes.html#vacumm.misc.axes.check_order">[docs]</a><span class="k">def</span> <span class="nf">check_order</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">allowed</span><span class="p">,</span> <span class="n">vertical</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reorder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">extended</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getorder</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check that the axis order of a variable is matches</span>
+<span class="sd">    at least one the specifed valid orders</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **var**: MV2 array.</span>
+<span class="sd">        - **allowed**: A single order string or a list. It should contain one or</span>
+<span class="sd">          several of these letters:</span>
+
+<span class="sd">            - ``x``: longitudes,</span>
+<span class="sd">            - ``y``: latitudes,</span>
+<span class="sd">            - ``z``: vertical levels,</span>
+<span class="sd">            - ``t``: time axis,</span>
+<span class="sd">            - ``d``: data values (ignored),</span>
+<span class="sd">            - ``-``: any kind of axis.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        ``var``, or ``var, order, reordered`` if **reorder** is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check allowed orders</span>
+    <span class="c1"># - consistency</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">allowed</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="p">[</span><span class="n">allowed</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">allowed</span><span class="p">)</span>
+    <span class="n">withd</span> <span class="o">=</span> <span class="s1">&#39;d&#39;</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">get_rank</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">get_rank</span><span class="p">(</span><span class="n">allowed</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cdms2</span><span class="o">.</span><span class="n">orderparse</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Wrong allowed order: &quot;</span><span class="o">+</span><span class="n">order</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;d&#39;</span> <span class="ow">in</span> <span class="n">order</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">withd</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;d&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span> <span class="ow">and</span> <span class="n">withd</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;&#39;d&#39; only partially present in allowed order: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">allowed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">get_rank</span><span class="p">(</span><span class="n">order</span><span class="p">)</span><span class="o">!=</span><span class="n">rank</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Inconsistent ranks between allowed orders: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">[</span><span class="n">get_rank</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">])</span>
+    <span class="c1"># - check extended mode</span>
+    <span class="k">if</span> <span class="n">extended</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># extended?</span>
+        <span class="n">re_upper</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;[XYZT]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span>
+        <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">re_upper</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">extended</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># force extended mode</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">extended</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">extended</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># lower</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1">#add tolerance for lower case orders</span>
+        <span class="n">re_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;[xyzt]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sub</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="n">allowed</span><span class="o">+</span><span class="p">[</span><span class="n">re_sub</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">]</span>
+    <span class="c1"># - unique and lower case</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">allowed</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+    <span class="n">allowed</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">allowed</span><span class="p">)[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="c1"># - restrict to vertical or horizontal (1D data only)</span>
+    <span class="k">if</span> <span class="n">vertical</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">allowed</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="p">[</span><span class="n">oo</span> <span class="k">for</span> <span class="n">oo</span> <span class="ow">in</span> <span class="n">allowed</span> <span class="k">if</span> <span class="n">oo</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">vertical</span><span class="p">)]</span><span class="o">==</span><span class="s1">&#39;d&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Data order</span>
+    <span class="n">data_cdms_order</span> <span class="o">=</span> <span class="n">get_order</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="c1"># Loop on allowed orders</span>
+    <span class="kn">from</span> <span class="nn">vacumm.misc.grid.misc</span> <span class="k">import</span> <span class="n">get_axis</span><span class="p">,</span> <span class="n">var2d</span>
+    <span class="n">reordered</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">allowed_order</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+
+        <span class="c1"># Handle data case</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">allowed_order</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">!=-</span><span class="mi">1</span><span class="p">:</span> <span class="n">allowed_order</span> <span class="o">=</span> <span class="n">allowed_order</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># pure axis</span>
+
+        <span class="c1"># Check cdms order</span>
+        <span class="n">allowed_cdms_order</span> <span class="o">=</span> <span class="n">allowed_order</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="c1"># lower case</span>
+        <span class="k">if</span> <span class="n">order_match</span><span class="p">(</span><span class="n">data_cdms_order</span><span class="p">,</span> <span class="n">allowed_cdms_order</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">):</span> <span class="k">break</span> <span class="c1"># It is already good</span>
+
+        <span class="c1"># Try to reorder</span>
+        <span class="k">if</span> <span class="n">reorder</span><span class="p">:</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">reordered</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">order2index</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getAxisList</span><span class="p">(),</span> <span class="n">allowed_cdms_order</span><span class="p">)</span>
+                <span class="n">new_var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">allowed_cdms_order</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">allowed_cdms_order</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">get_axis</span><span class="p">(</span><span class="n">new_var</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span> <span class="c1"># 2D axes</span>
+                    <span class="k">del</span> <span class="n">var</span>
+                    <span class="n">var</span> <span class="o">=</span> <span class="n">var2d</span><span class="p">(</span><span class="n">new_var</span><span class="p">,</span>
+                        <span class="n">MV2</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">get_axis</span><span class="p">(</span><span class="n">new_var</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+                        <span class="n">MV2</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">get_axis</span><span class="p">(</span><span class="n">new_var</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">set_order</span><span class="p">(</span><span class="n">new_var</span><span class="p">,</span> <span class="n">allowed_cdms_order</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">var</span>
+                    <span class="n">var</span> <span class="o">=</span> <span class="n">new_var</span>
+                <span class="n">data_cdms_order</span> <span class="o">=</span> <span class="n">get_order</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                <span class="k">break</span> <span class="c1"># No error so it worked and we leave</span>
+
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s1">&#39;Wrong type of axes. Possible forms are: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">allowed</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">getorder</span><span class="p">:</span> <span class="k">return</span> <span class="n">var</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">!=-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">data_cdms_order</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">orderparse</span><span class="p">(</span><span class="n">data_cdms_order</span><span class="p">)</span>
+        <span class="n">data_cdms_order</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+        <span class="n">data_cdms_order</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_cdms_order</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">var</span><span class="p">,</span> <span class="n">data_cdms_order</span><span class="p">,</span> <span class="n">reordered</span></div>
+
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

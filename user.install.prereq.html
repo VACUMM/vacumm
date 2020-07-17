@@ -1,0 +1,302 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.2.1. Prerequisites &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.2.1. Prerequisites</a><ul>
+<li><a class="reference internal" href="#list-of-packages">1.2.1.1. List of packages</a><ul>
+<li><a class="reference internal" href="#cdat">1.2.1.1.1. CDAT</a></li>
+<li><a class="reference internal" href="#other-packages">1.2.1.1.2. Other packages</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#install-uv-cdat">1.2.1.2. Install UV-CDAT</a><ul>
+<li><a class="reference internal" href="#from-conda">1.2.1.2.1. From conda</a></li>
+<li><a class="reference internal" href="#from-sources">1.2.1.2.2. From sources</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#setup-the-environment">1.2.1.3. Setup the environment</a></li>
+<li><a class="reference internal" href="#check-the-installation">1.2.1.4. Check the installation</a></li>
+<li><a class="reference internal" href="#install-other-packages">1.2.1.5. Install other packages</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.install.prereq.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="prerequisites">
+<span id="user-install-prereq"></span><h1>1.2.1. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is highly suggested to install UV-CDAT and other vacumm
+dependencies using <a class="reference external" href="http://conda.pydata.org/docs/index.html">conda</a>.</p>
+</div>
+<div class="section" id="list-of-packages">
+<span id="user-prereq-list"></span><h2>1.2.1.1. List of packages<a class="headerlink" href="#list-of-packages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cdat">
+<h3>1.2.1.1.1. CDAT<a class="headerlink" href="#cdat" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://uv-cdat.llnl.gov/">CDAT</a> is a meta-package containing:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a version of python;</li>
+<li>standard and specialized python packages
+like <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference">numpy</a>,
+<a class="reference external" href="http://docs.scipy.org/doc/scipy/reference">scipy</a> and
+<a class="reference external" href="http://matplotlib.org">matplotlib</a>;</li>
+<li>python packages made by UV-CDAT providers,
+and specialized for manipulation and visualization of ocean/atmosphere data;</li>
+<li>numerous other libraries and tools.</li>
+</ul>
+</div></blockquote>
+<p>The packages installed by CDAT and that are needed are the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>- python
+- numpy
+- libgfortran
+- cdms2
+- cdutil
+- genutil
+- matplotlib
+- basemap
+- basemap-data-hires
+- scipy
+</pre></div>
+</div>
+</div>
+<div class="section" id="other-packages">
+<h3>1.2.1.1.2. Other packages<a class="headerlink" href="#other-packages" title="Permalink to this headline">¶</a></h3>
+<p class="rubric">Python</p>
+<p>When you have installed CDAT or the , here is a list of necessary or
+useful  packages that can be install using <strong class="program">pip</strong> or
+<strong class="program">easy_install</strong>:</p>
+<span id="user-prereq-list-others-table"></span><table border="1" class="colwidths-given docutils" id="id2">
+<caption><span class="caption-text"><em>Necessary or useful packages</em></span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="30%" />
+<col width="16%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Package</th>
+<th class="head">Necessary?</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>configobj (4.7.2)</strong></td>
+<td>Yes</td>
+<td>Manipulate advanced configuration files</td>
+</tr>
+<tr class="row-odd"><td><strong>pytz</strong></td>
+<td>Only for time zone support</td>
+<td>Work with time zones</td>
+</tr>
+<tr class="row-even"><td><strong>paramiko</strong></td>
+<td>Only for <a class="reference internal" href="library/misc.remote.html#module-vacumm.misc.remote" title="vacumm.misc.remote"><code class="xref py py-mod docutils literal notranslate"><span class="pre">remote</span></code></a></td>
+<td>Use SSH2 protocol.</td>
+</tr>
+<tr class="row-odd"><td><strong>seawater</strong></td>
+<td>Yes for advanced diags.</td>
+<td>Sea water properties</td>
+</tr>
+<tr class="row-even"><td><strong>xlwt</strong></td>
+<td>Only for <a class="reference internal" href="library/misc.misc.html#vacumm.misc.misc.xls_style" title="vacumm.misc.misc.xls_style"><code class="xref py py-func docutils literal notranslate"><span class="pre">xls_style()</span></code></a>.</td>
+<td>Write excel files (better: <strong>xlutils</strong>)</td>
+</tr>
+<tr class="row-odd"><td><strong>cmocean</strong></td>
+<td>Only if you want cmocean colormaps</td>
+<td>Make these colormaps available like <code class="docutils literal notranslate"><span class="pre">cmocean_thermal</span></code></td>
+</tr>
+<tr class="row-even"><td><strong>PIL (1.1.7)</strong></td>
+<td>Only sometimes for <a class="reference internal" href="library/misc.plot.html#vacumm.misc.plot.add_logo" title="vacumm.misc.plot.add_logo"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_logo()</span></code></a>.</td>
+<td>Manipulate images</td>
+</tr>
+<tr class="row-odd"><td><strong>sphinx_fortran (1.0)</strong></td>
+<td>Doc</td>
+<td>Extension to <strong>sphinx</strong>: Documenting fortran codes</td>
+</tr>
+<tr class="row-even"><td><strong>sphinxcontrib-cheeseshop (0.2)</strong></td>
+<td>Doc</td>
+<td>Extension to <strong>sphinx</strong>: Linking to Cheese Shop (Python Package Index) packages</td>
+</tr>
+<tr class="row-odd"><td><strong>sphinxcontrib-programoutput (0.8)</strong></td>
+<td>Doc</td>
+<td>Extension to <strong>sphinx</strong>: Include program output</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Documentation generation</p>
+<p>These utilities are needed to fully compile the documentation.</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://www.graphviz.org">Graphviz</a></dt>
+<dd>Used to create hierarchical diagrams of class inheritance
+during the generation of the documentation by the
+sphinx extension <a class="reference external" href="http://www.sphinx-doc.org/en/stable/usage/extensions/graphviz.html#module-sphinx.ext.graphviz" title="(in Sphinx v1.8.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sphinx.ext.graphviz</span></code></a>.
+See for instance module <a class="reference internal" href="library/misc.core_plot.html#module-vacumm.misc.core_plot" title="vacumm.misc.core_plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core_plot</span></code></a>.
+The program <strong class="program">dot</strong> may be also needed.
+You can install both with the <strong>pydot</strong> package.</dd>
+<dt><a class="reference external" href="http://savannah.nongnu.org/projects/dvipng">dvipng</a></dt>
+<dd>Used to compile latex formula of the documentation.</dd>
+<dt><a class="reference external" href="https://www.ctan.org/pkg/enumitem">enumitem</a></dt>
+<dd>This package is needed to compile the PDF version
+of the documentation.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="install-uv-cdat">
+<span id="user-install-prereq-howto"></span><h2>1.2.1.2. Install UV-CDAT<a class="headerlink" href="#install-uv-cdat" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="from-conda">
+<h3>1.2.1.2.1. From conda<a class="headerlink" href="#from-conda" title="Permalink to this headline">¶</a></h3>
+<p>Using the <a class="reference external" href="http://conda.pydata.org/docs/index.html">conda installer</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install -c uvcdat uvcdat
+</pre></div>
+</div>
+</div>
+<div class="section" id="from-sources">
+<h3>1.2.1.2.2. From sources<a class="headerlink" href="#from-sources" title="Permalink to this headline">¶</a></h3>
+<p>To install UV-CDAT, follow the official <a class="reference external" href="http://uv-cdat.llnl.gov/install">instructions</a>.
+It can be installed on both linux and mac, by compiling sources or using
+availables binaries.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you compile it from sources, you need <a class="reference external" href="http://www.cmake.org">cmake</a> and
+<a class="reference external" href="http://git-scm.com">git</a>, and it is highly suggested to have your own
+version of <a class="reference external" href="http://qt-project.org">Qt4</a>.
+Packets are generally availables on all plateforms.</p>
+</div>
+<p>If you use UV-CDAT in operational jobs, you should install a separate version.
+One way to manage several versions is to use environment modules
+(see  <a class="reference internal" href="user.install.modenv.html#user-install-modenv"><span class="std std-ref">Using environment modules</span></a>).</p>
+</div>
+</div>
+<div class="section" id="setup-the-environment">
+<h2>1.2.1.3. Setup the environment<a class="headerlink" href="#setup-the-environment" title="Permalink to this headline">¶</a></h2>
+<p>Once the installation is done, set environment variables (bash):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>/path/to/uvcdat/bin:<span class="nv">$PATH</span>
+
+<span class="c1"># For install from sources</span>
+$ <span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/path/to/uvcdat/Externals/lib:/path/to/uvcdat/lib:<span class="nv">$LD_LIBRARY_PATH</span>
+$ <span class="nb">export</span> <span class="nv">C_INCLUDE_PATH</span><span class="o">=</span>/path/to/uvcdat/Externals/include:<span class="nv">$C_INCLUDE_PATH</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="check-the-installation">
+<h2>1.2.1.4. Check the installation<a class="headerlink" href="#check-the-installation" title="Permalink to this headline">¶</a></h2>
+<p>Then check:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -c <span class="s2">&quot;import cdms2&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-other-packages">
+<h2>1.2.1.5. Install other packages<a class="headerlink" href="#install-other-packages" title="Permalink to this headline">¶</a></h2>
+<p>Using <strong class="program">conda</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install -c conda-forge configobj PIL paramiko xlutils seawater pytz cmocean
+</pre></div>
+</div>
+<p>Using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install configobj PIL paramiko xlutils seawater pytz
+$ pip install sphinxcontrib-cheeseshop sphinxcontrib-programoutput sphinx-fortran
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

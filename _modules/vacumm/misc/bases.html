@@ -1,0 +1,1040 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.misc.bases &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../index.html"><img src="../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.misc.bases</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2010-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Jonathan Wilkins&#39;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;wilkins@actimar.fr&#39;</span>
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+
+<span class="s1">This module is intented to provide features like logging, configuration and</span>
+<span class="s1">debugging into a base class.</span>
+
+<span class="s1">The main tool of this module is the `class:`Object` class which</span>
+<span class="s1">may be used in high level components of your applications by inheriting from this</span>
+<span class="s1">base class.</span>
+
+
+<span class="s1">.. warning::</span>
+
+<span class="s1">    You must be aware that all `class:`Object` instances hold</span>
+<span class="s1">    a logger and an configuration manager.</span>
+<span class="s1">    Therefore you should not inherit from `class:`Object` in all of</span>
+<span class="s1">    your specialized classes especially when your application instanciate and holds</span>
+<span class="s1">    a lot of instances of this class.</span>
+<span class="s1">    The `class:`Object` class should only be used in main classes</span>
+<span class="s1">    of your application.</span>
+
+
+
+<span class="s1">&#39;&#39;&#39;</span>
+ 
+<span class="kn">import</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pdb</span><span class="o">,</span> <span class="nn">pprint</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">types</span>
+
+<span class="kn">import</span> <span class="nn">configobj</span>
+
+<span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">vacumm_warning</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.config</span> <span class="k">import</span> <span class="n">ConfigManager</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.exception</span> <span class="k">import</span> <span class="n">getDetailedExceptionInfo</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.misc</span> <span class="k">import</span> <span class="n">kwfilter</span><span class="p">,</span> <span class="n">dict_merge</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.log</span> <span class="k">import</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">get_str_levels</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">ArgumentParser</span>
+<span class="kn">from</span> <span class="nn">optparse</span> <span class="k">import</span> <span class="n">OptionParser</span>
+
+<span class="c1"># Test application origin: a python script or an executable (py2exe/cx_freeze)</span>
+<span class="n">isfreezed</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">)</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># Program identity variables</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">isfreezed</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">executable</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">if</span> <span class="n">prog</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;-c&#39;</span><span class="p">]:</span>
+    <span class="n">progname</span> <span class="o">=</span> <span class="n">prog</span> <span class="o">=</span> <span class="s1">&#39;python&#39;</span>
+    <span class="n">progdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">progname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+    <span class="n">progdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_prog_name"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.get_prog_name">[docs]</a><span class="k">def</span> <span class="nf">get_prog_name</span><span class="p">(</span><span class="n">noext</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the currently running program name</span>
+
+<span class="sd">    :Params:</span>
+<span class="sd">        - **noext**: If True, remove extension from program name</span>
+
+<span class="sd">    :Return:</span>
+<span class="sd">        - str: The program name, or &quot;python&quot; in interactive interpreter mode.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">noext</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">progname</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">progname</span></div>
+
+
+<div class="viewcode-block" id="get_prog_dir"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.get_prog_dir">[docs]</a><span class="k">def</span> <span class="nf">get_prog_dir</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Get the currently running program&#39;s directory.&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">progdir</span></div>
+
+
+<div class="viewcode-block" id="func_name"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.func_name">[docs]</a><span class="k">def</span> <span class="nf">func_name</span><span class="p">(</span><span class="n">iframe</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the name of the calling function</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - **iframe**: int: Get the iframe&#39;th caller function name.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#return inspect.currentframe().f_back.f_code.co_name</span>
+    <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">iframe</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span></div>
+
+
+<span class="k">def</span> <span class="nf">_set_ext_</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Change a file extension</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - **fname**: File path.</span>
+<span class="sd">        - **ext**: Remove extension if False, replace it if string,</span>
+<span class="sd">          or leave it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="n">fname</span><span class="p">,</span> <span class="n">suf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                <span class="n">suf</span> <span class="o">=</span> <span class="n">ext</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">suf</span><span class="p">:</span>
+                <span class="n">suf</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">suf</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">suf</span>
+    <span class="k">return</span> <span class="n">fname</span>
+
+<div class="viewcode-block" id="code_file_name"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.code_file_name">[docs]</a><span class="k">def</span> <span class="nf">code_file_name</span><span class="p">(</span><span class="n">iframe</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="n">ext</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the name of the file that hosts the code where it is called</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - **iframe**: int: Get the iframe&#39;th caller function name.</span>
+<span class="sd">        - **ext**: Remove extension if False, replace it if string,</span>
+<span class="sd">          or leave it.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">iframe</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_filename</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">_set_ext_</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fname</span></div>
+
+<div class="viewcode-block" id="code_base_name"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.code_base_name">[docs]</a><span class="k">def</span> <span class="nf">code_base_name</span><span class="p">(</span><span class="n">iframe</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the basename of the file that hosts the code where it is called</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - **iframe**: int: Get the iframe&#39;th caller function name.</span>
+<span class="sd">        - **ext**: Remove extension if False, replace it if string,</span>
+<span class="sd">          or leave it.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">code_file_name</span><span class="p">(</span><span class="n">iframe</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="code_dir_name"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.code_dir_name">[docs]</a><span class="k">def</span> <span class="nf">code_dir_name</span><span class="p">(</span><span class="n">iframe</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the dirname of the file that hosts the code where it is called</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - **iframe**: int: Get the iframe&#39;th caller function name.</span>
+<span class="sd">        - **ext**: Remove extension if False, replace it if string,</span>
+<span class="sd">          or leave it.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">code_file_name</span><span class="p">(</span><span class="n">iframe</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="stack_trace"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.stack_trace">[docs]</a><span class="k">def</span> <span class="nf">stack_trace</span><span class="p">(</span><span class="n">iframe</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">etrace</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># not the perfect way...</span>
+        <span class="k">if</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">).&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">o</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># not the perfect way...</span>
+            <span class="k">if</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">o</span> <span class="o">+=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%%</span><span class="s1">-</span><span class="si">%d</span><span class="s1">s&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">pad</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;  (</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_lineno</span><span class="p">)</span>
+    <span class="n">iframe</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">iframe</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="n">iframe</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">etrace</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">iframe</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="n">iframe</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">etrace</span><span class="p">(</span><span class="n">frame</span><span class="p">)))</span>
+        <span class="k">except</span><span class="p">:</span> <span class="k">break</span>
+    <span class="n">traces</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;Stack trace (innermost last):</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span></div>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">psutil</span>
+    <span class="n">_psutil_process</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+<div class="viewcode-block" id="psinfo"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.psinfo">[docs]</a>    <span class="k">def</span> <span class="nf">psinfo</span><span class="p">():</span>
+        <span class="sd">&#39;&#39;&#39;Get cpu and memory usage string (require **psutil** module)&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_psutil_process</span><span class="p">,</span> <span class="s1">&#39;get_cpu_percent&#39;</span><span class="p">):</span>
+            <span class="n">cpu</span> <span class="o">=</span> <span class="n">_psutil_process</span><span class="o">.</span><span class="n">get_cpu_percent</span><span class="p">()</span>
+            <span class="n">mem</span> <span class="o">=</span> <span class="n">_psutil_process</span><span class="o">.</span><span class="n">get_memory_percent</span><span class="p">()</span>
+            <span class="n">meminfo</span>  <span class="o">=</span> <span class="n">_psutil_process</span><span class="o">.</span><span class="n">get_memory_info</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cpu</span> <span class="o">=</span> <span class="n">_psutil_process</span><span class="o">.</span><span class="n">cpu_percent</span><span class="p">()</span>
+            <span class="n">mem</span> <span class="o">=</span> <span class="n">_psutil_process</span><span class="o">.</span><span class="n">memory_percent</span><span class="p">()</span>
+            <span class="n">meminfo</span> <span class="o">=</span> <span class="n">_psutil_process</span><span class="o">.</span><span class="n">memory_info</span><span class="p">()</span>
+        <span class="n">rss</span><span class="p">,</span> <span class="n">vsz</span> <span class="o">=</span> <span class="n">meminfo</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="s1">&#39;[CPU: </span><span class="si">%d%%</span><span class="s1">  MEM: </span><span class="si">%d%%</span><span class="s1">  RSS: </span><span class="si">%d</span><span class="s1">Mo  VSZ: </span><span class="si">%d</span><span class="s1">Mo&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">cpu</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">rss</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">,</span> <span class="n">vsz</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">meminfo</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">ps</span> <span class="o">+=</span> <span class="s1">&#39;  SHR: </span><span class="si">%d</span><span class="s1">Mo  DAT: </span><span class="si">%d</span><span class="s1">Mo&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">meminfo</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">,</span> <span class="n">meminfo</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">ps</span> <span class="o">+=</span> <span class="s1">&#39;]&#39;</span>
+        <span class="k">return</span> <span class="n">ps</span></div>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">verbose</span><span class="p">(</span><span class="s1">&#39;psinfo disabled: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="n">psinfo</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span><span class="s1">&#39;Ressources informations not available (no module psutil)&#39;</span>
+
+
+<div class="viewcode-block" id="describe"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.describe">[docs]</a><span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">stats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the object decription depending on its type.</span>
+
+<span class="sd">    Usefull with numpy and cdms variables/axes</span>
+
+<span class="sd">    :Params:</span>
+<span class="sd">        - **obj**: The object to describe.</span>
+<span class="sd">        - **stats**: If True, include numerical information like min, max, mean, count, ...</span>
+
+<span class="sd">    :Return:</span>
+<span class="sd">        - The object&#39;s summary string</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">cdms2</span><span class="o">,</span> <span class="nn">MV2</span><span class="o">,</span> <span class="nn">numpy</span>
+        <span class="kn">from</span> <span class="nn">cdms2.avariable</span> <span class="k">import</span> <span class="n">AbstractVariable</span>
+        <span class="kn">from</span> <span class="nn">cdms2.axis</span> <span class="k">import</span> <span class="n">AbstractAxis</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">cdms2</span><span class="o">.</span><span class="n">avariable</span><span class="o">.</span><span class="n">AbstractVariable</span><span class="p">,</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">AbstractAxis</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">otype</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="c1"># type(obj)</span>
+        <span class="n">sh</span><span class="p">,</span> <span class="n">sz</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">MV2</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">mi</span> <span class="o">=</span> <span class="n">ma</span> <span class="o">=</span> <span class="n">av</span> <span class="o">=</span> <span class="n">co</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">sz</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;typecode&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">typecode</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,):</span>
+                    <span class="n">mi</span><span class="p">,</span> <span class="n">ma</span><span class="p">,</span> <span class="n">av</span><span class="p">,</span> <span class="n">co</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">MV2</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">MV2</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">MV2</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Error getting statistics of object </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">AbstractVariable</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">, shape: (</span><span class="si">%s</span><span class="s1">), order: </span><span class="si">%s%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span>
+                <span class="n">otype</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">getAxisList</span><span class="p">()),</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">getOrder</span><span class="p">(),</span>
+                <span class="n">stats</span> <span class="ow">and</span> <span class="s1">&#39;, min: </span><span class="si">%s</span><span class="s1">, max: </span><span class="si">%s</span><span class="s1">, avg: </span><span class="si">%s</span><span class="s1">, count: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mi</span><span class="p">,</span> <span class="n">ma</span><span class="p">,</span> <span class="n">av</span><span class="p">,</span> <span class="n">co</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">AbstractAxis</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">, size: </span><span class="si">%s%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span>
+                <span class="n">otype</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span>
+                <span class="n">stats</span> <span class="ow">and</span> <span class="s1">&#39;, min: </span><span class="si">%s</span><span class="s1">, max: </span><span class="si">%s</span><span class="s1">, avg: </span><span class="si">%s</span><span class="s1">, count: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mi</span><span class="p">,</span> <span class="n">ma</span><span class="p">,</span> <span class="n">av</span><span class="p">,</span> <span class="n">co</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span><span class="c1">#if isinstance(obj, numpy.ndarray):</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: shape: </span><span class="si">%s%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span>
+                <span class="n">otype</span><span class="p">,</span> <span class="n">sh</span><span class="p">,</span>
+                <span class="n">stats</span> <span class="ow">and</span> <span class="s1">&#39;, min: </span><span class="si">%s</span><span class="s1">, max: </span><span class="si">%s</span><span class="s1">, avg: </span><span class="si">%s</span><span class="s1">, count: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mi</span><span class="p">,</span> <span class="n">ma</span><span class="p">,</span> <span class="n">av</span><span class="p">,</span> <span class="n">co</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Error getting description of object </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> (error getting description)&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1"># http://stackoverflow.com/questions/5892619/static-and-instance-methods-in-python</span>
+<span class="c1">################################################################################</span>
+
+<span class="k">class</span> <span class="nc">_classinstancemethod_wrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">kw</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kw</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span><span class="p">),</span> <span class="p">(</span>
+            <span class="s2">&quot;You cannot use &#39;self&#39; or &#39;cls&#39; arguments to a &quot;</span>
+            <span class="s2">&quot;classinstancemethod&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;&lt;bound class method </span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&gt;&#39;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">func_name</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;&lt;bound method </span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1"> of </span><span class="si">%r</span><span class="s1">&gt;&#39;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">))</span>
+
+<div class="viewcode-block" id="classinstancemethod"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.classinstancemethod">[docs]</a><span class="k">class</span> <span class="nc">classinstancemethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator which acts like a class method when called from a class, like an</span>
+<span class="sd">    instance method when called by an instance.  The method should</span>
+<span class="sd">    take two arguments, &#39;self&#39; and &#39;cls&#39;; one of these will be None</span>
+<span class="sd">    depending on how the method was called.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_classinstancemethod_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span></div>
+
+<span class="c1">################################################################################</span>
+
+
+<div class="viewcode-block" id="Class"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Class">[docs]</a><span class="k">class</span> <span class="nc">Class</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Vacumm&#39;s base metaclass used to initialize implementing classes.</span>
+
+<span class="sd">    The implementing classes (in fact via the :class:`Object` class below) can have methods</span>
+<span class="sd">    called at the class definition (at present, the :meth:`Object._init_class()` classmethod).</span>
+
+<span class="sd">    Usefull to initialize class attributes such like class configuration, logging, debugging...</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># More details in Object class comments below</span>
+
+    <span class="c1"># &lt;fix&gt;</span>
+    <span class="c1"># A fix for (at least) doc generation because the inspect module throws</span>
+    <span class="c1"># an AttributeError in a getattr call to get this attribute...</span>
+    <span class="c1"># This attribute seems to be used by the abc module (abstract base classes)</span>
+    <span class="c1"># I do not met some side effects using this fix yet.</span>
+    <span class="n">__abstractmethods__</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># &lt;/fix&gt;</span>
+
+    <span class="c1"># Not yet needed</span>
+    <span class="c1">#def __new__(mcs, name, bases, dct):</span>
+    <span class="c1">#    return type.__new__(mcs, name, bases, dct)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+        <span class="nb">type</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_init_class</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">)</span></div>
+
+
+<span class="n">_logging_proxies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span><span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span> <span class="n">get_str_levels</span><span class="p">()</span><span class="o">+</span><span class="p">[</span><span class="s1">&#39;exception&#39;</span><span class="p">]))</span>
+<span class="n">_logging_proxies</span> <span class="o">+=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;get_loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;get_level_name&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;set_loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;set_level&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;is_verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;is_verbose&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;is_debug&#39;</span><span class="p">,</span> <span class="s1">&#39;is_debug&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+<div class="viewcode-block" id="add_logging_proxies"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.add_logging_proxies">[docs]</a><span class="k">def</span> <span class="nf">add_logging_proxies</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Register some Logger shortcuts for a given class (cls.&lt;method&gt; =&gt; cls.get_logger().&lt;method&gt;):</span>
+
+<span class="sd">        - %s</span>
+
+<span class="sd">    These shortcuts will be bound to the class and its instances using its get_logger method</span>
+<span class="sd">    which must return a :class:`Logger` instance, so this method must be callable from the class or its</span>
+<span class="sd">    instances (you may use the :class:`classinstancemethod` decorator as of :meth:`Object.get_logger`)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">wrap_logging_function</span><span class="p">(</span><span class="bp">cls</span> <span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">lfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span><span class="c1">#, addextra=False):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lfunc</span><span class="p">:</span> <span class="n">lfunc</span> <span class="o">=</span> <span class="n">cfunc</span>
+        <span class="nd">@classinstancemethod</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">k</span><span class="p">):</span>
+<span class="c1">#            if addextra:</span>
+<span class="c1">#                k = k.copy()</span>
+<span class="c1">#                if lfunc != &#39;exception:&#39;</span>
+<span class="c1">#                    k.setdefault(&#39;extra&#39;, {})</span>
+<span class="c1">#                    # We cannot overwrite funcName so add a new keyword</span>
+<span class="c1">#                    k[&#39;extra&#39;].setdefault(&#39;funcname&#39;, func_name(1))</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(),</span> <span class="n">lfunc</span><span class="p">)(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="o">**</span><span class="n">k</span><span class="p">)</span>
+            <span class="c1">#return getattr(obj._logger if obj is not None else cls._class_logger, lfunc)(*a,**k)</span>
+        <span class="n">wrapper</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">cfunc</span>
+        <span class="n">wrapper</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;Wrapper to the </span><span class="si">%(lfunc)r</span><span class="s1"> method of this object logger (see :meth:`Logger.</span><span class="si">%(lfunc)s</span><span class="s1">` )&#39;&#39;&#39;</span><span class="o">%</span><span class="nb">vars</span><span class="p">()</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfunc</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">)</span>
+        
+        <span class="c1"># Register code to be skipped when logging</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">skipCaller</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">func</span><span class="p">)</span>
+        <span class="c1"># XXX because _classinstancemethod_wrapper is created on classinstancemethod.__get__(),</span>
+        <span class="c1"># we directly use _classinstancemethod_wrapper.__call__</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">skipCaller</span><span class="p">(</span><span class="n">_classinstancemethod_wrapper</span><span class="o">.</span><span class="fm">__call__</span><span class="o">.</span><span class="vm">__func__</span><span class="o">.</span><span class="vm">__code__</span><span class="p">)</span>
+        
+    <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">_logging_proxies</span><span class="p">:</span>
+        <span class="n">wrap_logging_function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+<span class="n">add_logging_proxies</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">%=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">        - &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> =&gt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">f</span><span class="p">,</span> <span class="n">_logging_proxies</span><span class="p">)),)</span>
+
+<div class="viewcode-block" id="Object"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object">[docs]</a><span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Vacumm&#39;s base class proving common usefull features:</span>
+
+<span class="sd">        - configuration management</span>
+<span class="sd">            - keeping trace of parent class configs</span>
+<span class="sd">            - allowing per-instance config usage (default to class config)</span>
+<span class="sd">        - logging</span>
+<span class="sd">        - debugging</span>
+<span class="sd">            - tracking (pdb)</span>
+<span class="sd">            - exceptions details</span>
+<span class="sd">            - process memory usage</span>
+
+<span class="sd">    Most features work at class level to reduce variables in instances.</span>
+
+<span class="sd">    This class is designed to be implemented by the main working classes,</span>
+<span class="sd">    but there is no real restriction about that.</span>
+
+<span class="sd">    The default configuration is automatically loaded when importing the class module, this</span>
+<span class="sd">    behavior is also applied for subclasses in other modules.</span>
+
+<span class="sd">    Instance initial configuration (:func:`get_config`) is a copy of the class</span>
+<span class="sd">    configuration (:func:`get_default_config`) made at instance creation time.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># All subclasses will use this metaclass</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">Class</span>
+    <span class="c1"># For example, the following classes definition:</span>
+    <span class="c1">#   In a vacumm.a.py module:</span>
+    <span class="c1">#     from vacumm import Object</span>
+    <span class="c1">#     class A(Object): pass</span>
+    <span class="c1">#   In b vacumm.b.py module:</span>
+    <span class="c1">#     import a</span>
+    <span class="c1">#     class B(a.A): pass</span>
+    <span class="c1">#</span>
+    <span class="c1"># will produce the following methods calls at class definition (import):</span>
+    <span class="c1">#</span>
+    <span class="c1">#   Class.__new__ (in Class): cls: &lt;class &#39;vacumm.Class&#39;&gt;</span>
+    <span class="c1">#   Object.__init__ (in Class): self: &lt;class &#39;vacumm.Object&#39;&gt;</span>
+    <span class="c1">#   Class.__new__ (in Class): cls: &lt;class &#39;vacumm.Class&#39;&gt;</span>
+    <span class="c1">#   A.__init__ (in Class): self: &lt;class &#39;a.A&#39;&gt;</span>
+    <span class="c1">#   Class.__new__ (in Class): cls: &lt;class &#39;vacumm.Class&#39;&gt;</span>
+    <span class="c1">#   B.__init__ (in Class): self: &lt;class &#39;b.B&#39;&gt;</span>
+    <span class="c1">#</span>
+    <span class="c1"># and then at instanciation (b=B()):</span>
+    <span class="c1">#</span>
+    <span class="c1">#   B.__new__ (in Object): cls: &lt;class &#39;b.B&#39;&gt;</span>
+    <span class="c1">#   B.__init__ (in Object): cls: &lt;b.B object at 0x2ad3b50&gt;</span>
+    <span class="c1">#   A.__init__</span>
+    <span class="c1">#   B.__init__</span>
+    <span class="c1">#</span>
+
+    <span class="n">_log_level</span> <span class="o">=</span> <span class="s1">&#39;info&#39;</span>
+    <span class="n">_cfg_debug</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_log_obj_stats</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Not yet needed</span>
+    <span class="c1">#def __new__(cls, *args, **kwargs):</span>
+    <span class="c1">#    #print &#39;%s.%s (in Object): cls: %s, args: %s, kwargs: %s&#39;%(cls.__name__, func_name(), cls, args, kwargs)</span>
+    <span class="c1">#    #print &#39;%s.%s (in Object): cls: %s&#39;%(cls.__name__, func_name(), cls)</span>
+    <span class="c1">#    #</span>
+    <span class="c1">#    return object.__new__(cls, *args, **kwargs)</span>
+
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Class initializer (not instance initializer !!!)</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_init_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Class initialization method, called when the class is defined.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Setup class logging</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_class_logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">name_filters</span><span class="o">=</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+        <span class="n">add_logging_proxies</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="c1"># Configuration management</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;__config_managers&#39;</span><span class="p">):</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">__config_managers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;__config_defaults&#39;</span><span class="p">):</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">__config_defaults</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">load_default_config</span><span class="p">(</span><span class="n">nested</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">init_class</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Object.init_class"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.init_class">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">init_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Redefine this method if you need class initialization&#39;&#39;&#39;</span>
+        <span class="k">pass</span></div>
+
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Logging features</span>
+    <span class="c1"># ==========================================================================</span>
+
+<div class="viewcode-block" id="Object.get_class_logger"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_class_logger">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_class_logger</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="s1">&#39;Return the :class:`Logger` instance bound to this class.&#39;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_class_logger</span></div>
+
+<div class="viewcode-block" id="Object.set_class_logger"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.set_class_logger">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_class_logger</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+        <span class="s1">&#39;Set the :class:`Logger` instance bound to this class.&#39;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_class_logger</span> <span class="o">=</span> <span class="n">logger</span></div>
+
+<div class="viewcode-block" id="Object.get_logger"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_logger">[docs]</a>    <span class="nd">@classinstancemethod</span>
+    <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the :class:`Logger` instance bound to this class or instance,</span>
+<span class="sd">        according to the way this method is called (from class or instance).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_class_logger</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">obj</span><span class="o">.</span><span class="n">_logger</span></div>
+
+<div class="viewcode-block" id="Object.set_logger"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.set_logger">[docs]</a>    <span class="nd">@classinstancemethod</span>
+    <span class="k">def</span> <span class="nf">set_logger</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the :class:`Logger` instance bound to this class or instance,</span>
+<span class="sd">        according to the way this method is called (from class or instance).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_class_logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span></div>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">o</span><span class="p">,</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="o">**</span><span class="n">k</span><span class="p">:</span><span class="n">o</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="o">**</span><span class="n">k</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">o</span><span class="p">,</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="o">**</span><span class="n">k</span><span class="p">:</span><span class="n">o</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="o">**</span><span class="n">k</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;A :class:`Logger` instance. You can use this object for all logging &#39;</span>
+        <span class="s1">&#39;operations related to this class&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Configuration features</span>
+    <span class="c1"># ==========================================================================</span>
+
+<div class="viewcode-block" id="Object.get_config_spec_file"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_config_spec_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_config_spec_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return (and define) the class specification file path&#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cfgfile</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.ini&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="bp">cls</span><span class="p">)))[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span> <span class="c1"># occure if creating a subclass in interactive python shell</span>
+            <span class="n">cfgfile</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">cfgfile</span></div>
+
+<div class="viewcode-block" id="Object.get_parent_config_spec"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_parent_config_spec">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_parent_config_spec</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the merged config specifications of all parents&#39;&#39;&#39;</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;get_config_spec&#39;</span><span class="p">):</span> <span class="k">continue</span>
+            <span class="n">cs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get_config_spec</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">cfg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cfg</span> <span class="o">=</span> <span class="n">cs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cfg</span> <span class="o">=</span> <span class="n">dict_merge</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">cs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cfg</span></div>
+
+
+<div class="viewcode-block" id="Object.get_config_spec"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_config_spec">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_config_spec</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Load the config specs as ConfigObj object</span>
+
+<span class="sd">        It merges the specs of the current class and those of parents classes</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_config_spec_file</span><span class="p">()</span>
+
+        <span class="c1"># If specification (and so defaults) file defined and exists</span>
+        <span class="k">if</span> <span class="n">spec</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
+
+            <span class="c1"># Load (temporary) the file</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">list_values</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># NOTE: list_values=False, interpolation=False are set because list values</span>
+            <span class="c1">#       are handled by the manager (parse error otherwise)</span>
+
+            <span class="c1"># If a config section lookup is defined and present, load the section</span>
+            <span class="n">sec</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_config_section_name</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">sec</span> <span class="ow">and</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+                <span class="c1">#cfg = configobj.ConfigObj(cfgspec[sec], list_values=False, interpolation=False)</span>
+                <span class="n">cfg</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">sec</span><span class="p">])</span>
+
+        <span class="c1"># Merge with parents</span>
+        <span class="n">pcfg</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_parent_config_spec</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cfg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">pcfg</span>
+        <span class="k">elif</span> <span class="n">pcfg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">dict_merge</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">pcfg</span><span class="p">,</span> <span class="n">mergesubdicts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cfg</span></div>
+
+
+<div class="viewcode-block" id="Object.get_config_section_name"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_config_section_name">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_config_section_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return (and define) the class specification section name&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span></div>
+
+<div class="viewcode-block" id="Object.get_config_manager"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_config_manager">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_config_manager</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the configuration manager for this class (cls).</span>
+<span class="sd">        This manager and its underlying configuration specification</span>
+<span class="sd">        must not be dynamically changed as it is fixed at design time.</span>
+
+<span class="sd">        .. note:: this method is also the config manager lazy loader</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Populate this class config manager if not yet done or reload request</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config_managers</span> <span class="ow">or</span> <span class="n">reload</span><span class="p">:</span>
+
+            <span class="c1"># Get the ConfigObj object of specifications</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_config_spec</span><span class="p">()</span>
+
+            <span class="c1"># NOTE: If no spec / no class section, class use empty spec</span>
+            <span class="n">cfgmgr</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">__config_managers</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfgmgr</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cfg_debug</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Loaded config manager of class </span><span class="si">%s</span><span class="s1"> with spec:</span><span class="se">\n</span><span class="s1">  </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfgmgr</span><span class="o">.</span><span class="n">_configspec</span><span class="o">.</span><span class="n">write</span><span class="p">()))</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config_managers</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Object.load_default_config"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.load_default_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_default_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">apply</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Load / update the class (unique) default configuration&#39;&#39;&#39;</span>
+        <span class="n">cfgmgr</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_config_manager</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="n">cfgdef</span> <span class="o">=</span> <span class="n">cfgmgr</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
+        <span class="n">cfgsec</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_config_section_name</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">cfgsec</span> <span class="o">=</span> <span class="n">nested</span>
+        <span class="c1"># Change the class default config if required</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+            <span class="c1"># If a config section lookup is required</span>
+            <span class="c1"># Otherwise, the whole passed config will be taken</span>
+            <span class="k">if</span> <span class="n">nested</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cfgsec</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+                    <span class="n">cfg</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">cfgsec</span><span class="p">],</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="c1"># Section not found, use empty config</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cfg</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+            <span class="n">cfgdef</span> <span class="o">=</span> <span class="n">cfgmgr</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__config_defaults</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfgdef</span>
+        <span class="k">if</span> <span class="n">apply</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">apply_default_config</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cfg_debug</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">&#39;Loaded </span><span class="si">%s</span><span class="s1"> default configuration:&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  section:  </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  nested:   </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  from:     </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  loaded:   &#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="bp">cls</span><span class="p">,</span> <span class="n">cfgsec</span><span class="p">,</span> <span class="n">nested</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Object.get_default_config"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_default_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the default configuration (copy)&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__config_defaults</span><span class="p">[</span><span class="bp">cls</span><span class="p">],</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Object.get_default_config_str"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_default_config_str">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_config_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the default configuration as a string&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__config_defaults</span><span class="p">[</span><span class="bp">cls</span><span class="p">],</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Object.apply_default_config"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.apply_default_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">apply_default_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This will turn on debug mode of various features (config, objects stats)</span>
+<span class="sd">        if the loglevel of nested Logger configuration is debug.</span>
+
+<span class="sd">        Set the default log level for the newly created objects based on nested</span>
+<span class="sd">        Logger configuration.</span>
+
+<span class="sd">        Subclasses may override this to apply/update according to the new config</span>
+
+<span class="sd">        :Params:</span>
+<span class="sd">            - **config**: The new config loaded by :meth:`load_default_config()`.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            - overriding this method will obviously shunt its default beahvior, you&#39;ll then have to call original method if needed</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">config</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="c1">#cls.get_logger().load_config(config, nested=True)</span>
+        <span class="n">loglvl</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_level_name</span><span class="p">()</span> <span class="c1">#loglvl = cls.get_logger().get_level_name().lower()</span>
+        <span class="n">isdbg</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">is_debug</span><span class="p">()</span> <span class="c1">#isdbg = loglvl == &#39;debug&#39;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">=</span> <span class="n">loglvl</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_cfg_debug</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cfg_debug&#39;</span><span class="p">,</span> <span class="n">isdbg</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cfg_debug</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_log_obj_stats</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_obj_stats&#39;</span><span class="p">,</span> <span class="n">isdbg</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_log_obj_stats</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Object.from_config"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Create a cls instance using args and kwargs and load config.</span>
+
+<span class="sd">        The **nested** named argument (in kwargs) is extracted before</span>
+<span class="sd">        creating the instance and then passed to load_config.</span>
+
+<span class="sd">        :Params:</span>
+<span class="sd">            - **config**: A configuration file (str) or object (ConfigObj).</span>
+<span class="sd">            - **args** and **kwargs**: Passed to the object constructor, without parmeters described above.</span>
+
+<span class="sd">        :Return:</span>
+<span class="sd">            - The created object of class cls</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">loadkw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(((</span><span class="n">a</span><span class="p">,</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;nested&#39;</span><span class="p">,</span> <span class="s1">&#39;apply&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">loadkw</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="Object.load_config"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.load_config">[docs]</a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">apply</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cfgpatch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Load / update the instance configuration</span>
+
+<span class="sd">        :Params:</span>
+<span class="sd">            - **config**: A configuration file (str) or object (ConfigObj) or</span>
+<span class="sd">              None to load defaults, or an :class:`~argparse.ArgumentParser` object.</span>
+<span class="sd">            - **nested**: Load from a nested config section instead of the whole config.</span>
+<span class="sd">                          If True, use the section name returned by :meth:`get_config_section_name()`</span>
+<span class="sd">                          Else if a string, use the section name defined by the **nested** string</span>
+<span class="sd">            - **cfgpatch**: A manual patch to apply to the config once loaded.</span>
+<span class="sd">            - Other options are passed to</span>
+<span class="sd">              :meth:`~vacumm.misc.config.ConfigManager.arg_parse`.</span>
+
+<span class="sd">        :Return: A :class:`ConfigObj` object or :class:`ConfigObj`,options tuple if</span>
+<span class="sd">            an :class:`~argparse.ArgumentParser` object has been passed</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_config_manager</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="n">sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_config_section_name</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_config&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                    <span class="n">sec</span> <span class="o">=</span> <span class="n">nested</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ArgumentParser</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">arg_parse</span><span class="p">(</span><span class="n">config</span><span class="p">,</span>
+                    <span class="n">nested</span><span class="o">=</span><span class="n">nested</span> <span class="ow">and</span> <span class="n">sec</span> <span class="ow">or</span> <span class="n">nested</span><span class="p">,</span> <span class="n">getargs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cfg</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="c1"># If a nested section lookup is required</span>
+                <span class="c1"># Otherwise, the whole passed config will be taken</span>
+                <span class="k">if</span> <span class="n">nested</span> <span class="ow">and</span> <span class="n">sec</span> <span class="ow">and</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span> <span class="c1"># If not found, self._config remain unchanged</span>
+                    <span class="n">cfg</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">sec</span><span class="p">],</span> <span class="n">interpolation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfgpatch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfgpatch</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">cfgpatch</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfgpatch</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">cfgpatch</span><span class="p">:</span>
+                <span class="n">mgr</span><span class="o">.</span><span class="n">cfg_patch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="n">patch</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">apply</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">&#39;Loaded </span><span class="si">%s</span><span class="s1"> configuration:&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  section:  </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  nested:   </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  from:     </span><span class="si">%s</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  loaded:   &#39;</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">sec</span><span class="p">,</span> <span class="n">nested</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">write</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span></div>
+
+<div class="viewcode-block" id="Object.save_config"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.save_config">[docs]</a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">outfile</span><span class="p">,</span> <span class="n">close</span> <span class="o">=</span> <span class="n">file</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">),</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nested</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                <span class="n">sec</span> <span class="o">=</span> <span class="n">nested</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_config_section_name</span><span class="p">()</span>
+            <span class="c1"># XXX config.dict() is required, otherwise section will not be correctly written ([] missing)</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">({</span><span class="n">sec</span><span class="p">:</span><span class="n">config</span><span class="o">.</span><span class="n">dict</span><span class="p">()})</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">close</span><span class="p">:</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="Object.get_options"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_options">[docs]</a>    <span class="k">def</span> <span class="nf">get_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get :attr:`options`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_options&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+    <span class="n">options</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">get_options</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Options loaded from the commandline parser or None&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Object.get_config"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the instance&#39;s config&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span></div>
+    <span class="n">config</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">get_config</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Current configuration&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Object.get_config_str"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.get_config_str">[docs]</a>    <span class="k">def</span> <span class="nf">get_config_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the instance&#39;s config as a string&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configobj</span><span class="o">.</span><span class="n">ConfigObj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Object.apply_config"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.apply_config">[docs]</a>    <span class="k">def</span> <span class="nf">apply_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Subclasses may override this to apply/update according to the new config</span>
+
+<span class="sd">        :Params:</span>
+<span class="sd">            - **config**: The new config loaded by :meth:`load_config()`.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            - overriding this method will obviously shunt its default beahvior,</span>
+<span class="sd">              you&#39;ll then have to call original method if needed</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="c1"># ...</span>
+
+
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Debugging/Introspection features</span>
+    <span class="c1"># ==========================================================================</span>
+
+<div class="viewcode-block" id="Object.func_name"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.func_name">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">func_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">iframe</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">func_name</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="k">return</span> <span class="n">func_name</span><span class="p">(</span><span class="n">iframe</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Object.stack_trace"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.stack_trace">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">stack_trace</span><span class="p">(</span><span class="n">iframe</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">stack_trace</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="k">return</span> <span class="n">stack_trace</span><span class="p">(</span><span class="n">iframe</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Object.exception_trace"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.exception_trace">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">exception_trace</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return a huge detailed exception traceback&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">getDetailedExceptionInfo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Object.trace"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.trace">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">trace</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">iframe</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iftty</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Start pdb debugger</span>
+
+<span class="sd">        :Params:</span>
+<span class="sd">            - **iframe**: frame index entry point of the debugger, relative to the caller</span>
+<span class="sd">            - **iftty**: if True, disable this call in a non interactive execution</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            - For debugging purpose only: do not let trace calls in a production</span>
+<span class="sd">              environment, even if an interactive test is done !</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span><span class="c1"># and sys.stdout.isatty():</span>
+            <span class="n">pdb</span><span class="o">.</span><span class="n">Pdb</span><span class="p">()</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">iframe</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Object.describe"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.describe">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">stats</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_log_obj_stats</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">pformat</span><span class="p">)</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">describe</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Object.pformat"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.pformat">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">pformat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Pretty print an object&#39;&#39;&#39;</span>
+        <span class="c1"># default is: indent=1, width=80, depth=None</span>
+        <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span></div>
+
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Other stuff</span>
+    <span class="c1"># ==========================================================================</span>
+
+<div class="viewcode-block" id="Object.kwfilter"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.Object.kwfilter">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">kwfilter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwa</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Shortcut to :func:`vacumm.misc.misc.kwfilter` with a filters argument which</span>
+<span class="sd">        defaults to this class lowercase name.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">filters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">filters</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwa</span><span class="p">)</span></div>
+
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Initializer</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        :Keyword arguments:</span>
+<span class="sd">            - **config*: load a configuration (:meth:`load_config()`)</span>
+<span class="sd">            - **logger**: A :class:`Logger` instance.</span>
+<span class="sd">            - **logger_&lt;param&gt;**: ``&lt;param&gt;`` is passed to the</span>
+<span class="sd">              :class:`Logger` constructor. Not used if **logger** is passed.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Setup logging</span>
+        <span class="n">lkw</span> <span class="o">=</span> <span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;logger&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">})</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lkw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">Object</span><span class="p">):</span>
+            <span class="n">lkw</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lkw</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="n">lkw</span><span class="p">[</span><span class="s1">&#39;name_filters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">lkw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name_filters&#39;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;logger&#39;</span> <span class="ow">in</span> <span class="n">lkw</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">lkw</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span> <span class="n">Logger</span><span class="p">):</span>
+                <span class="n">vacumm_warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span>
+                    <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is initialised with an invalid logger type&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span><span class="o">**</span><span class="n">lkw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">skipCaller</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_class_logger</span><span class="p">()</span><span class="o">.</span><span class="n">skipCaller</span><span class="p">())</span>
+        <span class="c1"># Load passed or default configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>  <span class="n">cfgpatch</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cfgpatch&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
+
+
+<span class="c1">################################################################################</span>
+<span class="c1"># http://code.activestate.com/recipes/204197-solving-the-metaclass-conflict/</span>
+<span class="c1">################################################################################</span>
+
+<span class="kn">import</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">types</span><span class="o">,</span> <span class="nn">__builtin__</span>
+
+<span class="c1">###################### preliminary: two utility functions ######################</span>
+
+<div class="viewcode-block" id="skip_redundant"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.skip_redundant">[docs]</a><span class="k">def</span> <span class="nf">skip_redundant</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">skipset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="s1">&#39;Redundant items are repeated items or items in the original skipset.&#39;</span>
+    <span class="k">if</span> <span class="n">skipset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">skipset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skipset</span><span class="p">:</span>
+            <span class="n">skipset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">item</span></div>
+
+
+<div class="viewcode-block" id="remove_redundant"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.remove_redundant">[docs]</a><span class="k">def</span> <span class="nf">remove_redundant</span><span class="p">(</span><span class="n">metaclasses</span><span class="p">):</span>
+    <span class="n">skipset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">types</span><span class="o">.</span><span class="n">ClassType</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">metaclasses</span><span class="p">:</span> <span class="c1"># determines the metaclasses to be skipped</span>
+        <span class="n">skipset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getmro</span><span class="p">(</span><span class="n">meta</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">skip_redundant</span><span class="p">(</span><span class="n">metaclasses</span><span class="p">,</span> <span class="n">skipset</span><span class="p">))</span></div>
+
+<span class="c1">######### now the core of the module: two mutually recursive functions #########</span>
+
+<span class="n">memorized_metaclasses_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="get_noconflict_metaclass"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.get_noconflict_metaclass">[docs]</a><span class="k">def</span> <span class="nf">get_noconflict_metaclass</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">left_metas</span><span class="p">,</span> <span class="n">right_metas</span><span class="p">):</span>
+     <span class="sd">&#39;&#39;&#39;Not intended to be used outside of this module, unless you know</span>
+<span class="sd">     what you are doing.&#39;&#39;&#39;</span>
+     <span class="c1"># make tuple of needed metaclasses in specified priority order</span>
+     <span class="n">metas</span> <span class="o">=</span> <span class="n">left_metas</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">bases</span><span class="p">))</span> <span class="o">+</span> <span class="n">right_metas</span>
+     <span class="n">needed_metas</span> <span class="o">=</span> <span class="n">remove_redundant</span><span class="p">(</span><span class="n">metas</span><span class="p">)</span>
+     <span class="c1"># return existing confict-solving meta, if any</span>
+     <span class="k">if</span> <span class="n">needed_metas</span> <span class="ow">in</span> <span class="n">memorized_metaclasses_map</span><span class="p">:</span>
+       <span class="k">return</span> <span class="n">memorized_metaclasses_map</span><span class="p">[</span><span class="n">needed_metas</span><span class="p">]</span>
+     <span class="c1"># nope: compute, memoize and return needed conflict-solving meta</span>
+     <span class="k">elif</span> <span class="ow">not</span> <span class="n">needed_metas</span><span class="p">:</span> <span class="c1"># wee, a trivial case, happy us</span>
+         <span class="n">meta</span> <span class="o">=</span> <span class="nb">type</span>
+     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">needed_metas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c1"># another trivial case</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">needed_metas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+     <span class="c1"># check for recursion, can happen i.e. for Zope ExtensionClasses</span>
+     <span class="k">elif</span> <span class="n">needed_metas</span> <span class="o">==</span> <span class="n">bases</span><span class="p">:</span>
+         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Incompatible root metatypes&#39;</span><span class="p">,</span> <span class="n">needed_metas</span><span class="p">)</span>
+     <span class="k">else</span><span class="p">:</span> <span class="c1"># gotta work ...</span>
+         <span class="n">metaname</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">m</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">needed_metas</span><span class="p">])</span>
+         <span class="n">meta</span> <span class="o">=</span> <span class="n">classmaker</span><span class="p">()(</span><span class="n">metaname</span><span class="p">,</span> <span class="n">needed_metas</span><span class="p">,</span> <span class="p">{})</span>
+     <span class="n">memorized_metaclasses_map</span><span class="p">[</span><span class="n">needed_metas</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span>
+     <span class="k">return</span> <span class="n">meta</span></div>
+
+<div class="viewcode-block" id="classmaker"><a class="viewcode-back" href="../../../library/misc.bases.html#vacumm.data.misc.coloc.classmaker">[docs]</a><span class="k">def</span> <span class="nf">classmaker</span><span class="p">(</span><span class="n">left_metas</span><span class="o">=</span><span class="p">(),</span> <span class="n">right_metas</span><span class="o">=</span><span class="p">()):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Avoid conflicts when using metaclass.</span>
+<span class="sd">    To use this:</span>
+
+<span class="sd">    class MyClass(AMetaclassedA, AMetaclassedB):</span>
+<span class="sd">        __metaclass__ = classmaker()</span>
+
+<span class="sd">        # then put the rest of your code ...</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">make_class</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">adict</span><span class="p">):</span>
+        <span class="n">metaclass</span> <span class="o">=</span> <span class="n">get_noconflict_metaclass</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">left_metas</span><span class="p">,</span> <span class="n">right_metas</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">metaclass</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">adict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">make_class</span></div>
+
+<span class="c1">################################################################################</span>
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.5.6.37. test_regrid_transect_xyt.py – Test transect() with interpolation in both time and space &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tests/test_regrid_transect_xyt.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="test-regrid-transect-xyt-py-test-transect-with-interpolation-in-both-time-and-space">
+<h1>3.5.6.37. <strong class="program">test_regrid_transect_xyt.py</strong> – Test <a class="reference internal" href="../library/misc.grid.regridding.html#vacumm.misc.grid.regridding.transect" title="vacumm.misc.grid.regridding.transect"><code class="xref py py-func docutils literal notranslate"><span class="pre">transect()</span></code></a> with interpolation in both time and space<a class="headerlink" href="#test-regrid-transect-xyt-py-test-transect-with-interpolation-in-both-time-and-space" title="Permalink to this headline">¶</a></h1>
+<div class="figure">
+<img alt="../_images/test_regrid_transect_xyt.png" src="../_images/test_regrid_transect_xyt.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Test :func:`~vacumm.misc.grid.regridding.transect` with interpolation in both time and space&quot;&quot;&quot;</span>
+
+<span class="c1"># Inits</span>
+<span class="n">ncfile</span> <span class="o">=</span> <span class="s2">&quot;mars2d.xyt.nc&quot;</span>
+<span class="n">lon0</span> <span class="o">=</span> <span class="o">-</span><span class="mf">5.4</span>
+<span class="n">lon1</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.7</span>
+<span class="n">lat0</span> <span class="o">=</span> <span class="mf">48.1</span>
+<span class="n">lat1</span> <span class="o">=</span> <span class="mf">48.6</span>
+<span class="n">time0</span> <span class="o">=</span> <span class="s2">&quot;2008-08-15 07:00&quot;</span>
+<span class="n">time1</span> <span class="o">=</span> <span class="s2">&quot;2008-08-15 16:00&quot;</span>
+
+
+<span class="c1"># Imports</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">cdms2</span><span class="p">,</span> <span class="n">data_sample</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">transect</span><span class="p">,</span> <span class="n">stick2</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">,</span> <span class="n">os</span><span class="p">,</span> \
+    <span class="n">transect_specs</span><span class="p">,</span> <span class="n">add_map_lines</span><span class="p">,</span> <span class="n">create_time</span><span class="p">,</span> <span class="n">IterDates</span><span class="p">,</span> <span class="n">P</span>
+
+<span class="c1"># Read data</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="n">ncfile</span><span class="p">))</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># Transect specs</span>
+<span class="n">tlons</span><span class="p">,</span> <span class="n">tlats</span> <span class="o">=</span> <span class="n">transect_specs</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">lon0</span><span class="p">,</span> <span class="n">lat0</span><span class="p">,</span> <span class="n">lon1</span><span class="p">,</span> <span class="n">lat1</span><span class="p">)</span>
+<span class="n">ttimes</span> <span class="o">=</span> <span class="p">(</span><span class="n">time0</span><span class="p">,</span> <span class="n">time1</span><span class="p">)</span>
+
+<span class="c1"># Compute transect</span>
+<span class="n">tu</span> <span class="o">=</span> <span class="n">transect</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">tlons</span><span class="p">,</span> <span class="n">tlats</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">ttimes</span><span class="p">)</span>
+<span class="n">tv</span> <span class="o">=</span> <span class="n">transect</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">tlons</span><span class="p">,</span> <span class="n">tlats</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">ttimes</span><span class="p">)</span>
+
+<span class="c1"># Plot along time</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">stick2</span><span class="p">(</span><span class="n">tu</span><span class="p">,</span> <span class="n">tv</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Space-time transect of speed&#39;</span><span class="p">,</span>
+    <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">quiver_width</span><span class="o">=</span><span class="mf">0.002</span><span class="p">)</span>
+
+<span class="c1"># Add a small map to show the transect positions</span>
+<span class="n">add_map_lines</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">tlons</span><span class="p">,</span> <span class="n">tlats</span><span class="p">,</span> <span class="n">map_zoom</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Save</span>
+<span class="n">figfile</span> <span class="o">=</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">figfile</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">figfile</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">figfile</span><span class="p">,</span> <span class="n">pdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

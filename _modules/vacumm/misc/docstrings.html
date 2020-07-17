@@ -1,0 +1,426 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.misc.docstrings &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../index.html"><img src="../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.misc.docstrings</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Docstring refomatting utilities for VACUMM help</span>
+
+<span class="sd">.. warning:: This module requires python 2.7+ to work.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2012-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to [describe</span>
+<span class="c1"># functionalities and technical features of your software].</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+
+
+<span class="kn">from</span> <span class="nn">textwrap</span> <span class="k">import</span> <span class="n">dedent</span>
+<span class="kn">import</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">inspect</span>
+
+<div class="viewcode-block" id="Docstring2Params"><a class="viewcode-back" href="../../../library/misc.docstrings.html#vacumm.misc.docstrings.Docstring2Params">[docs]</a><span class="k">class</span> <span class="nc">Docstring2Params</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Scan the docstring of an object to load parameters names and descriptions</span>
+<span class="sd">    and reformat them.</span>
+
+
+<span class="sd">    The docstring must follow this example::</span>
+
+<span class="sd">        &#39;&#39;&#39;Description</span>
+
+<span class="sd">        Some text</span>
+
+<span class="sd">        :Section: text</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            - **arg**: text</span>
+<span class="sd">              text</span>
+<span class="sd">            - **opt**, optional: text</span>
+
+<span class="sd">        Some text or sections.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+<span class="sd">    In particular:</span>
+
+<span class="sd">        - Parameters are described as in this example, on one or more lines.</span>
+<span class="sd">        - They must be inside a section whose name contains &quot;param&quot;.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **obj**: Typically a function, method or class.</span>
+<span class="sd">        - **select**, optional: A single or a list of parameter names to</span>
+<span class="sd">          restrict scan.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; dsp = Docstring2Params(myfunc)</span>
+<span class="sd">        &gt;&gt;&gt; dsp.format(&#39;firstparam&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; params = dsp.asdict(select=[&#39;secondpar&#39;, &#39;thirdpar&#39;], indent=8)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Regular expressions</span>
+    <span class="n">RE_SECTION_MATCH</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^:([^:]+):.*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">match</span>
+    <span class="n">RE_INDENT_MATCH</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(\s*)(\S.*)?$&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">match</span>
+    <span class="n">RE_PARAM</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(\s+)-\s*\*\*?\s*([^\*]+)\s*\*\*?([^:]*:.*)$&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]):</span>
+
+        <span class="nb">dict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Format docstring</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span> <span class="n">obj</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docstring</span> <span class="o">=</span> <span class="n">doc</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">return</span>
+        <span class="n">nn</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">nn</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">select</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">select</span> <span class="o">=</span> <span class="p">[</span><span class="n">select</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="c1"># Loop on lines</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ifc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">iline</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
+
+            <span class="c1"># Section header</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RE_SECTION_MATCH</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                <span class="k">if</span> <span class="kc">True</span> <span class="ow">in</span> <span class="p">[</span><span class="n">secname</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">secname</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">]:</span> <span class="c1"># Params section header</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="n">param</span><span class="p">:</span> <span class="c1"># New section, so the end</span>
+                    <span class="k">break</span>
+
+            <span class="c1"># Still no param section found</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="p">:</span> <span class="k">continue</span>
+
+            <span class="c1"># Param declaration</span>
+            <span class="n">mp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RE_PARAM</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mp</span><span class="p">:</span>
+                <span class="n">param</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">select</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">select</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+                        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RE_PARAM</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\1- **</span><span class="si">%s</span><span class="s1">\2**\3&#39;</span><span class="o">%</span><span class="n">prefix</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">prefix</span><span class="o">+</span><span class="n">param</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="p">[</span><span class="n">prefix</span><span class="o">+</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">prefix</span><span class="o">+</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ifc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">ifc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="c1"># Official indent</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Valid line for a param description continuation</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span> <span class="k">continue</span>
+            <span class="n">mi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RE_INDENT_MATCH</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mi</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">rem</span> <span class="o">=</span> <span class="n">mi</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rem</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ns</span> <span class="o">&gt;=</span> <span class="n">ifc</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="n">ifc</span> <span class="ow">and</span> <span class="n">rem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">rem</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">):</span> <span class="c1"># Description without parameter</span>
+                        <span class="n">param</span> <span class="o">=</span> <span class="mi">2</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="c1"># No longer describing a parameter</span>
+                        <span class="n">param</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">param</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">select</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">select</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">prefix</span><span class="o">+</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># End of parameters</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Remove trail empty line of the last param</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">prefix</span><span class="o">+</span><span class="n">param</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">prefix</span><span class="o">+</span><span class="n">param</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">p</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="k">del</span> <span class="n">p</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Docstring2Params.format"><a class="viewcode-back" href="../../../library/misc.docstrings.html#vacumm.misc.docstrings.Docstring2Params.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reformat one or several parameters</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            - **indent**, optional: Indentation string for all but the first line.</span>
+
+<span class="sd">              - String: Used as is.</span>
+<span class="sd">              - Integer:  ``ident`` times the space char.</span>
+<span class="sd">              - ``False``: ``&#39;&#39;``.</span>
+<span class="sd">              - Class method: 12 spaces.</span>
+<span class="sd">              - Other object: 8 spaces.</span>
+
+<span class="sd">            - **select**, optional: List of parameter names to format.</span>
+<span class="sd">              If None, all available parameters are used.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Selection of parameters</span>
+        <span class="k">if</span> <span class="n">select</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">select</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">select</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">select</span> <span class="o">=</span> <span class="p">[</span><span class="n">select</span><span class="p">]</span>
+        <span class="c1"># Indentation</span>
+        <span class="k">if</span> <span class="n">indent</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">indent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">indent</span><span class="p">:</span> <span class="n">indent</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indent</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span> <span class="n">indent</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">*</span><span class="n">indent</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indent</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">indent</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="o">*</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">indent</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">select</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">param</span><span class="p">])</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dedent</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">param</span><span class="p">]))</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">indent</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Docstring2Params.asfmtdict"><a class="viewcode-back" href="../../../library/misc.docstrings.html#vacumm.misc.docstrings.Docstring2Params.asfmtdict">[docs]</a>    <span class="k">def</span> <span class="nf">asfmtdict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get parameters as a dictionary of formatted descriptions&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">select</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">select</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">indent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div></div>
+
+
+<div class="viewcode-block" id="DocFiller"><a class="viewcode-back" href="../../../library/misc.docstrings.html#vacumm.misc.docstrings.DocFiller">[docs]</a><span class="k">class</span> <span class="nc">DocFiller</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Scan objects and return a dictionary whose key are their (formatted) name,</span>
+<span class="sd">    and value are a dictionary of their attributes description</span>
+
+<span class="sd">    If the object is a method like ``Map.contour``, the associated key is</span>
+<span class="sd">    ``Map_contour``. Therefore, classe names are supposed to not have any</span>
+<span class="sd">    underscore inside.</span>
+
+<span class="sd">    Parameter description are indented with 12 spaces for methods</span>
+<span class="sd">    and 8 spaces for other objects.</span>
+
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; df = DocFiller(MyClass1.my_method, MyClass2, myfync1)</span>
+
+
+<span class="sd">        ::</span>
+
+<span class="sd">            @df.docfill</span>
+<span class="sd">            def myfunc2(para, parb, parc, pard)</span>
+<span class="sd">                &quot;&quot;&quot;My description</span>
+
+<span class="sd">                :Params:</span>
+
+<span class="sd">                    {MyClass1_my_method[para]}</span>
+<span class="sd">                    {MyClass2[parb]}</span>
+<span class="sd">                    {MyClass2[parc]}</span>
+<span class="sd">                    {myfync1[pard]}</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="o">**</span><span class="n">aobjs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">aobjs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">objs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span><span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="o">**</span><span class="n">aobjs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DocFiller.scan"><a class="viewcode-back" href="../../../library/misc.docstrings.html#vacumm.misc.docstrings.DocFiller.scan">[docs]</a>    <span class="k">def</span> <span class="nf">scan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">,</span> <span class="o">**</span><span class="n">aobjs</span><span class="p">):</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">o</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">aobjs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="o">+</span><span class="nb">tuple</span><span class="p">(</span><span class="n">aliases</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">key</span> <span class="o">=</span>  <span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">im_class</span><span class="o">.</span><span class="vm">__name__</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">key</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">aliases</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">aliases</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Docstring2Params</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DocFiller.formatted"><a class="viewcode-back" href="../../../library/misc.docstrings.html#vacumm.misc.docstrings.DocFiller.formatted">[docs]</a>    <span class="k">def</span> <span class="nf">formatted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format all parameter descriptions</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            - **indent**, optional: Indentation string for all but the first line.</span>
+
+<span class="sd">              - String: Used as is.</span>
+<span class="sd">              - Integer:  ``ident`` times the space char.</span>
+<span class="sd">              - ``False``: ``&#39;&#39;``.</span>
+<span class="sd">              - Class method: 12 spaces.</span>
+<span class="sd">              - Other object: 8 spaces.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">asfmtdict</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="DocFiller.docfill"><a class="viewcode-back" href="../../../library/misc.docstrings.html#vacumm.misc.docstrings.DocFiller.docfill">[docs]</a>    <span class="k">def</span> <span class="nf">docfill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Fill docstring of an object with collected parameter descriptions</span>
+
+<span class="sd">        It is typically used to format function docstrings using a decorator.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            It cannot be applied to methods and classes.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+<span class="c1">#        print obj.__doc__</span>
+<span class="c1">#        print self.formatted(obj)</span>
+<span class="c1">#        obj.__doc__ = obj.__doc__.format(**self.formatted(obj))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span> <span class="s1">&#39;Missing key for docfill: &#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">message</span>
+<span class="c1">#            print &#39;When formatting doc:&#39;</span>
+<span class="c1">#            print obj.__doc__</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span> <span class="s1">&#39;Docfill error:&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span>
+        <span class="k">return</span> <span class="n">obj</span></div></div>
+
+<span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">docfiller_verbose</span>
+<span class="n">docfiller</span> <span class="o">=</span> <span class="n">DocFiller</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">docfiller_verbose</span><span class="p">)</span>
+<span class="n">docfill</span> <span class="o">=</span> <span class="n">docfiller</span><span class="o">.</span><span class="n">docfill</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">DocFiller</span><span class="p">(</span><span class="n">Docstring2Params</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+
+    <span class="nd">@df</span><span class="o">.</span><span class="n">docfill</span>
+    <span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">indent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Description</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            {Docstring2Params_format[indent]}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nb">print</span> <span class="n">myfunc</span><span class="o">.</span><span class="vm">__doc__</span>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

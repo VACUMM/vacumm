@@ -1,0 +1,312 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Diagnostics des processus côtiers &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Diagnostics des processus côtiers</a><ul>
+<li><a class="reference internal" href="#bourrelet-deau-froide">Bourrelet d’eau froide</a></li>
+<li><a class="reference internal" href="#front-douessant">Front d’Ouessant</a><ul>
+<li><a class="reference internal" href="#section-a-partir-d-une-grille-rectangulaire">Section à partir d’une grille rectangulaire</a></li>
+<li><a class="reference internal" href="#section-a-partir-d-une-grille-curvilineaire">Section à partir d’une grille curvilinéaire</a></li>
+<li><a class="reference internal" href="#diagnostics-et-graphiques">Diagnostics et graphiques</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.desc.proc.coastdiags.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="diagnostics-des-processus-cotiers">
+<span id="user-desc-proc-coastdiags"></span><h1>Diagnostics des processus côtiers<a class="headerlink" href="#diagnostics-des-processus-cotiers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="bourrelet-deau-froide">
+<span id="user-desc-proc-coastdiags-bour"></span><h2>Bourrelet d’eau froide<a class="headerlink" href="#bourrelet-deau-froide" title="Permalink to this headline">¶</a></h2>
+<p>Cette tâche consiste à représenter le bourrelet d’eau froide à travers
+une section verticale pouvant n’être
+ni zonale, ni méridienne.
+La procédure est la suivante :</p>
+<ul class="simple">
+<li>La première étape consiste à calculer la résolution de la grille.</li>
+<li>Celle-ci est utilisé ensuite pour définir la section et le domaine
+spatial de lecteur des données.</li>
+<li>Le bloc spatial 3D contenant la future section est ensuite lu.</li>
+<li>Si le champs est en coordonnées sigma, il convient aussi de
+récupérer les profondeurs associées à chaque points de grille.</li>
+<li>Les champs 3D (quantité physique, et profondeur si besoin)
+sont alors interpolés spatialement sur la section (utilisation de <a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.grid2xy" title="vacumm.misc.grid.regridding.grid2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid2xy()</span></code></a>).</li>
+<li>Le champs n’est finalement pas interpolé verticalement mais tracé directement
+sur sa grille verticale potentiellement irrégulière.</li>
+</ul>
+<p>On définit les limites de la section :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span>
+<span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">45</span>
+</pre></div>
+</div>
+<p>On récupère la résoltion de la grille avc un lecteur <code class="xref py py-class docutils literal notranslate"><span class="pre">MARS3D</span></code> :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lecture de la grille</span>
+<span class="n">mars</span> <span class="o">=</span> <span class="n">MARS3D</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">dates</span><span class="p">)</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">mars</span><span class="o">.</span><span class="n">get_grid</span><span class="p">()</span>
+
+<span class="c1"># Calcul de la résolution en degrés</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid</span> <span class="k">import</span> <span class="n">resol</span>
+<span class="n">xres</span><span class="p">,</span> <span class="n">yres</span> <span class="o">=</span> <span class="n">resol</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On calcul les coordonnées de la section par exemple en
+évaluant approximativement le nombre de points de grille,
+et en multipliant cette valeur par un facteur pour être sûr
+d’avoir assez de point de section :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">)</span><span class="o">/</span><span class="n">xres</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">)</span><span class="o">/</span><span class="n">xres</span>
+<span class="n">nxy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">ny</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span><span class="o">*</span><span class="mf">1.5</span>
+<span class="n">xx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">nxy</span><span class="p">)</span>
+<span class="n">yy</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">nxy</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On récupére le block 3D, avec une marge déduite de la résolution afin d’être sûr
+d’englober la section avec les points de grilles :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialisation</span>
+<span class="n">mars</span> <span class="o">=</span> <span class="n">MARS3D</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span>
+    <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="n">xmin</span><span class="o">-</span><span class="n">xres</span><span class="p">,</span> <span class="n">xmax</span><span class="o">+</span><span class="n">xres</span><span class="p">,</span> <span class="s1">&#39;ccb&#39;</span><span class="p">),</span>
+    <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xres</span><span class="p">,</span> <span class="n">xmax</span><span class="o">+</span><span class="n">xres</span><span class="p">,</span> <span class="s1">&#39;ccb&#39;</span><span class="p">))</span>
+
+<span class="c1"># Lecture de la température</span>
+<span class="n">temp</span> <span class="o">=</span> <span class="n">mars</span><span class="o">.</span><span class="n">get_temp</span><span class="p">()</span>
+
+<span class="c1"># Lecture des profondeurs en sigma</span>
+<span class="n">with_sigma</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mars</span><span class="p">,</span> <span class="n">get_sigma_depths</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">with_sigma</span><span class="p">:</span>
+    <span class="n">depths</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">get_depths</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>On interpole sur la section :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vacumm.misc.grid</span> <span class="k">import</span> <span class="n">grid2xy</span>
+<span class="n">xytemp</span> <span class="o">=</span> <span class="n">grid2xy</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+<span class="k">if</span>  <span class="n">with_sigma</span><span class="p">:</span>
+    <span class="n">xydepths</span> <span class="o">=</span> <span class="n">grid2xy</span><span class="p">(</span><span class="n">depths</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On trace la section avec indication de sa position :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Section</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="n">section2</span><span class="p">,</span> <span class="n">map2</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">with_sigma</span><span class="p">:</span>
+    <span class="n">section2</span><span class="p">(</span><span class="n">xytemp</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">section2</span><span class="p">(</span><span class="n">xytemp</span><span class="p">,</span> <span class="n">yaxis</span><span class="o">=</span><span class="n">xydepths</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Carte</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">map2</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="n">xmin</span><span class="o">-</span><span class="n">dx</span><span class="p">,</span> <span class="n">xmax</span><span class="o">+</span><span class="n">dx</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="n">ymin</span><span class="o">-</span><span class="n">dy</span><span class="p">,</span> <span class="n">ymax</span><span class="o">+</span><span class="n">dy</span><span class="p">),</span>
+     <span class="n">axes_rect</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">],</span>
+     <span class="n">drawmeridians_size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">drawparallels_size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+     <span class="n">show</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="front-douessant">
+<h2>Front d’Ouessant<a class="headerlink" href="#front-douessant" title="Permalink to this headline">¶</a></h2>
+<p>Le front d’Ouessant est diagnostiqué à travers l’utilisation de la SST à une latitude et dans un inter-
+valle de longitudes donnés.
+Les graphiquues suivants sont générés :
+– Un diagramme de Hovmoller.
+– Un évolution zonale du minimum de SST.
+– La valeur du minimum de température sur cette section en fonction du temps.</p>
+<p>Afin de permettre les comparaisons de plusieurs sources de données,
+la SST est interpolée sur la section.</p>
+<p>Les paramètres d’entrée sont les suivants :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lon_min</span> <span class="o">=</span> <span class="o">-</span><span class="mf">6.</span>
+<span class="n">lon_max</span> <span class="o">=</span> <span class="o">-</span><span class="mf">5.5</span>
+<span class="n">lat</span> <span class="o">=</span> <span class="mf">47.5</span>
+</pre></div>
+</div>
+<div class="section" id="section-a-partir-d-une-grille-rectangulaire">
+<h3>Section à partir d’une grille rectangulaire<a class="headerlink" href="#section-a-partir-d-une-grille-rectangulaire" title="Permalink to this headline">¶</a></h3>
+<p>On estime la résolution de la grille comme dans le cas de la section <a class="reference internal" href="#user-desc-proc-coastdiags-bour"><span class="std std-ref">Bourrelet d’eau froide</span></a>,
+et on obtient <code class="docutils literal notranslate"><span class="pre">xres</span></code>, <code class="docutils literal notranslate"><span class="pre">yres</span></code> et <code class="docutils literal notranslate"><span class="pre">grid</span></code>.
+La section zonale est alors définie à partir des points de la grille et des extrémités spécifiées de la section.</p>
+<p>Les points de la grille sont obtenus ainsi :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subgrid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">subGridRegion</span><span class="p">((</span><span class="n">lat</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="s1">&#39;ccb&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">lon_min</span><span class="p">,</span> <span class="n">lon_max</span><span class="p">,</span> <span class="s1">&#39;oo&#39;</span><span class="p">))</span>
+<span class="n">xgrid</span> <span class="o">=</span> <span class="n">subgrid</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()[:]</span>
+</pre></div>
+</div>
+<p>On ajoute les extrémités pour définir la section :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="n">lon_min</span><span class="p">],</span> <span class="n">xgrid</span><span class="p">,</span> <span class="p">[</span><span class="n">lon_max</span><span class="p">]))</span>
+<span class="n">yy</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">))</span><span class="o">*</span><span class="n">lat</span>
+</pre></div>
+</div>
+<p>Le modèle est lu par exemple de la manière suivante :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mars</span> <span class="o">=</span> <span class="n">MARS3D</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span>
+    <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="n">lon_min</span><span class="o">-</span><span class="n">xres</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">+</span><span class="n">xres</span><span class="p">,</span> <span class="s1">&#39;ccb&#39;</span><span class="p">),</span>
+    <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="n">lat</span><span class="o">-</span><span class="n">yres</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">+</span><span class="n">yres</span><span class="p">,</span> <span class="s1">&#39;ccb&#39;</span><span class="p">))</span>
+<span class="n">sst2d</span> <span class="o">=</span> <span class="n">mars</span><span class="o">.</span><span class="n">get_sst</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>On interpole alors sur la section comme dans le cas du bourrelet :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vacumm.misc.grid.regridding</span> <span class="k">import</span> <span class="n">grid2xy</span>
+<span class="n">sst</span> <span class="o">=</span> <span class="n">grid2xy</span><span class="p">(</span><span class="n">sst2d</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="section-a-partir-d-une-grille-curvilineaire">
+<h3>Section à partir d’une grille curvilinéaire<a class="headerlink" href="#section-a-partir-d-une-grille-curvilineaire" title="Permalink to this headline">¶</a></h3>
+<p>TODO ?</p>
+</div>
+<div class="section" id="diagnostics-et-graphiques">
+<h3>Diagnostics et graphiques<a class="headerlink" href="#diagnostics-et-graphiques" title="Permalink to this headline">¶</a></h3>
+<p>Evolution de la température le long d’une section :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="n">hov2</span>
+<span class="n">hov2</span><span class="p">(</span><span class="n">sst</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Localisation méridienne du minimum de température à un degré de latitude donné :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fonction de récupération de la position des min</span>
+<span class="k">def</span> <span class="nf">get_minx</span><span class="p">(</span><span class="n">sst</span><span class="p">):</span>
+
+    <span class="c1"># Position min à chaque instant avec valeurs masquées</span>
+    <span class="n">imin</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">sst</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">bad</span> <span class="o">=</span> <span class="n">imin</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># Initialisation variable</span>
+    <span class="n">sst_minx</span> <span class="o">=</span> <span class="n">sst</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="n">sst_minx</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Longitude of minimum&#39;</span>
+    <span class="n">sst_minx</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;degrees_east&#39;</span>
+
+    <span class="c1"># Remplissage</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">N</span><span class="o">.</span><span class="n">ndenumerate</span><span class="p">(</span><span class="n">imin</span><span class="p">):</span>
+        <span class="n">sst_minx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">sst</span><span class="o">.</span><span class="n">asma</span><span class="p">()[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+
+    <span class="c1"># Masquage</span>
+    <span class="n">sst_minx</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">bad</span><span class="p">,</span> <span class="n">sst_minx</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Estimations de la position minimum</span>
+<span class="n">minx_mars</span> <span class="o">=</span> <span class="n">get_minx</span><span class="p">(</span><span class="n">sst_mars</span><span class="p">)</span>
+<span class="n">minx_sat</span> <span class="o">=</span> <span class="n">get_minx</span><span class="p">(</span><span class="n">sst_sat</span><span class="p">)</span>
+
+<span class="c1"># Plots</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="n">curve2</span>
+<span class="n">curve2</span><span class="p">(</span><span class="n">minx_mars</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;MARS&#39;</span><span class="p">)</span>
+<span class="n">curve2</span><span class="p">(</span><span class="n">minx_sat</span><span class="p">,</span> <span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Satellite&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">P</span>
+<span class="n">P</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Valeur du minimum de température à un degré de latitude donné :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimations de la position minimum</span>
+<span class="n">min_mars</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">sst_mars</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">min_sat</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">sst_sat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Plots</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="n">curve2</span>
+<span class="n">curve2</span><span class="p">(</span><span class="n">min_mars</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;MARS&#39;</span><span class="p">)</span>
+<span class="n">curve2</span><span class="p">(</span><span class="n">min_sat</span><span class="p">,</span> <span class="s1">&#39;ok&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Satellite&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">P</span>
+<span class="n">P</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

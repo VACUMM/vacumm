@@ -1,0 +1,511 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.18. vacumm.misc.file – File utilities &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.18. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.file</span></code> – File utilities</a><ul>
+<li><a class="reference internal" href="#overview">2.3.18.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.18.2. Content</a><ul>
+<li><a class="reference internal" href="#file-utilities">2.3.18.2.1. File utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.file.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-file-file-utilities">
+<span id="lib-misc-file"></span><h1>2.3.18. <a class="reference internal" href="#module-vacumm.misc.file" title="vacumm.misc.file"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.file</span></code></a> – File utilities<a class="headerlink" href="#vacumm-misc-file-file-utilities" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.18.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.file.efind" title="vacumm.misc.file.efind"><code class="xref py py-func docutils literal notranslate"><span class="pre">efind()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.file.find" title="vacumm.misc.file.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">find()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.file.mkdirs" title="vacumm.misc.file.mkdirs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.file.mkfdirs" title="vacumm.misc.file.mkfdirs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mkfdirs()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.file.rollover" title="vacumm.misc.file.rollover"><code class="xref py py-func docutils literal notranslate"><span class="pre">rollover()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.file.strfsize" title="vacumm.misc.file.strfsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">strfsize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.file.strpsize" title="vacumm.misc.file.strpsize"><code class="xref py py-func docutils literal notranslate"><span class="pre">strpsize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.file.tfind" title="vacumm.misc.file.tfind"><code class="xref py py-func docutils literal notranslate"><span class="pre">tfind()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.file.walk" title="vacumm.misc.file.walk"><code class="xref py py-func docutils literal notranslate"><span class="pre">walk()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.file.xefind" title="vacumm.misc.file.xefind"><code class="xref py py-func docutils literal notranslate"><span class="pre">xefind()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.file.xfind" title="vacumm.misc.file.xfind"><code class="xref py py-func docutils literal notranslate"><span class="pre">xfind()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.18.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vacumm.misc.file"></span><div class="section" id="file-utilities">
+<h3>2.3.18.2.1. File utilities<a class="headerlink" href="#file-utilities" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>This module provides various file related features:</dt>
+<dd><ul class="first last simple">
+<li>filesystem traversal with depth support</li>
+<li>file search, wildcard or regex based</li>
+<li>file rollover (backup)</li>
+<li>size parsing and formatting</li>
+<li>directory creation without error on existing directory</li>
+</ul>
+</dd>
+</dl>
+<dl class="function">
+<dt id="vacumm.misc.file.efind">
+<code class="descname">efind</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#efind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.efind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a list from the <a class="reference internal" href="#vacumm.misc.file.xefind" title="vacumm.misc.file.xefind"><code class="xref py py-func docutils literal notranslate"><span class="pre">xefind()</span></code></a> generator</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.find">
+<code class="descname">find</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a list from the <a class="reference internal" href="#vacumm.misc.file.xfind" title="vacumm.misc.file.xfind"><code class="xref py py-func docutils literal notranslate"><span class="pre">xfind()</span></code></a> generator</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.mkdirs">
+<code class="descname">mkdirs</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#mkdirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.mkdirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a directory, including parents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>d</strong>: the directory, or list of directories, that may be created</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li><strong>created</strong>: For a single directory: d if directory has been created, ‘’ otherwise
+(already exists). For a list of directories, the list of directories which have been created.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.mkfdirs">
+<code class="descname">mkfdirs</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#mkfdirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.mkfdirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a file directory, including parents. This may be used before writing to a file
+to ensure the parent directories exists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>f</strong>: the file, or list of files, for which the directory may be created</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li><strong>created</strong>: For a single file: f directory if it has been created, ‘’ otherwise
+(already exists). For a list of files, the list of f directories which have been created
+were created</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.rollover">
+<code class="descname">rollover</code><span class="sig-paren">(</span><em>filepath</em>, <em>count=1</em>, <em>suffix='.%d'</em>, <em>keep=True</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#rollover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.rollover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a rollover of the specified file. Keep a certain number of backups
+of a file by renaming them with a suffix number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>filepath</strong>: the file to make a backup of</li>
+<li><strong>count</strong>: maximum number of backup files</li>
+<li><strong>suffix</strong>: suffix to use when renaming files, must contain a ‘%d’ marker which will be used to mark backup number</li>
+<li><strong>keep</strong>: whether to keep existing file in addition to the backup one</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">True if a backup occured, False otherwise (count is 0 or filepath does not exists)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.strfsize">
+<code class="descname">strfsize</code><span class="sig-paren">(</span><em>size</em>, <em>fmt=None</em>, <em>unit=None</em>, <em>si=False</em>, <em>suffix=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#strfsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.strfsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><dl class="first docutils">
+<dt><strong>size</strong>:</dt>
+<dd>the size in bytes</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>fmt</strong>:</dt>
+<dd>the format to use, will receive size and unit arguments, if None
+formats “%(size).3f %(unit)s” or “%(size)d %(unit)s” will be automatically used.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>unit</strong>:</dt>
+<dd>use an auto determinated unit if None, or the given one among K, M, G, T, P, E, Z, Y</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>si</strong>:</dt>
+<dd>whether to use SI (International System) units (10^3, …) or binary units (2^10, …)</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">a string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.strpsize">
+<code class="descname">strpsize</code><span class="sig-paren">(</span><em>size</em>, <em>si=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#strpsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.strpsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a size in Ko, Mo, Kio, Mio, …</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>size</strong>: the size string (eg. “1Ko”, “1Kio”, “2 Mo”, ” 10 Go”</li>
+<li><dl class="first docutils">
+<dt><strong>si</strong>: when unit does not ends with ‘io’ force interpretation as</dt>
+<dd>International System units (10^3, …) instead of binary units (2^10, …)</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">the float number of bytes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.tfind">
+<code class="descname">tfind</code><span class="sig-paren">(</span><em>regex</em>, <em>path=None</em>, <em>fmt='%Y-%m-%dT%H:%M:%SZ'</em>, <em>min=None</em>, <em>max=None</em>, <em>group=None</em>, <em>getdate=False</em>, <em>getmatch=False</em>, <em>xmin=False</em>, <em>xmax=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#tfind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.tfind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find timestamped paths (e.g. files having a date string in their paths)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See:</th><td class="field-body">func:<cite>find</cite> for <strong>regex</strong>, <strong>path</strong> and <strong>kwargs</strong> arguments.</td>
+</tr>
+</tbody>
+</table>
+<p>The regex regular expression must define at least one group which describe the date string location in paths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fmt</strong>: (python) date format</li>
+<li><strong>min</strong>: minimum date filter: a datetime object or a date string in fmt format. None means no max date filtering.</li>
+<li><strong>max</strong>: maximum date filter: a datetime object or a date string in fmt format. None means no max date filtering.</li>
+<li><strong>group</strong>: the regex group(s) number(s) or name(s): one or a list of string or integer. None means all groups.</li>
+<li><strong>xmin</strong>: if True, min is exclusive</li>
+<li><strong>xmax</strong>: if True, max is exclusive</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The group(s) can be specified either by their number or name. These group will be concatenated to
+form the date that will be parsed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Assuming we are lokking for the follwing files:</p>
+<blockquote>
+<div><ul class="simple">
+<li>path/to/data/data_2010-01-01T00H.nc</li>
+<li>path/to/data/data_2010-01-01T12H.nc</li>
+<li>path/to/data/data_2010-01-02T00H.nc</li>
+<li>path/to/data/data_2010-01-02T12H.nc</li>
+</ul>
+</div></blockquote>
+<p>The commands below will have the same result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">items</span> <span class="o">=</span> <span class="n">tfind</span><span class="p">(</span><span class="s1">&#39;data_(.*)\.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%HZ&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">items</span> <span class="o">=</span> <span class="n">tfind</span><span class="p">(</span><span class="s1">&#39;data_(....-..-..T..Z)\.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/data&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%HZ&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Same but more precise / advanced examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">items</span> <span class="o">=</span> <span class="n">tfind</span><span class="p">(</span><span class="s1">&#39;data_([0-9]</span><span class="si">{4}</span><span class="s1">-[0-9]</span><span class="si">{4}</span><span class="s1">-[0-9]</span><span class="si">{4}</span><span class="s1">T[0-9]</span><span class="si">{2}</span><span class="s1">Z)\.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/data&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">T%HH&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">items</span> <span class="o">=</span> <span class="n">tfind</span><span class="p">(</span><span class="s1">&#39;data_([0-9]</span><span class="si">{4}</span><span class="s1">)-([0-9]</span><span class="si">{4}</span><span class="s1">)-([0-9]</span><span class="si">{4}</span><span class="s1">)T([0-9]</span><span class="si">{2}</span><span class="s1">)Z\.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/data&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">items</span> <span class="o">=</span> <span class="n">tfind</span><span class="p">(</span><span class="s1">&#39;(data)_(?P&lt;y&gt;[0-9]</span><span class="si">{4}</span><span class="s1">)-([0-9]</span><span class="si">{2}</span><span class="s1">)-([0-9]</span><span class="si">{2}</span><span class="s1">)T([0-9]</span><span class="si">{2}</span><span class="s1">)Z\.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/data&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)))</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first">Depending on getdate and getmatch, a list in the form:</p>
+<ul class="last simple">
+<li>If getdate=False and getmatch=False: [path1, path2, …]</li>
+<li>If getdate=False and getmatch=True:  [(path1, match1), (path2, match1), …]</li>
+<li>If getdate=True  and getmatch=False: [(path1, datetime1), (path2, datetime2), …]</li>
+<li>If getdate=True  and getmatch=True:  [(path1, matchobj1, datetime1), (path2, matchobj2, datetime2), …]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.walk">
+<code class="descname">walk</code><span class="sig-paren">(</span><em>top</em>, <em>topdown=True</em>, <em>onerror=None</em>, <em>followlinks=False</em>, <em>depth=None</em>, <em>onfile=None</em>, <em>ondir=None</em>, <em>_depth=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#walk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.walk" title="Permalink to this definition">¶</a></dt>
+<dd><p>New implementation of os.walk <strong>with depth support to avoid unnecessary large scans</strong>.
+This yield a supplementary depth value for each walk (top, dirs, nondirs, depth)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><dl class="first docutils">
+<dt><strong>depth</strong>: Limit the depth of walk:</dt>
+<dd><ul class="first last">
+<li>None: no limit</li>
+<li>0: limited to top directory entries</li>
+<li>1: limited to first directory under the top directory</li>
+<li>N: limited to Nth directory under the top directory</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><strong>Do not use the _depth attribute</strong> as it is used to track the current depth in the yield processing</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">See:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/dev/library/os.html#os.walk" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.walk()</span></code></a> for more details on other parameters.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.xefind">
+<code class="descname">xefind</code><span class="sig-paren">(</span><em>regex</em>, <em>path=None</em>, <em>depth=0</em>, <em>files=True</em>, <em>dirs=False</em>, <em>matchall=False</em>, <em>abspath=True</em>, <em>exclude=None</em>, <em>followlinks=False</em>, <em>expandpath=True</em>, <em>onerror=None</em>, <em>onfile=None</em>, <em>ondir=None</em>, <em>onmatch=None</em>, <em>getmatch=False</em>, <em>rexflags=None</em>, <em>xrexflags=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#xefind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.xefind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find paths matching the regex regular expression.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>regex</strong>: the file regular expression</li>
+<li><strong>path</strong>: if not None, entries are searched from this location, otherwise current directory is used</li>
+<li><strong>depth</strong>: if not None, it designate the recursion limit (0 based, None for no limit, see walk function)</li>
+<li><strong>files</strong>: if False, file entries will not be returned</li>
+<li><strong>dirs</strong>: if False, directory entries will not be returned</li>
+<li><strong>matchall</strong>: if False, only file/directory names are evaluated, entire path otherwise</li>
+<li><strong>abspath</strong>: if True, returned paths are absolute</li>
+<li><strong>exclude</strong>: if not None, it designate a regular expression which will be used to exclude files or directories</li>
+<li><strong>getmatch</strong>: if True, return a list of (path, match_object) couples</li>
+<li><strong>followlinks</strong>: if True, symbolic links will be walked (see walk function)</li>
+<li><strong>regexflags</strong>: if not None, it will be used as regex compile flags</li>
+<li><strong>xregexflags</strong>: if not None, it will be used as exclude regex compile flags</li>
+<li><strong>expandpath</strong>: if True, environment variables and special character ~ will be expanded in the passed search path</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.*\.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;/path/to/data&#39;</span><span class="p">)</span>
+<span class="go">[&#39;/path/to/data/data_2010-01-01.nc&#39;, &#39;/path/to/data/data_2010-01-02.nc&#39;, ...]</span>
+</pre></div>
+</div>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filelist</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="s1">&#39;data_([0-9]</span><span class="si">{4}</span><span class="s1">)-([0-9]{1,2})-([0-9]{1,2})\.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">getmatch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">abspath</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">matchobj</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span> <span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">matchobj</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+<span class="go">data/data_2010-01-1.nc : (&#39;2010&#39;, &#39;01&#39;, &#39;1&#39;)</span>
+<span class="go">data/data_2010-01-10.nc : (&#39;2010&#39;, &#39;01&#39;, &#39;10&#39;)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.file.xfind">
+<code class="descname">xfind</code><span class="sig-paren">(</span><em>pattern</em>, <em>path=None</em>, <em>depth=0</em>, <em>files=True</em>, <em>dirs=False</em>, <em>matchall=False</em>, <em>abspath=True</em>, <em>exclude=None</em>, <em>followlinks=False</em>, <em>expandpath=True</em>, <em>onerror=None</em>, <em>onfile=None</em>, <em>ondir=None</em>, <em>onmatch=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/file.html#xfind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.file.xfind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find paths matching the pattern wildcard.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>pattern</strong>: pattern or list of patterns using special characters *,?,[seq],[!seq] (see standard module fnmatch)</li>
+<li><strong>path</strong>: if not None, entries are searched from this location, otherwise current directory is used</li>
+<li><strong>depth</strong>: if not None, it designate the recursion limit (0 based, None for no limit, see walk function)</li>
+<li><strong>files</strong>: if False, file entries will not be returned</li>
+<li><strong>dirs</strong>: if False, directory entries will not be returned</li>
+<li><strong>matchall</strong>: if False, only file/directory names are evaluated, entire path otherwise</li>
+<li><strong>abspath</strong>: if True, returned paths are absolute</li>
+<li><strong>exclude</strong>: if not None, it designate a pattern or list of patterns which will be used to exclude files or directories</li>
+<li><strong>followlinks</strong>: if True, symbolic links will be walked (see walk function)</li>
+<li><strong>expandpath</strong>: if True, environment variables and special character ~ will be expanded in the passed search path</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;*.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;/path/to/data&#39;</span><span class="p">)</span>
+<span class="go">[&#39;/path/to/data/data_2010-01-01.nc&#39;, &#39;/path/to/data/data_2010-01-02.nc&#39;, ...]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find</span><span class="p">((</span><span class="s1">&#39;*.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;*.grb&#39;</span><span class="p">),</span> <span class="s1">&#39;/path/to/data&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*-01.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;*02.grb&#39;</span><span class="p">))</span>
+<span class="go">[&#39;/path/to/data/data_2010-01-02.nc&#39;, &#39;/path/to/data/grib/data_2010-01-01.grb&#39;, ...]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

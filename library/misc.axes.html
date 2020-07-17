@@ -1,0 +1,713 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.3. vacumm.misc.axes – Tools for axes &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.3. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.axes</span></code> – Tools for axes</a><ul>
+<li><a class="reference internal" href="#overview">2.3.3.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.3.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.axes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-axes-tools-for-axes">
+<span id="lib-misc-axes"></span><h1>2.3.3. <a class="reference internal" href="#module-vacumm.misc.axes" title="vacumm.misc.axes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.axes</span></code></a> – Tools for axes<a class="headerlink" href="#vacumm-misc-axes-tools-for-axes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.3.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">BASIC_AXIS_DEFAULTS</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">BASIC_AXIS_SPECS</span></code></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.axes.axis_type" title="vacumm.misc.axes.axis_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">axis_type()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.check_axes" title="vacumm.misc.axes.check_axes"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_axes()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.check_axis" title="vacumm.misc.axes.check_axis"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_axis()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.check_id" title="vacumm.misc.axes.check_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_id()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.check_order" title="vacumm.misc.axes.check_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_order()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.create_axis" title="vacumm.misc.axes.create_axis"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_axis()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.create_dep" title="vacumm.misc.axes.create_dep"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_dep()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.create_depth" title="vacumm.misc.axes.create_depth"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_depth()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.create_lat" title="vacumm.misc.axes.create_lat"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_lat()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.axes.create_lon" title="vacumm.misc.axes.create_lon"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_lon()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.create_time" title="vacumm.misc.axes.create_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_time()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.get_axis_type" title="vacumm.misc.axes.get_axis_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_axis_type()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.get_checker" title="vacumm.misc.axes.get_checker"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_checker()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.get_order" title="vacumm.misc.axes.get_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_order()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.guess_timeid" title="vacumm.misc.axes.guess_timeid"><code class="xref py py-func docutils literal notranslate"><span class="pre">guess_timeid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.is_geo_axis" title="vacumm.misc.axes.is_geo_axis"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_geo_axis()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.is_geo_axis_type" title="vacumm.misc.axes.is_geo_axis_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_geo_axis_type()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.isaxis" title="vacumm.misc.axes.isaxis"><code class="xref py py-func docutils literal notranslate"><span class="pre">isaxis()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.axes.isdep" title="vacumm.misc.axes.isdep"><code class="xref py py-func docutils literal notranslate"><span class="pre">isdep()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.islat" title="vacumm.misc.axes.islat"><code class="xref py py-func docutils literal notranslate"><span class="pre">islat()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.islev" title="vacumm.misc.axes.islev"><code class="xref py py-func docutils literal notranslate"><span class="pre">islev()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.islon" title="vacumm.misc.axes.islon"><code class="xref py py-func docutils literal notranslate"><span class="pre">islon()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.istime" title="vacumm.misc.axes.istime"><code class="xref py py-func docutils literal notranslate"><span class="pre">istime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.merge_orders" title="vacumm.misc.axes.merge_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge_orders()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.order_match" title="vacumm.misc.axes.order_match"><code class="xref py py-func docutils literal notranslate"><span class="pre">order_match()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.axes.set_order" title="vacumm.misc.axes.set_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_order()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.3.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vacumm.misc.axes"></span><p>Generic tools dealing with information about longitude, latitude, depth and time axes</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Tutorials: <span class="xref std std-ref">user.tut.misc.variables.axes</span></p>
+</div>
+<dl class="function">
+<dt id="vacumm.misc.axes.axis_type">
+<code class="descname">axis_type</code><span class="sig-paren">(</span><em>axis</em>, <em>genname=False</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.axes.axis_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the axis type as a signle letter (CDAT standards): -, t, z, y, or x</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>axis</strong>: CDAT axis.</li>
+<li><strong>genname</strong>, optional: Return a generic name or None.</li>
+<li>Other keywords are passed to checking functions (<a class="reference internal" href="#vacumm.misc.axes.islon" title="vacumm.misc.axes.islon"><code class="xref py py-func docutils literal notranslate"><span class="pre">islon()</span></code></a>…).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_axis_type</span><span class="p">(</span><span class="n">create_time</span><span class="p">((</span><span class="mi">5</span><span class="p">,),</span><span class="s1">&#39;days since 2000&#39;</span><span class="p">))</span>
+<span class="go">&#39;t&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_axis_type</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">genname</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">&#39;time&#39;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.check_axes">
+<code class="descname">check_axes</code><span class="sig-paren">(</span><em>var</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#check_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.check_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the format of all axes of a cdms variable</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.check_axis">
+<code class="descname">check_axis</code><span class="sig-paren">(</span><em>axis</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#check_axis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.check_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the format an axis</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.check_id">
+<code class="descname">check_id</code><span class="sig-paren">(</span><em>axis</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#check_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.check_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify that an axis has a suitable id (not like ‘axis_3’ but ‘lon’)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.check_order">
+<code class="descname">check_order</code><span class="sig-paren">(</span><em>var</em>, <em>allowed</em>, <em>vertical=None</em>, <em>copy=False</em>, <em>reorder=False</em>, <em>extended=None</em>, <em>getorder=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#check_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.check_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the axis order of a variable is matches
+at least one the specifed valid orders</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>var</strong>: MV2 array.</p>
+</li>
+<li><p class="first"><strong>allowed</strong>: A single order string or a list. It should contain one or
+several of these letters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">x</span></code>: longitudes,</li>
+<li><code class="docutils literal notranslate"><span class="pre">y</span></code>: latitudes,</li>
+<li><code class="docutils literal notranslate"><span class="pre">z</span></code>: vertical levels,</li>
+<li><code class="docutils literal notranslate"><span class="pre">t</span></code>: time axis,</li>
+<li><code class="docutils literal notranslate"><span class="pre">d</span></code>: data values (ignored),</li>
+<li><code class="docutils literal notranslate"><span class="pre">-</span></code>: any kind of axis.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">var</span></code>, or <code class="docutils literal notranslate"><span class="pre">var,</span> <span class="pre">order,</span> <span class="pre">reordered</span></code> if <strong>reorder</strong> is True.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.create_axis">
+<code class="descname">create_axis</code><span class="sig-paren">(</span><em>values</em>, <em>atype='-'</em>, <em>**atts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#create_axis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.create_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quickly create a <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>values</strong>: Numerical values.</li>
+<li><strong>atype</strong>, optional: axis type within ‘x’,’y’,’z’,’t’,’-‘ [default: ‘-‘]</li>
+<li>Other keywords are passed as attributes to the axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lon</span> <span class="o">=</span> <span class="n">create_axis</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">10.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lon</span> <span class="o">=</span> <span class="n">create_axis</span><span class="p">((</span><span class="o">-</span><span class="mf">10.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;temps&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;seconds since 2000&#39;</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.create_dep">
+<code class="descname">create_dep</code><span class="sig-paren">(</span><em>values</em>, <em>**atts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#create_dep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.create_dep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a depthaxis</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>values</strong>: Numeric values</li>
+<li>Keywords are passed as attributes to the axis.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">create_dep</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">1000.</span><span class="p">,</span> <span class="o">-</span><span class="mf">500.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_dep</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">1000.</span><span class="p">,</span> <span class="o">-</span><span class="mf">500.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">),</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;deep_depth&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.create_depth">
+<code class="descname">create_depth</code><span class="sig-paren">(</span><em>values</em>, <em>**atts</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.axes.create_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a depthaxis</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>values</strong>: Numeric values</li>
+<li>Keywords are passed as attributes to the axis.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">create_dep</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">1000.</span><span class="p">,</span> <span class="o">-</span><span class="mf">500.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_dep</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">1000.</span><span class="p">,</span> <span class="o">-</span><span class="mf">500.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">),</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;deep_depth&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.create_lat">
+<code class="descname">create_lat</code><span class="sig-paren">(</span><em>values</em>, <em>**atts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#create_lat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.create_lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a latitude axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>values</strong>: Numeric values</li>
+<li>Keywords are passed as attributes to the axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">create_lat</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">40.</span><span class="p">,</span> <span class="mf">48.</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_lat</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">40.</span><span class="p">,</span> <span class="mf">48.</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;strange_latitude&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.create_lon">
+<code class="descname">create_lon</code><span class="sig-paren">(</span><em>values</em>, <em>**atts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#create_lon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.create_lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a longitude axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>values</strong>: Numeric values</li>
+<li>Keywords are passed as attributes to the axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">create_lon</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">18.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_lon</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">18.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">),</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;original_longitude&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.create_time">
+<code class="descname">create_time</code><span class="sig-paren">(</span><em>values</em>, <em>units=None</em>, <em>**atts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#create_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.create_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a time axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>values</strong>: Numeric values, or list of date objects
+(<a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">reltime()</span></code>).</li>
+<li><strong>units</strong>, optional: Time units like ‘days since 2000-01-01’.</li>
+<li>Other keywords are passed as attributes to the axis.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Units must be provided explicitly if no date are passed.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="n">create_time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cdtime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxis</span> <span class="o">=</span> <span class="n">create_time</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;months since 2000&#39;</span><span class="p">,</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;My time axis&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxis</span> <span class="o">=</span> <span class="n">create_time</span><span class="p">(</span><span class="n">taxis</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_time</span><span class="p">([</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="s1">&#39;2000-2-1&#39;</span><span class="p">],</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;months since 2000&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_time</span><span class="p">([</span><span class="n">cdtime</span><span class="o">.</span><span class="n">reltime</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;months since 2000&#39;</span><span class="p">),</span><span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.get_axis_type">
+<code class="descname">get_axis_type</code><span class="sig-paren">(</span><em>axis</em>, <em>genname=False</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#get_axis_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.get_axis_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the axis type as a signle letter (CDAT standards): -, t, z, y, or x</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>axis</strong>: CDAT axis.</li>
+<li><strong>genname</strong>, optional: Return a generic name or None.</li>
+<li>Other keywords are passed to checking functions (<a class="reference internal" href="#vacumm.misc.axes.islon" title="vacumm.misc.axes.islon"><code class="xref py py-func docutils literal notranslate"><span class="pre">islon()</span></code></a>…).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_axis_type</span><span class="p">(</span><span class="n">create_time</span><span class="p">((</span><span class="mi">5</span><span class="p">,),</span><span class="s1">&#39;days since 2000&#39;</span><span class="p">))</span>
+<span class="go">&#39;t&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_axis_type</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">genname</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checkatts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">&#39;time&#39;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.get_checker">
+<code class="descname">get_checker</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#get_checker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.get_checker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the function that checks if an axis of required type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong>: Generic name of the axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference internal" href="#vacumm.misc.axes.islon" title="vacumm.misc.axes.islon"><code class="xref py py-func docutils literal notranslate"><span class="pre">islon()</span></code></a>, <a class="reference internal" href="#vacumm.misc.axes.islat" title="vacumm.misc.axes.islat"><code class="xref py py-func docutils literal notranslate"><span class="pre">islat()</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">islevel()</span></code>, <a class="reference internal" href="#vacumm.misc.axes.istime" title="vacumm.misc.axes.istime"><code class="xref py py-func docutils literal notranslate"><span class="pre">istime()</span></code></a>
+or raises <a class="reference external" href="https://docs.python.org/dev/library/exceptions.html#TypeError" title="(in Python v3.8)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_checker</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_checker</span><span class="p">(</span><span class="s1">&#39;lon&#39;</span><span class="p">)(</span><span class="n">myaxis</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.get_order">
+<code class="descname">get_order</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#get_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.get_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enhanced version of getOrder() method that handles 2D axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong>: axis or cdms variable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Output:</th><td class="field-body"><p class="first">string containing letters x, y, z, t or -</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_order</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="go">&quot;-yx&quot;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.guess_timeid">
+<code class="descname">guess_timeid</code><span class="sig-paren">(</span><em>ncfile</em>, <em>vnames=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#guess_timeid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.guess_timeid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Guess the id of the time axis in a netcdf file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>ncfile</strong>: Netcdf file name or descriptor.</li>
+<li><strong>vnames</strong>, optional: List of variables to look for
+a time axis (defaults to all variables)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">The id as a string, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if not found.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tid</span> <span class="o">=</span> <span class="n">guess_timeid</span><span class="p">(</span><span class="s1">&#39;file.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;file.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tid</span> <span class="o">=</span> <span class="n">guess_timeid</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.is_geo_axis">
+<code class="descname">is_geo_axis</code><span class="sig-paren">(</span><em>axis</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#is_geo_axis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.is_geo_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if axis is time, level, lat or lon</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.is_geo_axis_type">
+<code class="descname">is_geo_axis_type</code><span class="sig-paren">(</span><em>obj</em>, <em>atype</em>, <em>defaults=None</em>, <em>ro=False</em>, <em>checkaxis=True</em>, <em>checkatts=True</em>, <em>**attchecks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#is_geo_axis_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.is_geo_axis_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is of a specific type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>obj</strong>: CDAT 1D or 2D axis or other object.</li>
+<li><strong>atype</strong>: Axis type as one of ‘x’, ‘y’, ‘z’ or ‘z’.</li>
+<li><strong>ids</strong>, optional: List od ids to check.</li>
+<li><strong>standard_names</strong>, optional: List of standard_names to check.</li>
+<li><strong>long_names</strong>, optional: List of long_names to check.</li>
+<li><strong>units</strong>, optional: List of units to check.</li>
+<li><strong>ro</strong>, optional: Read-only mode?</li>
+<li><strong>checkatts</strong>, optional: If False, do not check units and long_name attributes.</li>
+<li><strong>attchecks</strong>: Extra keywords are attributes name and checklist that
+will checks using <a class="reference internal" href="misc.misc.html#vacumm.misc.misc.match_atts" title="vacumm.misc.misc.match_atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">match_atts()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.isaxis">
+<code class="descname">isaxis</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#isaxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.isaxis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.isdep">
+<code class="descname">isdep</code><span class="sig-paren">(</span><em>obj</em>, <em>defaults=None</em>, <em>ro=False</em>, <em>checkaxis=True</em>, <em>checkatts=True</em>, <em>**attchecks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#isdep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.isdep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is of depth type</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.islat">
+<code class="descname">islat</code><span class="sig-paren">(</span><em>obj</em>, <em>defaults=None</em>, <em>ro=False</em>, <em>checkaxis=True</em>, <em>checkatts=True</em>, <em>**attchecks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#islat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.islat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is of latitude type</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.islev">
+<code class="descname">islev</code><span class="sig-paren">(</span><em>obj</em>, <em>defaults=None</em>, <em>ro=False</em>, <em>checkaxis=True</em>, <em>checkatts=True</em>, <em>**attchecks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#islev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.islev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is of level type</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.islon">
+<code class="descname">islon</code><span class="sig-paren">(</span><em>obj</em>, <em>defaults=None</em>, <em>ro=False</em>, <em>checkaxis=True</em>, <em>checkatts=True</em>, <em>**attchecks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#islon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.islon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is of longitude type</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.istime">
+<code class="descname">istime</code><span class="sig-paren">(</span><em>obj</em>, <em>defaults=None</em>, <em>ro=False</em>, <em>checkaxis=True</em>, <em>checkatts=True</em>, <em>**attchecks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#istime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.istime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is of time type</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.merge_orders">
+<code class="descname">merge_orders</code><span class="sig-paren">(</span><em>order1</em>, <em>order2</em>, <em>raiseerr=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#merge_orders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.merge_orders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge two axis orders</p>
+<p>When two orders doesn’t have the same length,
+they are right adjusted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">merge_orders</span><span class="p">(</span><span class="s1">&#39;t-x&#39;</span><span class="p">,</span> <span class="s1">&#39;y-&#39;</span><span class="p">)</span>
+<span class="go">&#39;tyx&#39;, &#39;yx&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_orders</span><span class="p">(</span><span class="s1">&#39;yx&#39;</span><span class="p">,</span> <span class="s1">&#39;tz&#39;</span><span class="p">)</span>
+<span class="go">&#39;yx&#39;, &#39;tz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_orders</span><span class="p">(</span><span class="n">myvar</span><span class="p">,</span> <span class="n">zaxis</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.order_match">
+<code class="descname">order_match</code><span class="sig-paren">(</span><em>order1</em>, <em>order2</em>, <em>asscore=False</em>, <em>strict=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#order_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.order_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that to axis orders are compatible</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>order1/2</strong>: Order strings containing <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">t</span></code> or <code class="docutils literal notranslate"><span class="pre">-</span></code> chars.</p>
+</li>
+<li><p class="first"><strong>asscore</strong>, optional: Return the total level of matching, where, for one char:</p>
+<blockquote>
+<div><ul class="simple">
+<li>0: no matching,</li>
+<li>1: matching with <code class="docutils literal notranslate"><span class="pre">-</span></code>,</li>
+<li>2: letters equal.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>strict</strong>, optional: Be more strict.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">False</span></code>: Not strict.</li>
+<li><code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;both&quot;</span></code>: Fail even with <code class="docutils literal notranslate"><span class="pre">-</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;left&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>: Designate the reference order, where
+the other one is not allowed to be different, except when the former
+has a <code class="docutils literal notranslate"><span class="pre">-</span></code>.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">order_match</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">order_match</span><span class="p">(</span><span class="s1">&#39;x-&#39;</span><span class="p">,</span> <span class="s1">&#39;xy&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">order_match</span><span class="p">(</span><span class="s1">&#39;x-&#39;</span><span class="p">,</span> <span class="s1">&#39;xy&#39;</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.axes.set_order">
+<code class="descname">set_order</code><span class="sig-paren">(</span><em>var</em>, <em>order</em>, <em>replace=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/axes.html#set_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.axes.set_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore axis order of cdms variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong>: A cdms array.</li>
+<li><strong>order</strong>: A cdms order  string(like ‘tx’)</li>
+<li><strong>replace</strong>: Erase existing axis types?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">set_order</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="s1">&#39;tyx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

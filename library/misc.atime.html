@@ -1,0 +1,2159 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.4. vacumm.misc.atime – Time utilities &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.4. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.atime</span></code> – Time utilities</a><ul>
+<li><a class="reference internal" href="#overview">2.3.4.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.4.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.atime.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-atime-time-utilities">
+<span id="lib-misc-time"></span><h1>2.3.4. <a class="reference internal" href="#module-vacumm.misc.atime" title="vacumm.misc.atime"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.atime</span></code></a> – Time utilities<a class="headerlink" href="#vacumm-misc-atime-time-utilities" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.4.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">RE_SPLIT_DATE</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">STR_UNIT_TYPES</span></code></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.add" title="vacumm.misc.atime.add"><code class="xref py py-func docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.add_margin" title="vacumm.misc.atime.add_margin"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_margin()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.add_time" title="vacumm.misc.atime.add_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_time()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.are_same_units" title="vacumm.misc.atime.are_same_units"><code class="xref py py-func docutils literal notranslate"><span class="pre">are_same_units()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.are_valid_units" title="vacumm.misc.atime.are_valid_units"><code class="xref py py-func docutils literal notranslate"><span class="pre">are_valid_units()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.ascii_to_num" title="vacumm.misc.atime.ascii_to_num"><code class="xref py py-func docutils literal notranslate"><span class="pre">ascii_to_num()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.axis_add" title="vacumm.misc.atime.axis_add"><code class="xref py py-func docutils literal notranslate"><span class="pre">axis_add()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.ch_units" title="vacumm.misc.atime.ch_units"><code class="xref py py-func docutils literal notranslate"><span class="pre">ch_units()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.check_range" title="vacumm.misc.atime.check_range"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_range()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.compress" title="vacumm.misc.atime.compress"><code class="xref py py-func docutils literal notranslate"><span class="pre">compress()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.daily" title="vacumm.misc.atime.daily"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.daily_bounds" title="vacumm.misc.atime.daily_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_bounds()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.datetime" title="vacumm.misc.atime.datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">datetime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.day_of_the_year" title="vacumm.misc.atime.day_of_the_year"><code class="xref py py-func docutils literal notranslate"><span class="pre">day_of_the_year()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.detrend" title="vacumm.misc.atime.detrend"><code class="xref py py-func docutils literal notranslate"><span class="pre">detrend()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.filter_time_selector" title="vacumm.misc.atime.filter_time_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_time_selector()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.fixcomptime" title="vacumm.misc.atime.fixcomptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">fixcomptime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.from_utc" title="vacumm.misc.atime.from_utc"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_utc()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.get_dt" title="vacumm.misc.atime.get_dt"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.has_time_pattern" title="vacumm.misc.atime.has_time_pattern"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_time_pattern()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.hourly" title="vacumm.misc.atime.hourly"><code class="xref py py-func docutils literal notranslate"><span class="pre">hourly()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.hourly_bounds" title="vacumm.misc.atime.hourly_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">hourly_bounds()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.hourly_exact" title="vacumm.misc.atime.hourly_exact"><code class="xref py py-func docutils literal notranslate"><span class="pre">hourly_exact()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.interp" title="vacumm.misc.atime.interp"><code class="xref py py-func docutils literal notranslate"><span class="pre">interp()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.interp_clim" title="vacumm.misc.atime.interp_clim"><code class="xref py py-func docutils literal notranslate"><span class="pre">interp_clim()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_axistime" title="vacumm.misc.atime.is_axistime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_axistime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_cdtime" title="vacumm.misc.atime.is_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_cdtime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_comptime" title="vacumm.misc.atime.is_comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_comptime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_datetime" title="vacumm.misc.atime.is_datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_datetime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_in_time_interval" title="vacumm.misc.atime.is_in_time_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_in_time_interval()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_interval" title="vacumm.misc.atime.is_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_interval()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_numtime" title="vacumm.misc.atime.is_numtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_numtime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_strtime" title="vacumm.misc.atime.is_strtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_strtime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.itv_intersect" title="vacumm.misc.atime.itv_intersect"><code class="xref py py-func docutils literal notranslate"><span class="pre">itv_intersect()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.itv_union" title="vacumm.misc.atime.itv_union"><code class="xref py py-func docutils literal notranslate"><span class="pre">itv_union()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.julday" title="vacumm.misc.atime.julday"><code class="xref py py-func docutils literal notranslate"><span class="pre">julday()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.lindates" title="vacumm.misc.atime.lindates"><code class="xref py py-func docutils literal notranslate"><span class="pre">lindates()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.midnight_date" title="vacumm.misc.atime.midnight_date"><code class="xref py py-func docutils literal notranslate"><span class="pre">midnight_date()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.midnight_interval" title="vacumm.misc.atime.midnight_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">midnight_interval()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.monthly" title="vacumm.misc.atime.monthly"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.mpl" title="vacumm.misc.atime.mpl"><code class="xref py py-func docutils literal notranslate"><span class="pre">mpl()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.notz" title="vacumm.misc.atime.notz"><code class="xref py py-func docutils literal notranslate"><span class="pre">notz()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.now" title="vacumm.misc.atime.now"><code class="xref py py-func docutils literal notranslate"><span class="pre">now()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.num_to_ascii" title="vacumm.misc.atime.num_to_ascii"><code class="xref py py-func docutils literal notranslate"><span class="pre">num_to_ascii()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.numtime" title="vacumm.misc.atime.numtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">numtime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.paris_to_utc" title="vacumm.misc.atime.paris_to_utc"><code class="xref py py-func docutils literal notranslate"><span class="pre">paris_to_utc()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.pat2freq" title="vacumm.misc.atime.pat2freq"><code class="xref py py-func docutils literal notranslate"><span class="pre">pat2freq()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.pat2glob" title="vacumm.misc.atime.pat2glob"><code class="xref py py-func docutils literal notranslate"><span class="pre">pat2glob()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.plot_dt" title="vacumm.misc.atime.plot_dt"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_dt()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.reduce" title="vacumm.misc.atime.reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">reduce()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.reduce_old" title="vacumm.misc.atime.reduce_old"><code class="xref py py-func docutils literal notranslate"><span class="pre">reduce_old()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.reltime" title="vacumm.misc.atime.reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">reltime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.round_date" title="vacumm.misc.atime.round_date"><code class="xref py py-func docutils literal notranslate"><span class="pre">round_date()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.round_interval" title="vacumm.misc.atime.round_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">round_interval()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.selector" title="vacumm.misc.atime.selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">selector()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.strftime" title="vacumm.misc.atime.strftime"><code class="xref py py-func docutils literal notranslate"><span class="pre">strftime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.strptime" title="vacumm.misc.atime.strptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">strptime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.strtime" title="vacumm.misc.atime.strtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">strtime()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.tic" title="vacumm.misc.atime.tic"><code class="xref py py-func docutils literal notranslate"><span class="pre">tic()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.time_selector" title="vacumm.misc.atime.time_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">time_selector()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.time_split" title="vacumm.misc.atime.time_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">time_split()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.time_split_nmax" title="vacumm.misc.atime.time_split_nmax"><code class="xref py py-func docutils literal notranslate"><span class="pre">time_split_nmax()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.time_type" title="vacumm.misc.atime.time_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">time_type()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.to_utc" title="vacumm.misc.atime.to_utc"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_utc()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.toc" title="vacumm.misc.atime.toc"><code class="xref py py-func docutils literal notranslate"><span class="pre">toc()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.trend" title="vacumm.misc.atime.trend"><code class="xref py py-func docutils literal notranslate"><span class="pre">trend()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.tsel2slice" title="vacumm.misc.atime.tsel2slice"><code class="xref py py-func docutils literal notranslate"><span class="pre">tsel2slice()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.tz_to_tz" title="vacumm.misc.atime.tz_to_tz"><code class="xref py py-func docutils literal notranslate"><span class="pre">tz_to_tz()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.unit_type" title="vacumm.misc.atime.unit_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_type()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.utc_to_paris" title="vacumm.misc.atime.utc_to_paris"><code class="xref py py-func docutils literal notranslate"><span class="pre">utc_to_paris()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.atime.yearly" title="vacumm.misc.atime.yearly"><code class="xref py py-func docutils literal notranslate"><span class="pre">yearly()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.atime.DateSorter" title="vacumm.misc.atime.DateSorter"><code class="xref py py-class docutils literal notranslate"><span class="pre">DateSorter</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.atime.Gaps" title="vacumm.misc.atime.Gaps"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gaps</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.Gaps.plot" title="vacumm.misc.atime.Gaps.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.Gaps.save" title="vacumm.misc.atime.Gaps.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.Gaps.show" title="vacumm.misc.atime.Gaps.show"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.atime.Intervals" title="vacumm.misc.atime.Intervals"><code class="xref py py-class docutils literal notranslate"><span class="pre">Intervals</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.Intervals.next" title="vacumm.misc.atime.Intervals.next"><code class="xref py py-meth docutils literal notranslate"><span class="pre">next()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.Intervals.round" title="vacumm.misc.atime.Intervals.round"><code class="xref py py-meth docutils literal notranslate"><span class="pre">round()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.Intervals.tolist" title="vacumm.misc.atime.Intervals.tolist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tolist()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.atime.IterDates" title="vacumm.misc.atime.IterDates"><code class="xref py py-class docutils literal notranslate"><span class="pre">IterDates</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.IterDates.next" title="vacumm.misc.atime.IterDates.next"><code class="xref py py-meth docutils literal notranslate"><span class="pre">next()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.IterDates.round" title="vacumm.misc.atime.IterDates.round"><code class="xref py py-meth docutils literal notranslate"><span class="pre">round()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.atime.IterDates.tolist" title="vacumm.misc.atime.IterDates.tolist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tolist()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.atime.SpecialDateFormatter" title="vacumm.misc.atime.SpecialDateFormatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecialDateFormatter</span></code></a></p>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.4.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Inheritance diagram:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="graphviz"><img src="../_images/inheritance-ca9f8be55d103258c8e7ac938090931bb55fad46.png" alt="Inheritance diagram of vacumm.misc.atime.Gaps, vacumm.misc.atime.SpecialDateFormatter" usemap="#inheritancea5df1f39e4" class="inheritance graphviz" /></div>
+<map id="inheritancea5df1f39e4" name="inheritancea5df1f39e4">
+<area shape="poly" id="node11" href="#vacumm.misc.atime.SpecialDateFormatter" target="_top" title="Special formatter for dates" alt="" coords="529,350,525,341,512,333,492,327,467,323,439,321,411,323,385,327,365,333,352,341,348,350,352,359,365,367,385,373,411,377,439,379,467,377,492,373,512,367,525,359"/>
+<area shape="poly" id="node7" href="#vacumm.misc.atime.Gaps" target="_top" title="Find time gaps in a variable" alt="" coords="184,350,182,341,177,333,169,327,159,323,148,321,137,323,127,327,119,333,114,341,112,350,114,359,119,367,127,373,137,377,148,379,159,377,169,373,177,367,182,359"/>
+</map><span class="target" id="module-vacumm.misc.atime"></span><p>Time utilities</p>
+<dl class="class">
+<dt id="vacumm.misc.atime.DateSorter">
+<em class="property">class </em><code class="descname">DateSorter</code><span class="sig-paren">(</span><em>pattern=None</em>, <em>basename=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#DateSorter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.DateSorter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Sort a list of date string, optionally using a date pattern</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="n">DateSorter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;annee 2006&#39;</span><span class="p">,</span> <span class="s1">&#39;annee 2002&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">DateSorter</span><span class="p">(</span><span class="s1">&#39;annee %Y&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dates</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">dates</span>
+<span class="go">[&#39;2002&#39;, &#39;2006&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.atime.Gaps">
+<em class="property">class </em><code class="descname">Gaps</code><span class="sig-paren">(</span><em>var</em>, <em>tolerance=0.1</em>, <em>verbose=True</em>, <em>dt=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#Gaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.Gaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">cdms2.tvariable.TransientVariable</span></code></p>
+<p>Find time gaps in a variable</p>
+<p>A gap is defined as a missing time step or data.
+With this class, you can:</p>
+<ul class="simple">
+<li>get the gaps as a variable (the object itself)</li>
+<li>where 1 refers to the start of gap and -1 to the end</li>
+<li>print them (<a class="reference internal" href="#vacumm.misc.atime.Gaps.show" title="vacumm.misc.atime.Gaps.show"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show()</span></code></a>)</li>
+<li>plot them (<a class="reference internal" href="#vacumm.misc.atime.Gaps.plot" title="vacumm.misc.atime.Gaps.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a>)</li>
+<li>save them in a netcdf or an ascii file (<a class="reference internal" href="#vacumm.misc.atime.Gaps.save" title="vacumm.misc.atime.Gaps.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>)</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong>: A cdms variable with a cdms time axis</li>
+<li><em>dt</em>: Time step [default: minimal time step]</li>
+<li><em>tolerance</em>: There is a gap when dt varies  of more than tolerance*min(dt) [default: 0.1]</li>
+<li><em>keyparam</em>: verbose Verbose mode</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">vacumm.misc</span> <span class="k">as</span> <span class="nn">M</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">MV2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">create_time</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;days since 2000&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">arange</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.atime.Gaps.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>show=True</em>, <em>savefig=None</em>, <em>figsize=(8</em>, <em>2.0)</em>, <em>title=None</em>, <em>color='red'</em>, <em>subplots_adjust={'bottom': 0.55</em>, <em>'left': 0.05</em>, <em>'top': 0.8}</em>, <em>show_time_range=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#Gaps.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.Gaps.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the gaps</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><em>color</em>: Color of gaps [default: ‘red’]</li>
+<li><em>figure</em>: Show results on a figure if there are gaps [default: True]</li>
+<li><em>show</em>: Show the figure plotted if gaps are found [default: True]</li>
+<li><em>title</em>: Use this title for the figure</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.atime.Gaps.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#Gaps.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.Gaps.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save gaps to a netcdf or an ascii file</p>
+<p>If the file name does not end with ‘cdf’ or ‘nc’,
+gaps are printed to an ascii file with the save format
+as displayed by (show())</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file</strong>: Netcdf file name</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.atime.Gaps.show">
+<code class="descname">show</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#Gaps.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.Gaps.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print out gaps</p>
+<p>Parameters are passed to col_printer()</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.atime.Intervals">
+<em class="property">class </em><code class="descname">Intervals</code><span class="sig-paren">(</span><em>time_range</em>, <em>dt</em>, <em>reverse=False</em>, <em>roundto=None</em>, <em>bounds=True</em>, <em>lmargin=0</em>, <em>rmargin=None</em>, <em>innerbounds='co'</em>, <em>roundmode='all'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#Intervals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.Intervals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Iterator on intervals</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>time_range</strong>: Time range (optionally with bounds).</li>
+<li><strong>dt</strong>: Size of intervals.</li>
+<li><strong>reverse</strong>, optional: Reverse the iterator.</li>
+<li><strong>roundto</strong>, optional: Round times  to this time units (like ‘hours’, etc).</li>
+<li><strong>bounds</strong>, optional: Add bounds specs to the intervals (like “co”).</li>
+<li><strong>l/rmargin</strong>, optional: Add a margin to the left and/or right of each interval.
+See <a class="reference internal" href="#vacumm.misc.atime.add_margin" title="vacumm.misc.atime.add_margin"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_margin()</span></code></a>.</li>
+<li><strong>innerbounds</strong>, optional: Add bounds specs to inner intervals (like “cc”).</li>
+<li><dl class="first docutils">
+<dt><strong>roundmode</strong>, optional:</dt>
+<dd><ul class="first last">
+<li>“all”: Round all dates.</li>
+<li>“inner”: Round only inner dates, not first and last.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">itv</span> <span class="ow">in</span> <span class="n">Intervals</span><span class="p">((</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span><span class="s1">&#39;2001&#39;</span><span class="p">,</span><span class="s1">&#39;co&#39;</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;month&#39;</span><span class="p">)):</span> <span class="nb">print</span> <span class="n">itv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Intervals</span><span class="p">((</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span><span class="s1">&#39;2001&#39;</span><span class="p">,</span><span class="s1">&#39;co&#39;</span><span class="p">),</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Intervals</span><span class="p">((</span><span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">),</span> <span class="s1">&#39;2001&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lmargin</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;hours&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.atime.Intervals.next">
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#Intervals.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.Intervals.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.atime.Intervals.round">
+<code class="descname">round</code><span class="sig-paren">(</span><em>mydate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#Intervals.round"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.Intervals.round" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.atime.Intervals.tolist">
+<code class="descname">tolist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#Intervals.tolist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.Intervals.tolist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.atime.IterDates">
+<em class="property">class </em><code class="descname">IterDates</code><span class="sig-paren">(</span><em>time_range</em>, <em>dt</em>, <em>reverse=False</em>, <em>roundto=None</em>, <em>closed=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#IterDates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.IterDates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Iterator on dates</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="n">IterDates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">IterDates</span><span class="p">((</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span><span class="s1">&#39;2001&#39;</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;month&#39;</span><span class="p">)):</span> <span class="nb">print</span> <span class="n">date</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">IterDates</span><span class="p">((</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span><span class="s1">&#39;2001&#39;</span><span class="p">),</span><span class="mi">12</span><span class="p">,</span><span class="n">closed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="nb">print</span> <span class="n">date</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="vacumm.misc.atime.IterDates.next">
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#IterDates.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.IterDates.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.atime.IterDates.round">
+<code class="descname">round</code><span class="sig-paren">(</span><em>mydate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#IterDates.round"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.IterDates.round" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.atime.IterDates.tolist">
+<code class="descname">tolist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#IterDates.tolist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.IterDates.tolist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.atime.SpecialDateFormatter">
+<em class="property">class </em><code class="descname">SpecialDateFormatter</code><span class="sig-paren">(</span><em>level</em>, <em>fmt=None</em>, <em>special_fmt=None</em>, <em>join=None</em>, <em>phase=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#SpecialDateFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.SpecialDateFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://matplotlib.org/api/dates_api.html#matplotlib.dates.DateFormatter" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.dates.DateFormatter</span></code></a></p>
+<p>Special formatter for dates
+Example: [‘00h 01/10/2000’ ‘02h’ …. ‘23h’  ‘00h 01/10/2000’] to mark days and keep hours
+Here the ‘phase’ is 0 (00h) and the level is 3 (=’day’)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>mytime</em>, <em>amount</em>, <em>units=None</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.atime.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add value to time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytime</strong>: Target time, list of times or time axis.</li>
+<li><strong>amount</strong>: Value to add.</li>
+<li><strong>units</strong>, optional: Units, needed if <code class="docutils literal notranslate"><span class="pre">mytime</span></code> is not a time axis.</li>
+<li><strong>copy</strong>, optional: Copy list or time axis?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">add_time</span><span class="p">(</span><span class="s1">&#39;2008-02&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;days&#39;</span><span class="p">)</span>
+<span class="go">&#39;2008-2-4 0:0:0.0&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.add_margin">
+<code class="descname">add_margin</code><span class="sig-paren">(</span><em>interval</em>, <em>lmargin</em>, <em>rmargin=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#add_margin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.add_margin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a margin to an interval</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>interval</strong>: A time interval or selector such as <code class="docutils literal notranslate"><span class="pre">('2000',</span> <span class="pre">'20001',</span> <span class="pre">'co')</span></code>
+Specified times may be of any valid type.</p>
+</li>
+<li><p class="first"><strong>lmargin</strong>: Left margin. Examples:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">(3,'months')</span></code>: explicit.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'hours'</span></code>: Same as <code class="docutils literal notranslate"><span class="pre">``(1,'hours')</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">4</span></code>: Relative margin of size <code class="docutils literal notranslate"><span class="pre">(interval[1]-interval[0)/4</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">False</span></code>: no margin.</li>
+</ul>
+</div></blockquote>
+<p>A negative margin decrease the size of the interval.</p>
+</li>
+<li><p class="first"><strong>rmargin</strong>, optional: Right margin (defaults to the left).</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">add_margin</span><span class="p">((</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span> <span class="s1">&#39;2001&#39;</span><span class="p">,</span> <span class="s1">&#39;co&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;days&#39;</span><span class="p">))</span>
+<span class="go">(&#39;1999-12-27 0:0:0.0&#39;, &#39;2001-1-6 0:0:0.0&#39;, &#39;co&#39;)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.add_time">
+<code class="descname">add_time</code><span class="sig-paren">(</span><em>mytime</em>, <em>amount</em>, <em>units=None</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#add_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.add_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add value to time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytime</strong>: Target time, list of times or time axis.</li>
+<li><strong>amount</strong>: Value to add.</li>
+<li><strong>units</strong>, optional: Units, needed if <code class="docutils literal notranslate"><span class="pre">mytime</span></code> is not a time axis.</li>
+<li><strong>copy</strong>, optional: Copy list or time axis?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">add_time</span><span class="p">(</span><span class="s1">&#39;2008-02&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;days&#39;</span><span class="p">)</span>
+<span class="go">&#39;2008-2-4 0:0:0.0&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.are_same_units">
+<code class="descname">are_same_units</code><span class="sig-paren">(</span><em>units1</em>, <em>units2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#are_same_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.are_same_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare time units</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">are_same_units</span><span class="p">(</span><span class="s1">&#39;days since 1900-1&#39;</span><span class="p">,</span> <span class="s1">&#39;days since 1900-01-01 00:00:0.0&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.are_valid_units">
+<code class="descname">are_valid_units</code><span class="sig-paren">(</span><em>units</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#are_valid_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.are_valid_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that units are well formatted</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="n">are_good_units</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">are_good_units</span><span class="p">(</span><span class="s1">&#39;months since 2000&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">are_good_units</span><span class="p">(</span><span class="s1">&#39;months since 2000-01-01 10h20&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.ascii_to_num">
+<code class="descname">ascii_to_num</code><span class="sig-paren">(</span><em>ss</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#ascii_to_num"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.ascii_to_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from ‘yyyy-mm-dd hh:mn:ss’ to [yyyy,mm,dd,hh,mn,ss]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ascii_to_num</span><span class="p">(</span><span class="s1">&#39;2000-01&#39;</span><span class="p">)</span>
+<span class="go">2000, 1, 1, 0, 0, 0</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.axis_add">
+<code class="descname">axis_add</code><span class="sig-paren">(</span><em>mytime</em>, <em>amount</em>, <em>units=None</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.atime.axis_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add value to time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytime</strong>: Target time, list of times or time axis.</li>
+<li><strong>amount</strong>: Value to add.</li>
+<li><strong>units</strong>, optional: Units, needed if <code class="docutils literal notranslate"><span class="pre">mytime</span></code> is not a time axis.</li>
+<li><strong>copy</strong>, optional: Copy list or time axis?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">add_time</span><span class="p">(</span><span class="s1">&#39;2008-02&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;days&#39;</span><span class="p">)</span>
+<span class="go">&#39;2008-2-4 0:0:0.0&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.ch_units">
+<code class="descname">ch_units</code><span class="sig-paren">(</span><em>mytimes</em>, <em>newunits</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#ch_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.ch_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change units of a CDAT time axis or a list (or single element) or cdtime times</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>mytimes</strong>: CDAT axis time object, a CDAT variable with a time axis,
+a valid time ot list of times.</p>
+</li>
+<li><p class="first"><strong>newunits</strong>: New time units.</p>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Create a new axis instead of updating
+the current one.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If <code class="docutils literal notranslate"><span class="pre">mytimes</span> <span class="pre">is</span> <span class="pre">True</span></code>, then <code class="docutils literal notranslate"><span class="pre">copy</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">New time axis, or relatives times.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mytimes</span> <span class="o">=</span> <span class="n">ch_units</span><span class="p">(</span><span class="n">time_axis</span><span class="p">,</span><span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In the case of a single time object or a list of them, all object
+that is not <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.reltime()</span></code> object will not be converted.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.check_range">
+<code class="descname">check_range</code><span class="sig-paren">(</span><em>this_time</em>, <em>time_range</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#check_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.check_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check wether a time is before, within or after a range</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><strong>this_time</strong>: time to check (string or cdat time)</li>
+<li><strong>time_range</strong>: 2(or 3)-element range (strings or cdat times) like (‘1975’,1980-10-01’,’co)</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="n">comptime</span><span class="p">,</span> <span class="n">reltime</span><span class="p">,</span> <span class="n">check_range</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_range</span><span class="p">(</span><span class="s1">&#39;2000-12&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;2000-11&#39;</span><span class="p">,</span> <span class="s1">&#39;2001&#39;</span><span class="p">))</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_range</span><span class="p">(</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">),</span> <span class="p">(</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span><span class="s1">&#39;20001&#39;</span><span class="p">,</span><span class="s1">&#39;oc&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>-1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">-1 is before, 0 if within, 1 if after</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.compress">
+<code class="descname">compress</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#compress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.compress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compress along time</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.comptime">
+<code class="descname">comptime</code><span class="sig-paren">(</span><em>mytime</em>, <em>nummode='mpl'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#comptime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.comptime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code> format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>mytime</strong>: Time as string, <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.reltime()</span></code>
+or a: mod:<cite>cdms2</cite> time axis.</p>
+</li>
+<li><p class="first"><strong>nummod</strong>, optional: Numeric case mode.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;mpl&quot;</span></code>: Converted using <a class="reference external" href="https://matplotlib.org/api/dates_api.html#matplotlib.dates.num2date" title="(in Matplotlib v3.0.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.dates.num2date()</span></code></a>
+and <code class="xref py py-class docutils literal notranslate"><span class="pre">cdtime.comptime</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;julday&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;cnes&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;nasa&quot;</span></code>: Considered as juldian days.</li>
+<li>Valid time units string: Converted using <code class="xref py py-class docutils literal notranslate"><span class="pre">cdtime.reldate</span></code>.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If not an <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> time axis, first argument may be a list.
+In this case, a list is also returned.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span> <span class="p">;</span> <span class="kn">import</span> <span class="nn">cdtime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="n">comptime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comptime</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="go">2000-1-1 0:0:0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comptime</span><span class="p">(</span><span class="n">cdtime</span><span class="o">.</span><span class="n">reltime</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="s1">&#39;days since 2008&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">day</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comptime</span><span class="p">(</span><span class="s1">&#39;1900-01-01&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
+<span class="go">1900</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.atime.reltime" title="vacumm.misc.atime.reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">reltime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.datetime" title="vacumm.misc.atime.datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">datetime()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.daily">
+<code class="descname">daily</code><span class="sig-paren">(</span><em>data</em>, <em>hstart=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.daily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to daily means</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A cdms variable with a time axis.</li>
+<li><em>hstart</em>: First hour of daily intervals.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dsst</span> <span class="o">=</span> <span class="n">daily</span><span class="p">(</span><span class="n">sst</span><span class="p">,</span> <span class="n">hstart</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first"><a class="reference internal" href="#vacumm.misc.atime.daily_bounds" title="vacumm.misc.atime.daily_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_bounds()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.reduce" title="vacumm.misc.atime.reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">reduce()</span></code></a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A cdms variable on a daily time axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.daily_bounds">
+<code class="descname">daily_bounds</code><span class="sig-paren">(</span><em>taxis</em>, <em>hstart=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#daily_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.daily_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a daily time bounds array from a time axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>taxis</strong>: A time axis or a variable with a time axis.</li>
+<li><strong>hstart</strong>, optional: First hour of each daily bounds.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.datetime">
+<code class="descname">datetime</code><span class="sig-paren">(</span><em>mytimes</em>, <em>nummode='mpl'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#datetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a> format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytimes</strong>: Time as string, <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.reltime()</span></code>, a number,
+or a: mod:<cite>cdms2</cite> time axis.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If not an <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> time axis, first argument may be a list.
+In this case, a list is also returned.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.reltime" title="vacumm.misc.atime.reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">reltime()</span></code></a>   <a class="reference internal" href="#vacumm.misc.atime.strtime" title="vacumm.misc.atime.strtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">strtime()</span></code></a>    <a class="reference internal" href="#vacumm.misc.atime.numtime" title="vacumm.misc.atime.numtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">numtime()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.day_of_the_year">
+<code class="descname">day_of_the_year</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#day_of_the_year"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.day_of_the_year" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the day of the year of a specified date</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.detrend">
+<code class="descname">detrend</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#detrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.detrend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linear detrend</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.filter_time_selector">
+<code class="descname">filter_time_selector</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#filter_time_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.filter_time_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pure time selector from all arguments</p>
+<p>All components that are not recognized as a time selection are not kept.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ids</strong>, optional: Special keyword to specify allowed time ids in addition
+to generic ones defined by <code class="xref py py-attr docutils literal notranslate"><span class="pre">cdms2.convention.time_aliases</span></code>.</li>
+<li><strong>out</strong>, optional: Inverse the process by removing all time selections
+(see <a class="reference internal" href="misc.misc.html#vacumm.misc.misc.filter_selector" title="vacumm.misc.misc.filter_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_selector()</span></code></a>)?</li>
+<li><strong>keeppos</strong>, optional: Remove positional components
+(see <a class="reference internal" href="misc.misc.html#vacumm.misc.misc.filter_selector" title="vacumm.misc.misc.filter_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_selector()</span></code></a>)?</li>
+<li><strong>noslice</strong>, optional: Remove slices
+(see <a class="reference internal" href="misc.misc.html#vacumm.misc.misc.filter_selector" title="vacumm.misc.misc.filter_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_selector()</span></code></a>)?</li>
+<li>Positional argument can be coordinates intervals, slices,
+dictionaries or cdms2 selectors.</li>
+<li>Optional arguments must have a key identified as time,
+and a value as coordinates or slice.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.fixcomptime">
+<code class="descname">fixcomptime</code><span class="sig-paren">(</span><em>mytime</em>, <em>decimals=3</em>, <em>copy=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#fixcomptime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.fixcomptime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fix the 60s bug of <code class="xref py py-class docutils literal notranslate"><span class="pre">cdtime.comptime</span></code> objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytime</strong>: Comptime or list of comptimes</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.from_utc">
+<code class="descname">from_utc</code><span class="sig-paren">(</span><em>mytime</em>, <em>new_tz</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#from_utc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.from_utc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.get_dt">
+<code class="descname">get_dt</code><span class="sig-paren">(</span><em>axis</em>, <em>units=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#get_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.get_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the time steps of an axis.
+Value is computed according to the median time step,
+and returned in original or specified units.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>axis</strong>: A time axis.</li>
+<li><strong>units</strong>, optional: Another valid unit type (cdtime or string)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">Time step</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_dt</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_dt</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getTime</span><span class="p">(),</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">Months</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_dt</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getTime</span><span class="p">(),</span> <span class="s1">&#39;months&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.atime.unit_type" title="vacumm.misc.atime.unit_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_type()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.has_time_pattern">
+<code class="descname">has_time_pattern</code><span class="sig-paren">(</span><em>ss</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#has_time_pattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.has_time_pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does ss string contains date pattern like %Y?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.hourly">
+<code class="descname">hourly</code><span class="sig-paren">(</span><em>data</em>, <em>frequency=24</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#hourly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.hourly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to hourly means</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A cdms variable.</li>
+<li><em>frequency</em> Used when different from hourly is requested [default: 24]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A cdms variable on a hourly time axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.hourly_bounds">
+<code class="descname">hourly_bounds</code><span class="sig-paren">(</span><em>taxis</em>, <em>mstart=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#hourly_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.hourly_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a hourly time bounds array from a time axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>taxis</strong>: A time axis or a variable with a time axis.</li>
+<li><strong>mstart</strong>, optional: First minute of each daily bounds.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.hourly_exact">
+<code class="descname">hourly_exact</code><span class="sig-paren">(</span><em>data</em>, <em>time_units=None</em>, <em>maxgap=None</em>, <em>ctlims=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#hourly_exact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.hourly_exact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linearly interpolate data at exact beginning of hours</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong>: Cdms variable.</li>
+<li><em>time_units</em>: Change time units.</li>
+<li><em>maxgap</em>: Maximal gap in hours to enable interpolation [default: None].</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.interp">
+<code class="descname">interp</code><span class="sig-paren">(</span><em>vari</em>, <em>outtimes</em>, <em>squeeze=1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.interp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linear interpolation in time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vari**</strong>: A cdms variable with a time axis</li>
+<li><strong>outtimes</strong>: A time axis, or a list (or single element) of date strings, comptime, reltime, datetime times.</li>
+<li><em>squeeze</em>: Remove uneeded output dimensions [default: 1]</li>
+<li>all other keywords are passed to <a class="reference internal" href="misc.grid.regridding.html#vacumm.misc.grid.regridding.interp1d" title="vacumm.misc.grid.regridding.interp1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">interp1d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.interp_clim">
+<code class="descname">interp_clim</code><span class="sig-paren">(</span><em>clim</em>, <em>times</em>, <em>method='linear'</em>, <em>day=15</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#interp_clim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.interp_clim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate a climatology at specified dates</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_axistime">
+<code class="descname">is_axistime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_axistime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_axistime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a time is a <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> time axis</p>
+<p>Simple shortcut to <a class="reference internal" href="misc.axes.html#vacumm.misc.axes.istime" title="vacumm.misc.axes.istime"><code class="xref py py-func docutils literal notranslate"><span class="pre">istime()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>mytime</strong>: object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="misc.axes.html#vacumm.misc.axes.istime" title="vacumm.misc.axes.istime"><code class="xref py py-func docutils literal notranslate"><span class="pre">istime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_comptime" title="vacumm.misc.atime.is_comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_comptime()</span></code></a>
+<a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_cdtime" title="vacumm.misc.atime.is_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_cdtime()</span></code></a>   <a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_cdtime">
+<code class="descname">is_cdtime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_cdtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_cdtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a mytime is a cdat time (from cdtime)</p>
+<p>Equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">is_reltime</span><span class="p">(</span><span class="n">mytime</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_comptime</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>mytime</strong>: object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cdtime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.atime</span> <span class="k">import</span> <span class="n">is_cdtime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_cdtime</span><span class="p">(</span><span class="n">cdtime</span><span class="o">.</span><span class="n">reltime</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;days since 2000&#39;</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_cdtime</span><span class="p">(</span><span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_cdtime</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.atime.is_comptime" title="vacumm.misc.atime.is_comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_comptime()</span></code></a><a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a>  <a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a>   <a class="reference internal" href="#vacumm.misc.atime.is_datetime" title="vacumm.misc.atime.is_datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_datetime()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_comptime">
+<code class="descname">is_comptime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_comptime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_comptime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a time is a cdat comptime (from <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdtime</span></code>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>mytime</strong>: object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.atime.is_datetime" title="vacumm.misc.atime.is_datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_datetime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_cdtime" title="vacumm.misc.atime.is_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_cdtime()</span></code></a>  <a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_datetime">
+<code class="descname">is_datetime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_datetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a time is a <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a> time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>mytime</strong>: object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.atime.is_comptime" title="vacumm.misc.atime.is_comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_cdtime" title="vacumm.misc.atime.is_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_cdtime()</span></code></a>   <a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_in_time_interval">
+<code class="descname">is_in_time_interval</code><span class="sig-paren">(</span><em>this_time</em>, <em>time_range</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_in_time_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_in_time_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a time is in specified closed/open range</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>this_time</strong>: time to check (string or cdat time)</li>
+<li><strong>time_range</strong>: 2(or 3)-element range (strings or cdat times) like (‘1975’,1980-10-01’,’co)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_in_range</span><span class="p">(</span><span class="s1">&#39;2000-12&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;2000-11&#39;</span><span class="p">,</span> <span class="s1">&#39;2001&#39;</span><span class="p">))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.atime.check_range" title="vacumm.misc.atime.check_range"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_range()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_interval">
+<code class="descname">is_interval</code><span class="sig-paren">(</span><em>interval</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if interval is a valid time interval</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>interval</strong>: It should be in the following generic form</li>
+</ul>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">(&lt;time0&gt;,&lt;time1&gt;[,&lt;bounds&gt;])</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;time?&gt;</span></code> is a valid time
+(see <a class="reference internal" href="#vacumm.misc.atime.time_type" title="vacumm.misc.atime.time_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">time_type()</span></code></a> and <code class="xref py py-func docutils literal notranslate"><span class="pre">is_valid()</span></code>) and <code class="docutils literal notranslate"><span class="pre">&lt;bounds&gt;</span></code> are
+interval bounds such as <code class="docutils literal notranslate"><span class="pre">&quot;co&quot;</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_numtime">
+<code class="descname">is_numtime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_numtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_numtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply check if a mytime is a number !</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>mytime</strong>: object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.atime.is_datetime" title="vacumm.misc.atime.is_datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_datetime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_comptime" title="vacumm.misc.atime.is_comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a>
+<a class="reference internal" href="#vacumm.misc.atime.is_cdtime" title="vacumm.misc.atime.is_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_cdtime()</span></code></a>   <a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_reltime">
+<code class="descname">is_reltime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_reltime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_reltime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a time is a cdat reltime (from <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdtime</span></code>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>mytime</strong>: object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.atime.is_comptime" title="vacumm.misc.atime.is_comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_cdtime" title="vacumm.misc.atime.is_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_cdtime()</span></code></a>   <a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_strtime">
+<code class="descname">is_strtime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_strtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_strtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a time is a valid string date</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>mytime</strong>: object to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.atime.is_datetime" title="vacumm.misc.atime.is_datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_datetime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_comptime" title="vacumm.misc.atime.is_comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a>
+<a class="reference internal" href="#vacumm.misc.atime.is_cdtime" title="vacumm.misc.atime.is_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_cdtime()</span></code></a>   <a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.is_time">
+<code class="descname">is_time</code><span class="sig-paren">(</span><em>mytime</em>, <em>alsonum=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#is_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.is_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if mytime is a CDAT time, a <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a> or date valid string.</p>
+<p>Equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">timetype</span><span class="p">(</span><span class="n">mytime</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.atime.is_datetime" title="vacumm.misc.atime.is_datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_datetime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_reltime" title="vacumm.misc.atime.is_reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_reltime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_cdtime" title="vacumm.misc.atime.is_cdtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_cdtime()</span></code></a>
+<a class="reference internal" href="#vacumm.misc.atime.is_numtime" title="vacumm.misc.atime.is_numtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_numtime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.is_time" title="vacumm.misc.atime.is_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_time()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.itv_intersect">
+<code class="descname">itv_intersect</code><span class="sig-paren">(</span><em>itv1</em>, <em>itv2</em>, <em>bb=None</em>, <em>aslogical=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#itv_intersect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.itv_intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the intersection of 2 time intervals</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body">The interval or <code class="docutils literal notranslate"><span class="pre">False</span></code> if not intersection is found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.itv_union">
+<code class="descname">itv_union</code><span class="sig-paren">(</span><em>itv1</em>, <em>itv2</em>, <em>bb=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#itv_union"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.itv_union" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the union of 2 time intervals</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.julday">
+<code class="descname">julday</code><span class="sig-paren">(</span><em>mytime</em>, <em>mode='cnes'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#julday"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.julday" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to a CNES julian days, i.e. days from 1950 (CNES) or 1958 (NASA)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>mytime</strong>: Time as string, <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.reltime()</span></code>, a number
+or a: mod:<cite>cdms2</cite> time axis.</p>
+</li>
+<li><p class="first"><strong>ref</strong>, optional: computation mode</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cnes&quot;</span></code>: days from 1958-01-01</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;nasa&quot;</span></code>: days from 1958-01-01</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If not an <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> time axis, first argument may be a list.
+In this case, a list is also returned.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.reltime" title="vacumm.misc.atime.reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">reltime()</span></code></a>  <a class="reference internal" href="#vacumm.misc.atime.datetime" title="vacumm.misc.atime.datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">datetime()</span></code></a>  <a class="reference internal" href="#vacumm.misc.atime.strtime" title="vacumm.misc.atime.strtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">strtime()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.lindates">
+<code class="descname">lindates</code><span class="sig-paren">(</span><em>first</em>, <em>last</em>, <em>incr</em>, <em>units=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#lindates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.lindates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of linearly incrementing dates</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>first</strong>: first date</li>
+<li><strong>last</strong>: first date</li>
+<li><strong>incr</strong>: increment step OR number of steps if units is None</li>
+<li><strong>units</strong>: units like “days” (see <a class="reference internal" href="#vacumm.misc.atime.unit_type" title="vacumm.misc.atime.unit_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">unit_type()</span></code></a>) or None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dates</span> <span class="o">=</span> <span class="n">lindates</span><span class="p">(</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span> <span class="s1">&#39;2002-05&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;months&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dates</span> <span class="o">=</span> <span class="n">lindates</span><span class="p">(</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span> <span class="s1">&#39;2002-05&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>list of <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code> dates</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.midnight_date">
+<code class="descname">midnight_date</code><span class="sig-paren">(</span><em>mydate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#midnight_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.midnight_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round a date to the closest midnight</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">midnight_date</span><span class="p">(</span><span class="s1">&#39;2010-11-29 23:10&#39;</span><span class="p">)</span>
+<span class="go">2010-11-30 0:0:0.0</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdtime.comptime</span></code> date at midnight</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.midnight_interval">
+<code class="descname">midnight_interval</code><span class="sig-paren">(</span><em>date</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#midnight_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.midnight_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round dates of a closed interval to the closest midnight</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">midnight_interval</span><span class="p">(</span><span class="s1">&#39;2010-11-29 23:10&#39;</span><span class="p">)</span>
+<span class="go">(2010-11-30 0:0:0.0, 2010-11-30 0:0:0.0, &#39;ccb&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">midnight_interval</span><span class="p">((</span><span class="s1">&#39;2010-11-29 23:10&#39;</span><span class="p">,</span><span class="s1">&#39;2010-11-30 04&#39;</span><span class="p">))</span>
+<span class="go">(2010-11-30 0:0:0.0, 2010-11-30 0:0:0.0, &#39;ccb&#39;)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdtime.comptime</span></code> interval</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.monthly">
+<code class="descname">monthly</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#monthly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.monthly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to monthly means</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A cdms variable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A cdms variable on a hourly time axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.mpl">
+<code class="descname">mpl</code><span class="sig-paren">(</span><em>mytimes</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#mpl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.mpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to Matplotlib units.</p>
+<p>Time objects (or list of them) are converted to
+pure numerical values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytimes</strong>: Time object (or list), or time axis.</li>
+<li><strong>copy</strong>, optional: Copy time axis or not?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function does not use <a class="reference internal" href="#vacumm.misc.atime.ch_units" title="vacumm.misc.atime.ch_units"><code class="xref py py-func docutils literal notranslate"><span class="pre">ch_units()</span></code></a>.
+It uses Matplotlib internal function
+<a class="reference external" href="https://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num" title="(in Matplotlib v3.0.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.dates.date2num()</span></code></a> instead.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">taxis</span> <span class="o">=</span> <span class="n">create_time</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10.</span><span class="p">),</span> <span class="s1">&#39;hours since 2000-01-01&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">maxis</span> <span class="o">=</span> <span class="n">mpl</span><span class="p">(</span><span class="n">taxis</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">maxis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">730120.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">maxis</span><span class="o">.</span><span class="n">units</span>
+<span class="go">days since 0001</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.notz">
+<code class="descname">notz</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#notz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.notz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suppres time zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li>A <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>A <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a> instance with not TZ</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.now">
+<code class="descname">now</code><span class="sig-paren">(</span><em>utc=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#now"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.now" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return current time as <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>utc</strong>, optional: Return UTC time [default: False]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.num_to_ascii">
+<code class="descname">num_to_ascii</code><span class="sig-paren">(</span><em>yyyy=1</em>, <em>mm=1</em>, <em>dd=1</em>, <em>hh=0</em>, <em>mn=0</em>, <em>ss=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#num_to_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.num_to_ascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from [yyyy,mm,dd,hh,mn,ss] or component time  or relative time to ‘yyyy-mm-dd hh:mn:ss’</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>yyyy</em>: int year OR component OR relative time (cdms) [default: 1]</li>
+<li><em>mm</em>: month [default: 1]</li>
+<li><em>dd</em>: day [default: 1]</li>
+<li><em>hh</em>: hour [default: 0]</li>
+<li><em>mn</em>: minute [default: 0]</li>
+<li><em>ss</em>: second [default: 0]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">num_to_ascii</span><span class="p">(</span><span class="n">month</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">0001-02-01 00:00:00</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num_to_ascii</span><span class="p">(</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="go">2000-10-01 00:00:00</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.numtime">
+<code class="descname">numtime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#numtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.numtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to a numeric time using <a class="reference external" href="https://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num" title="(in Matplotlib v3.0.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">date2num()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytime</strong>: Time as string, <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.reltime()</span></code>, a number
+or a: mod:<cite>cdms2</cite> time axis.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If not an <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> time axis, first argument may be a list.
+In this case, a list is also returned.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.reltime" title="vacumm.misc.atime.reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">reltime()</span></code></a>  <a class="reference internal" href="#vacumm.misc.atime.datetime" title="vacumm.misc.atime.datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">datetime()</span></code></a>  <a class="reference internal" href="#vacumm.misc.atime.strtime" title="vacumm.misc.atime.strtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">strtime()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.paris_to_utc">
+<code class="descname">paris_to_utc</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#paris_to_utc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.paris_to_utc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.pat2freq">
+<code class="descname">pat2freq</code><span class="sig-paren">(</span><em>pattern</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#pat2freq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.pat2freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the maximal frequency (“days”, “hours”, etc) associated with a date pattern</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>pattern</strong>: A string containg date patterns (like ‘%d’ or ‘%%d’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">One of <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;seconds&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;minutes&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hours&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;days&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;months&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;yaers&quot;</span></code>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">pat2freq</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y&#39;</span><span class="p">)</span>
+<span class="go">days</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.pat2glob">
+<code class="descname">pat2glob</code><span class="sig-paren">(</span><em>pattern</em>, <em>esc=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#pat2glob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.pat2glob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a date pattern to a rough global matching pattern</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A global matching pattern is a UNIX file pattern.
+See <a class="reference external" href="https://docs.python.org/dev/library/glob.html#glob.glob" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">glob.glob()</span></code></a> for more information.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The output global pattern is NOT strict, and thus
+may embed more than requested by the date pattern.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pattern</strong>: A string containg date patterns (like ‘%d’ or ‘%%d’)</li>
+<li><strong>esc</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, date patterns are escaped (like ‘%%d’)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.plot_dt">
+<code class="descname">plot_dt</code><span class="sig-paren">(</span><em>file</em>, <em>time_axis=None</em>, <em>nice=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#plot_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.plot_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot axis time step of a netcdf file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.reduce">
+<code class="descname">reduce</code><span class="sig-paren">(</span><em>vari</em>, <em>geterr=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#reduce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.reduce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Average time steps that have the same bounds or time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong>: Aray with a valid time axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">taxis</span> <span class="o">=</span> <span class="n">sst</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tbounds</span> <span class="o">=</span> <span class="n">daily_bounds</span><span class="p">(</span><span class="n">taxis</span><span class="p">,</span> <span class="n">hstart</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxis</span><span class="o">.</span><span class="n">setBounds</span><span class="p">(</span><span class="n">tbounds</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nightly_sst</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">sst</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.reduce_old">
+<code class="descname">reduce_old</code><span class="sig-paren">(</span><em>data</em>, <em>comp=True</em>, <em>fast=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#reduce_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.reduce_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce a variable in time by performing time average on time step that have the same time or time bounds.</p>
+<ul class="simple">
+<li><strong>data</strong>: A cdms variable with first axis supposed to be time.</li>
+<li><em>comp</em>: Call to <a class="reference internal" href="#vacumm.misc.atime.compress" title="vacumm.misc.atime.compress"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compress()</span></code></a> before reducing [default: True]</li>
+<li><em>fast</em>: Convert to pure numpy before processing, then convert back to cdms variable [default: True]</li>
+</ul>
+<p>Return: The new variable on its new time axis.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.reltime">
+<code class="descname">reltime</code><span class="sig-paren">(</span><em>mytime</em>, <em>units</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#reltime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.reltime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to func:<cite>cdtime.reltime</cite> format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytime</strong>: Time as string, <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.reltime()</span></code>, a number
+or a: mod:<cite>cdms2</cite> time axis.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If not an <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> time axis, first argument may be a list.
+In this case, a list is also returned.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.datetime" title="vacumm.misc.atime.datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">datetime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.strtime" title="vacumm.misc.atime.strtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">strtime()</span></code></a>   <a class="reference internal" href="#vacumm.misc.atime.numtime" title="vacumm.misc.atime.numtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">numtime()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.round_date">
+<code class="descname">round_date</code><span class="sig-paren">(</span><em>mydate</em>, <em>round_type</em>, <em>mode='round'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#round_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.round_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round a date to a step in year, month, day, hour, minute or second</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>mydate</strong>: A date compatible with <a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a>.</p>
+</li>
+<li><p class="first"><strong>round_type</strong>: A string like “year” or a tuple like (3, “year”).</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Rounding mode</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;ceil&quot;</span></code>: Choose the upper time.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;floor&quot;</span></code>: Choose the lower time.</li>
+<li>Else choose the nearest.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.round_interval">
+<code class="descname">round_interval</code><span class="sig-paren">(</span><em>time</em>, <em>round_type</em>, <em>mode='inner'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#round_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.round_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round an time interval using <a class="reference internal" href="#vacumm.misc.atime.round_date" title="vacumm.misc.atime.round_date"><code class="xref py py-func docutils literal notranslate"><span class="pre">round_date()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>time</strong>: A time interval like <code class="docutils literal notranslate"><span class="pre">(time0,</span> <span class="pre">time1,</span> <span class="pre">'cce')</span></code></p>
+</li>
+<li><p class="first"><strong>round_type</strong>: A string like “year” or a tuple like (3, “year”).</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Rounding mode</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;inner&quot;</span></code>: Upper for the lower bound and lower for the upper bound.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;outer&quot;</span></code>: Opposite to “inner”</li>
+<li>tuple: first is applied to lower bound, second to upper bound.</li>
+<li>Else, passed to <a class="reference internal" href="#vacumm.misc.atime.round_date" title="vacumm.misc.atime.round_date"><code class="xref py py-func docutils literal notranslate"><span class="pre">round_date()</span></code></a> and applied to both bounds.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.selector">
+<code class="descname">selector</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.atime.selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pure time selector from all arguments</p>
+<p>All components that are not recognized as a time selection are not kept.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ids</strong>, optional: Special keyword to specify allowed time ids in addition
+to generic ones defined by <code class="xref py py-attr docutils literal notranslate"><span class="pre">cdms2.convention.time_aliases</span></code>.</li>
+<li><strong>out</strong>, optional: Inverse the process by removing all time selections
+(see <a class="reference internal" href="misc.misc.html#vacumm.misc.misc.filter_selector" title="vacumm.misc.misc.filter_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_selector()</span></code></a>)?</li>
+<li><strong>keeppos</strong>, optional: Remove positional components
+(see <a class="reference internal" href="misc.misc.html#vacumm.misc.misc.filter_selector" title="vacumm.misc.misc.filter_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_selector()</span></code></a>)?</li>
+<li><strong>noslice</strong>, optional: Remove slices
+(see <a class="reference internal" href="misc.misc.html#vacumm.misc.misc.filter_selector" title="vacumm.misc.misc.filter_selector"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_selector()</span></code></a>)?</li>
+<li>Positional argument can be coordinates intervals, slices,
+dictionaries or cdms2 selectors.</li>
+<li>Optional arguments must have a key identified as time,
+and a value as coordinates or slice.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.strftime">
+<code class="descname">strftime</code><span class="sig-paren">(</span><em>fmt</em>, <em>mytime=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#strftime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.strftime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert current time, datetime, cdtime or string time to strftime</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>fmt</strong>: Time format with date patterns, like <code class="docutils literal notranslate"><span class="pre">&quot;%Y-%m-%d&quot;</span></code>.</li>
+<li><strong>mytime</strong>, optional: If None, takes current time using</li>
+</ul>
+<blockquote>
+<div><p>(<a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime.now" title="(in Python v3.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">now()</span></code></a>)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="go">2014-02-25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ctime</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Hh%M&#39;</span><span class="p">,</span> <span class="s1">&#39;2020&#39;</span><span class="p">)</span>
+<span class="go">00h00</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime.strftime" title="(in Python v3.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">datetime.datetime.strftime()</span></code></a> and
+<a class="reference external" href="http://docs.python.org/dev/library/datetime.html#strftime-strptime-behavior">this link</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.strptime">
+<code class="descname">strptime</code><span class="sig-paren">(</span><em>mytime</em>, <em>fmt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#strptime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.strptime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a string according to a format to retreive a component time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>fmt</strong>: Time format with date patterns, like <code class="docutils literal notranslate"><span class="pre">&quot;%Y-%m-%d&quot;</span></code>.</li>
+<li><strong>mytime</strong>: Date string.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">strptime</span><span class="p">(</span><span class="s1">&#39;25 Jan 2000, &#39;</span><span class="o">%</span><span class="n">d</span> <span class="o">%</span><span class="n">b</span> <span class="o">%</span><span class="n">Y</span><span class="s1">&#39;).month</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime.strptime" title="(in Python v3.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">datetime.datetime.strptime()</span></code></a> and
+<a class="reference external" href="http://docs.python.org/dev/library/datetime.html#strftime-strptime-behavior">this link</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.strtime">
+<code class="descname">strtime</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#strtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.strtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to valid string date</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mytime</strong>: Time as string, <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.reltime()</span></code>, a number,
+or a: mod:<cite>cdms2</cite> time axis.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If not an <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> time axis, first argument may be a list.
+In this case, a list is also returned.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sea also:</th><td class="field-body"><a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a> <a class="reference internal" href="#vacumm.misc.atime.reltime" title="vacumm.misc.atime.reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">reltime()</span></code></a>  <a class="reference internal" href="#vacumm.misc.atime.datetime" title="vacumm.misc.atime.datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">datetime()</span></code></a>  <a class="reference internal" href="#vacumm.misc.atime.numtime" title="vacumm.misc.atime.numtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">numtime()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.tic">
+<code class="descname">tic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#tic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.tic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launch a time counter at the begining of your program.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><ul class="first simple">
+<li>A time to be used with the toc() function.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stime</span> <span class="o">=</span> <span class="n">tic</span><span class="p">()</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.time_selector">
+<code class="descname">time_selector</code><span class="sig-paren">(</span><em>arg0</em>, <em>arg1=None</em>, <em>bounds=None</em>, <em>round=False</em>, <em>utc=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#time_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.time_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time selector formatter that returns start date and end date as component times</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">selector</span><span class="p">(</span><span class="s1">&#39;2006&#39;</span><span class="p">,</span><span class="s1">&#39;2007&#39;</span><span class="p">)</span> <span class="c1"># between two dates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">selector</span><span class="p">(</span><span class="n">comptime</span><span class="p">(</span><span class="mi">1950</span><span class="p">))</span> <span class="c1"># from a date to now</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">selector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;month&#39;</span><span class="p">,</span><span class="s1">&#39;co&#39;</span><span class="p">)</span> <span class="c1"># from now into the past</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.time_split">
+<code class="descname">time_split</code><span class="sig-paren">(</span><em>what</em>, <em>how</em>, <em>roundit=None</em>, <em>bb='co'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#time_split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.time_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic function to split an interval into subintervals</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>what</strong>: Time interval, dates or time axis
+that can be converted using <a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a>.</p>
+</li>
+<li><p class="first"><strong>how</strong>: Splitting specifications.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>A number: divide the interval in equal subintervals.</li>
+<li>A single or a list of dates: build subintervals
+with theses dates.</li>
+<li>A <a class="reference internal" href="#vacumm.misc.atime.IterDates" title="vacumm.misc.atime.IterDates"><code class="xref py py-class docutils literal notranslate"><span class="pre">IterDates</span></code></a> instance: generate a list of
+dates and make as in 2.</li>
+<li>A <a class="reference internal" href="#vacumm.misc.atime.Intervals" title="vacumm.misc.atime.Intervals"><code class="xref py py-class docutils literal notranslate"><span class="pre">Intervals</span></code></a> instance: directly generate
+a list of intervals.</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>roundit</strong>, optional: Round interval. Valid only if
+<code class="docutils literal notranslate"><span class="pre">how</span></code> is an time step specification such as
+<code class="docutils literal notranslate"><span class="pre">(1,'year')</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;year&quot;</span></code> (see <a class="reference internal" href="#vacumm.misc.atime.Intervals" title="vacumm.misc.atime.Intervals"><code class="xref py py-class docutils literal notranslate"><span class="pre">Intervals</span></code></a>).</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.time_split_nmax">
+<code class="descname">time_split_nmax</code><span class="sig-paren">(</span><em>what</em>, <em>nmax</em>, <em>roundit=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#time_split_nmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.time_split_nmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smartly split an interval with a length into subintervals of max length</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.time_type">
+<code class="descname">time_type</code><span class="sig-paren">(</span><em>mytime</em>, <em>out='string'</em>, <em>check=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#time_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.time_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the type of time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>mytime</strong>: A time of one of the following types:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.comptime()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">cdtime.reltime()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">datetime.datetime()</span></code> or a date string.</p>
+</li>
+<li><p class="first"><strong>out</strong>, optional: Output format, one of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code>: Return one of <code class="docutils literal notranslate"><span class="pre">&quot;comptime&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;reltime&quot;</span></code>
+<code class="docutils literal notranslate"><span class="pre">&quot;datetime&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;strtime&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;numtime&quot;</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;type&quot;</span></code>: Simply return result of <code class="docutils literal notranslate"><span class="pre">type(mytime)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;func&quot;</span></code>: Return the function used to convert
+to this type : <a class="reference internal" href="#vacumm.misc.atime.comptime" title="vacumm.misc.atime.comptime"><code class="xref py py-func docutils literal notranslate"><span class="pre">comptime()</span></code></a>, <a class="reference internal" href="#vacumm.misc.atime.reltime" title="vacumm.misc.atime.reltime"><code class="xref py py-func docutils literal notranslate"><span class="pre">reltime()</span></code></a>,
+<a class="reference internal" href="#vacumm.misc.atime.datetime" title="vacumm.misc.atime.datetime"><code class="xref py py-func docutils literal notranslate"><span class="pre">datetime()</span></code></a>, <a class="reference internal" href="#vacumm.misc.atime.numtime" title="vacumm.misc.atime.numtime"><code class="xref py py-func docutils literal notranslate"><span class="pre">numtime()</span></code></a>.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first"><code class="docutils literal notranslate"><span class="pre">None</span></code> if not a time, or see <strong>out</strong>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">time_type</span><span class="p">(</span><span class="s1">&#39;2000-10&#39;</span><span class="p">)</span>
+<span class="go">&#39;str&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time_type</span><span class="p">(</span><span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">out</span><span class="o">=</span><span class="s1">&#39;func&#39;</span><span class="p">)</span>
+<span class="go">&lt;function comptime at 0x31c4aa0&gt;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.to_utc">
+<code class="descname">to_utc</code><span class="sig-paren">(</span><em>mytime</em>, <em>old_tz</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#to_utc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.to_utc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.toc">
+<code class="descname">toc</code><span class="sig-paren">(</span><em>stime=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#toc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.toc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the cost of the computation and display in an adapted format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>stime</strong>, optional: The initial time given by the tic() function.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first simple">
+<li>Display the time spent in the program.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stime</span> <span class="o">=</span> <span class="n">tic</span><span class="p">()</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">toc</span><span class="p">(</span><span class="n">stime</span><span class="o">=</span><span class="n">stime</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.trend">
+<code class="descname">trend</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#trend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.trend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get linear trend</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.tsel2slice">
+<code class="descname">tsel2slice</code><span class="sig-paren">(</span><em>taxis</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#tsel2slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.tsel2slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert time selections on a time axis to a valid slice or None</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>asind</strong>, optional: Return indices instead of a slice.</li>
+<li><strong>nonone</strong>, optional: Return the full slice instead of <code class="docutils literal notranslate"><span class="pre">None</span></code> if everything is selected.</li>
+<li>Positional argument can be coordinates intervals, slices,
+dictionaries or cdms2 selectors.</li>
+<li>Optional arguments must have a key identified as time or be the axis id,
+and a value as coordinates or slice.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first simple">
+<li>A <a class="reference external" href="https://docs.python.org/dev/library/functions.html#slice" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">slice</span></code></a> or <code class="docutils literal notranslate"><span class="pre">(i,j,k)</span></code> when possible.</li>
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code> or the full slice if no slice needed (everything is selected).</li>
+<li><code class="docutils literal notranslate"><span class="pre">False</span></code> if no intersection is found.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">myslice</span> <span class="o">=</span> <span class="n">tsel2slice</span><span class="p">(</span><span class="n">taxis</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span> <span class="s1">&#39;2002&#39;</span><span class="p">,</span> <span class="s1">&#39;co&#39;</span><span class="p">),</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myslice</span> <span class="o">=</span> <span class="n">tsel2slice</span><span class="p">(</span><span class="n">taxis</span><span class="p">,</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">selectors</span><span class="o">.</span><span class="n">Selector</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span><span class="s1">&#39;2002&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myslice</span> <span class="o">=</span> <span class="n">tsel2slice</span><span class="p">(</span><span class="n">taxis</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="nb">dict</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span><span class="s1">&#39;2002&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.tz_to_tz">
+<code class="descname">tz_to_tz</code><span class="sig-paren">(</span><em>mytime</em>, <em>old_tz</em>, <em>new_tz</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#tz_to_tz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.tz_to_tz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert time from one time zone to another one</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.unit_type">
+<code class="descname">unit_type</code><span class="sig-paren">(</span><em>units</em>, <em>string_type=False</em>, <em>s=True</em>, <em>raiseerr=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#unit_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.unit_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a type of units in a suitable form with checkings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>units</strong>: A valid string or cdtime type of units.</li>
+<li><em>string_type</em>: Returns a string type instead of a cdtime type [default: False]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">A valid string or cdtime type of units</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unit_type</span><span class="p">(</span><span class="s1">&#39;minutes&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unit_type</span><span class="p">(</span><span class="n">cdtime</span><span class="o">.</span><span class="n">Minutes</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.utc_to_paris">
+<code class="descname">utc_to_paris</code><span class="sig-paren">(</span><em>mytime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#utc_to_paris"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.utc_to_paris" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.atime.yearly">
+<code class="descname">yearly</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/atime.html#yearly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.atime.yearly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to yearly means</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A cdms variable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A cdms variable on a hourly time axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

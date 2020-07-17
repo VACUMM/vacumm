@@ -1,0 +1,990 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.8.10. vacumm.misc.grid.masking – Masking &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.8.10. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.masking</span></code> – Masking</a></li>
+<li><a class="reference internal" href="#overview">2.3.8.11. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.8.12. Content</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.grid.masking.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-grid-masking-masking">
+<span id="lib-misc-grid-masking"></span><h1>2.3.8.10. <a class="reference internal" href="#module-vacumm.misc.grid.masking" title="vacumm.misc.grid.masking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid.masking</span></code></a> – Masking<a class="headerlink" href="#vacumm-misc-grid-masking-masking" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="overview">
+<h1>2.3.8.11. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.check_poly_islands" title="vacumm.misc.grid.masking.check_poly_islands"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_poly_islands()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.check_poly_straits" title="vacumm.misc.grid.masking.check_poly_straits"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_poly_straits()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.clip_shape" title="vacumm.misc.grid.masking.clip_shape"><code class="xref py py-func docutils literal notranslate"><span class="pre">clip_shape()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.clip_shapes" title="vacumm.misc.grid.masking.clip_shapes"><code class="xref py py-func docutils literal notranslate"><span class="pre">clip_shapes()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.convex_hull" title="vacumm.misc.grid.masking.convex_hull"><code class="xref py py-func docutils literal notranslate"><span class="pre">convex_hull()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.create_polygon" title="vacumm.misc.grid.masking.create_polygon"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.d2m" title="vacumm.misc.grid.masking.d2m"><code class="xref py py-func docutils literal notranslate"><span class="pre">d2m()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.envelop" title="vacumm.misc.grid.masking.envelop"><code class="xref py py-func docutils literal notranslate"><span class="pre">envelop()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.erode_coast" title="vacumm.misc.grid.masking.erode_coast"><code class="xref py py-func docutils literal notranslate"><span class="pre">erode_coast()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.get_avail_rate" title="vacumm.misc.grid.masking.get_avail_rate"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_avail_rate()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.get_coast" title="vacumm.misc.grid.masking.get_coast"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_coast()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.get_coastal_indices" title="vacumm.misc.grid.masking.get_coastal_indices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_coastal_indices()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.get_dist_to_coast" title="vacumm.misc.grid.masking.get_dist_to_coast"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dist_to_coast()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.grid_envelop" title="vacumm.misc.grid.masking.grid_envelop"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid_envelop()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.grid_envelop_mask" title="vacumm.misc.grid.masking.grid_envelop_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid_envelop_mask()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.mask2d" title="vacumm.misc.grid.masking.mask2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">mask2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.masked_polygon" title="vacumm.misc.grid.masking.masked_polygon"><code class="xref py py-func docutils literal notranslate"><span class="pre">masked_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.merge_masks" title="vacumm.misc.grid.masking.merge_masks"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge_masks()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.plot_polygon" title="vacumm.misc.grid.masking.plot_polygon"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_polygon()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.polygon_mask" title="vacumm.misc.grid.masking.polygon_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygon_mask()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.polygon_select" title="vacumm.misc.grid.masking.polygon_select"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygon_select()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.polygons" title="vacumm.misc.grid.masking.polygons"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygons()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.proj_shape" title="vacumm.misc.grid.masking.proj_shape"><code class="xref py py-func docutils literal notranslate"><span class="pre">proj_shape()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.resol_mask" title="vacumm.misc.grid.masking.resol_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">resol_mask()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.rsamp" title="vacumm.misc.grid.masking.rsamp"><code class="xref py py-func docutils literal notranslate"><span class="pre">rsamp()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.t2uvmasks" title="vacumm.misc.grid.masking.t2uvmasks"><code class="xref py py-func docutils literal notranslate"><span class="pre">t2uvmasks()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.uniq" title="vacumm.misc.grid.masking.uniq"><code class="xref py py-func docutils literal notranslate"><span class="pre">uniq()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.zcompress" title="vacumm.misc.grid.masking.zcompress"><code class="xref py py-func docutils literal notranslate"><span class="pre">zcompress()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.masking.GetLakes" title="vacumm.misc.grid.masking.GetLakes"><code class="xref py py-class docutils literal notranslate"><span class="pre">GetLakes</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">indices()</span></code></li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">lakes()</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">mask()</span></code></li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">ncells()</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">ocean()</span></code></li>
+<li><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.masking.Lakes" title="vacumm.misc.grid.masking.Lakes"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lakes</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.Lakes.indices" title="vacumm.misc.grid.masking.Lakes.indices"><code class="xref py py-meth docutils literal notranslate"><span class="pre">indices()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.Lakes.lakes" title="vacumm.misc.grid.masking.Lakes.lakes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lakes()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.Lakes.mask" title="vacumm.misc.grid.masking.Lakes.mask"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mask()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.Lakes.ncells" title="vacumm.misc.grid.masking.Lakes.ncells"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ncells()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.Lakes.ocean" title="vacumm.misc.grid.masking.Lakes.ocean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ocean()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.masking.Lakes.plot" title="vacumm.misc.grid.masking.Lakes.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h1>2.3.8.12. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Inheritance diagram:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-vacumm.misc.grid.masking"></span><span class="target" id="module-vacumm.misc.grid.masking"></span><p>Utilities to deal with masks and selections</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Tutorials: <a class="reference internal" href="../tutorials/misc.grid.masking.html#user-tut-misc-grid-masking"><span class="std std-ref">Les masques</span></a>, <a class="reference internal" href="../tutorials/misc.grid.polygons.html#user-tut-misc-grid-polygons"><span class="std std-ref">Les polygones</span></a></p>
+</div>
+<dl class="attribute">
+<dt id="vacumm.misc.grid.masking.GetLakes">
+<code class="descname">GetLakes</code><a class="headerlink" href="#vacumm.misc.grid.masking.GetLakes" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#vacumm.misc.grid.masking.Lakes" title="vacumm.misc.grid.masking.Lakes"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.grid.masking.Lakes</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.grid.masking.Lakes">
+<em class="property">class </em><code class="descname">Lakes</code><span class="sig-paren">(</span><em>mask</em>, <em>nmaxcells=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#Lakes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.Lakes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Find lakes in a 2D mask where 0 is water and 1 is land</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.grid</span> <span class="k">import</span> <span class="n">Lakes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">pcolor</span><span class="p">,</span><span class="n">show</span><span class="p">,</span><span class="n">title</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Build the mask</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">500</span><span class="p">,</span><span class="mi">500</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="mi">100</span><span class="p">:</span><span class="mi">102</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span><span class="p">[</span><span class="mi">103</span><span class="p">:</span><span class="mi">110</span><span class="p">,</span><span class="mi">200</span><span class="p">:</span><span class="mi">210</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span><span class="p">[</span><span class="mi">203</span><span class="p">:</span><span class="mi">210</span><span class="p">,</span><span class="mi">200</span><span class="p">:</span><span class="mi">220</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Find the lakes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lakes</span> <span class="o">=</span> <span class="n">Lakes</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="n">nmaxcells</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s1">&#39;Number of lakes:&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lakes</span><span class="o">.</span><span class="n">indices</span><span class="p">())</span>
+<span class="go">Number of lakes: 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pcolor</span><span class="p">(</span><span class="n">lakes</span><span class="o">.</span><span class="n">mask</span><span class="p">(),</span><span class="n">shading</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Lakes&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">first_two_lakes</span> <span class="o">=</span> <span class="n">lakes</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.grid.masking.Lakes.indices">
+<code class="descname">indices</code><span class="sig-paren">(</span><em>id=None</em>, <em>nbig=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#Lakes.indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.Lakes.indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of lake coordinates</p>
+<ul class="simple">
+<li><em>id</em>: Select lake #&lt;id&gt;</li>
+<li><em>nbig</em>: Consider the first <code class="docutils literal notranslate"><span class="pre">nbig</span></code> greatest lakes</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.masking.Lakes.lakes">
+<code class="descname">lakes</code><span class="sig-paren">(</span><em>id=None</em>, <em>nbig=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#Lakes.lakes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.Lakes.lakes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array of same size as masks, but with points in lakes set to its lake id, and others to set to zero</p>
+<ul class="simple">
+<li><em>id</em>: Select lake #&lt;id&gt;</li>
+<li><em>nbig</em>: Consider the first <code class="docutils literal notranslate"><span class="pre">nbig</span></code> greatest lakes</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.masking.Lakes.mask">
+<code class="descname">mask</code><span class="sig-paren">(</span><em>id=None</em>, <em>nbig=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#Lakes.mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.Lakes.mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean land/sea mask from lakes() (land is True)</p>
+<ul class="simple">
+<li><em>id</em>: Select lake #&lt;id&gt;</li>
+<li><em>nmaxcells</em>: Do not consider lakes with number of points greater than nmaxcells</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mask_lake2</span> <span class="o">=</span> <span class="n">GetLakes</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.masking.Lakes.ncells">
+<code class="descname">ncells</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#Lakes.ncells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.Lakes.ncells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of cell point for each lake</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.masking.Lakes.ocean">
+<code class="descname">ocean</code><span class="sig-paren">(</span><em>mask=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#Lakes.ocean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.Lakes.ocean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the biggest lake or its mask (integer type)</p>
+<ul class="simple">
+<li><em>mask</em>: If True, return the mask, not the lake [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.masking.Lakes.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#Lakes.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.Lakes.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the lakes</p>
+<p>Keywords are passed to :func`~matplotlib.pyplot.pcolor`</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.check_poly_islands">
+<code class="descname">check_poly_islands</code><span class="sig-paren">(</span><em>mask</em>, <em>polys</em>, <em>offsetmin=0.85</em>, <em>offsetmax=1.5</em>, <em>dcell=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#check_poly_islands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.check_poly_islands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that islands as greater as a cell are taken into account</p>
+<ul class="simple">
+<li><strong>mask</strong>: The initial mask. A cdms variable with X (longitude) and Y (latitude), or a tuple (lon, lat, mask).</li>
+<li><strong>polys</strong>: Coastal polygons.</li>
+<li><em>offset</em>: Islands whose area is &gt; 1-offset and &lt; 1+offset % of the mean cell area are checked [default: .95]</li>
+<li><em>dcell</em>: dx and dy relative extension from the center of the cell in resolution units.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.check_poly_straits">
+<code class="descname">check_poly_straits</code><span class="sig-paren">(</span><em>mask</em>, <em>polys</em>, <em>dcell=2</em>, <em>threshold=0.75</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#check_poly_straits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.check_poly_straits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that straits are opened by counting the number of polygon intersection in each cell and the area of water</p>
+<ul class="simple">
+<li><strong>mask</strong>: The initial mask. A cdms variable with X (longitude) and Y (latitude).</li>
+<li><strong>polys</strong>: Coastal polygons.</li>
+<li><em>dcell</em>: dx and dy relative extension from the center of the cell in resolution units.</li>
+<li><em>threshold</em>: Maximal fraction of cell area that must be covered of land (&gt; .5) [default: .25]</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.clip_shape">
+<code class="descname">clip_shape</code><span class="sig-paren">(</span><em>shape</em>, <em>clip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#clip_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.clip_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip a <code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code>, a <code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">LineString</span></code>
+shape using clipping polygon</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape</strong>: A valid <code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code>, a <code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code> or a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">LineString</span></code> instance.</li>
+<li><strong>clip</strong>, optional: A clipping polygon.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A possible empty list of intersection shapes.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.clip_shapes">
+<code class="descname">clip_shapes</code><span class="sig-paren">(</span><em>shapes</em>, <em>clip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#clip_shapes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.clip_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="#vacumm.misc.grid.masking.clip_shape" title="vacumm.misc.grid.masking.clip_shape"><code class="xref py py-func docutils literal notranslate"><span class="pre">clip_shape()</span></code></a> but applied to a list of shapes</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.convex_hull">
+<code class="descname">convex_hull</code><span class="sig-paren">(</span><em>xy</em>, <em>poly=False</em>, <em>method='delaunay'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#convex_hull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.convex_hull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the envelop of cloud of points</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>xy</strong>: (x,y) or array of size (2,nxy) (see <a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.get_xy" title="vacumm.misc.grid.misc.get_xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_xy()</span></code></a>).</p>
+</li>
+<li><p class="first"><em>poly</em>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">True</span></code>: Return as Polygon instance.</p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">False</span></code>: Return two 1D arrays <code class="docutils literal notranslate"><span class="pre">xpts,ypts</span></code></p>
+</li>
+<li><p class="first"><em>method</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;angles&quot;</span></code>: Recursive scan of angles between points.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;delaunay&quot;</span></code>: Use Delaunlay triangulation.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.create_polygon">
+<code class="descname">create_polygon</code><span class="sig-paren">(</span><em>data</em>, <em>proj=False</em>, <em>mode='poly'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#create_polygon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.create_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a simple <code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code> instance using data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong>: Can be either a <code class="docutils literal notranslate"><span class="pre">(N,2)</span></code> or <code class="docutils literal notranslate"><span class="pre">(2,N)</span></code> array,
+a <code class="docutils literal notranslate"><span class="pre">(xmin,ymin,xmax,ymax)</span></code> list, tuple or array, or a Polygon.</li>
+<li><strong>proj</strong>, optional: Geographical projection function.</li>
+<li><strong>mode</strong>, optional: Output mode. <code class="docutils literal notranslate"><span class="pre">&quot;line&quot;</span></code> = <code class="xref py py-class docutils literal notranslate"><span class="pre">LineString</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;verts&quot;</span></code> = numpy vertices, else <code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.d2m">
+<code class="descname">d2m</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#d2m"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.d2m" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.envelop">
+<code class="descname">envelop</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#envelop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.envelop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.misc.grid.masking.convex_hull" title="vacumm.misc.grid.masking.convex_hull"><code class="xref py py-func docutils literal notranslate"><span class="pre">convex_hull()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.erode_coast">
+<code class="descname">erode_coast</code><span class="sig-paren">(</span><em>var</em>, <em>mask2d=None</em>, <em>copy=True</em>, <em>maxiter=10</em>, <em>corners=0.0</em>, <em>hardmask=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#erode_coast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.erode_coast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Erode coastal mask of <code class="docutils literal notranslate"><span class="pre">var</span></code> to fit to <code class="docutils literal notranslate"><span class="pre">mask2d</span></code> using 2D smoothing</p>
+<p>Soothing is performed using <a class="reference internal" href="misc.filters.html#vacumm.misc.filters.shapiro2d" title="vacumm.misc.filters.shapiro2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">shapiro2d()</span></code></a>,
+in a convergence loop. Loop is ended if :</p>
+<blockquote>
+<div><ul class="simple">
+<li>the mask no longer changes,</li>
+<li>the number of iteration exceeds <code class="docutils literal notranslate"><span class="pre">maxiter</span></code>.</li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Must be used only for erodeing a thin border
+of the coast.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong>: Atleast-2D A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable with mask.</li>
+<li><strong>mask2d</strong>, optional: Reference 2D mask.</li>
+<li><strong>maxiter</strong>, optional: Maximal number of iteration for convergence loop.
+If equal to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no check is performed.</li>
+<li><strong>corners</strong>, optional: Weights of corners when calling <a class="reference internal" href="misc.filters.html#vacumm.misc.filters.shapiro2d" title="vacumm.misc.filters.shapiro2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">shapiro2d()</span></code></a>.</li>
+<li><strong>copy</strong>, optional: Modify the variable in place or copy it.</li>
+<li><strong>hardmask</strong>, optional: Mask always applied after an erosion step.</li>
+<li>Other keywords are passed to <a class="reference internal" href="misc.filters.html#vacumm.misc.filters.shapiro2d" title="vacumm.misc.filters.shapiro2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">shapiro2d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first simple">
+<li>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Tutorial:</th><td class="field-body"><p class="first last"><a class="reference internal" href="../tutorials/misc.grid.masking.erode_coast.html#user-tut-misc-grid-masking-erode-coast"><span class="std std-ref">Rognage de la côte</span></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.get_avail_rate">
+<code class="descname">get_avail_rate</code><span class="sig-paren">(</span><em>data</em>, <em>num=True</em>, <em>mode='rate'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#get_avail_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.get_avail_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the availability rate of a masked array along its forst dimension</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>data</strong>: Mask or masked array.</p>
+</li>
+<li><p class="first"><strong>num</strong>, optional: Get result as pure numpy array or formatted
+as input array when possible (MV2 array).</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional:</p>
+<blockquote>
+<div><ul class="simple">
+<li>“rate”: Output is between 0 and 1.</li>
+<li>“pct”: Same but in percents from 0 to 100.</li>
+<li>“count”: Count valid data.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.get_coast">
+<code class="descname">get_coast</code><span class="sig-paren">(</span><em>mask</em>, <em>land=True</em>, <em>b=True</em>, <em>borders=True</em>, <em>corners=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#get_coast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.get_coast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a mask integer of ocean coastal points from a 2D mask</p>
+<ul class="simple">
+<li><strong>mask</strong>: Input mask with 0 on water and 1 on land.</li>
+<li><em>land</em>: If True, coast is on land [default: True]</li>
+<li><em>corners</em>: If True, consider borders as coastal points [default: True]</li>
+<li><em>borders:</em> If True, consider corners as coastal points [default: True]</li>
+</ul>
+<p>At each point, return 0 if not coast, else an interger ranging from 1 to (2**8-1) to describe the coast point:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">128</span> <span class="mi">4</span>  <span class="mi">64</span>
+<span class="mi">8</span>   <span class="o">+</span>   <span class="mi">2</span>
+<span class="mi">16</span>  <span class="mi">1</span>  <span class="mi">32</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.get_coastal_indices">
+<code class="descname">get_coastal_indices</code><span class="sig-paren">(</span><em>mask</em>, <em>coast=None</em>, <em>asiijj=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#get_coastal_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.get_coastal_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get indices of ocean coastal points from a 2D mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mask</strong>: Input mask with 0 on water and 1 on land.</li>
+<li><em>boundary</em>: If True, consider outside boundary as land [default: True]</li>
+<li><em>asiijj</em>: Get results as II,JJ instead of [(j0,i0),(j1,i1)…]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.get_dist_to_coast">
+<code class="descname">get_dist_to_coast</code><span class="sig-paren">(</span><em>grid</em>, <em>mask=None</em>, <em>proj=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#get_dist_to_coast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.get_dist_to_coast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the distance to coast on grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>grid</strong>: (x,y), grid or variable with a grid.</li>
+<li><strong>mask</strong>: Land/sea mask or variable with a mask. If not provided,
+gets mask from <code class="docutils literal notranslate"><span class="pre">grid</span></code> if it is a masked variable,
+or estimates it using <a class="reference internal" href="#vacumm.misc.grid.masking.polygon_mask" title="vacumm.misc.grid.masking.polygon_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygon_mask()</span></code></a>
+and a GHSSC shoreline resolution given by
+<a class="reference internal" href="misc.grid.basemap.html#vacumm.misc.grid.basemap.gshhs_autores" title="vacumm.misc.grid.basemap.gshhs_autores"><code class="xref py py-func docutils literal notranslate"><span class="pre">gshhs_autores()</span></code></a>.</li>
+<li><strong>proj</strong>: Distance are computed by converting coordinates
+from degrees to meters.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span> <span class="o">=</span> <span class="n">get_dist_to_coast</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">sst</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span> <span class="o">=</span> <span class="n">get_dist_to_coast</span><span class="p">(</span><span class="n">sst</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.grid.masking.get_coastal_indices" title="vacumm.misc.grid.masking.get_coastal_indices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_coastal_indices()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.grid_envelop">
+<code class="descname">grid_envelop</code><span class="sig-paren">(</span><em>gg</em>, <em>centers=False</em>, <em>poly=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#grid_envelop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.grid_envelop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a polygon that encloses a grid</p>
+<ul>
+<li><p class="first"><strong>gg</strong>: A cdms grid or a tuple of (lat,lon)</p>
+</li>
+<li><p class="first"><em>centers</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">True</span></code>: The polygon is at the cell center.</li>
+<li><code class="docutils literal notranslate"><span class="pre">False</span></code>: The polygon is at the cell corners.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>poly</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">True</span></code>: Return as Polygon instance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">False</span></code>: Return two 1D arrays <code class="docutils literal notranslate"><span class="pre">xpts,ypts</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.grid_envelop_mask">
+<code class="descname">grid_envelop_mask</code><span class="sig-paren">(</span><em>ggi</em>, <em>ggo</em>, <em>poly=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#grid_envelop_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.grid_envelop_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mask on output grid from the bounds of an input grid:
+points of output grid that are not within bounds of input grid are masked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>ggi</strong>: Input grid or (lon,lat) or cdms variable.</li>
+<li><strong>ggo</strong>: Output grid or (lon,lat) or cdms variable.</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.grid.masking.grid_envelop" title="vacumm.misc.grid.masking.grid_envelop"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid_envelop()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A mask on output grid, where True means “outside bounds of input grid”.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.mask2d">
+<code class="descname">mask2d</code><span class="sig-paren">(</span><em>mask</em>, <em>method='and'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#mask2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.mask2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a 3(or more)-D mask to 2D by performing compression on first axes</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Mask is False on ocean</p>
+</div>
+<ul>
+<li><p class="first"><strong>mask</strong>: At least 2D mask</p>
+</li>
+<li><p class="first"><em>method</em>: Compression method</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;and&quot;</span></code>: Only one point must be unmask to get the compressed dimension unmasked.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;or&quot;</span></code>: All points must be unmask to get the compressed dimension unmasked.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.masked_polygon">
+<code class="descname">masked_polygon</code><span class="sig-paren">(</span><em>vv</em>, <em>polys</em>, <em>copy=0</em>, <em>reverse=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#masked_polygon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.masked_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask a variable according to a polygon list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vv</strong>: The MV2 array.</li>
+<li><strong>polys</strong>, optional: Polygons (or something like that, see <a class="reference internal" href="#vacumm.misc.grid.masking.polygons" title="vacumm.misc.grid.masking.polygons"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygons()</span></code></a>).</li>
+<li><strong>copy</strong>, optional: Copy data?.</li>
+<li><strong>reverse</strong>, optional: Reverse the mask?</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.grid.masking.polygon_mask" title="vacumm.misc.grid.masking.polygon_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygon_mask()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.merge_masks">
+<code class="descname">merge_masks</code><span class="sig-paren">(</span><em>varlist</em>, <em>copy=False</em>, <em>mode='max'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#merge_masks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.merge_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge the mask of a list of variable</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.plot_polygon">
+<code class="descname">plot_polygon</code><span class="sig-paren">(</span><em>poly</em>, <em>ax=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#plot_polygon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.plot_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply plot a polygon on the current plot using <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.0.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>poly</strong>: A valid <code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code> instance.</li>
+<li>Extra keyword are passed to plot function.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.polygon_mask">
+<code class="descname">polygon_mask</code><span class="sig-paren">(</span><em>gg, polys, mode='intersect', thresholds=[0.5, 0.75], ocean=False, fractions=0, yclean=True, premask=None, proj=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#polygon_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.polygon_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mask on a regular or curvilinear grid according to a polygon list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>gg</strong>: A cdms grid or variable or a tuple of (xx,yy).</p>
+</li>
+<li><p class="first"><strong>polys</strong>: A list of polygons or GMT resolutions or Shapes instance like shorelines.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Way to decide if a grid point is masked. Possible values are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">intersect</span></code>, 1, <code class="docutils literal notranslate"><span class="pre">area</span></code> (default): Masked if land area fraction is &gt; <code class="docutils literal notranslate"><span class="pre">thresholds[0]</span></code>.
+If more than one intersections, land area fraction must be &gt; <code class="docutils literal notranslate"><span class="pre">thresholds[1]</span></code>
+to prevent masking straits.</li>
+<li>else: Masked if grid point inside polygon.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>thresholds</strong>, optional: See <code class="docutils literal notranslate"><span class="pre">intersect</span></code> mode [default: [.5, .75]]</p>
+</li>
+<li><p class="first"><strong>ocean</strong>, optional: If True, keep only the ocean (= biggest lake).</p>
+</li>
+<li><p class="first"><strong>fractions</strong>: If True or 1, return the total fraction of cells covered by the
+polygons; if 2, returns the total area for each cell.</p>
+</li>
+<li><p class="first"><strong>proj</strong>, optional: Geographical projection function.
+See <a class="reference internal" href="misc.grid.basemap.html#vacumm.misc.grid.basemap.get_proj" title="vacumm.misc.grid.basemap.get_proj"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_proj()</span></code></a>. Use <code class="docutils literal notranslate"><span class="pre">False</span></code> to not
+convert coordinates to meters, and speed up the routine.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Result:</th><td class="field-body"><p class="first last">A <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> array of boolean (mask) with <code class="docutils literal notranslate"><span class="pre">False</span></code> on land.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.polygon_select">
+<code class="descname">polygon_select</code><span class="sig-paren">(</span><em>xx</em>, <em>yy</em>, <em>polys</em>, <em>zz=None</em>, <em>mask=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#polygon_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.polygon_select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select unstructered points that are inside polygons</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xx</strong>: Positions along X.</li>
+<li><strong>yy</strong>: Positions along Y.</li>
+<li><strong>polys</strong>: Polygons.</li>
+<li><strong>zz</strong>, optional: Values at theses positions.</li>
+<li><strong>mask</strong>, optional: Return masked positions and values of True or 1,</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span> <span class="o">=</span> <span class="n">polygon_select</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">poly1</span><span class="p">,</span> <span class="n">poly2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span> <span class="o">=</span> <span class="n">polygon_select</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">poly1</span><span class="p">,</span> <span class="n">poly2</span><span class="p">],</span> <span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xmasked</span><span class="p">,</span> <span class="n">ymasked</span><span class="p">,</span> <span class="n">zmasked</span> <span class="o">=</span> <span class="n">polygon_select</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">polys</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">xmasked</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">valid</span> <span class="o">=</span> <span class="n">polygon_select</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">polys</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">N</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">valid</span><span class="p">])</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Outputs:</th><td class="field-body"><p class="first">Depends on <code class="docutils literal notranslate"><span class="pre">mask</span></code></p>
+<ul class="last simple">
+<li>False or 0: selected <code class="docutils literal notranslate"><span class="pre">x,y</span></code> or <code class="docutils literal notranslate"><span class="pre">x,y,z</span></code></li>
+<li>True/1: the same but as masked arrays</li>
+<li>2: boolean array of valid points (the inverse of the mask)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.polygons">
+<code class="descname">polygons</code><span class="sig-paren">(</span><em>polys</em>, <em>proj=None</em>, <em>clip=None</em>, <em>shapetype=2</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#polygons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.polygons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of Polygon instances</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>polys</strong>: A tuple or list of polygon proxies (see examples).</li>
+<li><strong>shapetype</strong>: 1 = Polygons, 2=Polylines(=LineStrings) [default: 2]</li>
+<li><strong>proj</strong>: Geographical projection to convert positions. No projection
+by default.</li>
+<li><strong>clip</strong>, optional: Clip all polygons with this one.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Y</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">polygons</span><span class="p">(</span> <span class="p">[(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">)]]</span> <span class="p">)</span>                                <span class="c1"># from like grid bounds</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">polygons</span><span class="p">(</span> <span class="p">[</span><span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">),</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">],</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">])]</span> <span class="p">)</span>       <span class="c1"># cloud</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">polygons</span><span class="p">(</span> <span class="p">[</span><span class="n">polygons</span><span class="p">(([</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">],),</span> <span class="n">polygons</span><span class="p">(([</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">],)])</span>   <span class="c1"># from polygins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">polygons</span><span class="p">(</span> <span class="p">[[</span><span class="nb">min</span><span class="p">(</span><span class="n">X</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">Y</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">X</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">Y</span><span class="p">)],]</span> <span class="p">)</span>        <span class="c1"># from bounds</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.proj_shape">
+<code class="descname">proj_shape</code><span class="sig-paren">(</span><em>shape</em>, <em>proj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#proj_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.proj_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project a Point, a Polygon or a LineString shape using a geographical projection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape</strong>: A Point, Polygon, or a LineString instance with coordinates in degrees.</li>
+<li><strong>proj</strong>: A projection function of instance.
+See <a class="reference internal" href="misc.grid.basemap.html#vacumm.misc.grid.basemap.get_proj" title="vacumm.misc.grid.basemap.get_proj"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_proj()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A similar instance with its coordinates converted to meters</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.resol_mask">
+<code class="descname">resol_mask</code><span class="sig-paren">(</span><em>grid</em>, <em>res=None</em>, <em>xres=None</em>, <em>yres=None</em>, <em>xrelres=None</em>, <em>yrelres=None</em>, <em>relres=None</em>, <em>scaler=None</em>, <em>compact=False</em>, <em>relmargin=0.05</em>, <em>nauto=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#resol_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.resol_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mask based on resolution criteria for undersampling 2D data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>grid</strong>: A cdms array with a grid, a cdms grid or a tuple of axes.</p>
+</li>
+<li><dl class="first docutils">
+<dt><strong>res</strong>, optional: Horizontal resolution of arrows</dt>
+<dd><p class="first">(in both directions) for undersampling [default: <code class="docutils literal notranslate"><span class="pre">None</span></code>].
+If <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, resolution is computed so as to have at max <code class="docutils literal notranslate"><span class="pre">nauto</span></code>
+arrow in along an axis. If it is a <a class="reference external" href="https://docs.python.org/dev/library/functions.html#complex" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code></a> type, its imaginary part
+set the <code class="docutils literal notranslate"><span class="pre">nauto</span></code> parameter and <code class="docutils literal notranslate"><span class="pre">res</span></code> is set to <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Use of <code class="docutils literal notranslate"><span class="pre">res</span></code> makes the supposition that X and y units are consistent.</p>
+</div>
+</dd>
+</dl>
+</li>
+<li><p class="first"><strong>xres</strong>, optional: Same along X [default: <code class="docutils literal notranslate"><span class="pre">res</span></code>]</p>
+</li>
+<li><p class="first"><strong>yres</strong>, optional: Same along Y [default: <code class="docutils literal notranslate"><span class="pre">res</span></code>]</p>
+</li>
+<li><dl class="first docutils">
+<dt><strong>relres</strong>, optional: Relative resolution</dt>
+<dd><p class="first">(in both directions).</p>
+<ul class="last simple">
+<li>If &gt; 0, = <code class="docutils literal notranslate"><span class="pre">median(res)*relres</span></code>.</li>
+<li>If &lt; -1, =``min(res)*abs(relres)``.</li>
+<li>If &lt; 0 and &gt; -1, =max(res)*abs(relres)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first"><strong>xrelres</strong>, optional: Same along X [default: <code class="docutils literal notranslate"><span class="pre">relres</span></code>]</p>
+</li>
+<li><p class="first"><strong>yrelres</strong>, optional: Same along Y [default: <code class="docutils literal notranslate"><span class="pre">relres</span></code>]</p>
+</li>
+<li><p class="first"><strong>scaler</strong>, optional: A callable object that transform X and Y coordinates.
+Transformed coordinates are used instead of original coordinates
+if resolutions are negatives.
+A typical scaler is for example a geographic projection that convert degrees
+to meters (like a <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance).</p>
+</li>
+<li><p class="first"><strong>compact</strong>, optional: If no unsersampling is efective, returns <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A resolution value set to <code class="docutils literal notranslate"><span class="pre">False</span></code> implies no undersampling.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">resol_mask</span><span class="p">((</span><span class="n">x2d</span><span class="p">,</span> <span class="n">y2d</span><span class="p">),</span> <span class="n">relres</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span> <span class="c1"># sampling=2.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">resol_mask</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">xres</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">scaler</span><span class="o">=</span><span class="n">mymap</span><span class="p">,</span> <span class="n">yres</span><span class="o">=-</span><span class="mf">100.</span><span class="p">)</span> <span class="c1"># 100m</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">resol_mask</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">res</span><span class="o">=</span><span class="mi">20</span><span class="n">j</span><span class="p">)</span> <span class="c1"># at max 20 arrows per axis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">resol_mask</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">res</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">nauto</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span> <span class="c1"># equivalent</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is usually better to regrid with a convenient method
+instead of unsersample because of aliasing.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.rsamp">
+<code class="descname">rsamp</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>r</em>, <em>z=None</em>, <em>rmean=0.7</em>, <em>proj=False</em>, <em>rblock=3</em>, <em>getmask=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#rsamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.rsamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Undersample data points using a radius of proximity</p>
+<ul class="simple">
+<li><strong>x</strong>: 1D x array.</li>
+<li><strong>y</strong>: 1D Y array.</li>
+<li><strong>r</strong>: Radius of proximity.</li>
+<li><em>z</em>: 1D Z array.</li>
+<li><em>proj</em>: Geographic projection instance to convert coordinates.</li>
+<li><em>rmean</em>: Radius of averaging relative to <code class="docutils literal notranslate"><span class="pre">r</span></code> (<code class="docutils literal notranslate"><span class="pre">0&lt;rmean&lt;1</span></code>)</li>
+<li><em>rblock</em>: Size of blocks relative to <code class="docutils literal notranslate"><span class="pre">r</span></code> for computation by blocks.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.t2uvmasks">
+<code class="descname">t2uvmasks</code><span class="sig-paren">(</span><em>tmask</em>, <em>getu=True</em>, <em>getv=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#t2uvmasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.t2uvmasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compoute masks at U and V points from a mask at T points on a C grid (True is land)</p>
+<ul class="simple">
+<li><strong>tmask</strong>: A 2D mask.</li>
+<li><em>getu</em>: Get the mask at U-points</li>
+<li><em>getv</em>: Get the mask at V-points</li>
+</ul>
+<p>Return umask,vmask OR umask OR vmask depending on getu and getv.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.uniq">
+<code class="descname">uniq</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#uniq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.uniq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove duplicates in data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">20.</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">uniq</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.masking.zcompress">
+<code class="descname">zcompress</code><span class="sig-paren">(</span><em>z</em>, <em>*xy</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/masking.html#zcompress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.masking.zcompress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compress 1D arrays according to the mask of the first one</p>
+<ul class="simple">
+<li><strong>z</strong>: Reference (masked) array</li>
+<li><em>xy</em>: Additional arrays to be compressed</li>
+<li><em>numpify</em>: Force convertion to numpy array</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">zcompress</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">numpify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

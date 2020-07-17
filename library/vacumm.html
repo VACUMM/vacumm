@@ -1,0 +1,270 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.2. vacumm – Base &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.2. <code class="docutils literal notranslate"><span class="pre">vacumm</span></code> – Base</a><ul>
+<li><a class="reference internal" href="#overview">2.2.1. Overview</a></li>
+<li><a class="reference internal" href="#module-vacumm">2.2.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/vacumm.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-base">
+<h1>2.2. <a class="reference internal" href="#module-vacumm" title="vacumm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm</span></code></a> – Base<a class="headerlink" href="#vacumm-base" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.2.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">docfiller_verbose</span></code></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.help" title="vacumm.help"><code class="xref py py-func docutils literal notranslate"><span class="pre">help()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.vacumm_dep_warn" title="vacumm.vacumm_dep_warn"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm_dep_warn()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.vacumm_dep_warning" title="vacumm.vacumm_dep_warning"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm_dep_warning()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.vacumm_warn" title="vacumm.vacumm_warn"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm_warn()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.vacumm_warning" title="vacumm.vacumm_warning"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm_warning()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.vcdwarn" title="vacumm.vcdwarn"><code class="xref py py-func docutils literal notranslate"><span class="pre">vcdwarn()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.vcwarn" title="vacumm.vcwarn"><code class="xref py py-func docutils literal notranslate"><span class="pre">vcwarn()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.VACUMMDepWarning" title="vacumm.VACUMMDepWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMDepWarning</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.VACUMMError" title="vacumm.VACUMMError"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMError</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.VACUMMWarning" title="vacumm.VACUMMWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMWarning</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vacumm">
+<span id="content"></span><h2>2.2.2. Content<a class="headerlink" href="#module-vacumm" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="vacumm.VACUMMDepWarning">
+<em class="property">exception </em><code class="descname">VACUMMDepWarning</code><a class="reference internal" href="../_modules/vacumm.html#VACUMMDepWarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.VACUMMDepWarning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.DeprecationWarning" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.DeprecationWarning</span></code></a>, <a class="reference internal" href="#vacumm.VACUMMWarning" title="vacumm.VACUMMWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.VACUMMWarning</span></code></a></p>
+<p>Deprecation VACUMM warning</p>
+<dl class="attribute">
+<dt id="vacumm.VACUMMDepWarning.args">
+<code class="descname">args</code><a class="headerlink" href="#vacumm.VACUMMDepWarning.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.VACUMMDepWarning.message">
+<code class="descname">message</code><a class="headerlink" href="#vacumm.VACUMMDepWarning.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.VACUMMError">
+<em class="property">exception </em><code class="descname">VACUMMError</code><a class="reference internal" href="../_modules/vacumm.html#VACUMMError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.VACUMMError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Exception" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></a></p>
+<p>Standard VACUMM error (exception)</p>
+<dl class="attribute">
+<dt id="vacumm.VACUMMError.args">
+<code class="descname">args</code><a class="headerlink" href="#vacumm.VACUMMError.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.VACUMMError.message">
+<code class="descname">message</code><a class="headerlink" href="#vacumm.VACUMMError.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.VACUMMWarning">
+<em class="property">exception </em><code class="descname">VACUMMWarning</code><a class="reference internal" href="../_modules/vacumm.html#VACUMMWarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.VACUMMWarning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.UserWarning" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.UserWarning</span></code></a></p>
+<p>Standard VACUMM warning</p>
+<dl class="attribute">
+<dt id="vacumm.VACUMMWarning.args">
+<code class="descname">args</code><a class="headerlink" href="#vacumm.VACUMMWarning.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.VACUMMWarning.message">
+<code class="descname">message</code><a class="headerlink" href="#vacumm.VACUMMWarning.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.help">
+<code class="descname">help</code><span class="sig-paren">(</span><em>text=None</em>, <em>recent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm.html#help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open VACUMM website in a web browser and optionally search for a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong>, optional: String to search for.</li>
+<li><strong>recent</strong>, optional: Use the most recent version of the documentation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.vacumm_dep_warn">
+<code class="descname">vacumm_dep_warn</code><span class="sig-paren">(</span><em>message</em>, <em>stacklevel=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm.html#vacumm_dep_warn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.vacumm_dep_warn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issue a <a class="reference internal" href="#vacumm.VACUMMDepWarning" title="vacumm.VACUMMDepWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMDepWarning</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.vacumm_dep_warning">
+<code class="descname">vacumm_dep_warning</code><span class="sig-paren">(</span><em>message</em>, <em>stacklevel=2</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.vacumm_dep_warning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issue a <a class="reference internal" href="#vacumm.VACUMMDepWarning" title="vacumm.VACUMMDepWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMDepWarning</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.vacumm_warn">
+<code class="descname">vacumm_warn</code><span class="sig-paren">(</span><em>message</em>, <em>stacklevel=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm.html#vacumm_warn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.vacumm_warn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issue a <a class="reference internal" href="#vacumm.VACUMMWarning" title="vacumm.VACUMMWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMWarning</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.vacumm_warning">
+<code class="descname">vacumm_warning</code><span class="sig-paren">(</span><em>message</em>, <em>stacklevel=2</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.vacumm_warning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issue a <a class="reference internal" href="#vacumm.VACUMMWarning" title="vacumm.VACUMMWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMWarning</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.vcdwarn">
+<code class="descname">vcdwarn</code><span class="sig-paren">(</span><em>message</em>, <em>stacklevel=2</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.vcdwarn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issue a <a class="reference internal" href="#vacumm.VACUMMDepWarning" title="vacumm.VACUMMDepWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMDepWarning</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.vcwarn">
+<code class="descname">vcwarn</code><span class="sig-paren">(</span><em>message</em>, <em>stacklevel=2</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.vcwarn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issue a <a class="reference internal" href="#vacumm.VACUMMWarning" title="vacumm.VACUMMWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMWarning</span></code></a></p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

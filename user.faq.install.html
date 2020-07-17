@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.4.2. Installations &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.4.2. Installations</a><ul>
+<li><a class="reference internal" href="#this-intel-math-h-is-for-use-with-only-the-intel-compilers">1.4.2.1. “This Intel &lt;math.h&gt; is for use with only the Intel compilers!”</a></li>
+<li><a class="reference internal" href="#what-are-the-options-for-compilation-or-installation">1.4.2.2. What are the options for compilation or installation?</a></li>
+<li><a class="reference internal" href="#i-am-a-developer-and-i-have-an-error-like-importerror-libgfortran-so-2">1.4.2.3. I am a developer and I have an error like <code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">libgfortran.so.2</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.faq.install.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installations">
+<span id="user-faq-install"></span><h1>1.4.2. Installations<a class="headerlink" href="#installations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="this-intel-math-h-is-for-use-with-only-the-intel-compilers">
+<span id="user-faq-install-intel"></span><h2>1.4.2.1. “This Intel &lt;math.h&gt; is for use with only the Intel compilers!”<a class="headerlink" href="#this-intel-math-h-is-for-use-with-only-the-intel-compilers" title="Permalink to this headline">¶</a></h2>
+<p>During the installation (compilation) of the library, if you encounter an error message like:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/appli/intel/Compiler/11.1/073/include/math.h:27:3: error: <span class="c1">#error &quot;This Intel &lt;math.h&gt; is for use with only the Intel compilers!&quot;</span>
+In file included from /home1/caparmor/sraynaud/soft/cdat-vacumm/include/python2.5/pyport.h:231,
+                 from /home1/caparmor/sraynaud/soft/cdat-vacumm/include/python2.5/Python.h:57,
+                 from build/src.linux-x86_64-2.5/fortranobject.h:7,
+                 from build/src.linux-x86_64-2.5/fortranobject.c:2:
+/appli/intel/Compiler/11.1/073/include/math.h:27:3: error:
+    <span class="c1">#error &quot;This Intel &lt;math.h&gt; is for use with only the Intel compilers!&quot;</span>
+error: Command <span class="s2">&quot;gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O3 -Wall</span>
+<span class="s2">    -Wstrict-prototypes -fPIC -Ibuild/src.linux-x86_64-2.5</span>
+<span class="s2">    -I/home1/caparmor/sraynaud/soft/cdat-vacumm/lib/python2.5/site-packages/numpy/core/include</span>
+<span class="s2">    -I/home1/caparmor/sraynaud/soft/cdat-vacumm/include/python2.5</span>
+<span class="s2">    -c build/src.linux-x86_64-2.5/fortranobject.c -o build/temp.linux-x86_64-2.5/build/src.linux-x86_64-2.5/fortranobject.o&quot;</span> failed with <span class="nb">exit</span> status <span class="m">1</span>
+</pre></div>
+</div>
+<p>you surely loaded environment (eg variable <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>)
+pointing to Intel libraries while you compile with <strong class="program">gfortran</strong>.</p>
+<p>It is best to clean your environment before compilation.</p>
+</div>
+<div class="section" id="what-are-the-options-for-compilation-or-installation">
+<h2>1.4.2.2. What are the options for compilation or installation?<a class="headerlink" href="#what-are-the-options-for-compilation-or-installation" title="Permalink to this headline">¶</a></h2>
+<p>For compilation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py --help build
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py install --compiler<span class="o">=</span>gfortran
+</pre></div>
+</div>
+<p>For installation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py --help install
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py install --install-lib<span class="o">=</span><span class="nv">$HOME</span>/lib/python
+</pre></div>
+</div>
+</div>
+<div class="section" id="i-am-a-developer-and-i-have-an-error-like-importerror-libgfortran-so-2">
+<h2>1.4.2.3. I am a developer and I have an error like <code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">libgfortran.so.2</span></code><a class="headerlink" href="#i-am-a-developer-and-i-have-an-error-like-importerror-libgfortran-so-2" title="Permalink to this headline">¶</a></h2>
+<p>If you use vacumm as a developer (direct import sources), a typical error can occur when loading:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; import vacumm.misc
+Init? False
+libgfortran.so.2: cannot open shared object file: No such file or directory
+Trying to build it...
+Traceback (most recent call last):
+File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+File &quot;/home1/caparmor/sraynaud/soft/src/vacumm/lib/python/vacumm/misc/__init__.py&quot;, line 9, in &lt;module&gt;
+    import io
+File &quot;/home1/caparmor/sraynaud/soft/src/vacumm/lib/python/vacumm/misc/io.py&quot;, line 3825, in &lt;module&gt;
+    from plot import map2, _colorbar_, savefigs as Savefigs, markers as Markers, gobjs
+File &quot;/home1/caparmor/sraynaud/soft/src/vacumm/lib/python/vacumm/misc/plot.py&quot;, line 82, in &lt;module&gt;
+    from atime import mpl,time,axis_add,compress,SpecialDateFormatter
+File &quot;/home1/caparmor/sraynaud/soft/src/vacumm/lib/python/vacumm/misc/atime.py&quot;, line 2535, in &lt;module&gt;
+    import grid as G
+File &quot;/home1/caparmor/sraynaud/soft/src/vacumm/lib/python/vacumm/misc/grid/__init__.py&quot;, line 11, in &lt;module&gt;
+    import regridding
+File &quot;/home1/caparmor/sraynaud/soft/src/vacumm/lib/python/vacumm/misc/grid/regridding.py&quot;, line 87, in &lt;module&gt;
+    exec import_interp
+File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;
+ImportError: libgfortran.so.2: cannot open shared object file: No such file or directory
+&gt;&gt;&gt;
+</pre></div>
+</div>
+<p>This error occurs when there is an incompatibility between your python and module
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid._interp_</span></code> compiled from <code class="file docutils literal notranslate"><span class="pre">interp.f90</span></code> file.
+Generally, a different version of the compiler has been used.</p>
+<p>In this case, go to the root directorye of the sourcs, and proceed as:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ make lib
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

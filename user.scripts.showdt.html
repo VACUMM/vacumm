@@ -1,0 +1,185 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.2.2. showdt.py – Display de time step of netcdf time axis &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.showdt.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="showdt-py-display-de-time-step-of-netcdf-time-axis">
+<span id="user-scripts-showdt"></span><h1>1.6.2.2. <strong class="program">showdt.py</strong> – Display de time step of netcdf time axis<a class="headerlink" href="#showdt-py-display-de-time-step-of-netcdf-time-axis" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"><div class="first highlight-bash notranslate"><div class="highlight"><pre><span></span>showdt.py <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-t TIME<span class="o">]</span> <span class="o">[</span>-v VNAME<span class="o">]</span> <span class="o">[</span>-u UNITS<span class="o">]</span> <span class="o">[</span>-s STAT<span class="o">]</span> <span class="o">[</span>-f FORMAT<span class="o">]</span>
+        ncfile
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Show time step of a netcdf file.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Positional Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><dl class="first cmdoption">
+<dt id="cmdoption-showdt-py-arg-ncfile">
+<code class="descname">ncfile</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showdt-py-arg-ncfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Netcdf file name</p>
+</dd></dl>
+
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Optional Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><dl class="first cmdoption">
+<dt id="cmdoption-showdt-py-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showdt-py-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showdt-py-t">
+<code class="descname">-t</code><code class="descclassname"> TIME</code><code class="descclassname">, </code><code class="descname">--time</code><code class="descclassname"> TIME</code><a class="headerlink" href="#cmdoption-showdt-py-t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the time axis variable</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showdt-py-v">
+<code class="descname">-v</code><code class="descclassname"> VNAME</code><code class="descclassname">, </code><code class="descname">--var</code><code class="descclassname"> VNAME</code><a class="headerlink" href="#cmdoption-showdt-py-v" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the variable from which to guess time</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showdt-py-u">
+<code class="descname">-u</code><code class="descclassname"> UNITS</code><code class="descclassname">, </code><code class="descname">--units</code><code class="descclassname"> UNITS</code><a class="headerlink" href="#cmdoption-showdt-py-u" title="Permalink to this definition">¶</a></dt>
+<dd><p>Units as one of “s” for seconds, “m” for minutes, “h”
+for hours, “d” for days, “a” for auto (the defaults),
+and time axis units if empty “”</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showdt-py-s">
+<code class="descname">-s</code><code class="descclassname"> STAT</code><code class="descclassname">, </code><code class="descname">--stat</code><code class="descclassname"> STAT</code><a class="headerlink" href="#cmdoption-showdt-py-s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Statistics to guess time step, as one of “min”, “max”
+,”mean” or “median” (default: median)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showdt-py-f">
+<code class="descname">-f</code><code class="descclassname"> FORMAT</code><code class="descclassname">, </code><code class="descname">--format</code><code class="descclassname"> FORMAT</code><a class="headerlink" href="#cmdoption-showdt-py-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output format (default: %(value)g %(units)s)</p>
+</dd></dl>
+
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><p class="first">These examples are executed from the <code class="file docutils literal notranslate"><span class="pre">bin</span></code> directory of the distribution.</p>
+<div class="last highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; showdt.py ../data/mars3d.t.nc
+<span class="m">3600</span> seconds
+$&gt; showdt.py -u h --format<span class="o">=</span><span class="s2">&quot;Time step in hours: %(value).1f&quot;</span> ../data/mars3d.t.nc
+Time step in hours: <span class="m">1</span>.0
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

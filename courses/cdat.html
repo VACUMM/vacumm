@@ -1,0 +1,500 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.8.4. Leçon d’introduction à UV-CDAT &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.8.4. Leçon d’introduction à UV-CDAT</a><ul>
+<li><a class="reference internal" href="#introduction">3.8.4.1. Introduction</a></li>
+<li><a class="reference internal" href="#les-bases">3.8.4.2. Les bases</a></li>
+<li><a class="reference internal" href="#les-grilles">3.8.4.3. Les grilles</a></li>
+<li><a class="reference internal" href="#les-utilitaires">3.8.4.4. Les utilitaires</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/courses/cdat.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lecon-d-introduction-a-uv-cdat">
+<h1>3.8.4. Leçon d’introduction à UV-CDAT<a class="headerlink" href="#lecon-d-introduction-a-uv-cdat" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>3.8.4.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Site web : <a class="reference external" href="http://uv-cdat.llnl.gov/">http://uv-cdat.llnl.gov/</a></p>
+<p>CDAT est destiné à la communauté océano/météo/climat.</p>
+<blockquote>
+<div><ul class="simple">
+<li>CDAT étend les variables masquées de numpy
+en ajoutant attributs, axes (et grille) et autres méthodes :
+parallèle avec le netcdf (cf. note ci-dessous).</li>
+<li>CDAT offre des outils pour lire, écrire et traiter ces variables :
+ces outils n’ont pas besoin de recevoir les coordonnées
+en argument.</li>
+</ul>
+</div></blockquote>
+<div class="figure" id="id1">
+<img alt="../_images/numpy2mv.png" src="../_images/numpy2mv.png" />
+<p class="caption"><span class="caption-text">Le passage de <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> à <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> (CDAT).</span></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Parallèle avec le netcdf.</p>
+<p>Côté python :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">var</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="go">*** Description of Slab temp ***</span>
+<span class="go">id: temp</span>
+<span class="go">shape: (3,)</span>
+<span class="go">filename:</span>
+<span class="go">missing_value: 1e+20</span>
+<span class="go">comments:</span>
+<span class="go">grid_name: N/A</span>
+<span class="go">grid_type: N/A</span>
+<span class="go">time_statistic:</span>
+<span class="go">long_name: Temperature</span>
+<span class="go">units: degC</span>
+<span class="go">No grid present.</span>
+<span class="go">** Dimension 1 **</span>
+<span class="go">id: lon</span>
+<span class="go">Designated a longitude axis.</span>
+<span class="go">units:  degree_north</span>
+<span class="go">Length: 3</span>
+<span class="go">First:  0</span>
+<span class="go">Last:   2</span>
+<span class="go">Other axis attributes:</span>
+<span class="go">    long_name: Longitude</span>
+<span class="go">    axis: X</span>
+<span class="go">    modulo: 360.0</span>
+<span class="go">    topology: circular</span>
+<span class="go">Python id:  0x39efc10</span>
+<span class="go">*** End of description for temp ***</span>
+</pre></div>
+</div>
+<p>Côté fichier netcdf</p>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">netcdf</span> <span class="n">toto</span> <span class="p">{</span>
+<span class="n">dimensions</span><span class="p">:</span>
+<span class="n">lon</span> <span class="o">=</span> <span class="mi">3</span> <span class="p">;</span>
+<span class="n">bound</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">;</span>
+<span class="n">variables</span><span class="p">:</span>
+<span class="nb">int</span> <span class="n">lon</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span> <span class="p">;</span>
+    <span class="n">lon</span><span class="p">:</span><span class="n">bounds</span> <span class="o">=</span> <span class="s2">&quot;bounds_lon&quot;</span> <span class="p">;</span>
+    <span class="n">lon</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;degree_north&quot;</span> <span class="p">;</span>
+    <span class="n">lon</span><span class="p">:</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Longitude&quot;</span> <span class="p">;</span>
+    <span class="n">lon</span><span class="p">:</span><span class="n">axis</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span> <span class="p">;</span>
+    <span class="n">lon</span><span class="p">:</span><span class="n">modulo</span> <span class="o">=</span> <span class="mf">360.</span> <span class="p">;</span>
+    <span class="n">lon</span><span class="p">:</span><span class="n">topology</span> <span class="o">=</span> <span class="s2">&quot;circular&quot;</span> <span class="p">;</span>
+<span class="n">double</span> <span class="n">bounds_lon</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">bound</span><span class="p">)</span> <span class="p">;</span>
+<span class="n">double</span> <span class="n">temp</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span> <span class="p">;</span>
+    <span class="n">temp</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;degC&quot;</span> <span class="p">;</span>
+    <span class="n">temp</span><span class="p">:</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Temperature&quot;</span> <span class="p">;</span>
+    <span class="n">temp</span><span class="p">:</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;variable_3&quot;</span> <span class="p">;</span>
+    <span class="n">temp</span><span class="p">:</span><span class="n">missing_value</span> <span class="o">=</span> <span class="mf">1.e+20</span> <span class="p">;</span>
+
+<span class="o">//</span> <span class="k">global</span> <span class="n">attributes</span><span class="p">:</span>
+    <span class="p">:</span><span class="n">Conventions</span> <span class="o">=</span> <span class="s2">&quot;CF-1.0&quot;</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="les-bases">
+<h2>3.8.4.2. Les bases<a class="headerlink" href="#les-bases" title="Permalink to this headline">¶</a></h2>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_cdat_bases.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*- </span>
+<span class="sd">&quot;&quot;&quot;UV-CDAT - First commands (MV2 variables, grid, links with numpy arrays)&quot;&quot;&quot;</span>
+
+<span class="c1"># Imports</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;qt4agg&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">cdms2</span><span class="o">,</span> <span class="nn">MV2</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.axes</span> <span class="k">import</span> <span class="n">create_lon</span><span class="p">,</span><span class="n">create_lat</span><span class="p">,</span> <span class="n">create_time</span><span class="p">,</span> <span class="n">create_dep</span><span class="p">,</span> <span class="n">create_depth</span><span class="p">,</span> <span class="n">islon</span><span class="p">,</span> <span class="n">isdep</span><span class="p">,</span> <span class="n">istime</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="n">map2</span> <span class="k">as</span> <span class="nb">map</span><span class="p">,</span> <span class="n">hov2</span><span class="p">,</span> <span class="n">section2</span>
+<span class="kn">from</span> <span class="nn">vacumm.config</span> <span class="k">import</span> <span class="n">data_sample</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># ---- From a NetCDF file ...</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; ... From a NetCDF File ... &#39;</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="s1">&#39;mars3d.xy.nc&#39;</span><span class="p">))</span>
+<span class="n">ncarr</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="s1">&#39;temp&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">6.2</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="nb">print</span> <span class="s1">&#39;Array dimension :&#39;</span><span class="p">,</span> <span class="n">ncarr</span><span class="o">.</span><span class="n">shape</span>
+<span class="nb">print</span> <span class="s1">&#39;Array type - ncarr - :&#39;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">ncarr</span><span class="p">)</span>
+<span class="c1"># print &#39;Longitude :&#39;,ncarr.getLongitude()</span>
+<span class="c1"># print &#39;Latitude :&#39;,ncarr.getLatitude()</span>
+
+<span class="nb">print</span> <span class="s1">&#39;2D Grid: &#39;</span><span class="p">,</span><span class="n">ncarr</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span>
+
+<span class="c1"># ---- Copy or not copy !!!!</span>
+<span class="nb">print</span> <span class="s1">&#39;An example: &#39;</span><span class="p">,</span><span class="n">ncarr</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span>
+
+<span class="c1"># ==&gt; Practice: test and understant the differences WITH and WITHOUT copy.</span>
+<span class="n">newnccarr</span> <span class="o">=</span> <span class="n">ncarr</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span> <span class="c1"># WITH COPY</span>
+<span class="n">newnccarr</span> <span class="o">=</span> <span class="n">ncarr</span> <span class="c1"># WITHOUT COPY</span>
+<span class="nb">print</span> <span class="s1">&#39;+ nccarr: &#39;</span><span class="p">,</span><span class="n">ncarr</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span>
+<span class="nb">print</span> <span class="s1">&#39;+ newnccarr: &#39;</span><span class="p">,</span><span class="n">newnccarr</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span>
+<span class="n">newnccarr</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span> <span class="o">=</span> <span class="mf">25.</span>
+<span class="nb">print</span> <span class="s1">&#39;+ newnccarr modified: &#39;</span><span class="p">,</span><span class="n">newnccarr</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span>
+<span class="nb">print</span> <span class="s1">&#39;+ nccarr after modification of newnccarr: &#39;</span><span class="p">,</span><span class="n">ncarr</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span>
+
+<span class="c1"># Back to numpy array ...</span>
+<span class="n">nparr</span><span class="o">=</span><span class="n">ncarr</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
+<span class="nb">print</span> <span class="s1">&#39;Array type - nparr - :&#39;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">nparr</span><span class="p">)</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span> <span class="c1"># End of the run</span>
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+
+<span class="c1"># ---- From a Numpy array ...</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; ... From a numpy array ... &#39;</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span>
+
+<span class="c1"># ---- A 2-D numpy array ...</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; Numpy array &#39;</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;Array dimension :&#39;</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+<span class="nb">print</span> <span class="s1">&#39;Array type - arr - :&#39;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+<span class="c1"># print arr</span>
+
+<span class="c1"># ---- From numpy array to MV2 (Masked array) ...</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; MV2 array &#39;</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span>
+<span class="n">marr</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;Array type - marr - :&#39;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">marr</span><span class="p">)</span>
+<span class="c1"># print marr</span>
+
+<span class="c1"># Mask value lower than 0.5 ...</span>
+<span class="c1"># More details on masked array operations: http://docs.scipy.org/doc/numpy/reference/routines.ma.html</span>
+<span class="n">marr</span><span class="o">=</span><span class="n">MV2</span><span class="o">.</span><span class="n">masked_where</span><span class="p">((</span><span class="n">marr</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">),</span><span class="n">marr</span><span class="p">)</span>
+<span class="c1"># print marr.mask</span>
+<span class="c1"># print marr</span>
+<span class="nb">print</span> <span class="s1">&#39;Array dimension :&#39;</span><span class="p">,</span> <span class="n">marr</span><span class="o">.</span><span class="n">shape</span>
+<span class="nb">print</span> <span class="s1">&#39;Fill value: &#39;</span><span class="p">,</span><span class="n">marr</span><span class="o">.</span><span class="n">fill_value</span>
+
+<span class="c1"># Back to numpy array ...</span>
+<span class="n">nparr</span><span class="o">=</span><span class="n">marr</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
+<span class="c1"># print nparr</span>
+
+<span class="c1"># ---- A Cdms2 object = MV2 + Axes + Attributes ...</span>
+<span class="nb">print</span> <span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="s1">&#39; CDMS2 &#39;</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="s1">&#39;-&#39;</span>
+<span class="c1"># cdms2.createVariable()</span>
+
+<span class="c1"># Geographic axis creation</span>
+<span class="c1"># - longitude: changing &#39;lon&#39; id to &#39;longitude&#39;</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">create_lon</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">-</span><span class="mf">7.</span><span class="p">,</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;longitude&#39;</span><span class="p">)</span>
+<span class="c1"># - latitude</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">create_lat</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span><span class="o">*.</span><span class="mi">5</span><span class="o">+</span><span class="mf">44.</span><span class="p">)</span>
+
+<span class="c1"># ==&gt; Practice: Create cdarr with depth/lat axes. - see doc Vacumm -</span>
+<span class="c1"># # - depth</span>
+<span class="c1"># ax1 = create_dep(N.linspace(-1000,0,10))</span>
+<span class="c1"># # - latitude</span>
+<span class="c1"># ax2 = create_lat(N.arange(15)*.5+44.)</span>
+
+
+<span class="c1"># ==&gt; Practice: Create cdarr with time/lat axes. - see doc Vacumm -</span>
+<span class="c1"># # - time</span>
+<span class="c1"># ax1 = create_time(N.arange(10.),</span>
+    <span class="c1"># &#39;days since 2006-10-01&#39;,long_name=&#39;Mon axe de temps&#39;)</span>
+<span class="c1"># # - latitude</span>
+<span class="c1"># ax2 = create_lat(N.arange(15)*.5+44.)</span>
+
+<span class="c1"># - cdms2 variable creation</span>
+<span class="n">cdarr</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">marr</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="n">ax1</span><span class="p">,</span><span class="n">ax2</span><span class="p">],</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="n">attributes</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;the main test&#39;</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;$m^3 s^{-1}$&#39;</span><span class="p">))</span>
+<span class="nb">print</span> <span class="s1">&#39;Array type - cdarr - :&#39;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">cdarr</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;Variable :&#39;</span><span class="p">,</span><span class="n">cdarr</span><span class="o">.</span><span class="n">id</span>
+<span class="c1"># print &#39;Longitude :&#39;,cdarr.getLongitude()</span>
+<span class="c1"># print &#39;Latitude :&#39;,cdarr.getLatitude()</span>
+<span class="c1"># print cdarr</span>
+
+<span class="c1"># - Result snapshot</span>
+<span class="k">if</span> <span class="n">islon</span><span class="p">(</span><span class="n">cdarr</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
+    <span class="nb">map</span><span class="p">(</span><span class="n">cdarr</span><span class="p">,</span> <span class="n">contour</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">isdep</span><span class="p">(</span><span class="n">cdarr</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
+    <span class="n">section2</span><span class="p">(</span><span class="n">cdarr</span><span class="p">,</span> <span class="n">contour</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">istime</span><span class="p">(</span><span class="n">cdarr</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
+    <span class="n">hov2</span><span class="p">(</span><span class="n">cdarr</span><span class="p">,</span> <span class="n">contour</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="les-grilles">
+<h2>3.8.4.3. Les grilles<a class="headerlink" href="#les-grilles" title="Permalink to this headline">¶</a></h2>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_cdat_grids.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*- </span>
+<span class="sd">&quot;&quot;&quot;UV-CDAT - Axes and grids (creating, modifying, axes ...)&quot;&quot;&quot;</span>
+
+<span class="c1"># Imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span><span class="o">,</span> <span class="nn">cdms2</span><span class="o">,</span> <span class="nn">MV2</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># Longitude axis creation</span>
+<span class="c1"># - base</span>
+<span class="n">lon</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">([</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span><span class="o">-</span><span class="mf">4.</span><span class="p">,</span><span class="o">-</span><span class="mf">3.</span><span class="p">],</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;lon&#39;</span><span class="p">)</span>
+<span class="n">lon</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Longitude&#39;</span>
+<span class="n">lon</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;degree_east&#39;</span>
+<span class="c1"># - add lon.axis=&#39;X&#39; and lon.modulo = &#39;360.&#39;</span>
+<span class="n">lon</span><span class="o">.</span><span class="n">designateLongitude</span><span class="p">()</span>
+
+<span class="c1"># Latitude</span>
+<span class="n">lat</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">([</span><span class="mf">46.</span><span class="p">,</span><span class="mf">47.</span><span class="p">,</span><span class="mf">48.</span><span class="p">],</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;lat&#39;</span><span class="p">)</span>
+<span class="n">lat</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Latitude&#39;</span>
+<span class="n">lat</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;degree_north&#39;</span>
+<span class="n">lat</span><span class="o">.</span><span class="n">designateLatitude</span><span class="p">()</span> <span class="c1"># lat.axis = &#39;Y&#39;</span>
+
+<span class="c1"># Depth</span>
+<span class="n">depth</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">([</span><span class="o">-</span><span class="mf">200.</span><span class="p">,</span><span class="o">-</span><span class="mf">100.</span><span class="p">,</span><span class="o">-</span><span class="mf">0.</span><span class="p">],</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;depth&#39;</span><span class="p">)</span>
+<span class="n">depth</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Depth&#39;</span>
+<span class="n">depth</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
+<span class="n">depth</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span> <span class="c1"># depth.axis = &#39;Z&#39;</span>
+
+<span class="c1"># Time</span>
+<span class="c1"># - creation</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">],</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Time&#39;</span>
+<span class="n">time</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;days since 2006-08-01&#39;</span>
+<span class="n">time</span><span class="o">.</span><span class="n">designateTime</span><span class="p">()</span> <span class="c1"># time.axis = &#39;T&#39;</span>
+<span class="c1"># - check</span>
+<span class="n">ctime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()</span>
+<span class="nb">print</span> <span class="n">ctime</span><span class="p">,</span><span class="n">ctime</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">day</span>
+<span class="c1">#  -&gt; [2006-8-1 0:0:0.0, 2006-8-2 0:0:0.0, 2006-8-3 0:0:0.0] 2</span>
+<span class="n">rtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">asRelativeTime</span><span class="p">()</span>
+<span class="nb">print</span> <span class="n">rtime</span><span class="p">,</span><span class="n">rtime</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<span class="c1">#  -&gt; [0.00 days since 2006-08-01, 1.00 days since 2006-08-01,</span>
+<span class="c1">#      2.00 days since 2006-08-01] 1.0</span>
+
+
+<span class="c1"># Now, we create a variable using these axes.</span>
+<span class="c1">#- straightforward method</span>
+<span class="n">temp1</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span><span class="n">typecode</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;temp&#39;</span><span class="p">,</span>
+    <span class="n">fill_value</span><span class="o">=</span><span class="mf">1.e20</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="n">time</span><span class="p">,</span><span class="n">depth</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">],</span><span class="n">copyaxes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;Temperature&#39;</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;degC&#39;</span><span class="p">))</span>
+<span class="nb">print</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">temp1</span><span class="p">)</span>
+<span class="c1"># - Remark</span>
+<span class="nb">print</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span> <span class="ow">is</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span>
+<span class="c1">#  -&gt; True         (These are the same functions !)</span>
+<span class="c1"># - other methos</span>
+<span class="c1">#   . initialization</span>
+<span class="n">temp2</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="c1">#   . attributes</span>
+<span class="n">temp2</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;temp&#39;</span>
+<span class="n">temp2</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Temperature&#39;</span>
+<span class="n">temp2</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;degC&#39;</span>
+<span class="n">temp2</span><span class="o">.</span><span class="n">set_fill_value</span><span class="p">(</span><span class="mf">1.e20</span><span class="p">)</span> <span class="c1"># &lt;=&gt; temp2.setMissing(1.e20)</span>
+<span class="c1">#   . axes</span>
+<span class="n">temp2</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">([</span><span class="n">time</span><span class="p">,</span><span class="n">depth</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">])</span>
+<span class="c1">#   . or for example for each axis individually</span>
+<span class="n">temp2</span><span class="o">.</span><span class="n">setAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">depth</span><span class="p">)</span>
+
+<span class="c1"># Selection as for file</span>
+<span class="nb">print</span> <span class="n">temp2</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;2006-08-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2006-08-03&quot;</span><span class="p">,</span> <span class="s2">&quot;co&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">shape</span>
+
+<span class="c1"># The grid itself</span>
+<span class="c1"># - get it</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">temp2</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span>
+<span class="c1"># - check axes</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span> <span class="ow">is</span> <span class="n">temp2</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span> <span class="ow">is</span> <span class="n">grid</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">is</span> <span class="n">temp2</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="c1"># - create it!</span>
+<span class="n">grid2</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createGenericGrid</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">)</span>
+<span class="c1"># - set it</span>
+<span class="n">temp2</span><span class="o">.</span><span class="n">setGrid</span><span class="p">(</span><span class="n">grid2</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isGrid</span><span class="p">(</span><span class="n">grid2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="les-utilitaires">
+<h2>3.8.4.4. Les utilitaires<a class="headerlink" href="#les-utilitaires" title="Permalink to this headline">¶</a></h2>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_cdat_tools.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*- </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utilitaires intégrés à UVCDAT</span>
+
+<span class="sd">Modules: :mod:`cdtime`, :mod:`cdutil`, :mod:`genutil`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="c1"># Le module cdtime: la gestion du temps</span>
+
+<span class="c1"># - temps absolu</span>
+<span class="kn">import</span> <span class="nn">cdtime</span>
+<span class="n">ctime</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">23</span><span class="p">)</span>              <span class="c1"># mettre moins d&#39;arguments</span>
+<span class="nb">print</span> <span class="n">ctime</span><span class="o">.</span><span class="n">hour</span>                                        <span class="c1"># verifier les autres composantes</span>
+<span class="nb">print</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">1999</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">cmp</span><span class="p">(</span><span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">1999</span><span class="p">))</span>
+<span class="nb">print</span> <span class="n">ctime</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span><span class="o">.</span><span class="n">hour</span>                    <span class="c1"># essayez 70s</span>
+
+<span class="c1"># - temps relatif</span>
+<span class="n">rtime</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">reltime</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="s1">&#39;minutes since 2000-1-1 6&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">rtime</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">rtime</span><span class="o">.</span><span class="n">units</span>
+<span class="nb">print</span> <span class="n">rtime</span><span class="o">.</span><span class="n">torel</span><span class="p">(</span><span class="s1">&#39;hours since 2000&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+<span class="c1"># - conversions</span>
+<span class="nb">print</span> <span class="n">rtime</span><span class="o">.</span><span class="n">tocomp</span><span class="p">()</span>
+<span class="nb">print</span> <span class="n">ctime</span><span class="o">.</span><span class="n">torel</span><span class="p">(</span><span class="s1">&#39;months since 2000&#39;</span><span class="p">)</span>                  <span class="c1"># essayez les &quot;weeks&#39;</span>
+<span class="nb">print</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">s2c</span><span class="p">(</span><span class="s1">&#39;2000-10&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">month</span>                       <span class="c1"># testez cdtime.s2r, cdtime.r2r...</span>
+
+
+
+
+
+<span class="c1"># Le module cdutil : utilitaires orientes climat</span>
+
+<span class="c1"># - contenu</span>
+<span class="kn">import</span> <span class="nn">cdutil</span>
+<span class="nb">print</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cdutil</span><span class="p">)</span>
+
+<span class="c1"># - chargement des données (vent Pacifique central sur plusieurs années)</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="s1">&#39;uv_pacific.nc&#39;</span><span class="p">))</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;uwnd&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># - construire une climatologie mensuelle et des anomalies</span>
+<span class="n">cdutil</span><span class="o">.</span><span class="n">setTimeBoundsMonthly</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>                          <span class="c1"># importance des bounds (autres ?)</span>
+<span class="n">uclim</span> <span class="o">=</span> <span class="n">cdutil</span><span class="o">.</span><span class="n">ANNUALCYCLE</span><span class="o">.</span><span class="n">climatology</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>               <span class="c1"># climato</span>
+<span class="n">uanom</span> <span class="o">=</span> <span class="n">cdutil</span><span class="o">.</span><span class="n">ANNUALCYCLE</span><span class="o">.</span><span class="n">departures</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">uclim</span><span class="p">)</span>     <span class="c1"># anomalies</span>
+<span class="nb">print</span> <span class="n">uclim</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="n">uanom</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="n">djf</span> <span class="o">=</span> <span class="n">cdutil</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">Seasons</span><span class="p">(</span><span class="s1">&#39;DJF&#39;</span><span class="p">)</span>                       <span class="c1"># creation d&#39;une saison</span>
+<span class="n">udjf</span> <span class="o">=</span> <span class="n">djf</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>                                           <span class="c1"># extraction</span>
+<span class="n">dfj</span> <span class="o">=</span> <span class="n">cdutil</span><span class="o">.</span><span class="n">DJF</span>                                        <span class="c1"># des saisons existent déjà</span>
+
+<span class="c1"># - averager</span>
+<span class="n">ut</span> <span class="o">=</span> <span class="n">cdutil</span><span class="o">.</span><span class="n">averager</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;yx&#39;</span><span class="p">,</span>  <span class="n">weights</span><span class="o">=</span><span class="n">cdutil</span><span class="o">.</span><span class="n">area_weights</span><span class="p">(</span><span class="n">u</span><span class="p">))</span> <span class="c1"># moyenne spatiale</span>
+<span class="n">help</span><span class="p">(</span><span class="n">cdutil</span><span class="o">.</span><span class="n">averager</span><span class="p">)</span>
+<span class="c1">#  -&gt; essayez la moyenne temporelle</span>
+
+<span class="c1"># - regions et selecteurs</span>
+<span class="n">equator</span> <span class="o">=</span> <span class="n">cdutil</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">domain</span><span class="p">(</span><span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">select</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">selectors</span><span class="o">.</span><span class="n">Selector</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;1950&#39;</span><span class="p">,</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">1960</span><span class="p">)))</span>
+<span class="nb">print</span> <span class="n">u</span><span class="p">(</span><span class="n">equator</span><span class="p">)(</span><span class="n">select</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="c1">#  -&gt; appliquez à la lecture du fichier</span>
+
+
+
+
+
+
+<span class="c1"># Le module genutil : utilitaires generiques</span>
+
+<span class="c1"># - contenu</span>
+<span class="kn">import</span> <span class="nn">genutil</span>
+<span class="nb">print</span> <span class="nb">dir</span><span class="p">(</span><span class="n">genutil</span><span class="p">)</span>
+
+<span class="c1"># - statistics standards</span>
+<span class="nb">print</span> <span class="nb">dir</span><span class="p">(</span><span class="n">genutil</span><span class="o">.</span><span class="n">statistics</span><span class="p">)</span>
+<span class="n">ustd</span> <span class="o">=</span> <span class="n">genutil</span><span class="o">.</span><span class="n">statistics</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>                <span class="c1"># testez les options</span>
+<span class="n">ustd</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="nb">print</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ustd</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># - salstat</span>
+<span class="nb">print</span> <span class="nb">dir</span><span class="p">(</span><span class="n">genutil</span><span class="o">.</span><span class="n">salstat</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">genutil</span><span class="o">.</span><span class="n">salstat</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>             <span class="c1"># essayez d&#39;autres fonctions</span>
+
+<span class="c1"># - divers</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">uu</span> <span class="o">=</span> <span class="n">genutil</span><span class="o">.</span><span class="n">grower</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>                         <span class="c1"># testez d&#39;autres slices</span>
+<span class="nb">print</span> <span class="n">uu</span><span class="o">.</span><span class="n">shape</span>
+<span class="nb">print</span> <span class="n">genutil</span><span class="o">.</span><span class="n">minmax</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">](</span><span class="n">genutil</span><span class="o">.</span><span class="n">picker</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1960-01-03&#39;</span><span class="p">,</span> <span class="s1">&#39;1965-05-03&#39;</span><span class="p">]))</span> <span class="c1"># testez option match</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

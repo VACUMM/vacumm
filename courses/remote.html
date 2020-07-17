@@ -1,0 +1,160 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.8.18.2. Leçon sur le travail avec des fichiers distants &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/courses/remote.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lecon-sur-le-travail-avec-des-fichiers-distants">
+<h1>3.8.18.2. Leçon sur le travail avec des fichiers distants<a class="headerlink" href="#lecon-sur-le-travail-avec-des-fichiers-distants" title="Permalink to this headline">¶</a></h1>
+<p>Voir <a class="reference internal" href="../library/misc.remote.html#module-vacumm.misc.remote" title="vacumm.misc.remote"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.remote</span></code></a>.</p>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_advanced_remote.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Travail avec fichiers distants (:mod:`vacumm.misc.remote`) :</span>
+
+
+<span class="sd">- Fichiers d&#39;entreé : télécharger automatique les fichiers nécessaires</span>
+<span class="sd">  en fonction de leur disponibilité locale et de leur date.</span>
+<span class="sd">- Fichier de sortie : envoyer un fichier de sortie après son écriture.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">os</span><span class="p">,</span> <span class="n">InputWorkFiles</span><span class="p">,</span> <span class="n">OutputWorkFile</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;caparmor-sftp&#39;</span>
+
+<span class="c1"># Materiel</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;remote&#39;</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;remote&#39;</span><span class="p">)</span>
+<span class="n">rfiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;remote/data1.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;remote/data2.txt&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">rfile</span> <span class="ow">in</span> <span class="n">rfiles</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">rfile</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">rfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;data</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">wdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+
+<span class="c1"># Fichiers d&#39;entrée</span>
+<span class="c1"># - init et recuperation</span>
+<span class="n">wfi</span> <span class="o">=</span> <span class="n">InputWorkFiles</span><span class="p">(</span><span class="s1">&#39;(sftp://</span><span class="si">%(host)s%(wdir)s</span><span class="s1">/remote&gt;local)/data?.txt&#39;</span><span class="o">%</span><span class="nb">vars</span><span class="p">())</span>
+<span class="nb">print</span> <span class="n">wfi</span><span class="o">.</span><span class="n">remote_files</span><span class="p">()</span>
+<span class="nb">print</span> <span class="n">wfi</span><span class="o">.</span><span class="n">local_files</span><span class="p">()</span>
+<span class="c1"># - update</span>
+<span class="n">wfi</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>                                   <span class="c1"># ESSAYER APRES UN TOUCH, PUIS PARAM CHECK=..</span>
+
+
+<span class="c1"># Fichier de sortie</span>
+<span class="n">wfo</span> <span class="o">=</span> <span class="n">OutputWorkFile</span><span class="p">(</span><span class="s1">&#39;(local&gt;sftp://</span><span class="si">%(host)s%(wdir)s</span><span class="s1">/remote)/out.dat&#39;</span><span class="o">%</span><span class="nb">vars</span><span class="p">())</span>
+<span class="c1"># - ecriture</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">wfo</span><span class="o">.</span><span class="n">local_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;out</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c1"># - envoi</span>
+<span class="n">wfo</span><span class="o">.</span><span class="n">put</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,469 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.3.2. merge_profiles.py &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.6.3.2. <strong class="program">merge_profiles.py</strong></a><ul>
+<li><a class="reference internal" href="#prealables">1.6.3.2.1. Préalables</a></li>
+<li><a class="reference internal" href="#fonctionnement">1.6.3.2.2. Fonctionnement</a></li>
+<li><a class="reference internal" href="#utilisation">1.6.3.2.3. Utilisation</a><ul>
+<li><a class="reference internal" href="#usage">1.6.3.2.3.1. Usage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#format-des-sorties">1.6.3.2.4. Format des sorties:</a></li>
+<li><a class="reference internal" href="#exemple">1.6.3.2.5. Exemple</a><ul>
+<li><a class="reference internal" href="#emprise-manche-gascogne">1.6.3.2.5.1. Emprise manche-gascogne</a></li>
+<li><a class="reference internal" href="#emprise-mediteranee-nord-occidentale">1.6.3.2.5.2. Emprise méditéranée nord occidentale</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.merge_profiles.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="merge-profiles-py">
+<span id="user-scripts-merge-profiles"></span><h1>1.6.3.2. <strong class="program">merge_profiles.py</strong><a class="headerlink" href="#merge-profiles-py" title="Permalink to this headline">¶</a></h1>
+<p>Ce script est destiné à agréger des fichiers de profils verticaux plus ou moins homogènes dans
+l’organisation des fichiers NetCDF (convention, nom des variables et attributs).</p>
+<p>Initialement les profils exploités sont issus des bases CORIOLIS et SISMER.</p>
+<div class="section" id="prealables">
+<h2>1.6.3.2.1. Préalables<a class="headerlink" href="#prealables" title="Permalink to this headline">¶</a></h2>
+<p>Les profils pris en charge doivent respecter les conditions suivantes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>avoir les dimensions ou variables représentant le code plateforme, le temps, la position et la profondeur.</li>
+<li>les variables à traiter doivent être représentées sur deux dimensions, la première correspondant au profil, la seconde à la profondeur.</li>
+<li>en option, des variables de code qualité peuvent être utilisées et servir de filtres.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="fonctionnement">
+<h2>1.6.3.2.2. Fonctionnement<a class="headerlink" href="#fonctionnement" title="Permalink to this headline">¶</a></h2>
+<p>Le script effectue les actions suivantes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>chargement des fichiers de profils.</li>
+<li>exclusion des profils ne répondant pas aux critères de qualité des données.</li>
+<li>exclusion des données masquées.</li>
+<li>détection des dates partielles (heure manquante).</li>
+<li>détection des duplicats.</li>
+<li>homogénéisation du format des profils.</li>
+<li>enregistrement d’un fichier de profils. uniques et un fichier de profils dupliqués.</li>
+</ul>
+</div></blockquote>
+<p>Les types de profils sont déterminés automatiquement à partir des noms de fichiers.</p>
+<p>Le script fonctionne avec un type générique de profil, qui peut être spécialisé pour les cas particuliers.</p>
+<p>Les codes plateforme sont déterminés soit par une variable associée, un attribut global, ou le nom de fichier.</p>
+<p>La sélection de variables à traiter est réalisée par alias; une table de correspondance est définie dans le
+code source.</p>
+<p>Ex: en spécifiant comme variable “temperature”, la première recherche dans les fichiers sera sur une variable nommée TEMP.</p>
+<p><strong>Filtrage qualité</strong></p>
+<p>Si une liste de codes qualité valides est renseignée, les profils pour lesquels les informations de
+temps, position ou profondeurs ne correspondent pas à l’un des codes sont exclus.</p>
+<p><strong>Détection de dates partielles</strong></p>
+<p>Certains profils peuvent contenir une information partielle en temps, la partie horaire étant indéterminée.
+Dans ce cas la partie horaire est fixée à 12H et le script cherchera à remplacer ce profil par un profil avec
+une date complète si disponible, sinon le profil est conservé avec cette date ajustée.</p>
+<p><strong>Détection des duplicats</strong></p>
+<p>Les critères de duplicité de deux profils sont:</p>
+<ul class="simple">
+<li>codes plateforme égaux.</li>
+<li>dates et heures égales.</li>
+<li>positions égales.</li>
+</ul>
+<p>Si tous ces critères sont vérifiés, tous les profils correspondant sont ajoutés au fichier de duplicats, le premier profil est quand à lui ajouté au fichier profils uniques.</p>
+<p><strong>Homogénéisation des profils</strong></p>
+<p>Le script adapte les données des profils pour un format commun en sortie.</p>
+<p>Les informations temporelles, issus de variables de type chaîne de caractères, ou numérique avec unité sont converties
+en valeurs numérique avec unité (par défaut “seconds since 1900-01-01 00:00:00”).</p>
+<p>Les informations de profondeurs, issues de variables de profondeur ou de pression sont converties si nécessaire en profondeur.</p>
+</div>
+<div class="section" id="utilisation">
+<h2>1.6.3.2.3. Utilisation<a class="headerlink" href="#utilisation" title="Permalink to this headline">¶</a></h2>
+<p>Le paramétrage peut être réalisé soit par la ligne de commande, par un fichier de configuration ou les deux.
+Par exemple, la configuration <code class="file docutils literal notranslate"><span class="pre">profiles.cfg</span></code>:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[ProfilesMerger]</span>
+    <span class="na">input-files</span> <span class="o">=</span> <span class="s">profile1.nc,profile2.nc</span>
+<span class="s">    [[load]]</span>
+<span class="s">        variables = temperature,salinity</span>
+</pre></div>
+</div>
+<p>Ce fichier de configuration <code class="file docutils literal notranslate"><span class="pre">profiles.cfg</span></code>: serait utilisé de la manière suivante:</p>
+<p>Cela équivaut à la ligne de commande:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>merge_profiles.py --ProfilesMerger-load-variables temperature --ProfilesMerger-load-variables salinity --ProfilesMerger-input-files profile1.nc --ProfilesMerger-input-files profile2.nc
+</pre></div>
+</div>
+<p>Ou encore:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>merge_profiles.py --ProfilesMerger-load-variables temperature --ProfilesMerger-load-variables salinity profile1.nc profile2.nc
+</pre></div>
+</div>
+<p>Pour une utilisation en ligne de commande:</p>
+<p>Le choix des variables à traiter peut être spécifié avec l’option –ProfilesMerger-load-variables (option à répeter pour chaque variable)</p>
+<p>Le choix du filtre des codes qualité (des profils à conserver) peut être spécifié avec l’option –ProfilesMerger-load-qualities (option à répeter pour chaque code qualité)</p>
+<p>Exemple si on veut garder les profils ayant les codes qualité 1 ou 2:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>merge_profiles.py --cfgfile profiles.cfg --ProfilesMerger-load-qualities <span class="m">1</span> --ProfilesMerger-load-qualities <span class="m">2</span>
+</pre></div>
+</div>
+<p>Le nom du fichier de profils uniques en sortie est déterminé par –ProfilesMerger-merge-filter-file</p>
+<p>Le noom du fichier de profils dupliqués en sortie est déterminé par –ProfilesMerger-merge-reject-file</p>
+<dl class="docutils">
+<dt>Le choix des fichiers de profils en entrée à agréger peut être réalisé de trois manières différentes, pouvant être combinées:</dt>
+<dd><ul class="first last simple">
+<li>un fichier par argument de la ligne de commande</li>
+<li>un fichier par option “–ProfilesMerger-input-files” de la ligne de commande ou de la configuration</li>
+<li>par recherche de fichier en utilisant les options –ProfilesMerger-find-* de la ligne de commande ou de la configuration</li>
+</ul>
+</dd>
+<dt>Si la méthode de recherche de fichier est utilisée, deux modes sont disponibles selon l’utilisation de l’une ou l’autre des options/configurations:</dt>
+<dd><ul class="first last simple">
+<li>–ProfilesMerger-find-regex / regex: utilisation d’une expression régulière (ex: ‘.*PR_(BA|CT).*.nc’)</li>
+<li>–ProfilesMerger-find-pattern / pattern: utilisation d’une expression wildcard (ex: (‘<em>PR_BA</em>.nc’, ‘<em>PR_CT</em>.nc’))</li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="usage">
+<h3>1.6.3.2.3.1. Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Usage: merge_profiles.py [options] [profilesA.nc] [profilesB.nc] [...]
+
+Merge various vertical profiles into a netcdf file
+
+Options:
+  --version             show program&#39;s version number and exit
+  -h, --help            show this help message and exit
+  --nonetcdf3           Do not force saving files in NetCDF version 3
+  --nonumpywarnings     Hide all numpy warnings
+  --debug               Set logging level to DEBUG
+  --verbose             Set logging level to VERBOSE
+  --loglevel=level      Set logging level, available levels are: NOTSET,
+                        DEBUG, VERBOSE, INFO, NOTICE, WARNING, ERROR,
+                        CRITICAL. You may restrict this level for specific
+                        class with filters:
+                        --loglevel=MyBuggedClass=debug,MyVerbose Class=warning
+  --logformat=format    Set logging format. Can also use filters.
+  --logdateformat=format
+                        Set logging date format. Can also use filters.
+  --lognocolor          Disable logging colors
+  --cfgfile=CFGFILE     Configuration file [default: &quot;none&quot;]
+
+  Merger configuration:
+    --ProfilesMerger-find-path=PROFILESMERGER_FIND_PATH
+                         Root directory. [default: &quot;None&quot;]
+    --ProfilesMerger-find-regex=PROFILESMERGER_FIND_REGEX
+                         File inclusion regular expression. This is mutually
+                        exclusive with the pattern option. [default: &quot;None&quot;]
+    --ProfilesMerger-find-pattern=PROFILESMERGER_FIND_PATTERN
+                         File inclusion wildcard pattern(s). This is mutually
+                        exclusive with the regex option. [default: &quot;&quot;]
+    --ProfilesMerger-find-matchall=PROFILESMERGER_FIND_MATCHALL
+                         Evaluate whole files paths (True) or only files names
+                        (False). [default: &quot;False&quot;]
+    --ProfilesMerger-find-depth=PROFILESMERGER_FIND_DEPTH
+                         Maximum recursive search depth (None: no limit, 0:
+                        direct children, N: N subdirectories). [default: &quot;0&quot;]
+    --ProfilesMerger-load-safe=PROFILESMERGER_LOAD_SAFE
+                         Use generic profile on unknown profile type.
+                        [default: &quot;False&quot;]
+    --ProfilesMerger-load-variables=PROFILESMERGER_LOAD_VARIABLES
+                         Variable filter. [default: &quot;&quot;]
+    --ProfilesMerger-load-qualities=PROFILESMERGER_LOAD_QUALITIES
+                         Quality code filter applied to time, position and
+                        depth. [default: &quot;1 2&quot;]
+    --ProfilesMerger-merge-filter=PROFILESMERGER_MERGE_FILTER
+                         Filter class name. [default:
+                        &quot;ProfilesDuplicatesFilter&quot;]
+    --ProfilesMerger-merge-filter-file=PROFILESMERGER_MERGE_FILTER_FILE
+                         Filtered outputs file. [default:
+                        &quot;merged_profiles.nc&quot;]
+    --ProfilesMerger-merge-filter-sort=PROFILESMERGER_MERGE_FILTER_SORT
+                         Sort filtered (currently &#39;time&#39; or None). [default:
+                        &quot;time&quot;]
+    --ProfilesMerger-merge-reject-file=PROFILESMERGER_MERGE_REJECT_FILE
+                         Rejected outputs file. [default:
+                        &quot;duplicated_profiles.nc&quot;]
+    --ProfilesMerger-merge-reject-sort=PROFILESMERGER_MERGE_REJECT_SORT
+                         Sort filtered (currently &#39;time&#39; or None). [default:
+                        &quot;time&quot;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="format-des-sorties">
+<h2>1.6.3.2.4. Format des sorties:<a class="headerlink" href="#format-des-sorties" title="Permalink to this headline">¶</a></h2>
+<p>Les sorties sont au format NetCDF.</p>
+<p>Pour chaque profil, la variable filename donne le nom de fichier d’origine du profil et la dimension
+profile donne l’indice du profil dans ce fichier d’origine.</p>
+<p>La structure des fichiers générés suit celle de l’exemple suivant:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>netcdf merged_profiles {
+dimensions:
+    profile = 826 ;
+    filename_string = 18 ;
+    platform_code_string = 4 ;
+    level = 511 ;
+variables:
+    int profile(profile) ;
+        profile:description = &quot;Index of profile in original file&quot; ;
+    double time(profile) ;
+        time:long_name = &quot;Time&quot; ;
+        time:standard_name = &quot;time&quot; ;
+        time:units = &quot;seconds since 1900-01-01 00:00:00&quot; ;
+        time:missing_value = 1.e+20 ;
+        time:axis = &quot;T&quot; ;
+    int filename_string(filename_string) ;
+    char filename(profile, filename_string) ;
+        filename:missing_value = &quot;N/A&quot; ;
+        filename:description = &quot;File name of the original file&quot; ;
+    double latitude(profile) ;
+        latitude:standard_name = &quot;latitude&quot; ;
+        latitude:long_name = &quot;Latitude&quot; ;
+        latitude:valid_min = -90. ;
+        latitude:units = &quot;degree_north&quot; ;
+        latitude:missing_value = 1.e+20 ;
+        latitude:valid_max = 90. ;
+        latitude:axis = &quot;Y&quot; ;
+    double longitude(profile) ;
+        longitude:standard_name = &quot;longitude&quot; ;
+        longitude:long_name = &quot;Longitude&quot; ;
+        longitude:valid_min = -180. ;
+        longitude:units = &quot;degree_east&quot; ;
+        longitude:missing_value = 1.e+20 ;
+        longitude:valid_max = 180. ;
+        longitude:axis = &quot;X&quot; ;
+    int platform_code_string(platform_code_string) ;
+    char platform_code(profile, platform_code_string) ;
+        platform_code:missing_value = &quot;N/A&quot; ;
+    int level(level) ;
+        level:long_name = &quot;Level&quot; ;
+        level:standard_name = &quot;level&quot; ;
+        level:axis = &quot;Z&quot; ;
+    double depth(profile, level) ;
+        depth:standard_name = &quot;depth&quot; ;
+        depth:long_name = &quot;Depth&quot; ;
+        depth:valid_min = -4453.39918618524 ;
+        depth:positive = &quot;down&quot; ;
+        depth:units = &quot;m&quot; ;
+        depth:missing_value = 1.e+20 ;
+        depth:valid_max = 0. ;
+        depth:axis = &quot;Z&quot; ;
+    double temperature(profile, level) ;
+        temperature:long_name = &quot;sea water temperature&quot; ;
+        temperature:standard_name = &quot;sea_water_temperature&quot; ;
+        temperature:units = &quot;degree_Celsius&quot; ;
+        temperature:missing_value = 1.e+20 ;
+    double salinity(profile, level) ;
+        salinity:long_name = &quot;sea water salinity&quot; ;
+        salinity:standard_name = &quot;sea_water_salinity&quot; ;
+        salinity:units = &quot;PSU&quot; ;
+        salinity:missing_value = 1.e+20 ;
+
+// global attributes:
+        :Conventions = &quot;CF-1.0&quot; ;
+        :software_version = &quot;merge_profiles.py 2012-11-22&quot; ;
+        :creation_date = &quot;2012-12-07T17:33:56Z&quot; ;
+        :history = &quot;2012-12-07T17:33:56Z : Creation&quot; ;
+        :title = &quot;Profiles&quot; ;
+        :southernmost_latitude = 43. ;
+        :northernmost_latitude = 50. ;
+        :westernmost_longitude = -15. ;
+        :easternmost_longitude = -1. ;
+</pre></div>
+</div>
+</div>
+<div class="section" id="exemple">
+<h2>1.6.3.2.5. Exemple<a class="headerlink" href="#exemple" title="Permalink to this headline">¶</a></h2>
+<p>Les profils actuels sont:</p>
+<div class="section" id="emprise-manche-gascogne">
+<h3>1.6.3.2.5.1. Emprise manche-gascogne<a class="headerlink" href="#emprise-manche-gascogne" title="Permalink to this headline">¶</a></h3>
+<p>La racine de ces données se trouve ici:</p>
+<p>/home11/caparmor/mars/VALID/DATA/MANGA</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="57%" />
+<col width="43%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Description</th>
+<th class="head">Localisation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Profils BATHY provenant du GTS</td>
+<td>HYDRO_CORIOLIS/MANGA_CORIOLIS_PR_BA</td>
+</tr>
+<tr class="row-odd"><td>Profils CTD</td>
+<td>HYDRO_CORIOLIS/MANGA_CORIOLIS_PR_CT</td>
+</tr>
+<tr class="row-even"><td>Profils flotteurs Argo</td>
+<td>HYDRO_CORIOLIS/MANGA_CORIOLIS_PR_PF</td>
+</tr>
+<tr class="row-odd"><td>Recopesca</td>
+<td>HYDRO_CORIOLIS/MANGA_CORIOLIS_PR_RE</td>
+</tr>
+<tr class="row-even"><td>Profils TESAC provenant du GTS</td>
+<td>HYDRO_CORIOLIS/MANGA_CORIOLIS_PR_TE</td>
+</tr>
+<tr class="row-odd"><td>Profils XBT ou XCTD</td>
+<td>HYDRO_CORIOLIS/MANGA_CORIOLIS_PR_XB</td>
+</tr>
+<tr class="row-even"><td>Profils possiblement en double avec les données SISMER</td>
+<td>HYDRO_CORIOLIS_DOUBLES_POTENTIELS</td>
+</tr>
+<tr class="row-odd"><td>Profils Bouteilles</td>
+<td>HYDRO_SISMER/MANGA_SISMER_PR_BO.nc</td>
+</tr>
+<tr class="row-even"><td>Profils CTD</td>
+<td>HYDRO_SISMER/MANGA_SISMER_PR_CT.nc
+HYDRO_SISMER/MANGA_SISMER_PR_CT_DEPTH.nc</td>
+</tr>
+<tr class="row-odd"><td>Profils XBT</td>
+<td>HYDRO_SISMER/MANGA_SISMER_PR_XB.nc</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="emprise-mediteranee-nord-occidentale">
+<h3>1.6.3.2.5.2. Emprise méditéranée nord occidentale<a class="headerlink" href="#emprise-mediteranee-nord-occidentale" title="Permalink to this headline">¶</a></h3>
+<p>La racine de ces données se trouve ici:</p>
+<p>/home11/caparmor/mars/VALID/DATA/MANGA</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Description</th>
+<th class="head">Localisation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Profils BATHY provenant du GTS</td>
+<td>HYDRO_CORIOLIS/MENOR_CORIOLIS_PR_BA</td>
+</tr>
+<tr class="row-odd"><td>Profils CTD</td>
+<td>HYDRO_CORIOLIS/MENOR_CORIOLIS_PR_CT</td>
+</tr>
+<tr class="row-even"><td>Profils flotteurs Argo</td>
+<td>HYDRO_CORIOLIS/MENOR_CORIOLIS_PR_PF</td>
+</tr>
+<tr class="row-odd"><td>Profils TESAC provenant du GTS</td>
+<td>HYDRO_CORIOLIS/MENOR_CORIOLIS_PR_TE</td>
+</tr>
+<tr class="row-even"><td>Profils XBT ou XCTD</td>
+<td>HYDRO_CORIOLIS/MENOR_CORIOLIS_PR_XB</td>
+</tr>
+<tr class="row-odd"><td>Profils possiblement en double avec les données SISMER</td>
+<td>HYDRO_CORIOLIS_DOUBLES_POTENTIELS</td>
+</tr>
+<tr class="row-even"><td>Profils Bouteilles</td>
+<td>HYDRO_SISMER/MENOR_SISMER_PR_BO.nc</td>
+</tr>
+<tr class="row-odd"><td>Profils CTD</td>
+<td>HYDRO_SISMER/MENOR_SISMER_PR_CT.nc</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

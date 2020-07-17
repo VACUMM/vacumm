@@ -1,0 +1,486 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.10. vacumm.misc.remote – Remote files &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.10. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.remote</span></code> – Remote files</a><ul>
+<li><a class="reference internal" href="#overview">2.3.10.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.10.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.remote.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-remote-remote-files">
+<span id="lib-misc-remote"></span><h1>2.3.10. <a class="reference internal" href="#module-vacumm.misc.remote" title="vacumm.misc.remote"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.remote</span></code></a> – Remote files<a class="headerlink" href="#vacumm-misc-remote-remote-files" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.10.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.sshbank" title="vacumm.misc.remote.sshbank"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sshbank</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.remote.SSHBank" title="vacumm.misc.remote.SSHBank"><code class="xref py py-class docutils literal notranslate"><span class="pre">SSHBank</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.SSHBank.ftp" title="vacumm.misc.remote.SSHBank.ftp"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ftp()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.SSHBank.ssh" title="vacumm.misc.remote.SSHBank.ssh"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ssh()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.remote.WorkFile" title="vacumm.misc.remote.WorkFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkFile</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.WorkFile.debug" title="vacumm.misc.remote.WorkFile.debug"><code class="xref py py-meth docutils literal notranslate"><span class="pre">debug()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.remote.WorkFile.error" title="vacumm.misc.remote.WorkFile.error"><code class="xref py py-meth docutils literal notranslate"><span class="pre">error()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.remote.WorkFile.expand_path" title="vacumm.misc.remote.WorkFile.expand_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expand_path()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.WorkFile.info" title="vacumm.misc.remote.WorkFile.info"><code class="xref py py-meth docutils literal notranslate"><span class="pre">info()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.remote.WorkFile.parse_path" title="vacumm.misc.remote.WorkFile.parse_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse_path()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.WorkFile.remote_exec" title="vacumm.misc.remote.WorkFile.remote_exec"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remote_exec()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.remote.WorkFile.warning" title="vacumm.misc.remote.WorkFile.warning"><code class="xref py py-meth docutils literal notranslate"><span class="pre">warning()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.remote.InputWorkFiles" title="vacumm.misc.remote.InputWorkFiles"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputWorkFiles</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.InputWorkFiles.get" title="vacumm.misc.remote.InputWorkFiles.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.InputWorkFiles.local_files" title="vacumm.misc.remote.InputWorkFiles.local_files"><code class="xref py py-meth docutils literal notranslate"><span class="pre">local_files()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.InputWorkFiles.remote_files" title="vacumm.misc.remote.InputWorkFiles.remote_files"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remote_files()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.remote.OutputWorkFile" title="vacumm.misc.remote.OutputWorkFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputWorkFile</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.remote.OutputWorkFile.put" title="vacumm.misc.remote.OutputWorkFile.put"><code class="xref py py-meth docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.10.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="../_images/inheritance-e48494e42d56fc1b4eb95e5c18345e9149f06b63.png" alt="Inheritance diagram of vacumm.misc.remote" usemap="#inheritance1bdd584a37" class="inheritance graphviz" /></div>
+<map id="inheritance1bdd584a37" name="inheritance1bdd584a37">
+<area shape="poly" id="node1" href="#vacumm.misc.remote.InputWorkFiles" target="_top" title="A class to deal with input remote files" alt="" coords="194,93,189,87,175,82,154,77,128,75,99,74,69,75,43,77,22,82,8,87,4,93,8,99,22,104,43,108,69,111,99,112,128,111,154,108,175,104,189,99"/>
+<area shape="poly" id="node2" href="#vacumm.misc.remote.WorkFile" target="_top" title="Base class for :class:`InputWorkFiles` and class:`OutputWorkFile`" alt="" coords="165,23,161,17,150,11,132,7,109,4,84,4,59,4,37,7,19,11,8,17,4,23,8,29,19,34,37,38,59,41,84,42,109,41,132,38,150,34,161,29"/>
+<area shape="poly" id="node3" href="#vacumm.misc.remote.OutputWorkFile" target="_top" title="A class to deal with an output remote file" alt="" coords="403,93,399,87,385,82,363,77,336,75,306,74,276,75,249,77,228,82,214,87,209,93,214,99,228,104,249,108,276,111,306,112,336,111,363,108,385,104,399,99"/>
+<area shape="poly" id="node4" href="#vacumm.misc.remote.SSHBank" target="_top" title="Interface to handle a bank of SSH/SFTP connections" alt="" coords="350,23,346,17,334,11,315,7,292,4,266,4,240,4,216,7,197,11,186,17,181,23,186,29,197,34,216,38,240,41,266,42,292,41,315,38,334,34,346,29"/>
+</map><span class="target" id="module-vacumm.misc.remote"></span><p>Working with remote files</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Yoo need <a class="reference external" href="http://www.lag.net/paramiko/">paramiko</a> to use this module.</p>
+</div>
+<dl class="class">
+<dt id="vacumm.misc.remote.SSHBank">
+<em class="property">class </em><code class="descname">SSHBank</code><a class="reference internal" href="../_modules/vacumm/misc/remote.html#SSHBank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.SSHBank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Interface to handle a bank of SSH/SFTP connections</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sshbank</span> <span class="o">=</span> <span class="n">SSHBank</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">sshbank</span><span class="p">(</span><span class="s1">&#39;camarpor&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ssh</span> <span class="o">=</span> <span class="n">client</span><span class="p">(</span><span class="s1">&#39;ssh&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span><span class="s1">&#39;ls&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ftp</span> <span class="o">=</span> <span class="n">client</span><span class="p">(</span><span class="s1">&#39;ftp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ftp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;remote_file&#39;</span><span class="p">,</span> <span class="s1">&#39;local_file&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ssh2</span> <span class="o">=</span> <span class="n">sshbank</span><span class="o">.</span><span class="n">ssh</span><span class="p">(</span><span class="s1">&#39;myhost:4022&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ftp2</span> <span class="o">=</span> <span class="n">sshbank</span><span class="o">.</span><span class="n">ftp</span><span class="p">(</span><span class="s1">&#39;user@myhost&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.remote.SSHBank.ftp">
+<code class="descname">ftp</code><span class="sig-paren">(</span><em>host</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#SSHBank.ftp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.SSHBank.ftp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the SFTP agent</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.remote.SSHBank.ssh">
+<code class="descname">ssh</code><span class="sig-paren">(</span><em>host</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#SSHBank.ssh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.SSHBank.ssh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the SSH agent</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.remote.sshbank">
+<code class="descname">sshbank</code><em class="property"> = &lt;vacumm.misc.remote.SSHBank object&gt;</em><a class="headerlink" href="#vacumm.misc.remote.sshbank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ready to use SSH bank</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.remote.WorkFile">
+<em class="property">class </em><code class="descname">WorkFile</code><span class="sig-paren">(</span><em>logger</em>, <em>ssh</em>, <em>umask=0</em>, <em>dmode=509</em>, <em>fmode=436</em>, <em>raise_error=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#WorkFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.WorkFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for <a class="reference internal" href="#vacumm.misc.remote.InputWorkFiles" title="vacumm.misc.remote.InputWorkFiles"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputWorkFiles</span></code></a> and class:<cite>OutputWorkFile</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>logger</strong>:  A <a class="reference internal" href="misc.io.html#vacumm.misc.io.Logger" title="vacumm.misc.io.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a> (or subclass) instance</li>
+<li><strong>ssh</strong>: A ssh connexion (for instance created using :class`SSHBank`
+connected to an host).</li>
+<li><strong>umask</strong>, optional: Argument to <a class="reference external" href="https://docs.python.org/dev/library/os.html#os.umask" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.umask()</span></code></a></li>
+<li><strong>dmode</strong>, optional: Directory unix mode (see <a class="reference external" href="https://docs.python.org/dev/library/os.html#os.chmod" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.chmod()</span></code></a>)</li>
+<li><strong>fmode</strong>, optional: File unix mode (see <a class="reference external" href="https://docs.python.org/dev/library/os.html#os.chmod" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.chmod()</span></code></a>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.misc.remote.WorkFile.debug">
+<code class="descname">debug</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#WorkFile.debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.WorkFile.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a DEBUG message</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.remote.WorkFile.error">
+<code class="descname">error</code><span class="sig-paren">(</span><em>msg</em>, <em>warn=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#WorkFile.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.WorkFile.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send an ERROR message and exit</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.remote.WorkFile.expand_path">
+<em class="property">classmethod </em><code class="descname">expand_path</code><span class="sig-paren">(</span><em>path</em>, <em>subst=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#WorkFile.expand_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.WorkFile.expand_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand ‘~’, environment and other variables in a path</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong>: Path to be expanded</li>
+<li><strong>subst</strong>, optional: Dictionnary of variables that may be used
+for expansion</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.remote.WorkFile.info">
+<code class="descname">info</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#WorkFile.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.WorkFile.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send an INFO message</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.remote.WorkFile.parse_path">
+<em class="property">classmethod </em><code class="descname">parse_path</code><span class="sig-paren">(</span><em>path</em>, <em>rootdir=None</em>, <em>subst=None</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#WorkFile.parse_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.WorkFile.parse_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the (inputdir, outputdir, path) from path (and rootdir)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>path</strong>: Simple or complex path with remote and local part.
+The generic form is :
+<code class="docutils literal notranslate"><span class="pre">&quot;[&lt;prefix&gt;][(&lt;remote_dir&gt;&gt;&lt;local_dir&gt;)[&lt;pattern&gt;]&quot;</span></code>
+where <code class="docutils literal notranslate"><span class="pre">&lt;pattern&gt;</span></code> is global expression pattern (see <a class="reference external" href="https://docs.python.org/dev/library/glob.html#glob.glob" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">glob.glob()</span></code></a>).
+It can also take the form of a tuple.
+Remote paths follow specifications from RFC1738:
+<a class="reference external" href="http://tools.ietf.org/html/rfc1738.html">http://tools.ietf.org/html/rfc1738.html</a>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Be careful when using <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;</span></code> with a remote path.</p>
+</div>
+</li>
+<li><p class="first"><strong>rootdir</strong>, optional: Optional prefix to prepend to path.</p>
+</li>
+<li><p class="first"><strong>subst</strong>, optional: Dictionary of variables used for string isubstitutions on path.
+All environnement variables (taken from <code class="xref py py-attr docutils literal notranslate"><span class="pre">os.environ</span></code>) are also
+substituted.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">parse_path</span><span class="p">(</span><span class="s1">&#39;(sftp://user@host.fr:1022/my/path&gt;/local/path)/to/data.nc&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">parse_path</span><span class="p">((</span><span class="s1">&#39;sftp://user@host.fr:1022/my/path&#39;</span><span class="p">,</span><span class="s1">&#39;/local/path&#39;</span><span class="p">,</span><span class="s1">&#39;/to/data.nc&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">parse_path</span><span class="p">(</span><span class="s1">&#39;/local/path/data.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">parse_path</span><span class="p">(</span><span class="s1">&#39;/home10(/user1&gt;/user2)/data.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.remote.WorkFile.remote_exec">
+<code class="descname">remote_exec</code><span class="sig-paren">(</span><em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#WorkFile.remote_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.WorkFile.remote_exec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a remote command and return result as list of lines</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">files</span> <span class="o">=</span> <span class="n">workfile</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span><span class="s1">&#39;ls&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.remote.WorkFile.warning">
+<code class="descname">warning</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#WorkFile.warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.WorkFile.warning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a WARNING message</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.remote.InputWorkFiles">
+<em class="property">class </em><code class="descname">InputWorkFiles</code><span class="sig-paren">(</span><em>path</em>, <em>rootdir=None</em>, <em>logger=None</em>, <em>sshbank=None</em>, <em>transfer=False</em>, <em>subst=None</em>, <em>check=2</em>, <em>sort=None</em>, <em>filter=None</em>, <em>raise_error=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#InputWorkFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.InputWorkFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.misc.remote.WorkFile" title="vacumm.misc.remote.WorkFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.remote.WorkFile</span></code></a></p>
+<p>A class to deal with input remote files</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>path</em>: path in the form <code class="docutils literal notranslate"><span class="pre">&quot;&lt;prefix&gt;(&lt;remote_dir&gt;&gt;&lt;local_dir&gt;)&lt;pattern&gt;&quot;</span></code>.
+(see <code class="xref py py-func docutils literal notranslate"><span class="pre">parse_path()</span></code>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>logger</em>: a <a class="reference internal" href="misc.io.html#vacumm.misc.io.Logger" title="vacumm.misc.io.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a> (or subclass) instance</li>
+<li><em>sshbank</em>: a :class`SSHBank` instance</li>
+<li><em>transfer</em>: automatically start the transfer after initialization</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span> <span class="o">=</span> <span class="n">InputWorkFiles</span><span class="p">(</span><span class="s1">&#39;(caparmor-sftp:/home125&gt;/home200/caparmor)toto*/data/file*.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="c1"># update</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span> <span class="o">=</span> <span class="n">InputWorkFiles</span><span class="p">(</span><span class="s1">&#39;/home510/toto/toto.nc&#39;</span><span class="p">)</span> <span class="c1"># does nothing !</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span> <span class="o">=</span> <span class="n">InputWorkFiles</span><span class="p">((</span><span class="s1">&#39;/home15&gt;/home12)toto/toto.nc&#39;</span><span class="p">)</span> <span class="c1"># local copy only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">wfile</span><span class="o">.</span><span class="n">local_files</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">wfile</span><span class="o">.</span><span class="n">remote_files</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="vacumm.misc.remote.InputWorkFiles.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>check=2</em>, <em>ifile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#InputWorkFiles.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.InputWorkFiles.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download remote files when needed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><p class="first"><em>check</em>: checks</p>
+<ul class="last simple">
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code>: check nothing =&gt; force the transfer</li>
+<li><code class="docutils literal notranslate"><span class="pre">1</span></code>: only check the existence of the local file</li>
+<li><code class="docutils literal notranslate"><span class="pre">2</span></code>: check existence and compare local and remote dates</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.remote.InputWorkFiles.local_files">
+<code class="descname">local_files</code><span class="sig-paren">(</span><em>ifile=None</em>, <em>update=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#InputWorkFiles.local_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.InputWorkFiles.local_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of local (working) files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.remote.InputWorkFiles.remote_files">
+<code class="descname">remote_files</code><span class="sig-paren">(</span><em>ifile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#InputWorkFiles.remote_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.InputWorkFiles.remote_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of remote files</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.remote.OutputWorkFile">
+<em class="property">class </em><code class="descname">OutputWorkFile</code><span class="sig-paren">(</span><em>path</em>, <em>rootdir=''</em>, <em>logger=None</em>, <em>sshbank=None</em>, <em>subst=None</em>, <em>raise_error=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#OutputWorkFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.OutputWorkFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.misc.remote.WorkFile" title="vacumm.misc.remote.WorkFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.remote.WorkFile</span></code></a></p>
+<p>A class to deal with an output remote file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><dl class="first docutils">
+<dt><em>path</em>: path in the form <code class="docutils literal notranslate"><span class="pre">&quot;&lt;prefix&gt;(&lt;remote_dir&gt;&gt;&lt;local_dir&gt;)&lt;pattern&gt;&quot;</span></code></dt>
+<dd>(see <code class="xref py py-func docutils literal notranslate"><span class="pre">parse_path()</span></code>)</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>logger</em>: a <a class="reference internal" href="misc.io.html#vacumm.misc.io.Logger" title="vacumm.misc.io.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a> (or subclass) instance</li>
+<li><em>sshbank</em>: a :class`SSHBank` instance</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span> <span class="o">=</span> <span class="n">OutputWorkFile</span><span class="p">(</span><span class="s1">&#39;(sftp://caparmor-sftp/home125&gt;/home200/caparmor)toto/data/file.png&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span> <span class="o">=</span> <span class="n">OutputWorkFile</span><span class="p">(</span><span class="s1">&#39;(/home200/caparmor&gt;sftp://username@my.host.fr:1022/prefix)/toto/data/file.png&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span> <span class="o">=</span> <span class="n">OutputWorkFile</span><span class="p">(</span><span class="s1">&#39;/home510/toto/toto.png&#39;</span><span class="p">)</span> <span class="c1"># does nothing !</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span> <span class="o">=</span> <span class="n">OutputWorkFile</span><span class="p">(</span><span class="s1">&#39;(/home15&gt;/home12)toto/toto.png&#39;</span><span class="p">)</span> <span class="c1"># local copy only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pylab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">wfile</span><span class="o">.</span><span class="n">local_file</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wfile</span><span class="o">.</span><span class="n">put</span><span class="p">()</span> <span class="c1"># send or copy</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="vacumm.misc.remote.OutputWorkFile.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>checkdir=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/remote.html#OutputWorkFile.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.remote.OutputWorkFile.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send the file</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

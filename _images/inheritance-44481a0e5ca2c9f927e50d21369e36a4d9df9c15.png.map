@@ -1,0 +1,7 @@
+<map id="inheritance1fca5c46d3" name="inheritance1fca5c46d3">
+<area shape="poly" id="node1" title="Baseclass for all scalar to RGBA mappings." alt="" coords="190,34,187,25,181,17,170,11,157,7,143,5,128,7,115,11,105,17,98,25,96,34,98,43,105,51,115,57,128,61,143,63,157,61,170,57,181,51,187,43"/>
+<area shape="poly" id="node3" href="#vacumm.misc.color.RangedLinearSegmentedColormap" target="_top" title=":See also:" alt="" coords="280,139,274,130,254,122,224,116,185,112,143,111,100,112,62,116,32,122,12,130,5,139,12,148,32,156,62,163,100,167,143,168,185,167,224,163,254,156,274,148"/>
+<area shape="poly" id="node2" title="A class which, when called, can normalize data into" alt="" coords="408,34,406,25,399,17,389,11,375,7,360,5,345,7,332,11,321,17,314,25,312,34,314,43,321,51,332,57,345,61,360,63,375,61,389,57,399,51,406,43"/>
+<area shape="poly" id="node5" href="#vacumm.misc.color.StepsNorm" target="_top" title="Normalize a given value to the 0&#45;1 range on a stepped linear or log scale" alt="" coords="413,139,410,130,403,122,391,116,376,112,360,111,344,112,329,116,317,122,310,130,307,139,310,148,317,156,329,163,344,167,360,168,376,167,391,163,403,156,410,148"/>
+<area shape="poly" id="node4" href="#vacumm.misc.color.Scalar2RGB" target="_top" title="Converter from scalar to colors" alt="" coords="552,34,549,25,541,17,529,11,514,7,497,5,481,7,466,11,454,17,446,25,443,34,446,43,454,51,466,57,481,61,497,63,514,61,529,57,541,51,549,43"/>
+</map>

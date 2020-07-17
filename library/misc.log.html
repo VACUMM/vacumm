@@ -1,0 +1,814 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.19. vacumm.misc.log – Logging utilities &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.19. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.log</span></code> – Logging utilities</a><ul>
+<li><a class="reference internal" href="#overview">2.3.19.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.19.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.log.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-log-logging-utilities">
+<span id="lib-misc-log"></span><h1>2.3.19. <a class="reference internal" href="#module-vacumm.misc.log" title="vacumm.misc.log"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.log</span></code></a> – Logging utilities<a class="headerlink" href="#vacumm-misc-log-logging-utilities" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.19.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">default</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">hascurses</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">logger</span></code></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.check_level" title="vacumm.misc.log.check_level"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_level()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.convert_level" title="vacumm.misc.log.convert_level"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert_level()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.filter_name" title="vacumm.misc.log.filter_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_name()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.get_int_level" title="vacumm.misc.log.get_int_level"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_int_level()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.get_int_levels" title="vacumm.misc.log.get_int_levels"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_int_levels()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.get_str_level" title="vacumm.misc.log.get_str_level"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_str_level()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.get_str_levels" title="vacumm.misc.log.get_str_levels"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_str_levels()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.log.ColoredStreamHandler" title="vacumm.misc.log.ColoredStreamHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ColoredStreamHandler</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.ColoredStreamHandler.colors" title="vacumm.misc.log.ColoredStreamHandler.colors"><code class="xref py py-attr docutils literal notranslate"><span class="pre">colors</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.ColoredStreamHandler.level_colors" title="vacumm.misc.log.ColoredStreamHandler.level_colors"><code class="xref py py-attr docutils literal notranslate"><span class="pre">level_colors</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.ColoredStreamHandler.format" title="vacumm.misc.log.ColoredStreamHandler.format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">format()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.ColoredStreamHandler.get_level_color" title="vacumm.misc.log.ColoredStreamHandler.get_level_color"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_level_color()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.log.Formatter" title="vacumm.misc.log.Formatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.log.LogLevelError" title="vacumm.misc.log.LogLevelError"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogLevelError</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.log.Logger" title="vacumm.misc.log.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.default_date_format" title="vacumm.misc.log.Logger.default_date_format"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_date_format</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.default_encoding" title="vacumm.misc.log.Logger.default_encoding"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_encoding</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.default_format" title="vacumm.misc.log.Logger.default_format"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_format</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.default_level" title="vacumm.misc.log.Logger.default_level"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_level</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.default_max_file_backup" title="vacumm.misc.log.Logger.default_max_file_backup"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_max_file_backup</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.default_max_file_size" title="vacumm.misc.log.Logger.default_max_file_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_max_file_size</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.default" title="vacumm.misc.log.Logger.default"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.initial_level" title="vacumm.misc.log.Logger.initial_level"><code class="xref py py-attr docutils literal notranslate"><span class="pre">initial_level</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.shared_handlers" title="vacumm.misc.log.Logger.shared_handlers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">shared_handlers</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.addHandler" title="vacumm.misc.log.Logger.addHandler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">addHandler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.add_argparser_options" title="vacumm.misc.log.Logger.add_argparser_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_argparser_options()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.add_handler" title="vacumm.misc.log.Logger.add_handler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_handler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.add_optparser_options" title="vacumm.misc.log.Logger.add_optparser_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_optparser_options()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.add_rotating_file_handler" title="vacumm.misc.log.Logger.add_rotating_file_handler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_rotating_file_handler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.add_shared_handler" title="vacumm.misc.log.Logger.add_shared_handler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_shared_handler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.add_stream_handler" title="vacumm.misc.log.Logger.add_stream_handler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_stream_handler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.apply_argparser_options" title="vacumm.misc.log.Logger.apply_argparser_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_argparser_options()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.apply_class_argparser_options" title="vacumm.misc.log.Logger.apply_class_argparser_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_class_argparser_options()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.apply_class_optparser_options" title="vacumm.misc.log.Logger.apply_class_optparser_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_class_optparser_options()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.apply_optparser_options" title="vacumm.misc.log.Logger.apply_optparser_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_optparser_options()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.clean" title="vacumm.misc.log.Logger.clean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clean()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.colorize" title="vacumm.misc.log.Logger.colorize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">colorize()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.config" title="vacumm.misc.log.Logger.config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.default_colorize" title="vacumm.misc.log.Logger.default_colorize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">default_colorize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.filter_name" title="vacumm.misc.log.Logger.filter_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.findCaller" title="vacumm.misc.log.Logger.findCaller"><code class="xref py py-meth docutils literal notranslate"><span class="pre">findCaller()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_date_format" title="vacumm.misc.log.Logger.get_date_format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_date_format()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_default_colorize" title="vacumm.misc.log.Logger.get_default_colorize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_default_colorize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_default_date_format" title="vacumm.misc.log.Logger.get_default_date_format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_default_date_format()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_default_format" title="vacumm.misc.log.Logger.get_default_format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_default_format()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_default_level" title="vacumm.misc.log.Logger.get_default_level"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_default_level()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_format" title="vacumm.misc.log.Logger.get_format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_format()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_level_name" title="vacumm.misc.log.Logger.get_level_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_level_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_level" title="vacumm.misc.log.Logger.get_level"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_level()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_name_filters" title="vacumm.misc.log.Logger.get_name_filters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_name_filters()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.get_name" title="vacumm.misc.log.Logger.get_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.is_debug" title="vacumm.misc.log.Logger.is_debug"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_debug()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.is_verbose" title="vacumm.misc.log.Logger.is_verbose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_verbose()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.load_config" title="vacumm.misc.log.Logger.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.log" title="vacumm.misc.log.Logger.log"><code class="xref py py-meth docutils literal notranslate"><span class="pre">log()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.new_formatter" title="vacumm.misc.log.Logger.new_formatter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">new_formatter()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.new_rotating_file_handler" title="vacumm.misc.log.Logger.new_rotating_file_handler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">new_rotating_file_handler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.new_stream_handler" title="vacumm.misc.log.Logger.new_stream_handler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">new_stream_handler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.notice" title="vacumm.misc.log.Logger.notice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">notice()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.removeHandler" title="vacumm.misc.log.Logger.removeHandler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">removeHandler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.remove_handler" title="vacumm.misc.log.Logger.remove_handler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove_handler()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.setLevel" title="vacumm.misc.log.Logger.setLevel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setLevel()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_date_format" title="vacumm.misc.log.Logger.set_date_format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_date_format()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_default_colorize" title="vacumm.misc.log.Logger.set_default_colorize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_default_colorize()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_default_date_format" title="vacumm.misc.log.Logger.set_default_date_format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_default_date_format()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_default_format" title="vacumm.misc.log.Logger.set_default_format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_default_format()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_default_level" title="vacumm.misc.log.Logger.set_default_level"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_default_level()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_default_max_file_backup" title="vacumm.misc.log.Logger.set_default_max_file_backup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_default_max_file_backup()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_default_max_file_size" title="vacumm.misc.log.Logger.set_default_max_file_size"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_default_max_file_size()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_format" title="vacumm.misc.log.Logger.set_format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_format()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_handler_formats" title="vacumm.misc.log.Logger.set_handler_formats"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_handler_formats()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_level_console" title="vacumm.misc.log.Logger.set_level_console"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_level_console()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_level_logfile" title="vacumm.misc.log.Logger.set_level_logfile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_level_logfile()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_level" title="vacumm.misc.log.Logger.set_level"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_level()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_name_filters" title="vacumm.misc.log.Logger.set_name_filters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_name_filters()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.set_name" title="vacumm.misc.log.Logger.set_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.showwarning" title="vacumm.misc.log.Logger.showwarning"><code class="xref py py-meth docutils literal notranslate"><span class="pre">showwarning()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.skipCaller" title="vacumm.misc.log.Logger.skipCaller"><code class="xref py py-meth docutils literal notranslate"><span class="pre">skipCaller()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.start_redirections" title="vacumm.misc.log.Logger.start_redirections"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_redirections()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.stop_redirections" title="vacumm.misc.log.Logger.stop_redirections"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stop_redirections()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.Logger.verbose" title="vacumm.misc.log.Logger.verbose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">verbose()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.log.LoggerAdapter" title="vacumm.misc.log.LoggerAdapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggerAdapter</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.LoggerAdapter.get_logger" title="vacumm.misc.log.LoggerAdapter.get_logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.LoggerAdapter.is_debug" title="vacumm.misc.log.LoggerAdapter.is_debug"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_debug()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.LoggerAdapter.is_verbose" title="vacumm.misc.log.LoggerAdapter.is_verbose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_verbose()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.LoggerAdapter.notice" title="vacumm.misc.log.LoggerAdapter.notice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">notice()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.LoggerAdapter.process" title="vacumm.misc.log.LoggerAdapter.process"><code class="xref py py-meth docutils literal notranslate"><span class="pre">process()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.log.LoggerAdapter.verbose" title="vacumm.misc.log.LoggerAdapter.verbose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">verbose()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.log.StreamLogWrapper" title="vacumm.misc.log.StreamLogWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">StreamLogWrapper</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.log.StreamLogWrapper.write" title="vacumm.misc.log.StreamLogWrapper.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.19.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vacumm.misc.log"></span><p>Logging features</p>
+<dl class="class">
+<dt id="vacumm.misc.log.ColoredStreamHandler">
+<em class="property">class </em><code class="descname">ColoredStreamHandler</code><span class="sig-paren">(</span><em>stream</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#ColoredStreamHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.ColoredStreamHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/logging.handlers.html#logging.StreamHandler" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.StreamHandler</span></code></a></p>
+<dl class="attribute">
+<dt id="vacumm.misc.log.ColoredStreamHandler.colors">
+<code class="descname">colors</code><em class="property"> = {'blackb': 40, 'blackf': 30, 'blueb': 44, 'bluef': 34, 'boldoff': 22, 'boldon': 1, 'cyanb': 46, 'cyanf': 36, 'greenb': 42, 'greenf': 32, 'invoff': 27, 'invon': 7, 'italicsoff': 23, 'italicson': 3, 'purpleb': 45, 'purplef': 35, 'redb': 41, 'redf': 31, 'reset': 0, 'uloff': 24, 'ulon': 4, 'whiteb': 47, 'whitef': 37, 'yellowb': 43, 'yellowf': 33}</em><a class="headerlink" href="#vacumm.misc.log.ColoredStreamHandler.colors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.ColoredStreamHandler.format">
+<code class="descname">format</code><span class="sig-paren">(</span><em>record</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#ColoredStreamHandler.format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.ColoredStreamHandler.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format the specified record.</p>
+<p>If a formatter is set, use it. Otherwise, use the default formatter
+for the module.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.ColoredStreamHandler.get_level_color">
+<code class="descname">get_level_color</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#ColoredStreamHandler.get_level_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.ColoredStreamHandler.get_level_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.ColoredStreamHandler.level_colors">
+<code class="descname">level_colors</code><em class="property"> = {0: 'reset', 10: 'cyanf', 15: 'bluef', 20: 'greenf', 25: 'greenf,boldon', 30: 'yellowf,boldon', 40: 'redf,boldon', 50: 'purplef,boldon'}</em><a class="headerlink" href="#vacumm.misc.log.ColoredStreamHandler.level_colors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.log.Formatter">
+<em class="property">class </em><code class="descname">Formatter</code><span class="sig-paren">(</span><em>fmt=None</em>, <em>datefmt=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Formatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/logging.html#logging.Formatter" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.misc.log.LogLevelError">
+<em class="property">exception </em><code class="descname">LogLevelError</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#LogLevelError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.LogLevelError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Exception" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.log.Logger">
+<em class="property">class </em><code class="descname">Logger</code><span class="sig-paren">(</span><em>name=None</em>, <em>level=None</em>, <em>format=None</em>, <em>date_format=None</em>, <em>console=True</em>, <em>colorize=True</em>, <em>logfile=None</em>, <em>redirect_warnings=False</em>, <em>redirect_stdout=False</em>, <em>redirect_stderr=False</em>, <em>name_filters=None</em>, <em>config=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/logging.html#logging.Logger" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a></p>
+<p>Logger based on the standard python logging package.</p>
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.addHandler">
+<code class="descname">addHandler</code><span class="sig-paren">(</span><em>handler</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.log.Logger.addHandler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.add_argparser_options">
+<em class="property">classmethod </em><code class="descname">add_argparser_options</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.add_argparser_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.add_argparser_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.add_handler">
+<code class="descname">add_handler</code><span class="sig-paren">(</span><em>handler</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.add_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.add_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.add_optparser_options">
+<em class="property">classmethod </em><code class="descname">add_optparser_options</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.add_optparser_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.add_optparser_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.add_rotating_file_handler">
+<code class="descname">add_rotating_file_handler</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.add_rotating_file_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.add_rotating_file_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.add_shared_handler">
+<em class="property">classmethod </em><code class="descname">add_shared_handler</code><span class="sig-paren">(</span><em>handler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.add_shared_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.add_shared_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.add_stream_handler">
+<code class="descname">add_stream_handler</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.add_stream_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.add_stream_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.apply_argparser_options">
+<code class="descname">apply_argparser_options</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.apply_argparser_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.apply_argparser_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.apply_class_argparser_options">
+<em class="property">classmethod </em><code class="descname">apply_class_argparser_options</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.apply_class_argparser_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.apply_class_argparser_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.apply_class_optparser_options">
+<em class="property">classmethod </em><code class="descname">apply_class_optparser_options</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.apply_class_optparser_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.apply_class_optparser_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.apply_optparser_options">
+<code class="descname">apply_optparser_options</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.apply_optparser_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.apply_optparser_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.clean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.colorize">
+<code class="descname">colorize</code><span class="sig-paren">(</span><em>active=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.colorize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.colorize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.config">
+<code class="descname">config</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set logging configuration</p>
+<p>This method uses the get_* and set_* methods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><dl class="first docutils">
+<dt><strong>args</strong>: depending of the type:</dt>
+<dd><ul class="first last">
+<li>basestring: (getter) return the corresponding value(s)</li>
+<li>Logger: (setter) use this logger’s configuration</li>
+<li>dict: (setter) use this dict’s configuration</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><strong>kwargs</strong>: key/value pairs of configuration which are to be set</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Getter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">)</span>
+<span class="go">%(default_level)r</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="s1">&#39;format&#39;</span><span class="p">)</span>
+<span class="go">(%(default_level)r, %(default_format)r)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">()</span> <span class="c1"># return complete configuration as a dict</span>
+<span class="go">TODO</span>
+</pre></div>
+</div>
+<p>Setter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">level</span><span class="o">=%</span><span class="p">(</span><span class="n">default_level</span><span class="p">)</span><span class="n">r</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">level</span><span class="o">=%</span><span class="p">(</span><span class="n">default_level</span><span class="p">)</span><span class="n">r</span><span class="p">,</span> <span class="nb">format</span><span class="o">=%</span><span class="p">(</span><span class="n">default_format</span><span class="p">)</span><span class="n">r</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">configdict</span><span class="p">)</span> <span class="c1"># use a dict as config key/value pairs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">otherlogger</span><span class="p">)</span> <span class="c1"># use another logger&#39;s configuration</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.default">
+<code class="descname">default</code><em class="property"> = &lt;vacumm.misc.log.Logger object&gt;</em><a class="headerlink" href="#vacumm.misc.log.Logger.default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.default_colorize">
+<em class="property">classmethod </em><code class="descname">default_colorize</code><span class="sig-paren">(</span><em>active=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.default_colorize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.default_colorize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.default_date_format">
+<code class="descname">default_date_format</code><em class="property"> = {'console': '', 'default': '%Y-%m-%d %H:%M:%S %Z', 'logfile': '%Y-%m-%d %H:%M:%S %Z'}</em><a class="headerlink" href="#vacumm.misc.log.Logger.default_date_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.default_encoding">
+<code class="descname">default_encoding</code><em class="property"> = None</em><a class="headerlink" href="#vacumm.misc.log.Logger.default_encoding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.default_format">
+<code class="descname">default_format</code><em class="property"> = {'console': '[%(name)s %(levelname)s] %(message)s', 'default': '[%(asctime)s %(name)s %(levelname)s] %(message)s', 'logfile': '[%(asctime)s %(name)s %(levelname)s] %(message)s'}</em><a class="headerlink" href="#vacumm.misc.log.Logger.default_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.default_level">
+<code class="descname">default_level</code><em class="property"> = 20</em><a class="headerlink" href="#vacumm.misc.log.Logger.default_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.default_max_file_backup">
+<code class="descname">default_max_file_backup</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.misc.log.Logger.default_max_file_backup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.default_max_file_size">
+<code class="descname">default_max_file_size</code><em class="property"> = 512000</em><a class="headerlink" href="#vacumm.misc.log.Logger.default_max_file_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.filter_name">
+<code class="descname">filter_name</code><span class="sig-paren">(</span><em>value</em>, <em>default</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.filter_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.filter_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used by the set_{level,format,date_format} instance methods.
+The logger get_name() and instance variable self.__name_filters are evaluated against the
+couples name1=value1[,name2=value2,…] in value to determine the value to return, default
+is returned if nothing match, value is return if it isn’t a filter expression.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.findCaller">
+<code class="descname">findCaller</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.findCaller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.findCaller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the stack frame of the caller so that we can note the source
+file name, line number and function name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.get_date_format">
+<code class="descname">get_date_format</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_date_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_date_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.get_default_colorize">
+<em class="property">classmethod </em><code class="descname">get_default_colorize</code><span class="sig-paren">(</span><em>active=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.log.Logger.get_default_colorize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.get_default_date_format">
+<em class="property">classmethod </em><code class="descname">get_default_date_format</code><span class="sig-paren">(</span><em>target=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_default_date_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_default_date_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the default date format for the specified target, or all formats dict if target is None</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.get_default_format">
+<em class="property">classmethod </em><code class="descname">get_default_format</code><span class="sig-paren">(</span><em>target=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_default_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_default_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the default format for the specified target, or all formats dict if target is None</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.get_default_level">
+<em class="property">classmethod </em><code class="descname">get_default_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_default_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_default_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.get_format">
+<code class="descname">get_format</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.get_level">
+<code class="descname">get_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.get_level_name">
+<code class="descname">get_level_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_level_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_level_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.get_name_filters">
+<code class="descname">get_name_filters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.get_name_filters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.get_name_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.initial_level">
+<code class="descname">initial_level</code><em class="property"> = 20</em><a class="headerlink" href="#vacumm.misc.log.Logger.initial_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.instances">
+<code class="descname">instances</code><em class="property"> = &lt;_weakrefset.WeakSet object&gt;</em><a class="headerlink" href="#vacumm.misc.log.Logger.instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.is_debug">
+<code class="descname">is_debug</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.is_debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.is_debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.is_verbose">
+<code class="descname">is_verbose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.is_verbose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.is_verbose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.load_config">
+<code class="descname">load_config</code><span class="sig-paren">(</span><em>cfgo=None</em>, <em>nested=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.load_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.log">
+<code class="descname">log</code><span class="sig-paren">(</span><em>level</em>, <em>msg</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log ‘msg % args’ with the integer severity ‘level’.</p>
+<p>To pass exception information, use the keyword argument exc_info with
+a true value, e.g.</p>
+<p>logger.log(level, “We have a %s”, “mysterious problem”, exc_info=1)</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.new_formatter">
+<em class="property">classmethod </em><code class="descname">new_formatter</code><span class="sig-paren">(</span><em>format=None</em>, <em>date_format=None</em>, <em>formatter=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.new_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.new_formatter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.new_rotating_file_handler">
+<em class="property">classmethod </em><code class="descname">new_rotating_file_handler</code><span class="sig-paren">(</span><em>filePath=None</em>, <em>mode='a'</em>, <em>maxFileSize=None</em>, <em>maxFileBkp=None</em>, <em>encoding=None</em>, <em>level=None</em>, <em>format=None</em>, <em>date_format=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.new_rotating_file_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.new_rotating_file_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.new_stream_handler">
+<em class="property">classmethod </em><code class="descname">new_stream_handler</code><span class="sig-paren">(</span><em>stream=&lt;open file '&lt;stderr&gt;'</em>, <em>mode 'w'&gt;</em>, <em>colorize=False</em>, <em>level=None</em>, <em>format=None</em>, <em>date_format=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.new_stream_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.new_stream_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.notice">
+<code class="descname">notice</code><span class="sig-paren">(</span><em>msg</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.notice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.notice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.removeHandler">
+<code class="descname">removeHandler</code><span class="sig-paren">(</span><em>hdlr</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.log.Logger.removeHandler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.remove_handler">
+<code class="descname">remove_handler</code><span class="sig-paren">(</span><em>hdlr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.remove_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.remove_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.setLevel">
+<code class="descname">setLevel</code><span class="sig-paren">(</span><em>level</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.log.Logger.setLevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.set_date_format">
+<code class="descname">set_date_format</code><span class="sig-paren">(</span><em>format</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_date_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_date_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.set_default_colorize">
+<em class="property">classmethod </em><code class="descname">set_default_colorize</code><span class="sig-paren">(</span><em>active=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.log.Logger.set_default_colorize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.set_default_date_format">
+<em class="property">classmethod </em><code class="descname">set_default_date_format</code><span class="sig-paren">(</span><em>format</em>, <em>target=None</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_default_date_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_default_date_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.set_default_format">
+<em class="property">classmethod </em><code class="descname">set_default_format</code><span class="sig-paren">(</span><em>format</em>, <em>target=None</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_default_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_default_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.set_default_level">
+<em class="property">classmethod </em><code class="descname">set_default_level</code><span class="sig-paren">(</span><em>level</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_default_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_default_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.set_default_max_file_backup">
+<em class="property">classmethod </em><code class="descname">set_default_max_file_backup</code><span class="sig-paren">(</span><em>value</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_default_max_file_backup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_default_max_file_backup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.set_default_max_file_size">
+<em class="property">classmethod </em><code class="descname">set_default_max_file_size</code><span class="sig-paren">(</span><em>value</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_default_max_file_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_default_max_file_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.set_format">
+<code class="descname">set_format</code><span class="sig-paren">(</span><em>format</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.log.Logger.set_handler_formats">
+<em class="property">classmethod </em><code class="descname">set_handler_formats</code><span class="sig-paren">(</span><em>handler</em>, <em>format=None</em>, <em>date_format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_handler_formats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_handler_formats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.set_level">
+<code class="descname">set_level</code><span class="sig-paren">(</span><em>level</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.set_level_console">
+<code class="descname">set_level_console</code><span class="sig-paren">(</span><em>level</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_level_console"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_level_console" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.set_level_logfile">
+<code class="descname">set_level_logfile</code><span class="sig-paren">(</span><em>level</em>, <em>filter=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_level_logfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_level_logfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.set_name">
+<code class="descname">set_name</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.set_name_filters">
+<code class="descname">set_name_filters</code><span class="sig-paren">(</span><em>filters</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.set_name_filters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.set_name_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.log.Logger.shared_handlers">
+<code class="descname">shared_handlers</code><em class="property"> = []</em><a class="headerlink" href="#vacumm.misc.log.Logger.shared_handlers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.showwarning">
+<code class="descname">showwarning</code><span class="sig-paren">(</span><em>message</em>, <em>category</em>, <em>filename</em>, <em>lineno</em>, <em>file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.showwarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.showwarning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.skipCaller">
+<code class="descname">skipCaller</code><span class="sig-paren">(</span><em>caller=None</em>, <em>skip=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.skipCaller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.skipCaller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a function, method, code or set/list/tuple of codes to be skipped by findCaller</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.start_redirections">
+<code class="descname">start_redirections</code><span class="sig-paren">(</span><em>which='all'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.start_redirections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.start_redirections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.stop_redirections">
+<code class="descname">stop_redirections</code><span class="sig-paren">(</span><em>which='all'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.stop_redirections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.stop_redirections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.Logger.verbose">
+<code class="descname">verbose</code><span class="sig-paren">(</span><em>msg</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#Logger.verbose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.Logger.verbose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.log.LoggerAdapter">
+<em class="property">class </em><code class="descname">LoggerAdapter</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#LoggerAdapter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.LoggerAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/logging.html#logging.LoggerAdapter" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.LoggerAdapter</span></code></a></p>
+<dl class="method">
+<dt id="vacumm.misc.log.LoggerAdapter.get_logger">
+<code class="descname">get_logger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#LoggerAdapter.get_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.LoggerAdapter.get_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.LoggerAdapter.is_debug">
+<code class="descname">is_debug</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#LoggerAdapter.is_debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.LoggerAdapter.is_debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the logger level is debug (or greater)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.LoggerAdapter.is_verbose">
+<code class="descname">is_verbose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#LoggerAdapter.is_verbose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.LoggerAdapter.is_verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the logger level is verbose (or greater)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.LoggerAdapter.notice">
+<code class="descname">notice</code><span class="sig-paren">(</span><em>msg</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#LoggerAdapter.notice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.LoggerAdapter.notice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delegate a log call to the underlying logger, after adding
+contextual information from this adapter instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.LoggerAdapter.process">
+<code class="descname">process</code><span class="sig-paren">(</span><em>msg</em>, <em>kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#LoggerAdapter.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.LoggerAdapter.process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process the logging message and keyword arguments passed in to
+a logging call to insert contextual information. You can either
+manipulate the message itself, the keyword args or both. Return
+the message and kwargs modified (or not) to suit your needs.</p>
+<p>Normally, you’ll only need to override this one method in a
+LoggerAdapter subclass for your specific needs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.log.LoggerAdapter.verbose">
+<code class="descname">verbose</code><span class="sig-paren">(</span><em>msg</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#LoggerAdapter.verbose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.LoggerAdapter.verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delegate a log call to the underlying logger, after adding
+contextual information from this adapter instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.log.StreamLogWrapper">
+<em class="property">class </em><code class="descname">StreamLogWrapper</code><span class="sig-paren">(</span><em>stream</em>, <em>logger</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#StreamLogWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.StreamLogWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="vacumm.misc.log.StreamLogWrapper.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#StreamLogWrapper.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.StreamLogWrapper.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.log.check_level">
+<code class="descname">check_level</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#check_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.check_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.log.convert_level">
+<code class="descname">convert_level</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#convert_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.convert_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a level from int/str to str/int</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.log.filter_name">
+<code class="descname">filter_name</code><span class="sig-paren">(</span><em>names</em>, <em>value</em>, <em>default</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#filter_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.filter_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.log.get_int_level">
+<code class="descname">get_int_level</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#get_int_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.get_int_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the int level for the given int/str level</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.log.get_int_levels">
+<code class="descname">get_int_levels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#get_int_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.get_int_levels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.log.get_str_level">
+<code class="descname">get_str_level</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#get_str_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.get_str_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the str level for the given int/str level</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.log.get_str_levels">
+<code class="descname">get_str_levels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/log.html#get_str_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.log.get_str_levels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

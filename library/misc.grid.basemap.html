@@ -1,0 +1,593 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.8.13. vacumm.misc.grid.basemap – mpl_toolkits.basemap related &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.8.13. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.basemap</span></code> – <code class="docutils literal notranslate"><span class="pre">mpl_toolkits.basemap</span></code> related</a></li>
+<li><a class="reference internal" href="#overview">2.3.8.14. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.8.15. Content</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.grid.basemap.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-grid-basemap-mpl-toolkits-basemap-related">
+<span id="lib-misc-grid-basemap"></span><h1>2.3.8.13. <a class="reference internal" href="#module-vacumm.misc.grid.basemap" title="vacumm.misc.grid.basemap"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid.basemap</span></code></a> – <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#module-mpl_toolkits.basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mpl_toolkits.basemap</span></code></a> related<a class="headerlink" href="#vacumm-misc-grid-basemap-mpl-toolkits-basemap-related" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="overview">
+<h1>2.3.8.14. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.GSHHS_RESLIST" title="vacumm.misc.grid.basemap.GSHHS_RESLIST"><code class="xref py py-attr docutils literal notranslate"><span class="pre">GSHHS_RESLIST</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.RSHPERE_WGS84" title="vacumm.misc.grid.basemap.RSHPERE_WGS84"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RSHPERE_WGS84</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">gshhs_reslist</span></code></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.cache_map" title="vacumm.misc.grid.basemap.cache_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">cache_map()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.cached_map" title="vacumm.misc.grid.basemap.cached_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">cached_map()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.clean_cache" title="vacumm.misc.grid.basemap.clean_cache"><code class="xref py py-func docutils literal notranslate"><span class="pre">clean_cache()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.create_map" title="vacumm.misc.grid.basemap.create_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_map()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.get_map" title="vacumm.misc.grid.basemap.get_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_map()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.get_map_dir" title="vacumm.misc.grid.basemap.get_map_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_map_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.get_proj" title="vacumm.misc.grid.basemap.get_proj"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_proj()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.gshhs_autores" title="vacumm.misc.grid.basemap.gshhs_autores"><code class="xref py py-func docutils literal notranslate"><span class="pre">gshhs_autores()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.merc" title="vacumm.misc.grid.basemap.merc"><code class="xref py py-func docutils literal notranslate"><span class="pre">merc()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.reset_cache" title="vacumm.misc.grid.basemap.reset_cache"><code class="xref py py-func docutils literal notranslate"><span class="pre">reset_cache()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.GSHHS_BM" title="vacumm.misc.grid.basemap.GSHHS_BM"><code class="xref py py-class docutils literal notranslate"><span class="pre">GSHHS_BM</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h1>2.3.8.15. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Inheritance diagram:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="graphviz"><img src="../_images/inheritance-e2037d6ea3a33adc0f999a3cb4c8e3e55d91bb77.png" alt="Inheritance diagram of vacumm.misc.grid.basemap" usemap="#inheritance8a137eeec4" class="inheritance graphviz" /></div>
+<map id="inheritance8a137eeec4" name="inheritance8a137eeec4">
+<area shape="poly" id="node1" href="#vacumm.misc.grid.basemap.GSHHS_BM" target="_top" title="Shoreline from USGS using Basemap" alt="" coords="114,139,111,130,103,122,91,116,76,112,60,111,43,112,28,116,16,122,8,130,5,139,8,148,16,156,28,163,43,167,60,168,76,167,91,163,103,156,111,148"/>
+<area shape="poly" id="node2" href="misc.io.html#vacumm.misc.io.Shapes" target="_top" title="A class to read shapefiles and return GEOS objects" alt="" coords="99,34,97,25,91,17,83,11,72,7,60,5,47,7,36,11,28,17,22,25,20,34,22,43,28,51,36,57,47,61,60,63,72,61,83,57,91,51,97,43"/>
+</map><span class="target" id="module-vacumm.misc.grid.basemap"></span><p>Utilities derived from mpl_toolkits.basemap</p>
+<dl class="class">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM">
+<em class="property">class </em><code class="descname">GSHHS_BM</code><span class="sig-paren">(</span><em>input=None</em>, <em>clip=None</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>proj=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#GSHHS_BM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="misc.io.html#vacumm.misc.io.Shapes" title="vacumm.misc.io.Shapes"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.io.Shapes</span></code></a></p>
+<p>Shoreline from USGS using Basemap</p>
+<p>Initialized with a valid Basemap instance with resolution not equal to None,
+or thanks to arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">create_mapplot.map()</span></code></p>
+<ul class="simple">
+<li><em>input</em>: Basemap or Shapes instance [default: None]</li>
+</ul>
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.INPUT_MULTIPOINTS">
+<code class="descname">INPUT_MULTIPOINTS</code><em class="property"> = 8</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.INPUT_MULTIPOINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.INPUT_POINTS">
+<code class="descname">INPUT_POINTS</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.INPUT_POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.INPUT_POLYGONS">
+<code class="descname">INPUT_POLYGONS</code><em class="property"> = 5</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.INPUT_POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.INPUT_POLYLINES">
+<code class="descname">INPUT_POLYLINES</code><em class="property"> = 3</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.INPUT_POLYLINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.LINE">
+<code class="descname">LINE</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.LINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.LINES">
+<code class="descname">LINES</code><em class="property"> = 1</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.LINES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.POINT">
+<code class="descname">POINT</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.POINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.POINTS">
+<code class="descname">POINTS</code><em class="property"> = 0</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.POINTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.POLY">
+<code class="descname">POLY</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.POLY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.POLYGON">
+<code class="descname">POLYGON</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.POLYGON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.POLYGONS">
+<code class="descname">POLYGONS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.POLYGONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.POLYS">
+<code class="descname">POLYS</code><em class="property"> = 2</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.POLYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone</em>, <em>copy=True</em>, <em>sort=True</em>, <em>reverse=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip to zone</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zone</strong>: <code class="docutils literal notranslate"><span class="pre">[xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax]</span></code></li>
+<li><strong>copy</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make a copy of current instance,
+else simply rehandled the list of shapes.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">copy==True</span></code>, Other parameters are passed to the initialization
+of the new instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the numeric version of the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the associated basemap instance if set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.get_points">
+<code class="descname">get_points</code><span class="sig-paren">(</span><em>key=None</em>, <em>split=True</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.get_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the points from all the shapes as a tuple (x,y)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.get_shapes">
+<code class="descname">get_shapes</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.get_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of geos objects (polygons, etc)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong>: A slice selector applied to the list.</li>
+<li><strong>proj</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code>, or a callable to project or re-project coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.get_type">
+<code class="descname">get_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.get_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of shapes</p>
+<ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.GSHHS_BM.POINTS" title="vacumm.misc.grid.basemap.GSHHS_BM.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a> = Points,</li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.GSHHS_BM.LINES" title="vacumm.misc.grid.basemap.GSHHS_BM.LINES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LINES</span></code></a> = LineStrings = PolyLines</li>
+<li><a class="reference internal" href="#vacumm.misc.grid.basemap.GSHHS_BM.POLYGONS" title="vacumm.misc.grid.basemap.GSHHS_BM.POLYGONS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POLYGONS</span></code></a> = Polygons</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>key=None</em>, <em>proj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <code class="docutils literal notranslate"><span class="pre">get_points(split=false)</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.is_type">
+<code class="descname">is_type</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.is_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">is_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">POLYS</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>select=None</em>, <em>ax=None</em>, <em>fill=None</em>, <em>points=False</em>, <em>lines=True</em>, <em>fillcolor=None</em>, <em>color='k'</em>, <em>s=None</em>, <em>linewidth=None</em>, <em>m=None</em>, <em>show=True</em>, <em>alpha=1</em>, <em>autoscale=True</em>, <em>title=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot shapes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>select</strong>, optional: argument for selecting shapes in the list [defaul: None].</li>
+<li><strong>fill</strong>, optional: Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]</li>
+<li><strong>ax</strong>, optional: Axes instance.</li>
+<li><strong>m</strong>, optional: <a class="reference internal" href="misc.core_plot.html#vacumm.misc.core_plot.Map" title="vacumm.misc.core_plot.Map"><code class="xref py py-class docutils literal notranslate"><span class="pre">Map</span></code></a> instance
+(created with <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a>) or a <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance.</li>
+<li><strong>points</strong>, optional: Plots shapes as points.</li>
+<li><strong>lines</strong>, optional: Plot shapes as lines (if a of type <a class="reference internal" href="#vacumm.misc.grid.basemap.GSHHS_BM.POINTS" title="vacumm.misc.grid.basemap.GSHHS_BM.POINTS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">POINTS</span></code></a>).</li>
+<li><strong>fill_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>lines_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LineCollection</span></code></a> or to <a class="reference external" href="https://matplotlib.org/api/collections_api.html#matplotlib.collections.PolyCollection" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyCollection</span></code></a>.</li>
+<li><strong>points_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">scatter</span></code>.</li>
+<li><strong>m_&lt;params&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to
+<a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-class docutils literal notranslate"><span class="pre">map2</span></code></a> if <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">is</span> <span class="pre">True</span></code>.</li>
+<li><strong>autoscale</strong>, optional: Autoscale axis limits?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>deg=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean “resolution” of the shapes based on the first shape</p>
+<ul>
+<li><p class="first"><strong>deg</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>if <code class="docutils literal notranslate"><span class="pre">False</span></code>: return a resolution in meters has a the median distance between points</li>
+<li>if <code class="docutils literal notranslate"><span class="pre">True</span></code>: return the median distance between points as a resolution in degrees <code class="docutils literal notranslate"><span class="pre">(xres,yres)</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>reverse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort shapes according to their surface or length</p>
+<ul class="simple">
+<li><em>reverse</em>: If True, greater polygons are first [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.sorted">
+<code class="descname">sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.sorted" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.grid.basemap.GSHHS_BM.xy">
+<code class="descname">xy</code><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_BM.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>XY coordinates as a (2,npts) array</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.grid.basemap.GSHHS_RESLIST">
+<code class="descname">GSHHS_RESLIST</code><em class="property"> = ['f', 'h', 'i', 'l', 'c']</em><a class="headerlink" href="#vacumm.misc.grid.basemap.GSHHS_RESLIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>GSHHS shorelines letters</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="vacumm.misc.grid.basemap.RSHPERE_WGS84">
+<code class="descname">RSHPERE_WGS84</code><em class="property"> = (6378137.0, 6356752.3141)</em><a class="headerlink" href="#vacumm.misc.grid.basemap.RSHPERE_WGS84" title="Permalink to this definition">¶</a></dt>
+<dd><p>Earth radius of wgs84 ellipsoid</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.cache_map">
+<code class="descname">cache_map</code><span class="sig-paren">(</span><em>m</em>, <em>mapdir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#cache_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.cache_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cache a map if still not cached</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.cached_map">
+<code class="descname">cached_map</code><span class="sig-paren">(</span><em>m=None</em>, <em>mapdir=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#cached_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.cached_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if we have a cached map</p>
+<ul class="simple">
+<li><em>m</em>: A Basemap instance [Default: None]</li>
+<li><em>mapdir</em>: Where are stored the cached maps. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.get_configdir()</span></code> is used as a parent directory,
+which is the matplotlib configuration directory
+(<code class="file docutils literal notranslate"><span class="pre">~/.matplotlib</span></code> undex linux), and
+<code class="file docutils literal notranslate"><span class="pre">basemap/cached_maps</span></code> as the subdirectory.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">cached_map</span><span class="p">(</span><span class="n">lon_min</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">lat_min</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;lcc&#39;</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">cached_map</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="c1"># Does only caching of map</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.clean_cache">
+<code class="descname">clean_cache</code><span class="sig-paren">(</span><em>mapdir=None</em>, <em>maxsize=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#clean_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.clean_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean cache directory by checking its size</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mapdir</strong>, optional: Directory where maps are cached</li>
+<li><strong>maxsize</strong>, optional: Maximal size of directory in bytes.
+Default value from <code class="xref std std-confopt docutils literal notranslate"><span class="pre">[vacumm.misc.grid.basemap]max_cache_size</span></code>
+configuration value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.create_map">
+<code class="descname">create_map</code><span class="sig-paren">(</span><em>lon_min=-180.0</em>, <em>lon_max=180.0</em>, <em>lat_min=-90.0</em>, <em>lat_max=90.0</em>, <em>projection='cyl'</em>, <em>resolution='auto'</em>, <em>epsg=None</em>, <em>lon_center=None</em>, <em>lat_center=None</em>, <em>lat_ts=None</em>, <em>zoom=None</em>, <em>ax=None</em>, <em>overlay=False</em>, <em>fullscreen=False</em>, <em>nocache=False</em>, <em>cache_dir=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#create_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.create_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic creation of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code> instance with caching</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Merge <a class="reference internal" href="#vacumm.misc.grid.basemap.get_map" title="vacumm.misc.grid.basemap.get_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_map()</span></code></a> with <a class="reference internal" href="#vacumm.misc.grid.basemap.create_map" title="vacumm.misc.grid.basemap.create_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_map()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><em>gg=None</em>, <em>proj=None</em>, <em>res=None</em>, <em>auto=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#get_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quickly create <code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code> instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>gg</strong>, optional: cdms grid or variable, or (xx,yy).</li>
+<li><strong>res</strong>, optional: Resolution.</li>
+<li><strong>proj</strong>, optional: Projection [default: None-&gt;’merc’]</li>
+<li><strong>auto</strong>, optional: If True, get geo specs according to grid. If False, whole earth.
+If None, auto = res is None.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Merge with <a class="reference internal" href="#vacumm.misc.grid.basemap.create_map" title="vacumm.misc.grid.basemap.create_map"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_map()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.get_map_dir">
+<code class="descname">get_map_dir</code><span class="sig-paren">(</span><em>mapdir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#get_map_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.get_map_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the directory where cqched maps are stored</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.get_proj">
+<code class="descname">get_proj</code><span class="sig-paren">(</span><em>gg=None</em>, <em>proj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#get_proj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.get_proj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup a default projection using x,y coordinates and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Proj</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">basic_proj()</span></code></p>
+<p>Projection is set by default to “basic”.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>gg</strong>, optional: Grid or coordinates (see <a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.get_xy" title="vacumm.misc.grid.misc.get_xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_xy()</span></code></a>).
+If not provided, lon bounds are set to (-180,180) and lat bounds to (-89.99,89.99).</li>
+<li>Other keywords are passed to <code class="xref py py-class docutils literal notranslate"><span class="pre">Proj</span></code>. One of
+them is the projection type, which defaults to configuration option
+<code class="xref std std-confopt docutils literal notranslate"><span class="pre">[vacumm.misc.grid.basemap]</span> <span class="pre">proj</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">A <code class="xref py py-class docutils literal notranslate"><span class="pre">mpl_toolkits.basemap.proj.Proj</span></code> instance
+or <code class="xref py py-func docutils literal notranslate"><span class="pre">basic_proj()</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">proj</span> <span class="o">=</span> <span class="n">get_proj</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">proj</span><span class="o">=</span><span class="s1">&#39;laea&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">proj</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">proj</span> <span class="o">=</span> <span class="n">get_proj</span><span class="p">((</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">proj</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">proj</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">proj</span> <span class="o">=</span> <span class="n">get_proj</span><span class="p">(</span><span class="n">R</span><span class="o">=</span><span class="mf">6000000.</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.gshhs_autores">
+<code class="descname">gshhs_autores</code><span class="sig-paren">(</span><em>lon_min</em>, <em>lon_max</em>, <em>lat_min</em>, <em>lat_max</em>, <em>asindex=False</em>, <em>shift=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#gshhs_autores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.gshhs_autores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Guess best resolution from lon/lat bounds</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.merc">
+<code class="descname">merc</code><span class="sig-paren">(</span><em>lon=None</em>, <em>lat=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#merc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.merc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mercator map</p>
+<ul class="simple">
+<li>Extra keywords are passed to <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mpl_toolkits.basemap.Basemap</span></code></a></li>
+<li><em>lon</em>: Longitudes to define <code class="docutils literal notranslate"><span class="pre">llcrnrlon</span></code> and <code class="docutils literal notranslate"><span class="pre">urcrnrlon</span></code></li>
+<li><em>lat</em>: Latitudes to define  <code class="docutils literal notranslate"><span class="pre">lat_ts</span></code>, <code class="docutils literal notranslate"><span class="pre">llcrnrlat</span></code> and <code class="docutils literal notranslate"><span class="pre">urcrnrlat</span></code></li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.basemap.reset_cache">
+<code class="descname">reset_cache</code><span class="sig-paren">(</span><em>mapdir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/basemap.html#reset_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.basemap.reset_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all cached maps</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

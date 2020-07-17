@@ -1,0 +1,509 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.data.misc.arakawa &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../../index.html"><img src="../../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" >vacumm</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../../data.html" accesskey="U">vacumm.data</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.data.misc.arakawa</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2013-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">cdms2</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.regridding</span> <span class="k">import</span> <span class="n">shift2d</span><span class="p">,</span> <span class="n">shift1d</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ARAKAWA_LOCATIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;ARAKAWA_POSITIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;ArakawaGrid&#39;</span><span class="p">,</span> <span class="s1">&#39;CGrid&#39;</span><span class="p">,</span> <span class="s1">&#39;AGrid&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ArakawaGridTransfer&#39;</span><span class="p">]</span>
+
+<span class="c1">#: Strings for naming standard physical ARAKAWA_LOCATIONS on grid</span>
+<span class="n">ARAKAWA_LOCATIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="c1"># Thermodynamical quantities</span>
+    <span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="c1"># Zonal momentum quantities</span>
+    <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="c1"># Meridional momentum quantities</span>
+    <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="c1"># Vertical momentum quantities</span>
+    <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="c1"># Vorticity quantities</span>
+<span class="p">]</span>
+<span class="n">locations</span> <span class="o">=</span> <span class="n">ARAKAWA_LOCATIONS</span> <span class="c1"># compat</span>
+
+<span class="c1">#: Alias for :attr:`ARAKAWA_LOCATIONS`</span>
+<span class="n">ARAKAWA_POSITIONS</span> <span class="o">=</span> <span class="n">ARAKAWA_LOCATIONS</span>
+<span class="n">positions</span> <span class="o">=</span> <span class="n">ARAKAWA_POSITIONS</span> <span class="c1"># compat</span>
+
+<span class="c1">#: Upper-case version of :attr:`ARAKAWA_LOCATIONS`</span>
+<span class="n">ARAKAWA_LOCATIONS_UPPER</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">ARAKAWA_LOCATIONS</span><span class="p">]</span>
+<span class="n">Locations</span> <span class="o">=</span> <span class="n">ARAKAWA_LOCATIONS_UPPER</span><span class="c1"># compat</span>
+
+<span class="c1"># TODO: Add special ARAKAWA_LOCATIONS such as uw, vw and fw at the same place?</span>
+
+
+<span class="c1">#: Grid types</span>
+<span class="n">ARAKAWA_GRID_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]</span>
+<span class="n">grid_types</span> <span class="o">=</span> <span class="n">ARAKAWA_GRID_TYPES</span> <span class="c1"># compat</span>
+
+<span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">VACUMMError</span>
+<span class="k">class</span> <span class="nc">ArakawaGridError</span><span class="p">(</span><span class="n">VACUMMError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">_ArakawaInterp_</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">_xy_interp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># No grid</span>
+        <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">copy</span><span class="p">:</span> <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">var</span>
+
+        <span class="c1"># Delta</span>
+        <span class="n">dloc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_loc</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span>
+
+        <span class="c1"># Interpolate</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">shift2d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">ishift</span><span class="o">=</span><span class="n">dloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">jshift</span><span class="o">=</span><span class="n">dloc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">var</span>
+
+    <span class="k">def</span> <span class="nf">_z_interp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># No vertical axis (use vacumm.misc.grid.get_zdim?)</span>
+        <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">copy</span><span class="p">:</span> <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">var</span>
+
+        <span class="c1"># Z axis index</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">getOrder</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Delta</span>
+        <span class="n">dloc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_loc</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span>
+
+        <span class="c1"># Interpolate</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">shift1d</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="n">dloc</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">var</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">is_valid_loc</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if a location is valid&quot;&quot;&quot;</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="k">return</span> <span class="s1">&#39;t&#39;</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ARAKAWA_LOCATIONS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ArakawaGridError</span><span class="p">(</span><span class="s1">&#39;Bad location in Arakawa grid: </span><span class="si">%s</span><span class="s1">. &#39;</span>
+                <span class="s1">&#39;Please use one of: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ARAKAWA_LOCATIONS</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+<div class="viewcode-block" id="ArakawaGrid"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGrid">[docs]</a><span class="k">class</span> <span class="nc">ArakawaGrid</span><span class="p">(</span><span class="n">_ArakawaInterp_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class that provides a facotry and declares grid operations&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ArakawaGrid.factory"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGrid.factory">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">factory</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Guess the grid type and class, and instantiate it</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            - **arg**: An explicit grid type (:attr:`ARAKAWA_GRID_TYPES`), or</span>
+<span class="sd">              an object with a either :attr:`grid_type`, :attr:`arakawa_grid_type` or</span>
+<span class="sd">              :attr:`grid_type` attribute.</span>
+
+<span class="sd">        :Return: A :class:`ArakawaGrid` children object or ``None`` if grid type</span>
+<span class="sd">            has not been guessed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">AGrid</span><span class="p">,</span> <span class="n">CGrid</span><span class="p">]:</span> <span class="k">return</span> <span class="n">arg</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">ArakawaGrid</span><span class="p">):</span> <span class="k">return</span> <span class="n">arg</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">ARAKAWA_GRID_TYPES</span><span class="p">:</span>
+            <span class="n">gt</span> <span class="o">=</span> <span class="n">arg</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gt</span> <span class="o">=</span> <span class="n">get_grid_type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
+
+        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">gt</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;Grid&#39;</span><span class="p">)()</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_type</span>
+
+
+<div class="viewcode-block" id="ArakawaGrid.are_same_locs"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGrid.are_same_locs">[docs]</a>    <span class="k">def</span> <span class="nf">are_same_locs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if to ARAKAWA_POSITIONS are the same</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; mygrid.are_same_locs(&#39;t&#39;, &#39;u&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="p">[</span><span class="n">p0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="p">[</span><span class="n">p1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ArakawaGrid.delta_loc"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGrid.delta_loc">[docs]</a>    <span class="k">def</span> <span class="nf">delta_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Difference of relative ARAKAWA_LOCATIONS</span>
+
+<span class="sd">        :Return: ``dx,dy,dz``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">p1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="p">[</span><span class="n">p0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">p1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="p">[</span><span class="n">p0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">p1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="p">[</span><span class="n">p0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ArakawaGrid.interp"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGrid.interp">[docs]</a>    <span class="k">def</span> <span class="nf">interp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate a variable from one location to another one using</span>
+<span class="sd">        :func:`vacumm.misc.grid.regridding.shift2d` (horizontal) and</span>
+<span class="sd">        :func:`vacumm.misc.grid.regridding.shift1d` (vertical)</span>
+
+<span class="sd">        .. note:: It does not change the attributes.</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            - **var**: MV2 array with a grid.</span>
+<span class="sd">            - **p0/1**: Valid ARAKAWA_LOCATIONS: 0=source, 1=destination.</span>
+<span class="sd">              If p0 is None, it is guessed with :func:`vacumm.data.cf.get_loc`.</span>
+<span class="sd">            - **mode**, optional: Interpolation mode at boundaries</span>
+<span class="sd">              (see :func:`~vacumm.misc.grid.regridding.shift2d`).</span>
+<span class="sd">            - **zfirst**, optional: Perform the vertical interpolation first,</span>
+<span class="sd">              then the horizontal interpolation.</span>
+<span class="sd">            - **copy**, optional: Copy the variable if same location?</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; u3d_t = CGrid().interp(u3d_u, &#39;u&#39;, &#39;t&#39;, mode=&#39;extrap&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Valid ARAKAWA_LOCATIONS</span>
+        <span class="k">if</span> <span class="n">p0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">vacumm.data.cf</span> <span class="k">import</span> <span class="n">get_loc</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">get_loc</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="c1">#            if p0 is None:</span>
+<span class="c1">#                raise ArakawaGridError(&quot;Can&#39;t guess location of variable: &quot;+var.id)</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+
+        <span class="c1"># Same location or no grid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="n">p0</span><span class="p">]</span><span class="o">==</span><span class="bp">self</span><span class="p">[</span><span class="n">p1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">copy</span><span class="p">:</span> <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">var</span>
+
+        <span class="c1"># Interpolation order</span>
+        <span class="n">interpmets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z_interp_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xy_interp_</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">zfirst</span><span class="p">:</span>
+            <span class="n">interpmets</span> <span class="o">=</span> <span class="n">interpmets</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Interpolations</span>
+        <span class="k">for</span> <span class="n">interpmet</span> <span class="ow">in</span> <span class="n">interpmets</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">interpmet</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Special attributes</span>
+        <span class="kn">from</span> <span class="nn">vacumm.data.cf</span> <span class="k">import</span> <span class="n">set_loc</span>
+        <span class="n">set_loc</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span>
+        <span class="n">set_grid_type</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_type</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">var</span></div>
+    <span class="n">loc2loc</span> <span class="o">=</span> <span class="n">interp</span></div>
+
+<div class="viewcode-block" id="AGrid"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.AGrid">[docs]</a><span class="k">class</span> <span class="nc">AGrid</span><span class="p">(</span><span class="n">ArakawaGrid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A Arakawa grid&quot;&quot;&quot;</span>
+    <span class="c1"># Positions relative to T point</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+
+    <span class="n">grid_type</span> <span class="o">=</span> <span class="n">gtype</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span></div>
+
+<div class="viewcode-block" id="CGrid"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.CGrid">[docs]</a><span class="k">class</span> <span class="nc">CGrid</span><span class="p">(</span><span class="n">ArakawaGrid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;C Arakawa grid&quot;&quot;&quot;</span>
+
+    <span class="c1"># Positions relative to T point</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+
+    <span class="n">grid_type</span> <span class="o">=</span> <span class="n">gtype</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span></div>
+
+
+<div class="viewcode-block" id="ArakawaGridTransfer"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGridTransfer">[docs]</a><span class="k">class</span> <span class="nc">ArakawaGridTransfer</span><span class="p">(</span><span class="n">_ArakawaInterp_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;To interpolate variables from one grid type to another</span>
+
+<span class="sd">    .. note:: This classes does not interpolate between two grids, it just interpolates</span>
+<span class="sd">        between relative ARAKAWA_POSITIONS. For general interpolations, please use</span>
+<span class="sd">        :func:`~vacumm.grid.regridding.regrid2d`.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; sst_a_v = ArakawaGridTransfer(&#39;C&#39;,&#39;A&#39;).interp(sst_c_t, &#39;t&#39;, &#39;v&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid0</span><span class="p">,</span> <span class="n">grid1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            - **grid0/1**: Arguments to :meth:`~Arakawa.factory`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get ArakawaGrid objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid0</span> <span class="o">=</span> <span class="n">ArakawaGrid</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">grid0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid1</span> <span class="o">=</span> <span class="n">ArakawaGrid</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">grid1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ArakawaGridTransfer.delta_loc"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGridTransfer.delta_loc">[docs]</a>    <span class="k">def</span> <span class="nf">delta_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Difference of relative ARAKAWA_LOCATIONS</span>
+
+<span class="sd">        :Return: ``dx,dy,dz``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid0</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="n">p0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid0</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid1</span><span class="p">[</span><span class="n">p1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">grid0</span><span class="p">[</span><span class="n">p0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid1</span><span class="p">[</span><span class="n">p1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">grid0</span><span class="p">[</span><span class="n">p0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid1</span><span class="p">[</span><span class="n">p1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">grid0</span><span class="p">[</span><span class="n">p0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="ArakawaGridTransfer.interp"><a class="viewcode-back" href="../../../../library/data.misc.arakawa.html#vacumm.data.misc.arakawa.ArakawaGridTransfer.interp">[docs]</a>    <span class="k">def</span> <span class="nf">interp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate a variable from one location to another one using</span>
+<span class="sd">        :func:`vacumm.misc.grid.regridding.shift2d` (horizontal) and</span>
+<span class="sd">        :func:`vacumm.misc.grid.regridding.shift1d` (vertical)</span>
+
+<span class="sd">        .. note:: It does not change the attributes.</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            - **var**: MV2 array with a grid.</span>
+<span class="sd">            - **p0/1**: Valid ARAKAWA_LOCATIONS: 0=source, 1=destination.</span>
+<span class="sd">              If p0 is None, it is guessed with :func:`vacumm.data.cf.get_loc`.</span>
+<span class="sd">              If p1 is None, it defaults to p0.</span>
+<span class="sd">            - **mode**, optional: Interpolation mode at boundaries</span>
+<span class="sd">              (see :func:`~vacumm.misc.grid.regridding.shift2d`).</span>
+<span class="sd">            - **copy**, optional: Copy the variable if same location?</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; sst_a_v = ArakawaGridTransfer(&#39;C&#39;,&#39;A&#39;).interp(sst_c_t, &#39;t&#39;, &#39;v&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Valid location</span>
+        <span class="k">if</span> <span class="n">p0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">vacumm.data.cf</span> <span class="k">import</span> <span class="n">get_loc</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">get_loc</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="c1">#            if p0 is None:</span>
+<span class="c1">#                raise ArakawaGridError(&quot;Can&#39;t guess location of variable: &quot;+var.id)</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="n">p0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid0</span><span class="o">.</span><span class="n">is_valid_loc</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+
+        <span class="c1"># Same location or no grid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid0</span><span class="p">[</span><span class="n">p0</span><span class="p">]</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">grid1</span><span class="p">[</span><span class="n">p1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">copy</span><span class="p">:</span> <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">var</span>
+
+        <span class="c1"># Interpolation order</span>
+        <span class="n">interpmets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z_interp_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xy_interp_</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">zfirst</span><span class="p">:</span>
+            <span class="n">interpmets</span> <span class="o">=</span> <span class="n">interpmets</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Interpolations</span>
+        <span class="k">for</span> <span class="n">interpmet</span> <span class="ow">in</span> <span class="n">interpmets</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">interpmet</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Special attributes</span>
+        <span class="kn">from</span> <span class="nn">vacumm.data.cf</span> <span class="k">import</span> <span class="n">set_loc</span>
+        <span class="n">set_loc</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span>
+        <span class="n">set_grid_type</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid1</span><span class="o">.</span><span class="n">grid_type</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">var</span></div></div>
+
+<span class="n">_cdms2_atts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_vacumm_arakawa_grid_type&#39;</span><span class="p">,</span> <span class="s1">&#39;_arakawa_grid_type&#39;</span><span class="p">]</span>
+<span class="n">_other_atts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;arakawa_grid_type&#39;</span><span class="p">,</span> <span class="s1">&#39;grid_type&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">get_grid_type</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Guess the Arakawa grid type</span>
+
+<span class="sd">    It search for the following attributes: :attr:`arakawa_grid_type`, :attr:`grid_type`</span>
+<span class="sd">    and :attr:`_vacumm_arakawa_grid_type`.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **var**: A :mod:`cdms2` variable or grid, an :class:`ArakawaGrid` instance or</span>
+<span class="sd">          a :class:`~vacumm.data.misc.dataset.Dataset` instance.</span>
+<span class="sd">          If var is a :mod:`cdms2` variable, it also check its grid if defined.</span>
+
+<span class="sd">    :Return: An Arakawa grid upper-base letter, like &#39;C&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">vv</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">vv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vv</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">_cdms2_atts</span><span class="o">+</span><span class="n">_other_atts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">att</span><span class="p">):</span>
+                <span class="n">gt</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">att</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
+                <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">gt</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">_set_clean_atts_</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">atts</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">atts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">att</span><span class="p">):</span> <span class="nb">delattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">att</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">atts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">set_grid_type</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">gtype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set an attribute so that var is identified as being on the specified Arakawa</span>
+<span class="sd">    grid type.</span>
+
+<span class="sd">    If var is a :mod:`cdms2` variable or grid, it sets the</span>
+<span class="sd">    :attr:`_vacumm_arakawa_grid_type` attribute,</span>
+<span class="sd">    else it sets the :attr:`arakawa_grid_type` attribute.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **var**:  A :mod:`cdms2` variable or grid, a</span>
+<span class="sd">          :class:`~vacumm.data.misc.dataset.Dataset` instance.</span>
+<span class="sd">        - **gtype**: None or one of the :attr:`grid_type` letters.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">gtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gtype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gtype</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isGrid</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+        <span class="n">vv</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+            <span class="n">grid</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">vv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vv</span><span class="p">:</span>
+            <span class="n">_set_clean_atts_</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">_cdms2_atts</span><span class="p">,</span> <span class="n">gtype</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_set_clean_atts_</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">_other_atts</span><span class="p">,</span> <span class="n">gtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gtype</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" >vacumm</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../../data.html" >vacumm.data</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

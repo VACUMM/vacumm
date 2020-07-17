@@ -1,0 +1,289 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.8.1. vacumm.diag.dynamics – Dynamical processes &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.8.1. <code class="docutils literal notranslate"><span class="pre">vacumm.diag.dynamics</span></code> – Dynamical processes</a><ul>
+<li><a class="reference internal" href="#overview">2.8.1.1. Overview</a></li>
+<li><a class="reference internal" href="#module-vacumm.diag.dynamics">2.8.1.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/diag.dynamics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-diag-dynamics-dynamical-processes">
+<span id="lib-diag-dynamics"></span><h1>2.8.1. <a class="reference internal" href="#module-vacumm.diag.dynamics" title="vacumm.diag.dynamics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.diag.dynamics</span></code></a> – Dynamical processes<a class="headerlink" href="#vacumm-diag-dynamics-dynamical-processes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.8.1.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_gravity</span></code></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.diag.dynamics.barotropic_geostrophic_velocity" title="vacumm.diag.dynamics.barotropic_geostrophic_velocity"><code class="xref py py-func docutils literal notranslate"><span class="pre">barotropic_geostrophic_velocity()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.diag.dynamics.coriolis_parameter" title="vacumm.diag.dynamics.coriolis_parameter"><code class="xref py py-func docutils literal notranslate"><span class="pre">coriolis_parameter()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.diag.dynamics.eddy_kinetic_energy" title="vacumm.diag.dynamics.eddy_kinetic_energy"><code class="xref py py-func docutils literal notranslate"><span class="pre">eddy_kinetic_energy()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.diag.dynamics.kinetic_energy" title="vacumm.diag.dynamics.kinetic_energy"><code class="xref py py-func docutils literal notranslate"><span class="pre">kinetic_energy()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vacumm.diag.dynamics">
+<span id="content"></span><h2>2.8.1.2. Content<a class="headerlink" href="#module-vacumm.diag.dynamics" title="Permalink to this headline">¶</a></h2>
+<p>Diagnostic about dynamics</p>
+<dl class="function">
+<dt id="vacumm.diag.dynamics.barotropic_geostrophic_velocity">
+<code class="descname">barotropic_geostrophic_velocity</code><span class="sig-paren">(</span><em>ssh</em>, <em>dxy=None</em>, <em>gravity=9.822556428266076</em>, <em>cyclic=False</em>, <em>format_axes=True</em>, <em>getu=True</em>, <em>getv=True</em>, <em>filter=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/diag/dynamics.html#barotropic_geostrophic_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.diag.dynamics.barotropic_geostrophic_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get barotropic geostropic velocity from SSH on a C-grid</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">ssh is supposed to be at T points,
+ubt is computed at V points,
+and vbt is computed at U points.</p>
+</div>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Rewrite it using <a class="reference internal" href="data.misc.arakawa.html#module-vacumm.data.misc.arakawa" title="vacumm.data.misc.arakawa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa</span></code></a> and defining
+a limited number of algorithms for different staggering configurations.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>ssh</strong>: Sea surface height.</p>
+</li>
+<li><p class="first"><strong>dxy</strong>, optional: Horizontal resolutions (m).
+Resolution along X and Y are respectively at U and V points.
+Possible forms:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">res</span></code>: A scalar meaning a constant resolution along X and Y.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(dx,dy)</span></code>: A tuple of resolutions along X and Y.</li>
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: Resolution is estimated using
+<a class="reference internal" href="misc.grid.misc.html#vacumm.misc.grid.misc.resol" title="vacumm.misc.grid.misc.resol"><code class="xref py py-func docutils literal notranslate"><span class="pre">resol()</span></code></a>.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">(ubt,vbt)</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.diag.dynamics.coriolis_parameter">
+<code class="descname">coriolis_parameter</code><span class="sig-paren">(</span><em>lat</em>, <em>gravity=9.822556428266076</em>, <em>fromvar=False</em>, <em>format_axes=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/diag/dynamics.html#coriolis_parameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.diag.dynamics.coriolis_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the coriolis parameters computed at each latitude</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lat</strong>: Latitude or a variable with latitude coordinates.</li>
+<li><strong>gravity</strong>, optional: Gravity.</li>
+<li><strong>fromvar</strong>, optional: If True, lat is supposed to be a MV2
+array with latitude coordinates.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.diag.dynamics.eddy_kinetic_energy">
+<code class="descname">eddy_kinetic_energy</code><span class="sig-paren">(</span><em>sshuv</em>, <em>gravity=9.822556428266076</em>, <em>format_axes=None</em>, <em>dxy=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.diag.dynamics.eddy_kinetic_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute kinetic energy in m2.s-2 either from SSH or velocity on C-grid</p>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Rewrite it using <a class="reference internal" href="data.misc.arakawa.html#module-vacumm.data.misc.arakawa" title="vacumm.data.misc.arakawa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa</span></code></a> and defining
+a limited number of algorithms for different staggering configurations.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>sshuv</strong>: SSH or (U,V).</p>
+<blockquote>
+<div><ul class="simple">
+<li>If SSH, geostrophic velocity is computed at U and V points
+using <a class="reference internal" href="#vacumm.diag.dynamics.barotropic_geostrophic_velocity" title="vacumm.diag.dynamics.barotropic_geostrophic_velocity"><code class="xref py py-func docutils literal notranslate"><span class="pre">barotropic_geostrophic_velocity()</span></code></a>.</li>
+<li>If (U,V), velocities are supposed to be at V and U points.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>dxy</strong>, optional: Horizontal resolutions (see <a class="reference internal" href="#vacumm.diag.dynamics.barotropic_geostrophic_velocity" title="vacumm.diag.dynamics.barotropic_geostrophic_velocity"><code class="xref py py-func docutils literal notranslate"><span class="pre">barotropic_geostrophic_velocity()</span></code></a>).</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">KE at T points.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.diag.dynamics.kinetic_energy">
+<code class="descname">kinetic_energy</code><span class="sig-paren">(</span><em>sshuv</em>, <em>gravity=9.822556428266076</em>, <em>format_axes=None</em>, <em>dxy=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/diag/dynamics.html#kinetic_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.diag.dynamics.kinetic_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute kinetic energy in m2.s-2 either from SSH or velocity on C-grid</p>
+<div class="admonition-todo admonition" id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">Rewrite it using <a class="reference internal" href="data.misc.arakawa.html#module-vacumm.data.misc.arakawa" title="vacumm.data.misc.arakawa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data.misc.arakawa</span></code></a> and defining
+a limited number of algorithms for different staggering configurations.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>sshuv</strong>: SSH or (U,V).</p>
+<blockquote>
+<div><ul class="simple">
+<li>If SSH, geostrophic velocity is computed at U and V points
+using <a class="reference internal" href="#vacumm.diag.dynamics.barotropic_geostrophic_velocity" title="vacumm.diag.dynamics.barotropic_geostrophic_velocity"><code class="xref py py-func docutils literal notranslate"><span class="pre">barotropic_geostrophic_velocity()</span></code></a>.</li>
+<li>If (U,V), velocities are supposed to be at V and U points.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>dxy</strong>, optional: Horizontal resolutions (see <a class="reference internal" href="#vacumm.diag.dynamics.barotropic_geostrophic_velocity" title="vacumm.diag.dynamics.barotropic_geostrophic_velocity"><code class="xref py py-func docutils literal notranslate"><span class="pre">barotropic_geostrophic_velocity()</span></code></a>).</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">KE at T points.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

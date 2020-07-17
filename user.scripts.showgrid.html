@@ -1,0 +1,215 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.2.3. showgrid.py – Show and display a netcdf grid &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.showgrid.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="showgrid-py-show-and-display-a-netcdf-grid">
+<span id="user-scripts-showgrid"></span><h1>1.6.2.3. <strong class="program">showgrid.py</strong> – Show and display a netcdf grid<a class="headerlink" href="#showgrid-py-show-and-display-a-netcdf-grid" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"><div class="first highlight-bash notranslate"><div class="highlight"><pre><span></span>showgrid.py <span class="o">[</span>options<span class="o">]</span> ncfile
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Description:</th><td class="field-body"><p class="first">Show grid (rectangular or curvilinear) info of a netcdf file.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Options:</th><td class="field-body"><dl class="first cmdoption">
+<dt id="cmdoption-showgrid-py-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showgrid-py-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-v">
+<code class="descname">-v</code><code class="descclassname"> VNAME</code><code class="descclassname">, </code><code class="descname">--var</code><code class="descclassname">=VNAME</code><a class="headerlink" href="#cmdoption-showgrid-py-v" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the variable from which to get grid</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-p">
+<code class="descname">-p</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--plot</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-showgrid-py-p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the grid on a map [default: False]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-o">
+<code class="descname">-o</code><code class="descclassname"> OUT</code><code class="descclassname">, </code><code class="descname">--out</code><code class="descclassname">=OUT</code><a class="headerlink" href="#cmdoption-showgrid-py-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of an output file where to store the plot</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-z">
+<code class="descname">-z</code><code class="descclassname"> ZOOM</code><code class="descclassname">, </code><code class="descname">--zoom</code><code class="descclassname">=ZOOM</code><a class="headerlink" href="#cmdoption-showgrid-py-z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot zoom [default: 0.8]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-f">
+<code class="descname">-f</code><code class="descclassname"> FIGSIZE</code><code class="descclassname">, </code><code class="descname">--figsize</code><code class="descclassname">=FIGSIZE</code><a class="headerlink" href="#cmdoption-showgrid-py-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of figure in inches, like “5,6” or simply “5”</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-s">
+<code class="descname">-s</code><code class="descclassname"> SHORELINE</code><code class="descclassname">, </code><code class="descname">--shoreline</code><code class="descclassname">=SHORELINE</code><a class="headerlink" href="#cmdoption-showgrid-py-s" title="Permalink to this definition">¶</a></dt>
+<dd><p>GSHHS shoreline as one of ‘c’, ‘l’, ‘i’, ‘h’, ‘f’
+[default: auto]</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-xmin">
+<code class="descname">--xmin</code><code class="descclassname">=XMIN</code><a class="headerlink" href="#cmdoption-showgrid-py-xmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Min longitude of the map</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-xmax">
+<code class="descname">--xmax</code><code class="descclassname">=XMAX</code><a class="headerlink" href="#cmdoption-showgrid-py-xmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max longitude of the map</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-ymin">
+<code class="descname">--ymin</code><code class="descclassname">=YMIN</code><a class="headerlink" href="#cmdoption-showgrid-py-ymin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Min latitude of the map</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-ymax">
+<code class="descname">--ymax</code><code class="descclassname">=YMAX</code><a class="headerlink" href="#cmdoption-showgrid-py-ymax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max latitude of the map</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-showgrid-py-proj">
+<code class="descname">--proj</code><code class="descclassname">=PROJ</code><a class="headerlink" href="#cmdoption-showgrid-py-proj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map projection [default: merc]</p>
+</dd></dl>
+
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; showgrid.py --plot --figsize<span class="o">=</span><span class="m">12</span> -s f --xmin<span class="o">=</span>-5 ../data/mars3d.xy.nc
+Dimensions           : <span class="nv">nx</span><span class="o">=</span><span class="m">227</span> <span class="nv">ny</span><span class="o">=</span><span class="m">261</span>
+Axes                 : <span class="nv">lon</span><span class="o">=</span><span class="s2">&quot;longitude&quot;</span> <span class="nv">lat</span><span class="o">=</span><span class="s2">&quot;latitude&quot;</span>
+Zonal extent         : -6.56181 -&gt; -4.10829  <span class="o">[</span><span class="m">06</span>°33<span class="s1">&#39;43&#39;&#39;W -&gt; 04°06&#39;</span><span class="m">30</span><span class="s1">&#39;&#39;</span>W<span class="o">]</span>
+Meridional extent    : <span class="m">47</span>.4916 -&gt; <span class="m">49</span>.3615  <span class="o">[</span><span class="m">47</span>°29<span class="s1">&#39;30&#39;&#39;N -&gt; 49°21&#39;</span><span class="m">41</span><span class="s1">&#39;&#39;</span>N<span class="o">]</span>
+Zonal resolution     : <span class="m">0</span>.0108562° / <span class="m">0</span>.801031km
+Meridional resolution: <span class="m">0</span>.0071907° / <span class="m">0</span>.799714km
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="user.scripts.showres.html#user-scripts-showres"><span class="std std-ref">showres.py – Display the resolution of a netcdf grid</span></a>, <a class="reference internal" href="library/misc.grid.misc.html#vacumm.misc.grid.misc.resol" title="vacumm.misc.grid.misc.resol"><code class="xref py py-func docutils literal notranslate"><span class="pre">resol()</span></code></a>,
+<a class="reference internal" href="library/misc.grid.misc.html#vacumm.misc.grid.misc.get_xy" title="vacumm.misc.grid.misc.get_xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_xy()</span></code></a>, <a class="reference internal" href="library/misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a>,
+<a class="reference internal" href="library/misc.plot.html#vacumm.misc.plot.add_grid" title="vacumm.misc.plot.add_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_grid()</span></code></a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

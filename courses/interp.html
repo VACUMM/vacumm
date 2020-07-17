@@ -1,0 +1,215 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.8.13. Leçon sur les interpolations &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/courses/interp.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lecon-sur-les-interpolations">
+<h1>3.8.13. Leçon sur les interpolations<a class="headerlink" href="#lecon-sur-les-interpolations" title="Permalink to this headline">¶</a></h1>
+<p>Voir <a class="reference internal" href="../library/misc.grid.regridding.html#module-vacumm.misc.grid.regridding" title="vacumm.misc.grid.regridding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid.regridding</span></code></a>.</p>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_interp.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Interpolation depuis des positions aleatoires&quot;&quot;&quot;</span>
+
+<span class="c1"># Generation des donnees</span>
+<span class="c1"># - sur grille</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="n">xr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">20.</span><span class="p">)</span>
+<span class="n">yr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">10.</span><span class="p">)</span>
+<span class="n">xxr</span><span class="p">,</span> <span class="n">yyr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">)</span>
+<span class="n">zzr</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">xxr</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">yyr</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">xxr</span><span class="o">-</span><span class="mf">7.</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">yyr</span><span class="o">-</span><span class="mf">7.</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mf">4.</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="mf">100.</span>
+<span class="n">zzr</span> <span class="o">-=</span> <span class="n">zzr</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">vminmax</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">zzr</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">vmax</span><span class="o">=</span><span class="n">zzr</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="c1"># - un jeu alatoire (input)</span>
+<span class="n">ij</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">unique</span><span class="p">((</span><span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="o">*</span><span class="n">zzr</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">))</span>
+<span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span> <span class="o">=</span> <span class="n">xxr</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">ij</span><span class="p">],</span> <span class="n">yyr</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">ij</span><span class="p">],</span> <span class="n">zzr</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">ij</span><span class="p">]</span>
+<span class="c1"># - un autre jeu aleatoire (output)</span>
+<span class="n">ij2</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">unique</span><span class="p">((</span><span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">*</span><span class="n">zzr</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">))</span>
+<span class="n">xo</span><span class="p">,</span> <span class="n">yo</span> <span class="o">=</span> <span class="n">xxr</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">ij2</span><span class="p">],</span> <span class="n">yyr</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">ij2</span><span class="p">]</span>
+
+
+<span class="c1"># Sans VACUMM</span>
+
+<span class="c1"># - CDAT natgrid</span>
+<span class="kn">from</span> <span class="nn">nat</span> <span class="k">import</span> <span class="n">Natgrid</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">Natgrid</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">)</span>
+<span class="n">I</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="mi">1</span>                                               <span class="c1"># Changer</span>
+<span class="n">I</span><span class="o">.</span><span class="n">igr</span> <span class="o">=</span> <span class="mi">1</span>                                               <span class="c1"># les parametres</span>
+<span class="n">zzoc</span> <span class="o">=</span> <span class="n">I</span><span class="o">.</span><span class="n">rgrd</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># - Matplotlib / R. Kern</span>
+<span class="kn">from</span> <span class="nn">matplotlib.delaunay</span> <span class="k">import</span> <span class="n">Triangulation</span>
+<span class="n">tri</span> <span class="o">=</span> <span class="n">Triangulation</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">)</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">nn_extrapolator</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span>                             <span class="c1"># Tester les autres methodes</span>
+<span class="n">zzork</span> <span class="o">=</span> <span class="n">I</span><span class="p">(</span><span class="n">xxr</span><span class="p">,</span><span class="n">yyr</span><span class="p">)</span>  <span class="c1"># vers grille</span>
+<span class="n">zork</span> <span class="o">=</span> <span class="n">I</span><span class="p">(</span><span class="n">xo</span><span class="p">,</span><span class="n">yo</span><span class="p">)</span> <span class="c1"># vers points</span>
+
+
+<span class="c1"># Avec VACUMM</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.regridding</span> <span class="k">import</span> <span class="n">GridData</span><span class="p">,</span> <span class="n">griddata</span><span class="p">,</span> <span class="n">xy2xy</span>
+<span class="n">zzov</span> <span class="o">=</span> <span class="n">griddata</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nat&#39;</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>     
+<span class="c1"># -&gt; Tester la methode &quot;carg&quot;</span>
+<span class="c1"># -&gt; Testez parametre sub=...</span>
+<span class="c1"># -&gt; Essayer avec GridData</span>
+<span class="n">zov2</span> <span class="o">=</span> <span class="n">xy2xy</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">)</span>
+
+<span class="c1"># Krigeage</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.kriging</span> <span class="k">import</span> <span class="n">krig</span>
+<span class="n">zzok</span> <span class="o">=</span> <span class="n">krig</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="n">xxr</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yyr</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">zzr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># -&gt; Tester nproc et npmax</span>
+
+
+<span class="c1"># Plots</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">meshbounds</span><span class="p">,</span> <span class="n">P</span>
+<span class="n">xxrb</span><span class="p">,</span> <span class="n">yyrb</span> <span class="o">=</span> <span class="n">meshbounds</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">axis</span> <span class="o">=</span> <span class="p">[</span><span class="n">xxrb</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">xxrb</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">yyrb</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">yyrb</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
+<span class="c1">#</span>
+<span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">332</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xxrb</span><span class="p">,</span> <span class="n">yyrb</span><span class="p">,</span> <span class="n">zzr</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">334</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xxrb</span><span class="p">,</span> <span class="n">yyrb</span><span class="p">,</span> <span class="n">zzoc</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;CDAT/Natgrid&#39;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">335</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xxrb</span><span class="p">,</span> <span class="n">yyrb</span><span class="p">,</span> <span class="n">zzork</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;MPL/R.K. grid&#39;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">336</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xxrb</span><span class="p">,</span> <span class="n">yyrb</span><span class="p">,</span> <span class="n">zzr</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">zork</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;MPL/R.K. random&#39;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">337</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xxrb</span><span class="p">,</span> <span class="n">yyrb</span><span class="p">,</span> <span class="n">zzov</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;VACUMM/nat grid&#39;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">338</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xxrb</span><span class="p">,</span> <span class="n">yyrb</span><span class="p">,</span> <span class="n">zzr</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">zov2</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;VACUMM/nat random&#39;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">339</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xxrb</span><span class="p">,</span> <span class="n">yyrb</span><span class="p">,</span> <span class="n">zzok</span><span class="p">,</span> <span class="o">**</span><span class="n">vminmax</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Kriging&#39;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">P</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">P</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Transect</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

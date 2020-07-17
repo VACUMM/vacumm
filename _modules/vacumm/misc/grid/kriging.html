@@ -1,0 +1,1005 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.misc.grid.kriging &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../../index.html"><img src="../../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.misc.grid.kriging</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Kriging utilities inspired from the AMBHAS library (http://www.ambhas.com/).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2013-2016)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Pool</span><span class="p">,</span>  <span class="n">cpu_count</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">P</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="s1">&#39;isclose&#39;</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">vacumm.misc</span> <span class="k">import</span> <span class="n">closeto</span> <span class="k">as</span> <span class="n">isclose</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">isclose</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">isclose</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc</span> <span class="k">import</span> <span class="n">bivariate_normal</span>
+
+<span class="c1">#from scipy.optimize import curve_fit</span>
+<div class="viewcode-block" id="get_blas_func"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.get_blas_func">[docs]</a><span class="k">def</span> <span class="nf">get_blas_func</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">scipy.linalg.blas</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">blas</span><span class="o">.</span><span class="n">get_blas_funcs</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">scipy.linalg.fblas</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">fblas</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">func</span></div>
+<span class="n">blas_dgemv</span> <span class="o">=</span> <span class="n">get_blas_func</span><span class="p">(</span><span class="s1">&#39;gemv&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="dgemv"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.dgemv">[docs]</a><span class="k">def</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">blas_dgemv</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">_blaslapack</span> <span class="k">import</span> <span class="n">symm</span><span class="p">,</span> <span class="n">sytri</span>
+<span class="k">except</span><span class="p">:</span>
+<span class="c1">#    print &#39;Falling back to builtin functions&#39;</span>
+    <span class="n">dgemm</span> <span class="o">=</span> <span class="n">get_blas_func</span><span class="p">(</span><span class="s1">&#39;gemm&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="symm"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.symm">[docs]</a>    <span class="k">def</span> <span class="nf">symm</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span> <span class="k">return</span> <span class="n">dgemm</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></div>
+    <span class="n">sytri</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span>
+
+<span class="kn">from</span> <span class="nn">...misc.misc</span> <span class="k">import</span> <span class="n">kwfilter</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="k">import</span> <span class="n">get_distances</span>
+
+<div class="viewcode-block" id="KrigingError"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.KrigingError">[docs]</a><span class="k">class</span> <span class="nc">KrigingError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<span class="c1">#: Variogram model types</span>
+<span class="n">VARIOGRAM_MODEL_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;exponential&#39;</span><span class="p">,</span> <span class="s1">&#39;spherical&#39;</span><span class="p">,</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">]</span>
+<span class="n">VARIOGRAM_MODEL_TYPES</span> <span class="o">=</span> <span class="n">VARIOGRAM_MODEL_TYPES</span>
+
+<span class="c1">#: Default variogram model type</span>
+<span class="n">DEFAULT_VARIOGRAM_MODEL_TYPE</span> <span class="o">=</span> <span class="s1">&#39;exponential&#39;</span>
+
+<div class="viewcode-block" id="variogram_model_type"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.variogram_model_type">[docs]</a><span class="k">def</span> <span class="nf">variogram_model_type</span><span class="p">(</span><span class="n">mtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the the variogram model type</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **mtype**, optional: ``None``, and index or a string matching</span>
+<span class="sd">          an element of :data:`VARIOGRAM_MODEL_TYPES`.</span>
+<span class="sd">          If set to ``None``, it defaults to :data:`DEFAULT_VARIOGRAM_MODEL_TYPE`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mtype</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">VARIOGRAM_MODEL_TYPES</span>
+    <span class="n">errmsg</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">vtype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">VARIOGRAM_MODEL_TYPES</span><span class="p">):</span>
+        <span class="n">errmsg</span> <span class="o">+=</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; (=</span><span class="si">%i</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">vtype</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">errmsg</span> <span class="o">=</span> <span class="s1">&#39;Invalid variogram model type. Please choose one of: &#39;</span><span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mtype</span> <span class="o">=</span> <span class="n">DEFAULT_VARIOGRAM_MODEL_TYPE</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtype</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span><span class="o">&gt;</span><span class="nb">len</span><span class="p">(</span><span class="n">VARIOGRAM_MODEL_TYPES</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">VARIOGRAM_MODEL_TYPES</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mtype</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">vtype</span> <span class="ow">in</span> <span class="n">VARIOGRAM_MODEL_TYPES</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">vtype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">mtype</span><span class="p">):</span> <span class="k">return</span> <span class="n">vtype</span>
+    <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="variogram_model"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.variogram_model">[docs]</a><span class="k">def</span> <span class="nf">variogram_model</span><span class="p">(</span><span class="n">mtype</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">nrelmax</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the variogram model function from its name&quot;&quot;&quot;</span>
+
+    <span class="n">mtype</span> <span class="o">=</span> <span class="n">variogram_model_type</span><span class="p">(</span><span class="n">mtype</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">nrelmax</span><span class="o">*</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mtype</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="n">n</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">h</span><span class="o">/</span><span class="n">r</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">h</span><span class="o">&lt;=</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="n">h</span><span class="o">&gt;</span><span class="n">r</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">mtype</span><span class="o">==</span><span class="s1">&#39;exponential&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="n">n</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">h</span><span class="o">/</span><span class="n">r</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">mtype</span><span class="o">==</span><span class="s1">&#39;spherical&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="n">n</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">((</span><span class="mf">1.5</span><span class="o">*</span><span class="n">h</span><span class="o">/</span><span class="n">r</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">h</span><span class="o">&lt;=</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="n">h</span><span class="o">&gt;</span><span class="n">r</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">mtype</span><span class="o">==</span><span class="s1">&#39;gaussian&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="n">n</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">N</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">h</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VariogramModel"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.VariogramModel">[docs]</a><span class="k">class</span> <span class="nc">VariogramModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class used when fitting a variogram model to data to better control params&quot;&quot;&quot;</span>
+    <span class="n">param_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">variogram_model</span><span class="o">.</span><span class="n">func_code</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">param_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;nrelmax&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtype</span> <span class="o">=</span> <span class="n">variogram_model_type</span><span class="p">(</span><span class="n">mtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+
+<div class="viewcode-block" id="VariogramModel.get_all_kwargs"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.VariogramModel.get_all_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get arguments list to :func:`variogram_model` by merging variable params `p`</span>
+<span class="sd">        and :attr:`fixed_params`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">p</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_params</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_params</span> <span class="k">else</span> <span class="n">pp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="VariogramModel.get_var_args"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.VariogramModel.get_var_args">[docs]</a>    <span class="k">def</span> <span class="nf">get_var_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get variable arguments list from specified params</span>
+
+<span class="sd">        .. note:: Result cannot contain ``None``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vargs</span> <span class="o">=</span> <span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_params</span><span class="p">]</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">vargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VariogramModelError</span><span class="p">(</span><span class="s1">&#39;Variable arguments cannot contains Nones&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vargs</span></div>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="n">pp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call the variogram model function&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variogram_model</span><span class="p">(</span><span class="n">pp</span><span class="p">)(</span><span class="n">d</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VariogramModel.get_variogram_model"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.VariogramModel.get_variogram_model">[docs]</a>    <span class="k">def</span> <span class="nf">get_variogram_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the variogram model function using `pp` variable arguments&quot;&quot;&quot;</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_kwargs</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">variogram_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="VariogramModelError"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.VariogramModelError">[docs]</a><span class="k">class</span> <span class="nc">VariogramModelError</span><span class="p">(</span><span class="n">KrigingError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<span class="k">def</span> <span class="nf">_get_xyz_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">noextra</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">getmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="o">!=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="s1">&#39;x, y must have the same 1D shape&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">noextra</span> <span class="ow">or</span> <span class="n">z</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="o">!=</span><span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="s1">&#39;z must have the same 1D shape as x and y&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">noextra</span> <span class="ow">and</span> <span class="n">z</span><span class="o">.</span><span class="n">ndim</span><span class="o">!=</span><span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">ndim</span><span class="o">!=</span><span class="mi">2</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="o">!=</span><span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="s1">&#39;z must have 2 dims with its last dim of same length as x and y&#39;</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">nomask</span>
+    <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMA</span><span class="p">(</span><span class="n">z</span><span class="p">):</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMA</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="n">mask</span> <span class="o">|=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMA</span><span class="p">(</span><span class="n">y</span><span class="p">):</span> <span class="n">mask</span> <span class="o">|=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">nomask</span> <span class="ow">and</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span> <span class="c1"># permanent mask</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">logical_and</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">good</span> <span class="o">=</span> <span class="o">~</span><span class="n">mask</span>
+        <span class="k">if</span> <span class="n">check</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">good</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="s1">&#39;All data are masked&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">good</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">good</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">good</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span>
+    <span class="k">if</span> <span class="n">getmask</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">+=</span> <span class="n">mask</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">res</span>
+
+<div class="viewcode-block" id="variogram"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.variogram">[docs]</a><span class="k">def</span> <span class="nf">variogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">binned</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">nbindef</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">nbin0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nbmin</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">distmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="n">distfunc</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span> <span class="n">errfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Estimate variogram from data</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **x/y/z**: 1D arrays of positions and data.</span>
+<span class="sd">        - **nmax**, optional: Above this number, size of</span>
+<span class="sd">          the sampe is reduced using undersampling.</span>
+<span class="sd">        - **binned**, optional: If set to a number,</span>
+<span class="sd">          data are arranged in bins to estimate</span>
+<span class="sd">          variogram. If set to ``None``, data are</span>
+<span class="sd">          arranged in bins if the number of pairs</span>
+<span class="sd">          of points is greater than ``nbindef*nbmin``.</span>
+<span class="sd">        - **nbindef**, optional: Default number</span>
+<span class="sd">          of bins (not used if ``binned`` is a number).</span>
+<span class="sd">        - **nbin0**, optional: If set to a number &gt; 1,</span>
+<span class="sd">          the first bin is split into nbin0 sub-bins.</span>
+<span class="sd">          If set to ``None``, it is evaluated with</span>
+<span class="sd">          ``min(bins[1]/nbmin, nbin)``.</span>
+<span class="sd">        - **nbmin**, optional: Minimal number of points</span>
+<span class="sd">          in a bin.</span>
+<span class="sd">        - **distmax**, optional: Max distance to consider.</span>
+<span class="sd">        - **distfunc**: Function to compute distances, or a mode argument to</span>
+<span class="sd">          :func:`~vacumm.misc.grid.misc.get_distances`.</span>
+<span class="sd">        - **errfunc**, optional: Callable function to compute &quot;errors&quot; like square</span>
+<span class="sd">          root difference between to z values. It take two arguments and</span>
+<span class="sd">          defaults to :math:`(z1-z0)^2/2`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">_get_xyz_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">npts</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Undepsample?</span>
+    <span class="k">if</span> <span class="n">npts</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">*</span><span class="n">nmax</span><span class="p">:</span>
+        <span class="n">samp</span> <span class="o">=</span> <span class="n">npts</span><span class="o">/</span><span class="n">nmax</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[::</span><span class="n">samp</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[::</span><span class="n">samp</span><span class="p">]</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="p">[::</span><span class="n">samp</span><span class="p">]</span>
+        <span class="n">npts</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Distances</span>
+    <span class="n">dd</span> <span class="o">=</span> <span class="n">get_distances</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">distfunc</span><span class="p">)</span>
+
+    <span class="c1"># Variogram</span>
+    <span class="k">if</span> <span class="n">errfunc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">errfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">:</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">a1</span><span class="o">-</span><span class="n">a0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">vv</span> <span class="o">=</span> <span class="n">errfunc</span><span class="p">(</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+
+    <span class="c1"># Unique</span>
+    <span class="n">ii</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">dd</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">iup</span> <span class="o">=</span> <span class="n">ii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">ii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">dd</span><span class="p">[</span><span class="n">iup</span><span class="p">]</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">vv</span><span class="p">[</span><span class="n">iup</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">dd</span><span class="p">,</span> <span class="n">vv</span>
+
+    <span class="c1"># Max distance</span>
+    <span class="k">if</span> <span class="n">distmax</span><span class="p">:</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">d</span><span class="o">&lt;=</span><span class="n">distmax</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">valid</span><span class="p">]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">valid</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">valid</span>
+
+    <span class="c1"># Direct variogram?</span>
+    <span class="k">if</span> <span class="n">binned</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">&gt;</span><span class="n">nbindef</span><span class="o">*</span><span class="n">nbmin</span><span class="p">:</span> <span class="n">binned</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">binned</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span> <span class="n">binned</span> <span class="o">=</span> <span class="n">nbindef</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">binned</span><span class="p">:</span> <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">v</span>
+
+    <span class="c1"># Rebin</span>
+    <span class="c1"># - first try</span>
+    <span class="n">ii</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">np</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nbin</span> <span class="o">=</span> <span class="n">binned</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nbin</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="c1"># - more details in first bin</span>
+    <span class="k">if</span> <span class="n">nbin0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># do we need more details?</span>
+        <span class="n">NBIN0MAX</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">nbin0</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">nbmin</span><span class="p">,</span> <span class="n">NBIN0MAX</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nbin0</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span> <span class="c1"># split first bin</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nbin0</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">+</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">nbin</span> <span class="o">=</span> <span class="n">nbin</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">nbin0</span> <span class="c1"># len(edges)-1</span>
+    <span class="c1"># - rebinning</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nbin</span><span class="p">)</span>
+    <span class="n">vb</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nbin</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ib</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">nbin</span><span class="p">):</span>
+        <span class="n">iib</span> <span class="o">=</span> <span class="n">ii</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="n">ib</span><span class="p">]:</span><span class="n">edges</span><span class="p">[</span><span class="n">ib</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">db</span><span class="p">[</span><span class="n">ib</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">iib</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">vb</span><span class="p">[</span><span class="n">ib</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">iib</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">db</span><span class="p">,</span> <span class="n">vb</span></div>
+
+<div class="viewcode-block" id="variogram_fit"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.variogram_fit">[docs]</a><span class="k">def</span> <span class="nf">variogram_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getall</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">getp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geterr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">distfunc</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span> <span class="n">errfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fit a variogram model to data and return the function</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; vm, errs = variogram_fit(x, y, z, &#39;linear&#39;, n=0, distmax=30e3, geterr=True)</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **x/y/z**: Position and data.</span>
+<span class="sd">        - **mtype**: Variogram model type (see ::`variogram_model_type`).</span>
+<span class="sd">        - **getall**: Get verything in a dictionary whose keys are</span>
+
+<span class="sd">            - ``&quot;func&quot;``: model function,</span>
+<span class="sd">            - ``&quot;err&quot;``: fitting error,</span>
+<span class="sd">            - ``&quot;params&quot;``: all parameters has a dictionary,</span>
+<span class="sd">            - ``&quot;popt&quot;``: parameters than where optimised,</span>
+<span class="sd">            - ``vm&quot;``: :class:`VariogramModel` instance,</span>
+<span class="sd">            - ``&quot;mtype&quot;``: variogram model type.</span>
+
+<span class="sd">        - **getp**, optional: Only return model parameters. Return them as</span>
+<span class="sd">          a `class:`dict` if equal to ``2``.</span>
+<span class="sd">        - **variogram_&lt;param&gt;**, optional: ``param`` is passed to :func:`variogram`.</span>
+<span class="sd">        - **distfunc**: Function to compute distances, or a mode argument to</span>
+<span class="sd">          :func:`~vacumm.misc.grid.misc.get_distances`.</span>
+<span class="sd">        - **errfunc**, optional: Callable function to compute &quot;errors&quot; like square</span>
+<span class="sd">          root difference between to z values. It take two arguments and</span>
+<span class="sd">          defaults to :math:`\sqrt(z1^2-z0^2)/2`.</span>
+
+<span class="sd">          .. warning:: use &quot;haversine&quot; if input coordinates are in degrees.</span>
+
+<span class="sd">        - Extra keywords are those of :func:`variogram_model`.</span>
+<span class="sd">          They can be used to freeze some of the parameters.</span>
+
+<span class="sd">          &gt;&gt;&gt; variogram_fit(x, y, z, mtype, n=0) # fix the nugget</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwv</span> <span class="o">=</span> <span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;variogram_&#39;</span><span class="p">)</span>
+    <span class="n">kwv</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;distfunc&quot;</span><span class="p">,</span> <span class="n">distfunc</span><span class="p">)</span>
+    <span class="n">kwv</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;errfunc&quot;</span><span class="p">,</span> <span class="n">errfunc</span><span class="p">)</span>
+
+    <span class="c1"># Estimated variogram</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">variogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="o">**</span><span class="n">kwv</span><span class="p">)</span>
+
+    <span class="c1"># Variogram model</span>
+    <span class="n">vm</span> <span class="o">=</span> <span class="n">VariogramModel</span><span class="p">(</span><span class="n">mtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># First guess of paramaters</span>
+    <span class="n">imax</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">p0</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">get_var_args</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="n">imax</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="n">imax</span><span class="p">])</span>
+
+    <span class="c1"># Fitting</span>
+<span class="c1">#    p, e = curve_fit(vm, d, v, p0=p0) # old way: no constraint</span>
+    <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">minimize</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">pp</span><span class="p">:</span> <span class="p">((</span><span class="n">v</span><span class="o">-</span><span class="n">vm</span><span class="o">.</span><span class="n">get_variogram_model</span><span class="p">(</span><span class="n">pp</span><span class="p">)(</span><span class="n">d</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="s1">&#39;divide by zero encountered in divide&#39;</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">[(</span><span class="n">N</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">p0</span><span class="p">),</span>
+        <span class="n">method</span><span class="o">=</span><span class="s1">&#39;L-BFGS-B&#39;</span><span class="p">)[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">warnings</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Output</span>
+    <span class="k">if</span> <span class="n">getall</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">vm</span><span class="o">.</span><span class="n">get_variogram_model</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
+            <span class="n">err</span><span class="o">=</span><span class="p">(</span><span class="n">vm</span><span class="o">.</span><span class="n">get_variogram_model</span><span class="p">(</span><span class="n">p</span><span class="p">)(</span><span class="n">d</span><span class="p">)</span><span class="o">-</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">get_all_kwargs</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
+            <span class="n">popt</span> <span class="o">=</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">getp</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">get_all_kwargs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">getp</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">p</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">get_variogram_model</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">geterr</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="n">res</span><span class="p">,</span>  <span class="p">(</span><span class="n">vm</span><span class="o">.</span><span class="n">get_variogram_model</span><span class="p">(</span><span class="n">p</span><span class="p">)(</span><span class="n">d</span><span class="p">)</span><span class="o">-</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="variogram_multifit"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.variogram_multifit">[docs]</a><span class="k">def</span> <span class="nf">variogram_multifit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">mtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getall</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">getp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Same as :func:`variogram_fit` but with several samples&quot;&quot;&quot;</span>
+    <span class="n">vm</span> <span class="o">=</span> <span class="n">VariogramModel</span><span class="p">(</span><span class="n">mtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">pp</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">)):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">_get_xyz_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">variogram_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="n">getp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">pp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">pp</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="s1">&#39;All data are masked&#39;</span><span class="p">)</span>
+    <span class="n">mp</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">getall</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">vm</span><span class="o">.</span><span class="n">get_variogram_model</span><span class="p">(</span><span class="n">mp</span><span class="p">),</span>
+            <span class="n">err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">get_all_kwargs</span><span class="p">(</span><span class="n">mp</span><span class="p">),</span>
+            <span class="n">popt</span> <span class="o">=</span> <span class="n">mp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">getp</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vm</span><span class="o">.</span><span class="n">get_all_kwargs</span><span class="p">(</span><span class="n">mp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">getp</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mp</span>
+    <span class="k">return</span> <span class="n">vm</span><span class="o">.</span><span class="n">get_variogram_model</span><span class="p">(</span><span class="n">mp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="cloud_split"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.cloud_split">[docs]</a><span class="k">def</span> <span class="nf">cloud_split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">npmax</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">getdist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">getcent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split data intot cloud of points of max size npmax:</span>
+
+<span class="sd">    :Returns: ``None`` if ``len(x)&lt;=npmax``</span>
+
+<span class="sd">        Else ``indices``</span>
+<span class="sd">        or ``(indices, global_distorsion, distortions)``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">scipy.cluster.vq</span> <span class="k">import</span> <span class="n">kmeans</span><span class="p">,</span> <span class="n">vq</span>
+
+    <span class="c1"># Nothing to do</span>
+    <span class="n">csize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">npmax</span><span class="o">&lt;</span><span class="mi">2</span> <span class="ow">or</span> <span class="n">csize</span><span class="o">&lt;=</span><span class="n">npmax</span><span class="p">:</span> <span class="k">return</span>
+
+    <span class="c1"># Loop on the number of clusters</span>
+    <span class="n">nclust</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">ii</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">csize</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">csize</span> <span class="o">&gt;</span> <span class="n">npmax</span><span class="p">:</span>
+        <span class="n">centroids</span><span class="p">,</span> <span class="n">global_distorsion</span> <span class="o">=</span> <span class="n">kmeans</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">nclust</span><span class="p">)</span>
+        <span class="n">indices</span><span class="p">,</span> <span class="n">distorsions</span> <span class="o">=</span> <span class="n">vq</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
+        <span class="n">sindices</span> <span class="o">=</span> <span class="p">[</span><span class="n">ii</span><span class="p">[</span><span class="n">indices</span><span class="o">==</span><span class="n">nc</span><span class="p">]</span> <span class="k">for</span> <span class="n">nc</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">nclust</span><span class="p">)]</span>
+        <span class="n">csizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">sii</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sii</span> <span class="ow">in</span> <span class="n">sindices</span><span class="p">]</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">csizes</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">csize</span> <span class="o">=</span> <span class="n">csizes</span><span class="p">[</span><span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">getdist</span><span class="p">:</span> <span class="n">sdistorsions</span> <span class="o">=</span> <span class="p">[</span><span class="n">distorsions</span><span class="p">[</span><span class="n">sii</span><span class="p">]</span> <span class="k">for</span> <span class="n">sii</span> <span class="ow">in</span> <span class="n">sindices</span><span class="p">]</span>
+        <span class="n">nclust</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1">#  Reorder</span>
+    <span class="n">sindices</span> <span class="o">=</span> <span class="p">[</span><span class="n">sindices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">order</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">getdist</span><span class="p">:</span>
+        <span class="n">sdistorsions</span> <span class="o">=</span> <span class="p">[</span><span class="n">sdistorsions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">order</span><span class="p">]</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">global_distorsion</span><span class="p">,</span>  <span class="n">sdistorsions</span>
+    <span class="k">if</span> <span class="n">getcent</span><span class="p">:</span>
+        <span class="n">centroids</span> <span class="o">=</span> <span class="n">centroids</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+
+    <span class="c1"># Output</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">getdist</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">getcent</span><span class="p">:</span> <span class="k">return</span> <span class="n">indices</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">sindices</span><span class="p">,</span>
+    <span class="k">if</span> <span class="n">getcent</span><span class="p">:</span> <span class="n">ret</span> <span class="o">+=</span> <span class="n">centroids</span><span class="p">,</span>
+    <span class="k">if</span> <span class="n">getdist</span><span class="p">:</span> <span class="n">ret</span> <span class="o">+=</span> <span class="n">dists</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="syminv"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.syminv">[docs]</a><span class="k">def</span> <span class="nf">syminv</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Invert a symetric matrix</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **A**: (np+1,np+1) for variogram matrix</span>
+
+<span class="sd">    :Return: ``Ainv(np+1,np+1)``</span>
+
+<span class="sd">    :Raise: :exc:`KrigingError`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">sytri</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">info</span><span class="p">:</span> <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="s1">&#39;Error during call to Lapack DSYTRI (info=</span><span class="si">%i</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="CloudKriger"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger">[docs]</a><span class="k">class</span> <span class="nc">CloudKriger</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ordinary kriger using mutliclouds of points</span>
+
+<span class="sd">    Big input cloud of points (size &gt; ``npmax``)</span>
+<span class="sd">    are split into smaller</span>
+<span class="sd">    clouds using cluster analysis of distance with</span>
+<span class="sd">    function :func:`cloud_split`.</span>
+
+<span class="sd">    The problem is solved in this way:</span>
+
+<span class="sd">        #. Input points are split in clouds if necessary.</span>
+<span class="sd">        #. The input variogram matrix is inverted</span>
+<span class="sd">           for each cloud, possibly using</span>
+<span class="sd">           :mod:`multiprocessing` if ``nproc&gt;1``.</span>
+<span class="sd">        #. Value are computed at output positions</span>
+<span class="sd">           using each the inverted matrix of cloud.</span>
+<span class="sd">        #. Final value is a weighted average of</span>
+<span class="sd">           the values estimated using each cloud.</span>
+<span class="sd">           Weights are inversely proportional to the inverse</span>
+<span class="sd">           of the squared error.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **x/y/z**: Input positions and data (masked array).</span>
+<span class="sd">        - **mtype**, optional: Variogram model type (defaults to &#39;exp&#39;).</span>
+<span class="sd">          See :func:`variogram_model_type` and :func:`variogram_model_type`.</span>
+<span class="sd">        - **vgf**, optional: Variogram function. If not set,</span>
+<span class="sd">          it is estimated using :meth:`variogram_fit`.</span>
+<span class="sd">        - **npmax**, optional: Maxima size of cloud.</span>
+<span class="sd">        - **nproc**, optional: Number of processes to use</span>
+<span class="sd">          to invert matrices. Set it to a number &lt;2 to switch off</span>
+<span class="sd">          parallelisation.</span>
+<span class="sd">        - **exact**, optional: If True, variogram is exactly zero when distance is zero.</span>
+<span class="sd">        - **distfunc**: Function to compute distances, or a mode argument to</span>
+<span class="sd">          :func:`~vacumm.misc.grid.misc.get_distances`.</span>
+<span class="sd">        - **errfunc**, optional: Callable function to compute &quot;errors&quot; like square</span>
+<span class="sd">          root difference between to z values. It take two arguments and</span>
+<span class="sd">          defaults to :math:`\sqrt(z1^2-z0^2)/2`.</span>
+<span class="sd">        - Extra keywords are  parameters to the :func:`variogram_model` that must not be</span>
+<span class="sd">          optimized by :func:`variogram_model`. For instance ``n=0`` fix the</span>
+<span class="sd">        - Extra keywords are the parameters to the :func:`variogram_model` that must not be</span>
+<span class="sd">          optimized by :func:`variogram_model`. For instance ``n=0`` fixes the</span>
+<span class="sd">          nugget to zero.</span>
+<span class="sd">          This is used only if ``vfg`` is not passed as an argument.</span>
+
+
+<span class="sd">    :Attributes: :attr:`x`, :attr:`y`, :attr:`z`, :attr:`np`,</span>
+<span class="sd">        :attr:`xc`, :attr:`yc`, :attr:`zc`,  :attr:`npc`,</span>
+<span class="sd">        :attr:`variogram_function`, :attr:`Ainv`, :attr:`npmax`, :attr:`nproc`.</span>
+
+<span class="sd">        .. attribute:: x</span>
+
+<span class="sd">            List of all input x positions.</span>
+
+<span class="sd">        .. attribute:: y</span>
+
+<span class="sd">            List of all input y positions.</span>
+
+<span class="sd">        .. attribute:: z</span>
+
+<span class="sd">            List of all input data.</span>
+
+<span class="sd">        .. attribute:: xc</span>
+
+<span class="sd">            List of input x positions of each cloud.</span>
+
+<span class="sd">        .. attribute:: yc</span>
+
+<span class="sd">            List input of y positions of each cloud.</span>
+
+<span class="sd">        .. attribute:: zc</span>
+
+<span class="sd">            List of input data of each cloud.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">krigtype</span><span class="p">,</span> <span class="n">mtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vgf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npmax</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">nproc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">distfunc</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span> <span class="n">errfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">farvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">krigtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">krigtype</span> <span class="o">=</span> <span class="s1">&#39;ordinary&#39;</span>
+        <span class="n">krigtype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">krigtype</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">krigtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span> <span class="s1">&#39;ordinary&#39;</span><span class="p">],</span> <span class="p">(</span><span class="s1">&#39;krigtype must be either &#39;</span>
+            <span class="s1">&#39;&quot;simple&quot; or &quot;ordinary&quot;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">_get_xyz_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">noextra</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">getmask</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nt</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">1</span> <span class="k">else</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtype</span> <span class="o">=</span> <span class="n">variogram_model_type</span><span class="p">(</span><span class="n">mtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npmax</span> <span class="o">=</span> <span class="n">npmax</span>
+        <span class="k">if</span> <span class="n">nproc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nproc</span> <span class="o">=</span> <span class="n">cpu_count</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nproc</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">cpu_count</span><span class="p">(),</span> <span class="n">nproc</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_clouds_</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nproc</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">nproc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">vgf</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variogram_func</span> <span class="o">=</span> <span class="n">vgf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variogram_fitting_results</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exact</span> <span class="o">=</span> <span class="n">exact</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distfunc</span> <span class="o">=</span> <span class="n">distfunc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errfunc</span> <span class="o">=</span> <span class="n">errfunc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">krigtype</span> <span class="o">=</span> <span class="n">krigtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">krigtype</span> <span class="o">==</span> <span class="s1">&#39;simple&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple</span><span class="p">:</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">elif</span> <span class="n">mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">farvalue</span> <span class="o">=</span> <span class="n">farvalue</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_xyz_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">if</span> <span class="n">z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span>
+        <span class="k">return</span> <span class="n">_get_xyz_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">noextra</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_clouds_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup cloud spliting</span>
+
+<span class="sd">        Estimate:</span>
+
+<span class="sd">            #. The number of procs to use (sef.nproc).</span>
+<span class="sd">            #. Cloud positions and data (self.xc/yc/zc[ic]).</span>
+<span class="sd">            #. Weight function for each cloud (self.wc[ic](x,y)).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Split?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npc</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">npmax</span><span class="o">&gt;</span><span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">npmax</span><span class="p">:</span>
+
+            <span class="c1"># Split in clouds</span>
+            <span class="n">indices</span><span class="p">,</span> <span class="n">centroids</span><span class="p">,</span> <span class="p">(</span><span class="n">gdist</span><span class="p">,</span> <span class="n">dists</span><span class="p">)</span> <span class="o">=</span> <span class="n">cloud_split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+                <span class="n">npmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">npmax</span><span class="p">,</span> <span class="n">getdist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">getcent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+
+            <span class="c1"># Loop on clouds</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xc</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yc</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zc</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ic</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span><span class="p">):</span>
+
+                <span class="c1"># Positions and data</span>
+                <span class="k">for</span> <span class="n">xyz</span> <span class="ow">in</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">+</span><span class="s1">&#39;c&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">ic</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+                <span class="c1"># Size</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">npc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">ic</span><span class="p">]))</span>
+
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># Single cloud</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">xc</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yc</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zc</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">npc</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cwfunc</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="mf">1.</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CloudKriger.plot_clouds"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.plot_clouds">[docs]</a>    <span class="k">def</span> <span class="nf">plot_clouds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Quickly Plot inputs points splitted in clouds&quot;&quot;&quot;</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yc</span><span class="p">):</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CloudKriger.variogram_fit"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.variogram_fit">[docs]</a>    <span class="k">def</span> <span class="nf">variogram_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Estimate the variogram function by using :func:`variogram_fit`&quot;&quot;&quot;</span>
+        <span class="n">kw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kw</span><span class="p">[</span><span class="s1">&#39;distfunc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distfunc</span>
+        <span class="n">kw</span><span class="p">[</span><span class="s1">&#39;errfunc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">errfunc</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_xyz_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">z</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">ne</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">variogram_multifit</span><span class="p">([</span><span class="n">x</span><span class="p">]</span><span class="o">*</span><span class="n">ne</span><span class="p">,</span> <span class="p">[</span><span class="n">y</span><span class="p">]</span><span class="o">*</span><span class="n">ne</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtype</span><span class="p">,</span> <span class="n">getall</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">variogram_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtype</span><span class="p">,</span> <span class="n">getall</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variogram_func</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variogram_fitting_results</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variogram_func</span></div>
+
+<div class="viewcode-block" id="CloudKriger.get_sill"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.get_sill">[docs]</a>    <span class="k">def</span> <span class="nf">get_sill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vgf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variogram_func</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">variogram_fitting_results</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variogram_fitting_results</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="s1">&#39;s&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">vgf</span><span class="p">(</span><span class="mf">1e60</span><span class="p">)</span></div>
+
+    <span class="n">sill</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">get_sill</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Sill&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CloudKriger.set_variogram_func"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.set_variogram_func">[docs]</a>    <span class="k">def</span> <span class="nf">set_variogram_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vgf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the variogram function&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">vgf</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">KrigingError</span><span class="p">(</span><span class="s2">&quot;Your variogram function must be callable&quot;</span><span class="p">)</span>
+        <span class="n">reset</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_vgf&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">vgf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vgf</span> <span class="o">=</span> <span class="n">vgf</span>
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span> <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ainv</span></div>
+<div class="viewcode-block" id="CloudKriger.get_variogram_func"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.get_variogram_func">[docs]</a>    <span class="k">def</span> <span class="nf">get_variogram_func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the variogram function&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_vgf&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variogram_fit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vgf</span></div>
+<div class="viewcode-block" id="CloudKriger.del_variogram_func"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.del_variogram_func">[docs]</a>    <span class="k">def</span> <span class="nf">del_variogram_func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete the variogram function&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_vgf&#39;</span><span class="p">):</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vgf</span></div>
+    <span class="n">variogram_func</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_variogram_func</span><span class="p">,</span> <span class="n">set_variogram_func</span><span class="p">,</span>
+        <span class="n">del_variogram_func</span><span class="p">,</span> <span class="s2">&quot;Variogram function&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CloudKriger.get_Ainv"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.get_Ainv">[docs]</a>    <span class="k">def</span> <span class="nf">get_Ainv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the inverse of A&quot;&quot;&quot;</span>
+
+        <span class="c1"># Already computed</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_Ainv&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Ainv</span>
+
+        <span class="c1"># Variogram function</span>
+        <span class="n">vgf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variogram_func</span>
+
+        <span class="c1"># Loop on clouds</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_dd&#39;</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dd</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">Ainv</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">AA</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ic</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span><span class="p">):</span>
+
+            <span class="c1"># Get distance between input points</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dd</span><span class="p">)</span><span class="o">&lt;</span><span class="n">ic</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">dd</span> <span class="o">=</span> <span class="n">get_distances</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xc</span><span class="p">[</span><span class="n">ic</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">yc</span><span class="p">[</span><span class="n">ic</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">xc</span><span class="p">[</span><span class="n">ic</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">yc</span><span class="p">[</span><span class="n">ic</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">distfunc</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dd</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span>
+
+            <span class="c1"># Form A</span>
+            <span class="n">np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npc</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">np</span><span class="o">+</span><span class="nb">next</span><span class="p">,</span> <span class="n">np</span><span class="o">+</span><span class="nb">next</span><span class="p">))</span>
+            <span class="n">A</span><span class="p">[:</span><span class="n">np</span><span class="p">,</span> <span class="p">:</span><span class="n">np</span><span class="p">]</span> <span class="o">=</span> <span class="n">vgf</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exact</span><span class="p">:</span>
+                <span class="n">N</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">A</span><span class="p">[:</span><span class="n">np</span><span class="p">,</span> <span class="p">:</span><span class="n">np</span><span class="p">][</span><span class="n">isclose</span><span class="p">(</span><span class="n">A</span><span class="p">[:</span><span class="n">np</span><span class="p">,</span> <span class="p">:</span><span class="n">np</span><span class="p">],</span> <span class="mf">0.</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">A</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">A</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># Invert for single cloud</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nproc</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">Ainv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syminv</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">AA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+        <span class="c1"># Multiprocessing inversion</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nproc</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nproc</span><span class="p">)</span>
+            <span class="n">Ainv</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">syminv</span><span class="p">,</span> <span class="n">AA</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># Fortran arrays</span>
+        <span class="n">Ainv</span> <span class="o">=</span> <span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">ainv</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ainv</span> <span class="ow">in</span> <span class="n">Ainv</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ainv</span> <span class="o">=</span> <span class="n">Ainv</span>
+        <span class="k">return</span> <span class="n">Ainv</span></div>
+
+<div class="viewcode-block" id="CloudKriger.set_Ainv"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.set_Ainv">[docs]</a>    <span class="k">def</span> <span class="nf">set_Ainv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Ainv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the invert of A&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_Ainv</span> <span class="o">=</span> <span class="n">Ainv</span></div>
+<div class="viewcode-block" id="CloudKriger.del_Ainv"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.del_Ainv">[docs]</a>    <span class="k">def</span> <span class="nf">del_Ainv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete the invert of A&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_Ainv&#39;</span><span class="p">):</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Ainv</span></div>
+
+    <span class="n">Ainv</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_Ainv</span><span class="p">,</span> <span class="n">set_Ainv</span><span class="p">,</span> <span class="n">del_Ainv</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Invert of A&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CloudKriger.interp"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.CloudKriger.interp">[docs]</a>    <span class="k">def</span> <span class="nf">interp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="n">geterr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">blockr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate to positions xo,yo</span>
+
+<span class="sd">        :Params:</span>
+
+<span class="sd">            - **xo/yo**: Output positions.</span>
+<span class="sd">            - **geterr**, optional: Also return errors.</span>
+
+<span class="sd">        :Return: ``zo`` or ``zo,eo``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Inits</span>
+        <span class="n">xo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xo</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+        <span class="n">yo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">yo</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+        <span class="n">npo</span> <span class="o">=</span> <span class="n">xo</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">vgf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variogram_func</span>
+        <span class="n">so</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nt</span><span class="p">,</span> <span class="n">npo</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nt</span> <span class="k">else</span> <span class="n">npo</span>
+        <span class="n">zo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">so</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">geterr</span><span class="p">:</span>
+            <span class="n">eo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npo</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span><span class="o">&gt;</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">geterr</span><span class="p">:</span>
+            <span class="n">wo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npo</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Loop on clouds</span>
+        <span class="n">Ainv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ainv</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ic</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span><span class="p">):</span> <span class="c1"># TODO: multiproc here?</span>
+
+            <span class="c1"># Distances to output points</span>
+            <span class="c1"># dd = cdist(N.transpose([xi,yi]),N.transpose([xo,yo])) # TODO: test cdist</span>
+            <span class="n">dd</span> <span class="o">=</span> <span class="n">get_distances</span><span class="p">(</span><span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xc</span><span class="p">[</span><span class="n">ic</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">yc</span><span class="p">[</span><span class="n">ic</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">distfunc</span><span class="p">)</span>
+
+            <span class="c1"># Form B</span>
+            <span class="n">np</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npc</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">np</span><span class="o">+</span><span class="nb">next</span><span class="p">,</span> <span class="n">npo</span><span class="p">))</span>
+            <span class="n">B</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">npc</span><span class="p">[</span><span class="n">ic</span><span class="p">]]</span> <span class="o">=</span> <span class="n">vgf</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple</span><span class="p">:</span>
+                <span class="n">B</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exact</span><span class="p">:</span>
+                <span class="n">B</span><span class="p">[:</span><span class="n">np</span><span class="p">][</span><span class="n">isclose</span><span class="p">(</span><span class="n">B</span><span class="p">[:</span><span class="n">np</span><span class="p">],</span> <span class="mf">0.</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="k">del</span> <span class="n">dd</span>
+
+            <span class="c1"># Block kriging</span>
+            <span class="k">if</span> <span class="n">blockr</span><span class="p">:</span>
+                <span class="n">tree</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">]))</span>
+                <span class="n">Bb</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">iineigh</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">query_ball_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">blockr</span><span class="p">)):</span>
+                    <span class="n">Bb</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span><span class="p">[:,</span> <span class="n">iineigh</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                <span class="n">B</span> <span class="o">=</span> <span class="n">Bb</span>
+
+            <span class="c1"># Compute weights</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">symm</span><span class="p">(</span><span class="n">Ainv</span><span class="p">[</span><span class="n">ic</span><span class="p">],</span> <span class="n">N</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)))</span>
+
+            <span class="c1"># Simple kriging with adjusted mean for long distance values</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">farvalue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sill</span><span class="p">()</span>
+                <span class="n">Ais</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sill</span><span class="p">()</span> <span class="o">*</span> <span class="n">Ainv</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">farvalue</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zc</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ais</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">mean</span> <span class="o">/=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Ais</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span>
+
+            <span class="c1"># Interpolate</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">dgemv</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">W</span><span class="p">[:</span><span class="n">np</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">),</span>
+                <span class="n">N</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zc</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span><span class="o">-</span><span class="n">mean</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simple</span><span class="p">:</span>
+                <span class="n">z</span> <span class="o">+=</span> <span class="n">mean</span>
+
+            <span class="c1"># Simplest case</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">geterr</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">:</span>
+                <span class="n">zo</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">T</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Get error</span>
+<span class="c1">#            e = (W[:-1]*B[:-1]).sum(axis=0)</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">W</span><span class="o">*</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">W</span><span class="p">,</span> <span class="n">B</span>
+
+            <span class="c1"># Weigthed contribution based on errors</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">z</span><span class="p">[:]</span> <span class="o">*=</span> <span class="n">w</span>
+            <span class="n">wo</span> <span class="o">+=</span> <span class="n">w</span>
+            <span class="k">del</span> <span class="n">w</span>
+            <span class="n">zo</span><span class="p">[:]</span> <span class="o">+=</span> <span class="n">z</span><span class="o">.</span><span class="n">T</span> <span class="p">;</span> <span class="k">del</span> <span class="n">z</span>
+
+        <span class="c1"># Error</span>
+        <span class="k">if</span> <span class="n">geterr</span><span class="p">:</span>
+            <span class="n">eo</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">N</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">wo</span><span class="p">)</span>
+
+        <span class="c1"># Normalization</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncloud</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">zo</span><span class="p">[:]</span> <span class="o">/=</span> <span class="n">wo</span>
+
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">geterr</span><span class="p">:</span> <span class="k">return</span> <span class="n">zo</span><span class="p">,</span> <span class="n">eo</span>
+        <span class="k">return</span> <span class="n">zo</span></div>
+
+    <span class="fm">__call__</span> <span class="o">=</span> <span class="n">interp</span></div>
+
+
+<div class="viewcode-block" id="OrdinaryCloudKriger"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.OrdinaryCloudKriger">[docs]</a><span class="k">class</span> <span class="nc">OrdinaryCloudKriger</span><span class="p">(</span><span class="n">CloudKriger</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ordinary kriger using cloud splitting&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vgf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npmax</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">nproc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">distfunc</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span> <span class="n">errfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">CloudKriger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;ordinary&#39;</span><span class="p">,</span> <span class="n">mtype</span><span class="o">=</span><span class="n">mtype</span><span class="p">,</span> <span class="n">vgf</span><span class="o">=</span><span class="n">vgf</span><span class="p">,</span> <span class="n">npmax</span><span class="o">=</span><span class="n">npmax</span><span class="p">,</span>
+            <span class="n">nproc</span><span class="o">=</span><span class="n">nproc</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">distfunc</span><span class="o">=</span><span class="n">distfunc</span><span class="p">,</span> <span class="n">errfunc</span><span class="o">=</span><span class="n">errfunc</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+<span class="n">OrdinaryKriger</span> <span class="o">=</span> <span class="n">OrdinaryCloudKriger</span>
+
+
+<div class="viewcode-block" id="SimpleCloudKriger"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.SimpleCloudKriger">[docs]</a><span class="k">class</span> <span class="nc">SimpleCloudKriger</span><span class="p">(</span><span class="n">CloudKriger</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simple kriger using cloud splitting&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vgf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">npmax</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">nproc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">distfunc</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span> <span class="n">errfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">farvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">CloudKriger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;simple&#39;</span><span class="p">,</span> <span class="n">mtype</span><span class="o">=</span><span class="n">mtype</span><span class="p">,</span> <span class="n">vgf</span><span class="o">=</span><span class="n">vgf</span><span class="p">,</span> <span class="n">npmax</span><span class="o">=</span><span class="n">npmax</span><span class="p">,</span>
+            <span class="n">nproc</span><span class="o">=</span><span class="n">nproc</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">distfunc</span><span class="o">=</span><span class="n">distfunc</span><span class="p">,</span> <span class="n">errfunc</span><span class="o">=</span><span class="n">errfunc</span><span class="p">,</span>
+            <span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">farvalue</span><span class="o">=</span><span class="n">farvalue</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="krig"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.krig">[docs]</a><span class="k">def</span> <span class="nf">krig</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="n">vgf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geterr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Quickly krig data&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">OrdinaryKriger</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="n">vgf</span><span class="o">=</span><span class="n">vgf</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)(</span><span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="n">geterr</span><span class="o">=</span><span class="n">geterr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="gauss3"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.gauss3">[docs]</a><span class="k">def</span> <span class="nf">gauss3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
+    <span class="n">x0</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">dx0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dy0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>
+    <span class="n">x1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dx1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dy1</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">x2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y2</span><span class="o">=-</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">dx2</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">dy2</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">f2</span><span class="o">=-.</span><span class="mi">3</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create data sample as function position and 3-gaussian function&quot;&quot;&quot;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">bivariate_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dx0</span><span class="p">,</span> <span class="n">dy0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span><span class="o">*</span><span class="n">f0</span>
+    <span class="n">g</span><span class="o">+=</span> <span class="n">bivariate_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dx1</span><span class="p">,</span> <span class="n">dy1</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span><span class="o">*</span><span class="n">f1</span>
+    <span class="n">g</span><span class="o">+=</span> <span class="n">bivariate_normal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dx2</span><span class="p">,</span> <span class="n">dy2</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span><span class="o">*</span><span class="n">f2</span>
+    <span class="n">g</span> <span class="o">*=</span> <span class="mf">10.</span>
+    <span class="k">return</span> <span class="n">g</span></div>
+
+<div class="viewcode-block" id="gridded_gauss3"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.gridded_gauss3">[docs]</a><span class="k">def</span> <span class="nf">gridded_gauss3</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">mesh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a data sample on a grid using :func:`gauss3`&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">zz</span> <span class="o">=</span> <span class="n">gauss3</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mesh</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">zz</span></div>
+
+<div class="viewcode-block" id="random_gauss3"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.random_gauss3">[docs]</a><span class="k">def</span> <span class="nf">random_gauss3</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a data sample of random points using :func:`gauss3`&quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">random_points</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">gauss3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span></div>
+
+<div class="viewcode-block" id="random_points"><a class="viewcode-back" href="../../../../library/misc.grid.kriging.html#vacumm.misc.grid.kriging.random_points">[docs]</a><span class="k">def</span> <span class="nf">random_points</span><span class="p">(</span><span class="n">np</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate random coordinates of points&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">np</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">)</span><span class="o">+</span><span class="n">xmin</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">np</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">ymax</span><span class="o">-</span><span class="n">ymin</span><span class="p">)</span><span class="o">+</span><span class="n">ymin</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

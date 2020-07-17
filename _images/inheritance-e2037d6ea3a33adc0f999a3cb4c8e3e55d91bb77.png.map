@@ -1,0 +1,4 @@
+<map id="inheritance8a137eeec4" name="inheritance8a137eeec4">
+<area shape="poly" id="node1" href="#vacumm.misc.grid.basemap.GSHHS_BM" target="_top" title="Shoreline from USGS using Basemap" alt="" coords="114,139,111,130,103,122,91,116,76,112,60,111,43,112,28,116,16,122,8,130,5,139,8,148,16,156,28,163,43,167,60,168,76,167,91,163,103,156,111,148"/>
+<area shape="poly" id="node2" href="misc.io.html#vacumm.misc.io.Shapes" target="_top" title="A class to read shapefiles and return GEOS objects" alt="" coords="99,34,97,25,91,17,83,11,72,7,60,5,47,7,36,11,28,17,22,25,20,34,22,43,28,51,36,57,47,61,60,63,72,61,83,57,91,51,97,43"/>
+</map>

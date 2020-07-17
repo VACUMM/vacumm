@@ -1,0 +1,199 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.5.1. python.batch – Script for batch submission &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.batch.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="python-batch-script-for-batch-submission">
+<span id="user-scripts-batch"></span><h1>1.6.5.1. <strong class="program">python.batch</strong> – Script for batch submission<a class="headerlink" href="#python-batch-script-for-batch-submission" title="Permalink to this headline">¶</a></h1>
+<p>This script helps you running a script in batch mode.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python.batch -h
+$ python.batch myscript.py --options arguments
+</pre></div>
+</div>
+<p>All the options and arguments are passed to the python script.</p>
+<p>To properly use it, the script must load the right
+python environment.
+Therefore, it is suggested than you make a copy of it and edit it.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you use the environment modules,
+you can set the <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">VACUMM_MODULES</span></code> environment variable
+to the directory of module files that contain the
+:<code class="file docutils literal notranslate"><span class="pre">vacumm</span></code> module file.
+For instance, here we make the supposition that the
+<code class="file docutils literal notranslate"><span class="pre">/home/me/modulefiles/vacumm</span></code> exists:</p>
+<div class="last highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">VACUMM_MODULES</span><span class="o">=</span>/home/me/modulefiles
+</pre></div>
+</div>
+</div>
+<p>Here is a view the script for batch submission:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#####################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># PURPOSE:</span>
+<span class="c1">#    Script for batch submission of python scripts.</span>
+<span class="c1">#    For</span>
+<span class="c1">#</span>
+<span class="c1"># USAGE:</span>
+<span class="c1">#    python.batch myscript.py --myoptions myargs</span>
+<span class="c1">#</span>
+<span class="c1"># EXAMPLE:</span>
+<span class="c1">#    python.batch evalref.py --log-level=INFO ref2</span>
+<span class="c1"># </span>
+<span class="c1"># SETUP:</span>
+<span class="c1">#   Please edit your environnement setup pour your config below.</span>
+<span class="c1">#   You maye alternatively set the VACUMM_MODULES environment </span>
+<span class="c1">#   variable to load a vacumm environment module </span>
+<span class="c1">#   using &quot;module load vacumm&quot;.</span>
+<span class="c1">#   </span>
+<span class="c1">#</span>
+<span class="c1">#####################################################################</span>
+
+<span class="c1"># Check args</span>
+usage<span class="o">(){</span> <span class="nb">echo</span> <span class="s2">&quot;   Usage: python.batch myscript.py --myoptions myargs&quot;</span><span class="p">;</span><span class="o">}</span>
+<span class="k">if</span> <span class="nb">test</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;-h&quot;</span> -o <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;--help&quot;</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Script for batch submission of python scripts&quot;</span>
+    usage
+    <span class="nb">exit</span> <span class="m">0</span>
+<span class="k">elif</span> ! <span class="nb">test</span> -f <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">then</span>
+    usage
+    <span class="nb">exit</span> <span class="m">1</span>
+<span class="k">fi</span>
+
+<span class="c1"># Names</span>
+<span class="nv">jobname</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$1</span> <span class="p">|</span> cut -d. -f1<span class="k">)</span>
+<span class="nv">batchfile</span><span class="o">=</span>.batchfile
+
+<span class="c1"># Create the batch file</span>
+cat &gt; <span class="nv">$batchfile</span> <span class="s">&lt;&lt; EOF</span>
+<span class="s">#PBS -q sequentiel</span>
+<span class="s">#PBS -N $jobname</span>
+<span class="s">#PBS -l mem=6gb</span>
+
+<span class="s">echo &quot;Loading python environment&quot;</span>
+<span class="s"># !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>
+<span class="s"># !!!!!!!!! EDIT HERE YOUR ENVIRONMENT SETUP !!!!!!!!!</span>
+<span class="s">if test -n &quot;$VACUMM_MODULES&quot; ; then</span>
+<span class="s">    source /usr/share/modules/init/csh</span>
+<span class="s">    module use $VACUMM_MODULES</span>
+<span class="s">    module load vacumm</span>
+<span class="s">fi</span>
+<span class="s"># !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>
+
+<span class="s">echo &quot;Changing directory to $(pwd)&quot;</span>
+<span class="s">cd $(pwd)</span>
+
+<span class="s">echo &quot;Running python script&quot;</span>
+<span class="s">python $1 ${*:2} || exit 1</span>
+
+<span class="s">echo &quot;Done&quot;</span>
+
+<span class="s">EOF</span>
+
+<span class="c1"># Submit it</span>
+qsub -S /bin/bash <span class="nv">$batchfile</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

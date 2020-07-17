@@ -1,0 +1,271 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.data &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><img src="../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.data</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Data tools</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2010-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span> <span class="k">as</span> <span class="nn">_os</span><span class="o">,</span> <span class="nn">locale</span> <span class="k">as</span> <span class="nn">_locale</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">_os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LC_NUMERIC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;en_US.UTF-8&#39;</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">_locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">_locale</span><span class="o">.</span><span class="n">LC_NUMERIC</span><span class="p">,</span> <span class="s1">&#39;en_US.UTF-8&#39;</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">VACUMMError</span>
+<span class="kn">import</span> <span class="nn">satellite</span>
+
+<span class="c1">#: Specifications of available dataset types</span>
+<span class="n">DATASET_SPECS</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">dataset_specs</span> <span class="o">=</span> <span class="n">DATASET_SPECS</span> <span class="c1"># compat</span>
+
+<span class="c1">##: List of available dataset types</span>
+<span class="c1">#DATASET_NAMES = DATASET_SPECS.keys()</span>
+<span class="c1">#dataset_names = DATASET_NAMES # compat</span>
+
+<div class="viewcode-block" id="DS"><a class="viewcode-back" href="../../library/data.html#vacumm.data.DS">[docs]</a><span class="k">def</span> <span class="nf">DS</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">clsname</span><span class="o">=</span><span class="s1">&#39;generic&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load a specialized :class:`vacumm.data.misc.dataset.Dataset` instance</span>
+
+<span class="sd">    Available methods for retreiving data (or derived data) are the same</span>
+<span class="sd">    for all dataset types.</span>
+<span class="sd">    And whatever the dataset type, the outputs will all have the same</span>
+<span class="sd">    format (names, attributes...). Formating is defined and performed</span>
+<span class="sd">    by the :mod:`vacumm.data.cf` module.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **ncfile**: Netcdf file name(s) or pattern compatibile with</span>
+<span class="sd">          :func:`~vacumm.misc.io.list_forecast_files`, so</span>
+<span class="sd">          please read the documentation of this function carefully.</span>
+<span class="sd">        - **clsname**: Generic class name. Please choose one of:</span>
+<span class="sd">          %s</span>
+<span class="sd">        - All other keyword are passed to the class initialization.</span>
+<span class="sd">          See :class:`~vacumm.data.misc.dataset.Dataset` a list of these options.</span>
+
+<span class="sd">    :Return: A child of :class:`vacumm.data.misc.dataset.Dataset`.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; from vacumm.data import DS</span>
+<span class="sd">        &gt;&gt;&gt; mars = DS(&#39;results.nc&#39;, &#39;mars&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; dx,dy = mars.get_resol()</span>
+<span class="sd">        &gt;&gt;&gt; sst = mars.get_sst()</span>
+
+<span class="sd">    :See also: :ref:`user.desc.dataset`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Register builtin datasets</span>
+    <span class="kn">import</span> <span class="nn">vacumm.data.misc.dataset</span>
+    <span class="kn">import</span> <span class="nn">vacumm.data.model</span>
+
+    <span class="c1"># Class name</span>
+    <span class="k">if</span> <span class="n">clsname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">clsname</span> <span class="o">=</span> <span class="s1">&#39;generic&#39;</span>
+    <span class="n">clsname</span> <span class="o">=</span> <span class="n">clsname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="c1"># Class</span>
+    <span class="k">if</span> <span class="n">clsname</span> <span class="ow">in</span> <span class="n">DATASET_SPECS</span><span class="p">:</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="n">DATASET_SPECS</span><span class="p">[</span><span class="n">clsname</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s1">&#39;Wrong name of dataset type: </span><span class="si">%s</span><span class="s1">. &#39;</span>
+            <span class="s1">&#39; Please choose one of the following: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">clsname</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATASET_NAMES</span><span class="p">)))</span>
+
+    <span class="c1"># Instantiate</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="n">DS</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">DS</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">%</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATASET_SPECS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<div class="viewcode-block" id="setup_dataset"><a class="viewcode-back" href="../../library/data.html#vacumm.data.setup_dataset">[docs]</a><span class="k">def</span> <span class="nf">setup_dataset</span><span class="p">(</span><span class="n">clsname</span><span class="p">,</span> <span class="n">ncfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Alias for ``DS(ncfile,  clsname, *args, **kwargs)``</span>
+
+<span class="sd">    See :func:`DS` for arguments.</span>
+
+<span class="sd">    This function is here mainly for backward compatibility.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">DS</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span>  <span class="n">clsname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="register_dataset"><a class="viewcode-back" href="../../library/data.html#vacumm.data.register_dataset">[docs]</a><span class="k">def</span> <span class="nf">register_dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">clsname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Register a new :class:`~vacumm.data.misc.dataset.Dataset` class</span>
+<span class="sd">    that can be loaded with :func:`DS`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the class when a path is given</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">modname</span><span class="p">,</span> <span class="n">Clsname</span> <span class="o">=</span> <span class="n">_os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">Clsname</span> <span class="o">=</span> <span class="n">Clsname</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">Clsname</span><span class="p">])</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">Clsname</span><span class="p">)</span>
+
+    <span class="c1"># Check inheritance</span>
+    <span class="kn">from</span> <span class="nn">vacumm.data.misc.dataset</span> <span class="k">import</span> <span class="n">Dataset</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s1">&#39;cls must be a Dataset subclass&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Get the name</span>
+    <span class="k">if</span> <span class="n">clsname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">clsname</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">clsname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">clsname</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">clsname</span> <span class="o">=</span> <span class="n">clsname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">clsname</span>
+
+    <span class="c1"># Already registered?</span>
+    <span class="k">if</span> <span class="n">clsname</span> <span class="ow">in</span> <span class="n">DATASET_SPECS</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">warn</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
+                <span class="n">ms</span> <span class="o">=</span> <span class="s1">&#39;Overwriting it...&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ms</span> <span class="o">=</span> <span class="s1">&#39;Skipping...&#39;</span>
+            <span class="n">sonat_warn</span><span class="p">(</span><span class="s1">&#39;Dataset class &quot;</span><span class="si">{}</span><span class="s1">&quot; is already registered. &#39;</span><span class="o">+</span><span class="n">ms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+            <span class="k">return</span>
+
+    <span class="c1"># Register</span>
+    <span class="n">DATASET_SPECS</span><span class="p">[</span><span class="n">clsname</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+    <span class="k">return</span> <span class="bp">cls</span></div>
+
+<div class="viewcode-block" id="print_registered_datasets"><a class="viewcode-back" href="../../library/data.html#vacumm.data.print_registered_datasets">[docs]</a><span class="k">def</span> <span class="nf">print_registered_datasets</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Print all registered datasets&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">clsname</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">DATASET_SPECS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span> <span class="n">clsname</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span>
+        <span class="nb">print</span> <span class="s1">&#39;  description: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="s1">&#39;  class: &#39;</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

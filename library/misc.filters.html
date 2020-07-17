@@ -1,0 +1,527 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.7. vacumm.misc.filters – 1D/2D numeric filters &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.7. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.filters</span></code> – 1D/2D numeric filters</a><ul>
+<li><a class="reference internal" href="#overview">2.3.7.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.7.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.filters.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-filters-1d-2d-numeric-filters">
+<span id="lib-misc-filters"></span><h1>2.3.7. <a class="reference internal" href="#module-vacumm.misc.filters" title="vacumm.misc.filters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.filters</span></code></a> – 1D/2D numeric filters<a class="headerlink" href="#vacumm-misc-filters-1d-2d-numeric-filters" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.7.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.filters.bartlett1d" title="vacumm.misc.filters.bartlett1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">bartlett1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.blackman1d" title="vacumm.misc.filters.blackman1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">blackman1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.deriv" title="vacumm.misc.filters.deriv"><code class="xref py py-func docutils literal notranslate"><span class="pre">deriv()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.deriv2d" title="vacumm.misc.filters.deriv2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">deriv2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.gaussian1d" title="vacumm.misc.filters.gaussian1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">gaussian1d()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.filters.gaussian2d" title="vacumm.misc.filters.gaussian2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">gaussian2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.generic2d" title="vacumm.misc.filters.generic2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.hamming1d" title="vacumm.misc.filters.hamming1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">hamming1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.hanning1d" title="vacumm.misc.filters.hanning1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">hanning1d()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.filters.kaiser1d" title="vacumm.misc.filters.kaiser1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">kaiser1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.norm_atan" title="vacumm.misc.filters.norm_atan"><code class="xref py py-func docutils literal notranslate"><span class="pre">norm_atan()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.running_average" title="vacumm.misc.filters.running_average"><code class="xref py py-func docutils literal notranslate"><span class="pre">running_average()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.shapiro1d" title="vacumm.misc.filters.shapiro1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">shapiro1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.filters.shapiro2d" title="vacumm.misc.filters.shapiro2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">shapiro2d()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.7.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vacumm.misc.filters"></span><p>Various 1d and 2D filters</p>
+<dl class="function">
+<dt id="vacumm.misc.filters.bartlett1d">
+<code class="descname">bartlett1d</code><span class="sig-paren">(</span><em>data</em>, <em>M</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#bartlett1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.bartlett1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bartlett 1D filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+<li><strong>M</strong>: Size of the Bartlett window.</li>
+<li>Keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.blackman1d">
+<code class="descname">blackman1d</code><span class="sig-paren">(</span><em>data</em>, <em>M</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#blackman1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.blackman1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blackman 1D filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+<li><strong>M</strong>: Size of the Blackman window.</li>
+<li>Keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.deriv">
+<code class="descname">deriv</code><span class="sig-paren">(</span><em>data</em>, <em>axis=0</em>, <em>fast=True</em>, <em>fill_value=None</em>, <em>physical=True</em>, <em>lat=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#deriv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.deriv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Derivative along a given axis</p>
+<ul class="simple">
+<li><strong>data</strong>: Data array (converted to MV array if needed)</li>
+<li><em>axis</em>: Axis on which the derivative is performed [default: 0]</li>
+<li><em>fast</em>: Filled masked array before derivating, so use Numeric which is faster than MA or MV [<em>WARNING</em> default: True]</li>
+<li><em>physical</em>: Try physical derivative, taking axis units into account [default: True]</li>
+<li><em>lat</em>: Latitude for geographical deriviative to convert positions in degrees to meters</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.deriv2d">
+<code class="descname">deriv2d</code><span class="sig-paren">(</span><em>data</em>, <em>direction=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#deriv2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.deriv2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Derivative in a 2D space</p>
+<ul class="simple">
+<li><strong>data</strong>: 2D variable</li>
+<li><em>direction</em>: If not None, derivative is computed in this direction, else the module is returned [default: None]</li>
+<li>Other keywords are passed to deriv()</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.gaussian1d">
+<code class="descname">gaussian1d</code><span class="sig-paren">(</span><em>data</em>, <em>nxw</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#gaussian1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.gaussian1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gaussian 1D filter</p>
+<ul class="simple">
+<li><strong>data</strong>: Data array</li>
+<li><strong>nxw</strong>: Size of gaussian weights array along X</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a></li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.gaussian2d">
+<code class="descname">gaussian2d</code><span class="sig-paren">(</span><em>data</em>, <em>nxw</em>, <em>nyw=None</em>, <em>sxw=0.3333333333333333</em>, <em>syw=0.3333333333333333</em>, <em>rmax=3.0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#gaussian2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.gaussian2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gaussian 2D filter</p>
+<ul class="simple">
+<li><strong>data</strong>: Data array</li>
+<li><strong>nxw</strong>: Size of gaussian weights array along X (and Y if nyw not given)</li>
+<li><em>nyw</em>: Size of gaussian weights array along Y [default: nxw]</li>
+<li><em>sxw</em>: Standard deviation of the gaussian distribution along X.
+If &lt;1, its size is relative to nxw. If &gt; 1, it is directly expressed in grid
+steps.</li>
+<li><em>syw</em>: Same as sxw for Y direction.</li>
+<li><em>rmax</em>: Distance relative to sqrt(sxw**2+syw**2) after with weights are
+nullified.</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic2d" title="vacumm.misc.filters.generic2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic2d()</span></code></a></li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.generic1d">
+<code class="descname">generic1d</code><span class="sig-paren">(</span><em>data</em>, <em>weights</em>, <em>axis=0</em>, <em>mask='same'</em>, <em>copy=True</em>, <em>cyclic=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#generic1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.generic1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic 1D filter applied to <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variables using convolution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>data</strong>: Atleast 1D <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</p>
+</li>
+<li><p class="first"><strong>weights</strong>: integer, 1D weights.
+They are expected to be symmetric and of odd sizes.</p>
+</li>
+<li><p class="first"><strong>axis</strong>, optional: axis on which to operate</p>
+</li>
+<li><p class="first"><strong>mask</strong>, optional: mode of masking.
+The mask is also filtered, and its value helps
+defining the new mask, depending on this parameter:</p>
+<blockquote>
+<div><ul class="simple">
+<li>If a float is provided, data are masked if the mask value
+is greater than this parameter.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;minimal&quot;</span></code>: Equivalent to <code class="docutils literal notranslate"><span class="pre">1.</span></code>. Data is not masked
+if a valid value was used to compute data.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;maximal&quot;</span></code>: Equivalent to <code class="docutils literal notranslate"><span class="pre">0.</span></code>. Data is masked
+if a invalid value was used to compute data.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>: Mask is the same as input mask.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Copy variable before filtering it.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first simple">
+<li>The filtered <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)</span> <span class="c1"># running mean using a 3-points block</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generic1d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># shapiro filter on third axis</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.convolve2d.html#scipy.signal.convolve2d" title="(in SciPy v1.2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.convolve2d()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.generic2d">
+<code class="descname">generic2d</code><span class="sig-paren">(</span><em>data</em>, <em>weights</em>, <em>mask='same'</em>, <em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#generic2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.generic2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic 2D filter applied to 2D (or more) <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variables using convolution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>data</strong>: Atleast 2D <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</p>
+</li>
+<li><p class="first"><strong>weights</strong>: integer, 2D weights.
+They are expected to be symmetric and of odd sizes.
+If an integer is provided, a <code class="docutils literal notranslate"><span class="pre">(weights,weights)</span></code>
+array of ones is used.</p>
+</li>
+<li><p class="first"><strong>mask</strong>, optional: mode of masking.
+The mask is also filtered, and its value helps
+defining the new mask, depending on this parameter:</p>
+<blockquote>
+<div><ul class="simple">
+<li>If a float is provided, data are masked if the mask value
+is greater than this parameter.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;minimal&quot;</span></code>: Equivalent to <code class="docutils literal notranslate"><span class="pre">1.</span></code>. Data is not masked
+if a valid value was used to compute data.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;maximal&quot;</span></code>: Equivalent to <code class="docutils literal notranslate"><span class="pre">0.</span></code>. Data is masked
+if a invalid value was used to compute data.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>: Mask is the same as input mask.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>copy</strong>, optional: Copy variable before filtering it.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first simple">
+<li>The filtered <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generic2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)</span> <span class="c1"># running mean using a 3x3 block</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generic2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span> <span class="c1"># the same</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generic2d</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">weights</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;minimal&#39;</span><span class="p">)</span> <span class="c1"># crop coasts</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.convolve2d.html#scipy.signal.convolve2d" title="(in SciPy v1.2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.convolve2d()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.hamming1d">
+<code class="descname">hamming1d</code><span class="sig-paren">(</span><em>data</em>, <em>M</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#hamming1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.hamming1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hamming 1D filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+<li><strong>M</strong>: Size of the Hamming window.</li>
+<li>Keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.hanning1d">
+<code class="descname">hanning1d</code><span class="sig-paren">(</span><em>data</em>, <em>M</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#hanning1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.hanning1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hanning 1D filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+<li><strong>M</strong>: Size of the Hanning window.</li>
+<li>Keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.kaiser1d">
+<code class="descname">kaiser1d</code><span class="sig-paren">(</span><em>data</em>, <em>M</em>, <em>beta</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#kaiser1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.kaiser1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kaiser 1D filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+<li><strong>M</strong>: Size of the Kaiser window.</li>
+<li><strong>beta</strong>: Shape of the window.</li>
+<li>Keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.norm_atan">
+<code class="descname">norm_atan</code><span class="sig-paren">(</span><em>var</em>, <em>stretch=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#norm_atan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.norm_atan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize using arctan (arctan(strecth*var/std(var))</p>
+<ul class="simple">
+<li><em>stretch</em>: If stretch close to 1, saturates values [default: 1]</li>
+</ul>
+<p>Return: Value in [-1,1]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.running_average">
+<code class="descname">running_average</code><span class="sig-paren">(</span><em>x</em>, <em>l</em>, <em>d=0</em>, <em>w=None</em>, <em>keep_mask=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#running_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.running_average" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a running average on an masked array. Average is linearly reduced near bounds, so that the input and output have the same size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong>: Masked array</li>
+<li><strong>l</strong>: Window size</li>
+<li><em>d</em>: Dimension over which the average is performed (0)</li>
+<li><em>w</em>: Weights (1…)</li>
+<li><em>keep_mask</em>: Apply mask from x to output array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">running_average</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_mask</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="last">Returns Average array (same size as x)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function deprecated. Please use <a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a> instead.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.shapiro1d">
+<code class="descname">shapiro1d</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#shapiro1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.shapiro1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shapiro (121) 1D filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+<li>Keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic1d" title="vacumm.misc.filters.generic1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic1d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.filters.shapiro2d">
+<code class="descname">shapiro2d</code><span class="sig-paren">(</span><em>data</em>, <em>corners=0.5</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/filters.html#shapiro2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.filters.shapiro2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shapiro (121) 2D filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong>: A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable.</li>
+<li><strong>corner</strong>, optional: Value in (4) corners.</li>
+<li>Keywords are passed to <a class="reference internal" href="#vacumm.misc.filters.generic2d" title="vacumm.misc.filters.generic2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">generic2d()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

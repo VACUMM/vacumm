@@ -1,0 +1,532 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.13. vacumm.misc.stats – Statistiques spéciales &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.13. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.stats</span></code> – Statistiques spéciales</a><ul>
+<li><a class="reference internal" href="#overview">2.3.13.1. Overview</a></li>
+<li><a class="reference internal" href="#module-vacumm.misc.stats">2.3.13.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.stats.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-stats-statistiques-speciales">
+<span id="lib-misc-stats"></span><h1>2.3.13. <a class="reference internal" href="#module-vacumm.misc.stats" title="vacumm.misc.stats"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.stats</span></code></a> – Statistiques spéciales<a class="headerlink" href="#vacumm-misc-stats-statistiques-speciales" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.13.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.stats.corr_proba" title="vacumm.misc.stats.corr_proba"><code class="xref py py-func docutils literal notranslate"><span class="pre">corr_proba()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.ensrank" title="vacumm.misc.stats.ensrank"><code class="xref py py-func docutils literal notranslate"><span class="pre">ensrank()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.stats.qtmax" title="vacumm.misc.stats.qtmax"><code class="xref py py-func docutils literal notranslate"><span class="pre">qtmax()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.qtmin" title="vacumm.misc.stats.qtmin"><code class="xref py py-func docutils literal notranslate"><span class="pre">qtmin()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.stats.qtminmax" title="vacumm.misc.stats.qtminmax"><code class="xref py py-func docutils literal notranslate"><span class="pre">qtminmax()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.stats.StatAccum" title="vacumm.misc.stats.StatAccum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StatAccum</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.all_stats" title="vacumm.misc.stats.StatAccum.all_stats"><code class="xref py py-attr docutils literal notranslate"><span class="pre">all_stats</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.default_restart_file" title="vacumm.misc.stats.StatAccum.default_restart_file"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_restart_file</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.dual_stats" title="vacumm.misc.stats.StatAccum.dual_stats"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dual_stats</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.single_stats" title="vacumm.misc.stats.StatAccum.single_stats"><code class="xref py py-attr docutils literal notranslate"><span class="pre">single_stats</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.append" title="vacumm.misc.stats.StatAccum.append"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.dump" title="vacumm.misc.stats.StatAccum.dump"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dump()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_savail" title="vacumm.misc.stats.StatAccum.get_savail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_savail()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_sbias" title="vacumm.misc.stats.StatAccum.get_sbias"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_sbias()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_scorr" title="vacumm.misc.stats.StatAccum.get_scorr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_scorr()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_scount" title="vacumm.misc.stats.StatAccum.get_scount"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_scount()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_scrms" title="vacumm.misc.stats.StatAccum.get_scrms"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_scrms()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_shist" title="vacumm.misc.stats.StatAccum.get_shist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_shist()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_smean" title="vacumm.misc.stats.StatAccum.get_smean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_smean()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_srms" title="vacumm.misc.stats.StatAccum.get_srms"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_srms()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_sstats" title="vacumm.misc.stats.StatAccum.get_sstats"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_sstats()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_sstd" title="vacumm.misc.stats.StatAccum.get_sstd"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_sstd()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_stats" title="vacumm.misc.stats.StatAccum.get_stats"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_stats()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_tavail" title="vacumm.misc.stats.StatAccum.get_tavail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_tavail()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_tbias" title="vacumm.misc.stats.StatAccum.get_tbias"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_tbias()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_tcorr" title="vacumm.misc.stats.StatAccum.get_tcorr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_tcorr()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_tcount" title="vacumm.misc.stats.StatAccum.get_tcount"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_tcount()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_tcrms" title="vacumm.misc.stats.StatAccum.get_tcrms"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_tcrms()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_thist" title="vacumm.misc.stats.StatAccum.get_thist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_thist()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_tmean" title="vacumm.misc.stats.StatAccum.get_tmean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_tmean()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_trms" title="vacumm.misc.stats.StatAccum.get_trms"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_trms()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_tstats" title="vacumm.misc.stats.StatAccum.get_tstats"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_tstats()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.get_tstd" title="vacumm.misc.stats.StatAccum.get_tstd"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_tstd()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.isempty" title="vacumm.misc.stats.StatAccum.isempty"><code class="xref py py-meth docutils literal notranslate"><span class="pre">isempty()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.stats.StatAccum.load" title="vacumm.misc.stats.StatAccum.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.stats.StatAccumError" title="vacumm.misc.stats.StatAccumError"><code class="xref py py-class docutils literal notranslate"><span class="pre">StatAccumError</span></code></a></p>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vacumm.misc.stats">
+<span id="content"></span><h2>2.3.13.2. Content<a class="headerlink" href="#module-vacumm.misc.stats" title="Permalink to this headline">¶</a></h2>
+<p>Statistical tools</p>
+<dl class="class">
+<dt id="vacumm.misc.stats.StatAccum">
+<em class="property">class </em><code class="descname">StatAccum</code><span class="sig-paren">(</span><em>tall=False</em>, <em>tavail=None</em>, <em>tmean=None</em>, <em>tstd=None</em>, <em>smax=None</em>, <em>smin=None</em>, <em>tbias=None</em>, <em>trms=None</em>, <em>tcrms=None</em>, <em>tcorr=None</em>, <em>shist=None</em>, <em>tcount=None</em>, <em>sall=False</em>, <em>savail=None</em>, <em>smean=None</em>, <em>sstd=None</em>, <em>tmax=None</em>, <em>tmin=None</em>, <em>sbias=None</em>, <em>srms=None</em>, <em>scrms=None</em>, <em>scorr=None</em>, <em>thist=None</em>, <em>scount=None</em>, <em>bins=None</em>, <em>restart_file=None</em>, <em>restart=False</em>, <em>withtime=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Statistics accumulator</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Generic params:</th><td class="field-body"><ul class="first simple">
+<li><strong>t/sall</strong>: Perform all the statistics by default.</li>
+<li><strong>withtime</strong>, optional: Input does not contain a time dimension.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Single:</th><td class="field-body"><ul class="first simple">
+<li><strong>tcount/scount</strong>: Number of observations taken into account</li>
+<li><strong>tavail/savail</strong>: Percentage of available observations</li>
+<li><strong>tmean/smean</strong>: Temporal (t) / Spatial (s) average</li>
+<li><strong>tstd/sstd</strong>: Temporal (t) / Spatial (s) std</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Dual:</th><td class="field-body"><ul class="first simple">
+<li><strong>tall</strong>: Perform all the following statistics by default.</li>
+<li><strong>tbias/sbias</strong>: Temporal (t) / Spatial (s) bias</li>
+<li><strong>trms/srms</strong>: Temporal (t) / Spatial (s) RMS</li>
+<li><strong>tcrms/scrms</strong>: Temporal (t) / Spatial (s) centered RMS</li>
+<li><strong>tcorr/scorr</strong>: Temporal (t) / Spatial (s) Correlation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sa</span> <span class="o">=</span> <span class="n">StatAccum</span><span class="p">(</span><span class="n">tbias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">srms</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sa</span> <span class="o">+=</span> <span class="n">ssta1</span><span class="p">,</span> <span class="n">sstb1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sa</span> <span class="o">+=</span> <span class="n">ssta2</span><span class="p">,</span> <span class="n">sstb2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tbias</span> <span class="o">=</span> <span class="n">sa</span><span class="o">.</span><span class="n">get_tbias</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srms</span> <span class="o">=</span> <span class="n">sa</span><span class="o">.</span><span class="n">get_srms</span><span class="p">()</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="vacumm.misc.stats.StatAccum.all_stats">
+<code class="descname">all_stats</code><em class="property"> = ('mean', 'std', 'hist', 'min', 'max', 'bias', 'rms', 'crms', 'corr', 'avail', 'count')</em><a class="headerlink" href="#vacumm.misc.stats.StatAccum.all_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>*items</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append data to the accumulator</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.stats.StatAccum.default_restart_file">
+<code class="descname">default_restart_file</code><em class="property"> = 'stataccum_restart.nc'</em><a class="headerlink" href="#vacumm.misc.stats.StatAccum.default_restart_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.stats.StatAccum.dual_stats">
+<code class="descname">dual_stats</code><em class="property"> = ('bias', 'rms', 'crms', 'corr', 'avail', 'count')</em><a class="headerlink" href="#vacumm.misc.stats.StatAccum.dual_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.dump">
+<code class="descname">dump</code><span class="sig-paren">(</span><em>restart_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump the current instance to a netcdf file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_savail">
+<code class="descname">get_savail</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_savail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_savail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial availability</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_sbias">
+<code class="descname">get_sbias</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_sbias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_sbias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial bias</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_scorr">
+<code class="descname">get_scorr</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_scorr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_scorr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial correlation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_scount">
+<code class="descname">get_scount</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_scount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_scount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial count</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_scrms">
+<code class="descname">get_scrms</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_scrms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_scrms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial centered RMS difference</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_shist">
+<code class="descname">get_shist</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_shist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_shist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial histogram</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_smean">
+<code class="descname">get_smean</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_smean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_smean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial standard deviation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_srms">
+<code class="descname">get_srms</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_srms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_srms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial absolute RMS difference</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_sstats">
+<code class="descname">get_sstats</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_sstats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_sstats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all spatial statistics as a dictionary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_sstd">
+<code class="descname">get_sstd</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_sstd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_sstd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the spatial mean</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_stats">
+<code class="descname">get_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all statistics as dict</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_tavail">
+<code class="descname">get_tavail</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_tavail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_tavail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal availability</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_tbias">
+<code class="descname">get_tbias</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_tbias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_tbias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal bias</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_tcorr">
+<code class="descname">get_tcorr</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_tcorr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_tcorr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal correlation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_tcount">
+<code class="descname">get_tcount</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_tcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_tcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal count</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_tcrms">
+<code class="descname">get_tcrms</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_tcrms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_tcrms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal centered RMS difference</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_thist">
+<code class="descname">get_thist</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_thist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_thist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal histogram</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_tmean">
+<code class="descname">get_tmean</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_tmean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_tmean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal standard deviation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_trms">
+<code class="descname">get_trms</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_trms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_trms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal absolute RMS difference</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_tstats">
+<code class="descname">get_tstats</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_tstats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_tstats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all temporal statistics as a dictionary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.get_tstd">
+<code class="descname">get_tstd</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.get_tstd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.get_tstd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the temporal mean</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.isempty">
+<code class="descname">isempty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.isempty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.isempty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.stats.StatAccum.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>restart_file=None</em>, <em>iterindex=None</em>, <em>nowtime=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccum.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccum.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the current instance from a netcdf file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>restart_file</strong>, optional: Netcdf restart file.</li>
+<li><strong>iterindex</strong>, optional: If given, the restart file is not loaded if
+<code class="docutils literal notranslate"><span class="pre">iterindex</span></code> is greater or equal to the file’s <code class="docutils literal notranslate"><span class="pre">iterindex</span></code> attribute.</li>
+<li><strong>nowtime</strong>, optional: If given, the restart file is not loaded if
+<code class="docutils literal notranslate"><span class="pre">nowtime</span></code> is greater or equal to the file’s <code class="docutils literal notranslate"><span class="pre">lasttime</span></code> attribute.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.stats.StatAccum.single_stats">
+<code class="descname">single_stats</code><em class="property"> = ('mean', 'std', 'hist', 'min', 'max')</em><a class="headerlink" href="#vacumm.misc.stats.StatAccum.single_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.misc.stats.StatAccumError">
+<em class="property">exception </em><code class="descname">StatAccumError</code><a class="reference internal" href="../_modules/vacumm/misc/stats.html#StatAccumError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.StatAccumError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vacumm.html#vacumm.VACUMMError" title="vacumm.VACUMMError"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.VACUMMError</span></code></a></p>
+<dl class="attribute">
+<dt id="vacumm.misc.stats.StatAccumError.args">
+<code class="descname">args</code><a class="headerlink" href="#vacumm.misc.stats.StatAccumError.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.stats.StatAccumError.message">
+<code class="descname">message</code><a class="headerlink" href="#vacumm.misc.stats.StatAccumError.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.stats.corr_proba">
+<code class="descname">corr_proba</code><span class="sig-paren">(</span><em>r</em>, <em>ndata</em>, <em>ndataset=2</em>, <em>dof=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#corr_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.corr_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Probability of rejecting correlations</p>
+<ul class="simple">
+<li><strong>r</strong>: Correlation coefficient</li>
+<li><strong>ndata</strong>: Number of records use for correlations</li>
+<li><strong>ndataset</strong>, optional:  Number of datasets (1 for autocorrelations, else 2) [default: 2]</li>
+</ul>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">This must be rewritten using <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.stats.ensrank">
+<code class="descname">ensrank</code><span class="sig-paren">(</span><em>obs</em>, <em>ens</em>, <em>gethist=False</em>, <em>getnrz=False</em>, <em>centered=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#ensrank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.ensrank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the rank of a reference (observations) in an ensemble</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">nens</span></code> is the size of the ensemble,
+the rank may go from <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">nens</span></code>.</p>
+<ul class="simple">
+<li><strong>obs</strong>, (…): Observation array</li>
+<li><strong>ens</strong>, (nens,…): Ensemble array</li>
+<li><strong>getrank</strong>, optional: If True, return also the rank histogram</li>
+<li><strong>getnrz</strong>, optional: If True, return also non recovery zones</li>
+<li><strong>centered</strong>, optional: Center the ensemble data on the observations
+before computing the rank</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.stats.qtmax">
+<code class="descname">qtmax</code><span class="sig-paren">(</span><em>var</em>, <em>qt=95.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#qtmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.qtmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get max using quantiles</p>
+<p>This is useful for very asymmetic distributions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var</strong>: A numeric array.</li>
+<li><strong>qt</strong>, optional: Percentile used to define max</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.stats.qtmin">
+<code class="descname">qtmin</code><span class="sig-paren">(</span><em>var</em>, <em>qt=5.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#qtmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.qtmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get min max using quantiles</p>
+<p>This is useful for very asymmetic distributions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var</strong>: A numeric array.</li>
+<li><strong>qt</strong>, optional: Percentile used to define min</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.stats.qtminmax">
+<code class="descname">qtminmax</code><span class="sig-paren">(</span><em>var</em>, <em>qt=5.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/stats.html#qtminmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.stats.qtminmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get min and max using quantiles</p>
+<p>This is useful for very asymmetic distributions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>var</strong>: A numeric array.</p>
+</li>
+<li><p class="first"><strong>qt</strong>, optional: Percentile used to define min and max</p>
+<blockquote>
+<div><ul class="simple">
+<li>Single number: <code class="docutils literal notranslate"><span class="pre">qt</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">[qt,</span> <span class="pre">100-qt]</span></code></li>
+<li>Two elements: used directly.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

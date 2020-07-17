@@ -1,0 +1,358 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.7.2.1. data.misc.coloc – Colocalisations &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.7.2.1. <code class="docutils literal notranslate"><span class="pre">data.misc.coloc</span></code> – Colocalisations</a><ul>
+<li><a class="reference internal" href="#overview">2.7.2.1.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.7.2.1.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/data.misc.coloc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="data-misc-coloc-colocalisations">
+<span id="lib-data-misc-coloc"></span><h1>2.7.2.1. <code class="xref py py-mod docutils literal notranslate"><span class="pre">data.misc.coloc</span></code> – Colocalisations<a class="headerlink" href="#data-misc-coloc-colocalisations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.7.2.1.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">g</span></code></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.data.misc.coloc.Colocator" title="vacumm.data.misc.coloc.Colocator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Colocator</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro"><code class="xref py py-meth docutils literal notranslate"><span class="pre">coloc_mod_on_pro()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.coloc_strat_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.coloc_strat_mod_on_pro"><code class="xref py py-meth docutils literal notranslate"><span class="pre">coloc_strat_mod_on_pro()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.plot_layer_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.plot_layer_mod_on_pro"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_layer_mod_on_pro()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.plot_mld_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.plot_mld_mod_on_pro"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_mld_mod_on_pro()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.plot_ped_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.plot_ped_mod_on_pro"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_ped_mod_on_pro()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.7.2.1.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Inheritance diagram:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="graphviz"><img src="../_images/inheritance-3b572282ccb1d115f544da9f1174468ae3d68d26.png" alt="Inheritance diagram of vacumm.data.misc.coloc" usemap="#inheritance113462627a" class="inheritance graphviz" /></div>
+<map id="inheritance113462627a" name="inheritance113462627a">
+<area shape="poly" id="node1" href="#vacumm.data.misc.coloc.Colocator" target="_top" title="vacumm.data.misc.coloc.Colocator" alt="" coords="280,139,274,130,254,122,224,116,185,112,143,111,100,112,62,116,32,122,12,130,5,139,12,148,32,156,62,163,100,167,143,168,185,167,224,163,254,156,274,148"/>
+<area shape="poly" id="node2" href="misc.bases.html#vacumm.misc.bases.Object" target="_top" title="Vacumm&#39;s base class proving common usefull features:" alt="" coords="254,34,248,25,232,17,208,11,177,7,143,5,109,7,78,11,53,17,38,25,32,34,38,43,53,51,78,57,109,61,143,63,177,61,208,57,232,51,248,43"/>
+</map><span class="target" id="module-vacumm.data.misc.coloc"></span><p>Dataset Colocalizations</p>
+<dl class="class">
+<dt id="vacumm.data.misc.coloc.Colocator">
+<em class="property">class </em><code class="descname">Colocator</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data/misc/coloc.html#Colocator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="misc.bases.html#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.bases.Object</span></code></a></p>
+<dl class="method">
+<dt id="vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro">
+<code class="descname">coloc_mod_on_pro</code><span class="sig-paren">(</span><em>model</em>, <em>profiles</em>, <em>varnames</em>, <em>select=None</em>, <em>method='nearest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data/misc/coloc.html#Colocator.coloc_mod_on_pro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colocalize model on profile data.</p>
+<p>Load model data corresponding to the selected profiles positions and time.</p>
+<p>Returns loaded model longitudes, latitudes, depths and requested variable(s)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>model</strong>: model data <a class="reference internal" href="data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></li>
+<li><strong>profiles</strong>: profile data <a class="reference internal" href="data.misc.profile.html#vacumm.data.misc.profile.ProfilesDataset" title="vacumm.data.misc.profile.ProfilesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProfilesDataset</span></code></a></li>
+<li><strong>varnames</strong>: variables to load (ex: (‘temp’,’sal’) or ((‘temp’,’temperature’),(‘sal’,’salinity’))</li>
+<li><strong>select</strong>: selector</li>
+<li><strong>method</strong>: coloc method (<strong>nearest</strong> or <strong>interp</strong>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lons_mod</strong>: model longitude coordinates, shape: (profile)</li>
+<li><strong>lats_mod</strong>: model latitude coordinates, shape: (profile)</li>
+<li><strong>deps_mod</strong>: model depth coordinates, shape: (level,profile)</li>
+<li><strong>var1</strong>: requested variables, shape: (level,profile)</li>
+<li>…</li>
+<li><strong>varN</strong></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>also load and return profile data here</li>
+<li>exclude coords where profile data is masked (no data for specified depth)</li>
+<li>return time coordinates</li>
+<li>return depth and vars with shape (profile,level)</li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.data.misc.coloc.Colocator.coloc_strat_mod_on_pro">
+<code class="descname">coloc_strat_mod_on_pro</code><span class="sig-paren">(</span><em>model</em>, <em>profiles</em>, <em>select</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data/misc/coloc.html#Colocator.coloc_strat_mod_on_pro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.coloc_strat_mod_on_pro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get colocalized stratification data of a model on profiles</p>
+<p>See: <a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro"><code class="xref py py-func docutils literal notranslate"><span class="pre">coloc_mod_on_pro()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lons_mod, lats_mod, deps_mod</strong>:</li>
+<li><strong>temp_mod, sal_mod</strong>: temperature and salinity</li>
+<li><strong>pres_mod, dens_mod</strong>: pressure and density</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.critical">
+<code class="descname">critical</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.critical" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.debug">
+<code class="descname">debug</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.error">
+<code class="descname">error</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.exception">
+<code class="descname">exception</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.exception" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.get_loglevel">
+<code class="descname">get_loglevel</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.get_loglevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.info">
+<code class="descname">info</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.is_debug">
+<code class="descname">is_debug</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.is_debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.is_verbose">
+<code class="descname">is_verbose</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.is_verbose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.notice">
+<code class="descname">notice</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.notice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.notset">
+<code class="descname">notset</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.notset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.data.misc.coloc.Colocator.plot_layer_mod_on_pro">
+<code class="descname">plot_layer_mod_on_pro</code><span class="sig-paren">(</span><em>model</em>, <em>profiles</em>, <em>varname</em>, <em>depth</em>, <em>select=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data/misc/coloc.html#Colocator.plot_layer_mod_on_pro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.plot_layer_mod_on_pro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a layer of variable for a specified depth.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>varname</strong>: variable to process</li>
+<li><strong>depth</strong>: output depth(s)</li>
+</ul>
+<p class="last">Other params, see: <a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro"><code class="xref py py-func docutils literal notranslate"><span class="pre">coloc_mod_on_pro()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.data.misc.coloc.Colocator.plot_mld_mod_on_pro">
+<code class="descname">plot_mld_mod_on_pro</code><span class="sig-paren">(</span><em>model</em>, <em>profiles</em>, <em>select=None</em>, <em>deep=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data/misc/coloc.html#Colocator.plot_mld_mod_on_pro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.plot_mld_mod_on_pro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot mixed layer depth of model data correspponding to profiles position</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>deep</strong>: deep water computation mode if true</li>
+</ul>
+<p class="last">Other params, see: <a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro"><code class="xref py py-func docutils literal notranslate"><span class="pre">coloc_mod_on_pro()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.data.misc.coloc.Colocator.plot_ped_mod_on_pro">
+<code class="descname">plot_ped_mod_on_pro</code><span class="sig-paren">(</span><em>model</em>, <em>profiles</em>, <em>select=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/data/misc/coloc.html#Colocator.plot_ped_mod_on_pro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.plot_ped_mod_on_pro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot potential energy deficit of model data correspponding to profiles position</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body">See: <a class="reference internal" href="#vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro" title="vacumm.data.misc.coloc.Colocator.coloc_mod_on_pro"><code class="xref py py-func docutils literal notranslate"><span class="pre">coloc_mod_on_pro()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.set_loglevel">
+<code class="descname">set_loglevel</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.set_loglevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.verbose">
+<code class="descname">verbose</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.verbose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.data.misc.coloc.Colocator.warning">
+<code class="descname">warning</code><em class="property"> = &lt;bound class method Colocator.wrapper&gt;</em><a class="headerlink" href="#vacumm.data.misc.coloc.Colocator.warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

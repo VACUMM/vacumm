@@ -1,0 +1,1661 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.8.16. Interace to fortran interpolation routines &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.grid.finterp.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interace-to-fortran-interpolation-routines">
+<span id="lib-misc-grid-finterp"></span><h1>2.3.8.16. Interace to fortran interpolation routines<a class="headerlink" href="#interace-to-fortran-interpolation-routines" title="Permalink to this headline">¶</a></h1>
+<p>These routines are made accessible to the <a class="reference internal" href="misc.grid.regridding.html#module-vacumm.misc.grid.regridding" title="vacumm.misc.grid.regridding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid.regridding</span></code></a> module
+thanks to f2py as the undocumented <code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid._interp_</span></code> module.</p>
+<p class="rubric">Subroutines and functions</p>
+<dl class="subroutine">
+<dt id="f/_/interp1d">
+<em class="property">subroutine  </em><code class="descname">interp1d</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>method</em>, <em>nx</em>, <em>nyi</em>, <em>nyo</em><span class="optional">[</span>, <em>extrap</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/interp1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation along the second axis (y)</p>
+<ul class="simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>yi: input y axis</li>
+<li>yo: output y axis</li>
+<li>mv: missing value (used only for initialisation)</li>
+<li>method: 0 = nearest, 1 = linear, 2 = cubic, 3 = hermit</li>
+<li>extrap: 0 = do not extrapolate, 1 = top, -1 = bottom, 2 = both</li>
+</ul>
+<p>See: <a class="reference external" href="http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/">http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>method</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+<li><strong>extrap</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/interp1dx">
+<em class="property">subroutine  </em><code class="descname">interp1dx</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>method</em>, <em>nx</em>, <em>nxb</em>, <em>nyi</em>, <em>nyo</em><span class="optional">[</span>, <em>extrap</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/interp1dx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation along the second axis (y)</p>
+<ul class="simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>yi: input y axis</li>
+<li>yo: output y axis</li>
+<li>mv: missing value (used only for initialisation)</li>
+<li>method: 0 = nearest, 1 = linear, 2 = cubic, 3 = hermit</li>
+<li>extrap: 0 = do not extrapolate, 1 = top, -1 = bottom, 2 = both</li>
+</ul>
+<p>See: <a class="reference external" href="http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/">http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nxb,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em> :: above</li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>method</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nxb</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yi,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+<li><strong>extrap</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/interp1dxx">
+<em class="property">subroutine  </em><code class="descname">interp1dxx</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>method</em>, <em>nx</em>, <em>nxb</em>, <em>nyi</em>, <em>nyo</em><span class="optional">[</span>, <em>extrap</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/interp1dxx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation along the second axis (y)</p>
+<ul class="simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>yi: input y axis</li>
+<li>yo: output y axis</li>
+<li>mv: missing value (used only for initialisation)</li>
+<li>method: 0 = nearest, 1 = linear, 2 = cubic, 3 = hermit</li>
+<li>extrap: 0 = do not extrapolate, 1 = top, -1 = bottom, 2 = both</li>
+</ul>
+<p>See: <a class="reference external" href="http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/">http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nxb,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em> :: above</li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nxb,nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>method</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nxb</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yi,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yo,1)</em><em>]</em></li>
+<li><strong>extrap</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/extrap1d">
+<em class="property">subroutine  </em><code class="descname">extrap1d</code><span class="sig-paren">(</span><em>vari</em>, <em>varo</em>, <em>mv</em><span class="optional">[</span>, <em>extrap</em>, <em>nx</em>, <em>ny</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/extrap1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extrapolate valid data to the top and/or bottom</p>
+<ul class="simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>mv: missing value (used only for initialisation)</li>
+<li>extrap: 0 = do not extrapolate, 1 = top, -1 = bottom, 2 = both</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,ny)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nx,ny)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>extrap</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>ny</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/remap1d">
+<em class="property">subroutine  </em><code class="descname">remap1d</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>conserv</em>, <em>nx</em>, <em>nyi</em>, <em>nyo</em><span class="optional">[</span>, <em>yib</em><span class="optional">[</span>, <em>yob</em><span class="optional">[</span>, <em>extrap</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/remap1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remapping along the second axis (y)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>conserv</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+<li><strong>yib</strong> (nyi + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>yob</strong> (nyo + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em> :: below</li>
+<li><strong>extrap</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/remap1dx">
+<em class="property">subroutine  </em><code class="descname">remap1dx</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>conserv</em>, <em>nx</em>, <em>nxb</em>, <em>nyi</em>, <em>nyo</em><span class="optional">[</span>, <em>yib</em><span class="optional">[</span>, <em>yob</em><span class="optional">[</span>, <em>extrap</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/remap1dx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remapping along the second axis (y)</p>
+<ul class="simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>yi: input y axis</li>
+<li>yo: output y axis</li>
+<li>mv: missing value (used only for initialisation)</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nxb,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>conserv</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nxb</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yi,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+<li><strong>yib</strong> (nxb,nyi + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>yob</strong> (nyo + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>extrap</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/remap1dxx">
+<em class="property">subroutine  </em><code class="descname">remap1dxx</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>conserv</em>, <em>nx</em>, <em>nxb</em>, <em>nyi</em>, <em>nyo</em><span class="optional">[</span>, <em>yib</em><span class="optional">[</span>, <em>yob</em><span class="optional">[</span>, <em>extrap</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/remap1dxx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remapping between two variable axes in space (y)</p>
+<ul class="simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>yi: input y axis</li>
+<li>yo: output y axis</li>
+<li>mv: missing value (used only for initialisation)</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nxb,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nxb,nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>conserv</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nxb</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yi,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yo,1)</em><em>]</em></li>
+<li><strong>yib</strong> (nxb,nyi + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>yob</strong> (nxb,nyo + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>extrap</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/cellerr1d">
+<em class="property">subroutine  </em><code class="descname">cellerr1d</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>errm</em>, <em>errl</em>, <em>erro</em><span class="optional">[</span>, <em>yob</em>, <em>nx</em>, <em>nxb</em>, <em>nyi</em>, <em>nyo</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/cellerr1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error-based weighthed local mooving average interpolation between
+two variables axes in space (y) with interpolation error estimate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params :</th><td class="field-body"><ul class="first simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>yi: input y axis</li>
+<li>yo: output y axis</li>
+<li>mv: missing value (used only for initialisation)</li>
+<li>errm: input measurement error</li>
+<li>errl: input lag error per yi units</li>
+<li>erro: output error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>errm</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>errl</strong> (nxb)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>erro</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>yob</strong> (nyo + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nxb</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(errl)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/cellerr1dx">
+<em class="property">subroutine  </em><code class="descname">cellerr1dx</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>errm</em>, <em>errl</em>, <em>erro</em><span class="optional">[</span>, <em>yob</em>, <em>nx</em>, <em>nxb</em>, <em>nyi</em>, <em>nyo</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/cellerr1dx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error-based weighthed local mooving average interpolation between
+two variables axes in space (y) with interpolation error estimate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params :</th><td class="field-body"><ul class="first simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>yi: input y axis</li>
+<li>yo: output y axis</li>
+<li>mv: missing value (used only for initialisation)</li>
+<li>errm: input measurement error</li>
+<li>errl: input lag error per yi units</li>
+<li>erro: output error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nxb,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>errm</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>errl</strong> (nxb)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>erro</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>yob</strong> (nyo + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nxb</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yi,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/cellerr1dxx">
+<em class="property">subroutine  </em><code class="descname">cellerr1dxx</code><span class="sig-paren">(</span><em>vari</em>, <em>yi</em>, <em>varo</em>, <em>yo</em>, <em>mv</em>, <em>errm</em>, <em>errl</em>, <em>erro</em><span class="optional">[</span>, <em>yob</em>, <em>nx</em>, <em>nxb</em>, <em>nyi</em>, <em>nyo</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/cellerr1dxx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error-based weighthed local mooving average interpolation between
+two variables axes in space (y) with interpolation error estimate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params :</th><td class="field-body"><ul class="first simple">
+<li>vari: input variable</li>
+<li>varo: output variable</li>
+<li>yi: input y axis</li>
+<li>yo: output y axis</li>
+<li>mv: missing value (used only for initialisation)</li>
+<li>errm: input measurement error</li>
+<li>errl: input lag error per yi units</li>
+<li>erro: output error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nxb,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yo</strong> (nxb,nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>errm</strong> (nx,nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>errl</strong> (nxb)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>erro</strong> (nx,nyo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>yob</strong> (nxb,nyo + 1)<em> [</em><em>real</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nxb</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yi,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yo,1)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/nearest2d">
+<em class="property">subroutine  </em><code class="descname">nearest2d</code><span class="sig-paren">(</span><em>vari</em>, <em>xxi</em>, <em>yyi</em>, <em>varo</em>, <em>xxo</em>, <em>yyo</em>, <em>nb</em><span class="optional">[</span>, <em>nogeo</em>, <em>nxi</em>, <em>nyi</em>, <em>nxo</em>, <em>nyo</em>, <em>nz</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/nearest2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nearest neighbour interpolation of two curvilinear grids</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xxi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nz,nyo,nxo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>xxo</strong> (nyo,nxo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyo</strong> (nyo,nxo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>nb</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nogeo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,2)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nxo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxo,1)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxo,0)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/closest2d" title="f/_/closest2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">closest2d()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/closest2d">
+<em class="property">subroutine  </em><code class="descname">closest2d</code><span class="sig-paren">(</span><em>xxi</em>, <em>yyi</em>, <em>xo</em>, <em>yo</em>, <em>nxi</em>, <em>nyi</em>, <em>i</em>, <em>j</em>, <em>nogeo</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/closest2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find indices of closest point on 2D axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>i</strong><em> [</em><em>integer</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>j</strong><em> [</em><em>integer</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>nogeo</strong><em> [</em><em>logical</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/nearest2d" title="f/_/nearest2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">nearest2d()</span></code></a>, <a class="reference internal" href="#f/_/curv2rel_single" title="f/_/curv2rel_single"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel_single()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/bilin">
+<em class="property">subroutine  </em><code class="descname">bilin</code><span class="sig-paren">(</span><em>vari</em>, <em>xi</em>, <em>yi</em>, <em>varo</em>, <em>xo</em>, <em>yo</em>, <em>mv</em><span class="optional">[</span>, <em>nogeo</em>, <em>nxi</em>, <em>nyi</em>, <em>nxo</em>, <em>nyo</em>, <em>nz</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/bilin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple bilinear interpolation between two regular grids</p>
+<p>See also <a class="reference internal" href="#f/_/mixt2d" title="f/_/mixt2d"><code class="xref f f-subr docutils literal notranslate"><span class="pre">mixt2d()</span></code></a> as an alternative method</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nz,nyo,nxo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>xo</strong> (nxo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nogeo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,2)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nxo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/dstwgt">
+<em class="property">subroutine  </em><code class="descname">dstwgt</code><span class="sig-paren">(</span><em>vari</em>, <em>xi</em>, <em>yi</em>, <em>varo</em>, <em>xo</em>, <em>yo</em>, <em>mv</em><span class="optional">[</span>, <em>nogeo</em>, <em>nxi</em>, <em>nyi</em>, <em>nxo</em>, <em>nyo</em>, <em>nz</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/dstwgt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple distance weight interpolation between two regular grids
+It does not interpolate missing values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nz,nyo,nxo)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>xo</strong> (nxo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nogeo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,2)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nxo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/mbilin2d">
+<em class="property">subroutine  </em><code class="descname">mbilin2d</code><span class="sig-paren">(</span><em>vari</em>, <em>xi</em>, <em>yi</em>, <em>varo</em>, <em>xo</em>, <em>yo</em>, <em>mv</em>, <em>ext</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em><span class="optional">[</span>, <em>nogeo</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/_/mbilin2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Binilear interpolation of random point to a regular grid
+with minimal missing data handling</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ext</strong><em> [</em><em>logical</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nogeo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/nearest2dto1d">
+<em class="property">subroutine  </em><code class="descname">nearest2dto1d</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/nearest2dto1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>nearest neighbour interpolation of gridded data to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xi)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yi)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/bilin2dto1d">
+<em class="property">subroutine  </em><code class="descname">bilin2dto1d</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/bilin2dto1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>bilinear interpolation of gridded data to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xi)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yi)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/dstwgt2dto1d">
+<em class="property">subroutine  </em><code class="descname">dstwgt2dto1d</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/dstwgt2dto1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance weight interpolation of gridded data to random positions</p>
+<p>Distances are computed with the four corners of a cell and are relative
+to the cell sizes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xi)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yi)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/linear4dto1d">
+<em class="property">subroutine  </em><code class="descname">linear4dto1d</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>ti</em>, <em>vi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>to</em>, <em>vo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>nzi</em>, <em>nti</em>, <em>no</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/linear4dto1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>nearest neighbour interpolation of gridded data to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zi</strong> (nzi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ti</strong> (nti)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vi</strong> (nti,nzi,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>to</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vo</strong> (no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xi)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yi)</em><em>]</em></li>
+<li><strong>nzi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(zi)</em><em>]</em></li>
+<li><strong>nti</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(ti)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/linear4dto1dx">
+<em class="property">subroutine  </em><code class="descname">linear4dto1dx</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>ti</em>, <em>vi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>to</em>, <em>vo</em>, <em>mv</em>, <em>nex</em>, <em>nxi</em>, <em>nyi</em>, <em>nzi</em>, <em>nti</em>, <em>no</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/linear4dto1dx" title="Permalink to this definition">¶</a></dt>
+<dd><p>nearest neighbour interpolation of gridded data to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zi</strong> (nzi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ti</strong> (nti)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vi</strong> (nex,nti,nzi,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>to</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vo</strong> (nex,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nex</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vi,0)</em><em>]</em></li>
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xi)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yi)</em><em>]</em></li>
+<li><strong>nzi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(zi)</em><em>]</em></li>
+<li><strong>nti</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(ti)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/linear4dto1dxx">
+<em class="property">subroutine  </em><code class="descname">linear4dto1dxx</code><span class="sig-paren">(</span><em>xxi</em>, <em>yyi</em>, <em>zzi</em>, <em>ti</em>, <em>vi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>to</em>, <em>vo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>nyix</em>, <em>nxiy</em>, <em>nyiz</em>, <em>nxiz</em>, <em>nzi</em>, <em>nti</em>, <em>ntiz</em>, <em>no</em>, <em>nex</em>, <em>nexz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/linear4dto1dxx" title="Permalink to this definition">¶</a></dt>
+<dd><p>linear interpolation of gridded data to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxi</strong> (nyix,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxiy)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zzi</strong> (nexz,ntiz,nzi,nyiz,nxiz)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ti</strong> (nti)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vi</strong> (nex,nti,nzi,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>to</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vo</strong> (nex,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em> :: masked</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yyi,0)</em><em>]</em></li>
+<li><strong>nyix</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,0)</em><em>]</em></li>
+<li><strong>nxiy</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yyi,1)</em><em>]</em></li>
+<li><strong>nyiz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,3)</em><em>]</em></li>
+<li><strong>nxiz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,4)</em><em>]</em></li>
+<li><strong>nzi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,2)</em><em>]</em></li>
+<li><strong>nti</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(ti)</em><em>]</em></li>
+<li><strong>ntiz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,1)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nex</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vi,0)</em><em>]</em></li>
+<li><strong>nexz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,0)</em><em>]</em> :: extra dim</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/curv2rel_single" title="f/_/curv2rel_single"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel_single()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/nearest4dto1dxx">
+<em class="property">subroutine  </em><code class="descname">nearest4dto1dxx</code><span class="sig-paren">(</span><em>xxi</em>, <em>yyi</em>, <em>zzi</em>, <em>ti</em>, <em>vi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>to</em>, <em>vo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>nyix</em>, <em>nxiy</em>, <em>nyiz</em>, <em>nxiz</em>, <em>nzi</em>, <em>nti</em>, <em>ntiz</em>, <em>no</em>, <em>nex</em>, <em>nexz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/nearest4dto1dxx" title="Permalink to this definition">¶</a></dt>
+<dd><p>linear interpolation of gridded data to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxi</strong> (nyix,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxiy)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zzi</strong> (nexz,ntiz,nzi,nyiz,nxiz)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ti</strong> (nti)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vi</strong> (nex,nti,nzi,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>to</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vo</strong> (nex,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yyi,0)</em><em>]</em></li>
+<li><strong>nyix</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,0)</em><em>]</em></li>
+<li><strong>nxiy</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(yyi,1)</em><em>]</em></li>
+<li><strong>nyiz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,3)</em><em>]</em></li>
+<li><strong>nxiz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,4)</em><em>]</em></li>
+<li><strong>nzi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,2)</em><em>]</em></li>
+<li><strong>nti</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(ti)</em><em>]</em></li>
+<li><strong>ntiz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,1)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nex</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vi,0)</em><em>]</em></li>
+<li><strong>nexz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,0)</em><em>]</em> :: extra dim</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/curv2rel_single" title="f/_/curv2rel_single"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel_single()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/nearest4dto1d">
+<em class="property">subroutine  </em><code class="descname">nearest4dto1d</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>ti</em>, <em>vi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>to</em>, <em>vo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>nzi</em>, <em>nti</em>, <em>no</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/nearest4dto1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>nearest neighbour interpolation of gridded data to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zi</strong> (nzi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ti</strong> (nti)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vi</strong> (nti,nyi,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>to</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>vo</strong> (no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xi)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yi)</em><em>]</em></li>
+<li><strong>nzi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(zi)</em><em>]</em></li>
+<li><strong>nti</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(ti)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/linept">
+<em class="property">subroutine  </em><code class="descname">linept</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>x1</em>, <em>x2</em>, <em>y1</em>, <em>y2</em>, <em>xc</em>, <em>yc</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/linept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates of line point closest to target point</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xc</strong><em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yc</strong><em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/linepts" title="f/_/linepts"><code class="xref f f-func docutils literal notranslate"><span class="pre">linepts()</span></code></a>, <a class="reference internal" href="#f/_/lineptss" title="f/_/lineptss"><code class="xref f f-func docutils literal notranslate"><span class="pre">lineptss()</span></code></a>, <a class="reference internal" href="#f/_/dstpt2line" title="f/_/dstpt2line"><code class="xref f f-func docutils literal notranslate"><span class="pre">dstpt2line()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/linepts">
+<em class="property">subroutine  </em><code class="descname">linepts</code><span class="sig-paren">(</span><em>xx</em>, <em>yy</em>, <em>x1</em>, <em>x2</em>, <em>y1</em>, <em>y2</em>, <em>xxc</em>, <em>yyc</em>, <em>np</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/linepts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates of line points closest to target points</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xx</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xxc</strong> (np)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yyc</strong> (np)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><p class="first"><strong>np</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xx)</em><em>]</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first"><a class="reference internal" href="#f/_/dstpts2line" title="f/_/dstpts2line"><code class="xref f f-func docutils literal notranslate"><span class="pre">dstpts2line()</span></code></a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/linept" title="f/_/linept"><code class="xref f f-func docutils literal notranslate"><span class="pre">linept()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/lineptss">
+<em class="property">subroutine  </em><code class="descname">lineptss</code><span class="sig-paren">(</span><em>xx</em>, <em>yy</em>, <em>xx1</em>, <em>xx2</em>, <em>yy1</em>, <em>yy2</em>, <em>xxc</em>, <em>yyc</em>, <em>np</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/lineptss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates of lines points closest to target points</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xx</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xx1</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xx2</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy1</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy2</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xxc</strong> (np)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>yyc</strong> (np)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><p class="first"><strong>np</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xx)</em><em>]</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first"><a class="reference internal" href="#f/_/dstpts2lines" title="f/_/dstpts2lines"><code class="xref f f-func docutils literal notranslate"><span class="pre">dstpts2lines()</span></code></a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/linept" title="f/_/linept"><code class="xref f f-func docutils literal notranslate"><span class="pre">linept()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/dstpt2line">
+<em class="property">subroutine  </em><code class="descname">dstpt2line</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>x1</em>, <em>x2</em>, <em>y1</em>, <em>y2</em>, <em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/dstpt2line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance from a point to a line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>d</strong><em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/linept" title="f/_/linept"><code class="xref f f-func docutils literal notranslate"><span class="pre">linept()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/dstpts2line">
+<em class="property">subroutine  </em><code class="descname">dstpts2line</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>x1</em>, <em>x2</em>, <em>y1</em>, <em>y2</em>, <em>d</em>, <em>np</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/dstpts2line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance from points to a line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>d</strong> (np)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><p class="first"><strong>np</strong><em> [</em><em>integer</em><em>,</em><em>optional/default=len(x)</em><em>]</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/linepts" title="f/_/linepts"><code class="xref f f-func docutils literal notranslate"><span class="pre">linepts()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/dstpts2lines">
+<em class="property">subroutine  </em><code class="descname">dstpts2lines</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>x1</em>, <em>x2</em>, <em>y1</em>, <em>y2</em>, <em>d</em>, <em>np</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/dstpts2lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance from points to lines</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x1</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x2</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y1</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y2</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>d</strong> (np)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><p class="first"><strong>np</strong><em> [</em><em>integer</em><em>,</em><em>optional/default=len(x)</em><em>]</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/lineptss" title="f/_/lineptss"><code class="xref f f-func docutils literal notranslate"><span class="pre">lineptss()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/curv2rect">
+<em class="property">subroutine  </em><code class="descname">curv2rect</code><span class="sig-paren">(</span><em>x1</em>, <em>x2</em>, <em>x3</em>, <em>x4</em>, <em>y1</em>, <em>y2</em>, <em>y3</em>, <em>y4</em>, <em>x</em>, <em>y</em>, <em>p</em>, <em>q</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/curv2rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinate transform from curvilinear to rectangular</p>
+<p>Cell shape:</p>
+<blockquote>
+<div>2 - 3
+|   |
+1 - 4</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Source :</th><td class="field-body"><p class="first"><a class="reference external" href="http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19890018062_1989018062.pdf">http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19890018062_1989018062.pdf</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x3</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x4</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y2</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y3</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y4</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>p</strong><em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>q</strong><em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/curv2rel_single" title="f/_/curv2rel_single"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel_single()</span></code></a>, <a class="reference internal" href="#f/_/curv2rectss" title="f/_/curv2rectss"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rectss()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/curv2rectss">
+<em class="property">subroutine  </em><code class="descname">curv2rectss</code><span class="sig-paren">(</span><em>xx1</em>, <em>xx2</em>, <em>xx3</em>, <em>xx4</em>, <em>yy1</em>, <em>yy2</em>, <em>yy3</em>, <em>yy4</em>, <em>xx</em>, <em>yy</em>, <em>pp</em>, <em>qq</em>, <em>np</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/curv2rectss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as curv2rel but for a definite and same number of quadrangles and points</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xx1</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xx2</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xx3</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xx4</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy1</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy2</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy3</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy4</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xx</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy</strong> (np)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>pp</strong> (np)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>qq</strong> (np)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><p class="first"><strong>np</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xx1)</em><em>]</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/curv2rect" title="f/_/curv2rect"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rect()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/curv2rel">
+<em class="property">subroutine  </em><code class="descname">curv2rel</code><span class="sig-paren">(</span><em>xxi</em>, <em>yyi</em>, <em>xo</em>, <em>yo</em>, <em>p</em>, <em>q</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/curv2rel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a series of absolute coordinates to coordinates relative to
+a curved grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>p</strong> (no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>q</strong> (no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,0)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first"><a class="reference internal" href="#f/_/nearest2dto1dc" title="f/_/nearest2dto1dc"><code class="xref f f-func docutils literal notranslate"><span class="pre">nearest2dto1dc()</span></code></a>, <a class="reference internal" href="#f/_/dstwgt2dto1dc" title="f/_/dstwgt2dto1dc"><code class="xref f f-func docutils literal notranslate"><span class="pre">dstwgt2dto1dc()</span></code></a>, <a class="reference internal" href="#f/_/bilin2dto1dc" title="f/_/bilin2dto1dc"><code class="xref f f-func docutils literal notranslate"><span class="pre">bilin2dto1dc()</span></code></a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/curv2rel_single" title="f/_/curv2rel_single"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel_single()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/curv2rel_single">
+<em class="property">subroutine  </em><code class="descname">curv2rel_single</code><span class="sig-paren">(</span><em>xxi</em>, <em>yyi</em>, <em>xo</em>, <em>yo</em>, <em>p</em>, <em>q</em>, <em>nxi</em>, <em>nyi</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/curv2rel_single" title="Permalink to this definition">¶</a></dt>
+<dd><p>curv2rel for a single output point</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>p</strong><em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>q</strong><em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first"><a class="reference internal" href="#f/_/curv2rel" title="f/_/curv2rel"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel()</span></code></a>, <a class="reference internal" href="#f/_/linear4dto1dxx" title="f/_/linear4dto1dxx"><code class="xref f f-func docutils literal notranslate"><span class="pre">linear4dto1dxx()</span></code></a>, <a class="reference internal" href="#f/_/nearest4dto1dxx" title="f/_/nearest4dto1dxx"><code class="xref f f-func docutils literal notranslate"><span class="pre">nearest4dto1dxx()</span></code></a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/closest2d" title="f/_/closest2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">closest2d()</span></code></a>, <a class="reference internal" href="#f/_/curv2rect" title="f/_/curv2rect"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rect()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/nearest2dto1dc_reduc">
+<em class="property">subroutine  </em><code class="descname">nearest2dto1dc_reduc</code><span class="sig-paren">(</span><em>p</em>, <em>q</em>, <em>zzi</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/nearest2dto1dc_reduc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nearest interpolation of gridded data with 2D AXES to random positions
+This version takes relative positions with respect to output grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>q</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zzi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,2)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,1)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(p)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/nearest2dto1dc" title="f/_/nearest2dto1dc"><code class="xref f f-func docutils literal notranslate"><span class="pre">nearest2dto1dc()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/nearest2dto1dc">
+<em class="property">subroutine  </em><code class="descname">nearest2dto1dc</code><span class="sig-paren">(</span><em>xxi</em>, <em>yyi</em>, <em>zzi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/nearest2dto1dc" title="Permalink to this definition">¶</a></dt>
+<dd><p>nearest interpolation of gridded data with 2D AXES to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zzi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,0)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/curv2rel" title="f/_/curv2rel"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel()</span></code></a>, <a class="reference internal" href="#f/_/nearest2dto1dc_reduc" title="f/_/nearest2dto1dc_reduc"><code class="xref f f-func docutils literal notranslate"><span class="pre">nearest2dto1dc_reduc()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/bilin2dto1dc_reduc">
+<em class="property">subroutine  </em><code class="descname">bilin2dto1dc_reduc</code><span class="sig-paren">(</span><em>p</em>, <em>q</em>, <em>zzi</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/bilin2dto1dc_reduc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bilinear interpolation of gridded data with 2D AXES to random positions
+This version takes relative positions with respect to output grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>q</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zzi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,2)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,1)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(p)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/bilin2dto1dc" title="f/_/bilin2dto1dc"><code class="xref f f-func docutils literal notranslate"><span class="pre">bilin2dto1dc()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/bilin2dto1dc">
+<em class="property">subroutine  </em><code class="descname">bilin2dto1dc</code><span class="sig-paren">(</span><em>xxi</em>, <em>yyi</em>, <em>zzi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/bilin2dto1dc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bilinear interpolation of gridded data with 2D AXES to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zzi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,0)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/curv2rel" title="f/_/curv2rel"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel()</span></code></a>, <a class="reference internal" href="#f/_/bilin2dto1dc_reduc" title="f/_/bilin2dto1dc_reduc"><code class="xref f f-func docutils literal notranslate"><span class="pre">bilin2dto1dc_reduc()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/dstwgt2dto1dc_reduc">
+<em class="property">subroutine  </em><code class="descname">dstwgt2dto1dc_reduc</code><span class="sig-paren">(</span><em>p</em>, <em>q</em>, <em>zzi</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/dstwgt2dto1dc_reduc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bilinear interpolation of gridded data with 2D AXES to random positions
+This version takes relative positions with respect to output grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>q</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zzi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,2)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,1)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(p)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/dstwgt2dto1dc" title="f/_/dstwgt2dto1dc"><code class="xref f f-func docutils literal notranslate"><span class="pre">dstwgt2dto1dc()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/dstwgt2dto1dc">
+<em class="property">subroutine  </em><code class="descname">dstwgt2dto1dc</code><span class="sig-paren">(</span><em>xxi</em>, <em>yyi</em>, <em>zzi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>mv</em>, <em>nxi</em>, <em>nyi</em>, <em>no</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/dstwgt2dto1dc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance weight interpolation of gridded data with 2D AXES to random positions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yyi</strong> (nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zzi</strong> (nz,nyi,nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (no)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nz,no)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,1)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(xxi,0)</em><em>]</em></li>
+<li><strong>no</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(zzi,0)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/curv2rel" title="f/_/curv2rel"><code class="xref f f-func docutils literal notranslate"><span class="pre">curv2rel()</span></code></a>, <a class="reference internal" href="#f/_/dstwgt2dto1dc_reduc" title="f/_/dstwgt2dto1dc_reduc"><code class="xref f f-func docutils literal notranslate"><span class="pre">dstwgt2dto1dc_reduc()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/mixt2dx">
+<em class="property">subroutine  </em><code class="descname">mixt2dx</code><span class="sig-paren">(</span><em>vari</em>, <em>xi</em>, <em>yi</em>, <em>varo</em>, <em>xo</em>, <em>yo</em>, <em>mv</em>, <em>ext</em>, <em>nxi</em>, <em>nyi</em>, <em>nxo</em>, <em>nyo</em>, <em>nz</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/mixt2dx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extension of avgext2d to third dimension (simple loop)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vari</strong> (nxi,nyi,nz)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xi</strong> (nxi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (nyi)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>varo</strong> (nxo,nyo,nz)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>xo</strong> (nxo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (nyo)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ext</strong><em> [</em><em>logical</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>nxi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,0)</em><em>]</em></li>
+<li><strong>nyi</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,1)</em><em>]</em></li>
+<li><strong>nxo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>nyo</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+<li><strong>nz</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(vari,2)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/mixt2d" title="f/_/mixt2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">mixt2d()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/mixt2d">
+<em class="property">subroutine  </em><code class="descname">mixt2d</code><span class="sig-paren">(</span><em>idim</em>, <em>jdim</em>, <em>xx</em>, <em>yy</em>, <em>ff</em>, <em>mdim</em>, <em>ndim</em>, <em>rr</em>, <em>ss</em>, <em>gg</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/mixt2d" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>idim</strong><em> [</em><em>integer</em><em>,</em><em>optional/default=len(xx)</em><em>]</em></li>
+<li><strong>jdim</strong><em> [</em><em>integer</em><em>,</em><em>optional/default=len(yy)</em><em>]</em></li>
+<li><strong>mdim</strong><em> [</em><em>integer</em><em>,</em><em>optional/default=len(rr)</em><em>]</em></li>
+<li><strong>ndim</strong><em> [</em><em>integer</em><em>,</em><em>optional/default=len(ss)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xx</strong> (idim)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yy</strong> (jdim)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ff</strong> (idim,jdim)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>rr</strong> (mdim)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ss</strong> (ndim)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>gg</strong> (mdim,ndim)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/mixt2dx" title="f/_/mixt2dx"><code class="xref f f-func docutils literal notranslate"><span class="pre">mixt2dx()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/cargen">
+<em class="property">subroutine  </em><code class="descname">cargen</code><span class="sig-paren">(</span><em>xi</em>, <em>yi</em>, <em>zi</em>, <em>xo</em>, <em>yo</em>, <em>zo</em>, <em>mv</em>, <em>npt</em>, <em>nx</em>, <em>ny</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/cargen" title="Permalink to this definition">¶</a></dt>
+<dd><p>The famous cargen interpolator</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong> (npt)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yi</strong> (npt)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zi</strong> (npt)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>xo</strong> (nx)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>yo</strong> (ny)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zo</strong> (nx,ny)<em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>mv</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>npt</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xi)</em><em>]</em></li>
+<li><strong>nx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(xo)</em><em>]</em></li>
+<li><strong>ny</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(yo)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/zkrig" title="f/_/zkrig"><code class="xref f f-func docutils literal notranslate"><span class="pre">zkrig()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="subroutine">
+<dt id="f/_/zkrig">
+<em class="property">subroutine  </em><code class="descname">zkrig</code><span class="sig-paren">(</span><em>x0</em>, <em>y0</em>, <em>z0</em>, <em>x</em>, <em>y</em>, <em>z</em>, <em>n</em>, <em>npt</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/zkrig" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x0</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y0</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>z0</strong><em> [</em><em>real</em><em>,</em><em>out</em><em>]</em></li>
+<li><strong>x</strong> (npt)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y</strong> (npt)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>z</strong> (npt)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><p class="first"><strong>npt</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(x)</em><em>]</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first"><a class="reference internal" href="#f/_/cargen" title="f/_/cargen"><code class="xref f f-func docutils literal notranslate"><span class="pre">cargen()</span></code></a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/plan" title="f/_/plan"><code class="xref f f-func docutils literal notranslate"><span class="pre">plan()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="f/_/plan">
+<em class="property">function  </em><code class="descname">plan</code><span class="sig-paren">(</span><em>xpl</em>, <em>ypl</em>, <em>zpl</em>, <em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="headerlink" href="#f/_/plan" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xpl</strong> (3)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>ypl</strong> (3)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>zpl</strong> (3)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>x1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+<li><strong>y1</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first"><strong>plan</strong><em> [</em><em>real</em><em>]</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/_/zkrig" title="f/_/zkrig"><code class="xref f f-func docutils literal notranslate"><span class="pre">zkrig()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

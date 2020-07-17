@@ -1,0 +1,239 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3. vacumm.misc – Generic tools &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-vacumm.misc">
+<span id="vacumm-misc-generic-tools"></span><span id="lib-misc"></span><h1>2.3. <a class="reference internal" href="#module-vacumm.misc" title="vacumm.misc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc</span></code></a> – Generic tools<a class="headerlink" href="#module-vacumm.misc" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="misc.misc.html">2.3.1. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.misc</span></code>– Very generic tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.misc.html#overview">2.3.1.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.misc.html#module-vacumm.misc.misc">2.3.1.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.plot.html">2.3.2. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.plot</span></code> – Plots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.plot.html#overview">2.3.2.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.plot.html#content">2.3.2.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.axes.html">2.3.3. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.axes</span></code> – Tools for axes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.axes.html#overview">2.3.3.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.axes.html#content">2.3.3.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.atime.html">2.3.4. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.atime</span></code> – Time utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.atime.html#overview">2.3.4.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.atime.html#content">2.3.4.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.bases.html">2.3.5. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.bases</span></code> – Base classes and utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.bases.html#overview">2.3.5.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.bases.html#content">2.3.5.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.color.html">2.3.6. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.color</span></code> – Colors and colormaps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.color.html#overview">2.3.6.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.color.html#content">2.3.6.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.filters.html">2.3.7. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.filters</span></code> – 1D/2D numeric filters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.filters.html#overview">2.3.7.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.filters.html#content">2.3.7.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.grid.html">2.3.8. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid</span></code> – All about grids</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.misc.html">2.3.8.1. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.misc</span></code> – Generic utilities about grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.misc.html#overview">2.3.8.2. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.misc.html#content">2.3.8.3. Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.regridding.html">2.3.8.4. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.regridding</span></code> – Regridding and interpolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.regridding.html#overview">2.3.8.5. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.regridding.html#content">2.3.8.6. Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.kriging.html">2.3.8.7. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.kriging</span></code> – Kriging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.kriging.html#overview">2.3.8.8. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.kriging.html#module-vacumm.misc.grid.kriging">2.3.8.9. Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.masking.html">2.3.8.10. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.masking</span></code> – Masking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.masking.html#overview">2.3.8.11. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.masking.html#content">2.3.8.12. Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.basemap.html">2.3.8.13. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.basemap</span></code> – <code class="docutils literal notranslate"><span class="pre">mpl_toolkits.basemap</span></code> related</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.basemap.html#overview">2.3.8.14. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.basemap.html#content">2.3.8.15. Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.grid.finterp.html">2.3.8.16. Interace to fortran interpolation routines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.io.html">2.3.9. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.io</span></code> – Input/output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.html#overview">2.3.9.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.io.html#content">2.3.9.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.remote.html">2.3.10. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.remote</span></code> – Remote files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.remote.html#overview">2.3.10.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.remote.html#content">2.3.10.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.namelist.html">2.3.11. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.namelist</span></code> – Fortran namelists</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.namelist.html#overview">2.3.11.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.namelist.html#content">2.3.11.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.phys.html">2.3.12. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.phys</span></code> – Physics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.phys.constants.html">2.3.12.1. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.phys.constants</span></code> – Constants</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.phys.constants.html#overview">2.3.12.1.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.phys.constants.html#module-vacumm.misc.phys.constants">2.3.12.1.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="misc.phys.units.html">2.3.12.2. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.phys.units</span></code> – Units</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.phys.units.html#overview">2.3.12.2.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.phys.units.html#module-vacumm.misc.phys.units">2.3.12.2.2. Content</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.stats.html">2.3.13. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.stats</span></code> – Statistiques spéciales</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.stats.html#overview">2.3.13.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.stats.html#module-vacumm.misc.stats">2.3.13.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.config.html">2.3.14. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.config</span></code> – Configuration management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.config.html#overview">2.3.14.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.config.html#content">2.3.14.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.core_plot.html">2.3.15. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.core_plot</span></code> – Core classes for plots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.core_plot.html#overview">2.3.15.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.core_plot.html#content">2.3.15.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.docstrings.html">2.3.16. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.docstrings</span></code> – Docstrings processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.docstrings.html#overview">2.3.16.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.docstrings.html#module-vacumm.misc.docstrings">2.3.16.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.exception.html">2.3.17. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.exception</span></code> – Exception utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.exception.html#overview">2.3.17.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.exception.html#content">2.3.17.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.file.html">2.3.18. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.file</span></code> – File utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.file.html#overview">2.3.18.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.file.html#content">2.3.18.2. Content</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="misc.file.html#file-utilities">2.3.18.2.1. File utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.log.html">2.3.19. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.log</span></code> – Logging utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.log.html#overview">2.3.19.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.log.html#content">2.3.19.2. Content</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.xml.html">2.3.20. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.xml</span></code> – XML serialization/deserialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.xml.html#overview">2.3.20.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.xml.html#content">2.3.20.2. Content</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

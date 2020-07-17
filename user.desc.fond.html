@@ -1,0 +1,236 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.5.1. Basis of the librairy &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.5.1. Basis of the librairy</a><ul>
+<li><a class="reference internal" href="#general-architecture">1.5.1.1. General architecture</a></li>
+<li><a class="reference internal" href="#cdat-as-numeric-basis">1.5.1.2. CDAT as numeric basis</a><ul>
+<li><a class="reference internal" href="#array-as-extended-variables-mv2">1.5.1.2.1. Array as extended variables [<code class="docutils literal notranslate"><span class="pre">MV2</span></code>]</a></li>
+<li><a class="reference internal" href="#the-time-cdtime">1.5.1.2.2. The time [<code class="docutils literal notranslate"><span class="pre">cdtime</span></code>]</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#matplotlib-as-graphic-basis">1.5.1.3. Matplotlib as graphic basis</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.desc.fond.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="basis-of-the-librairy">
+<span id="user-desc-basis"></span><h1>1.5.1. Basis of the librairy<a class="headerlink" href="#basis-of-the-librairy" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="general-architecture">
+<span id="user-desc-basis-arch"></span><h2>1.5.1.1. General architecture<a class="headerlink" href="#general-architecture" title="Permalink to this headline">¶</a></h2>
+<div class="figure" id="id1">
+<span id="fig-arch"></span><img alt="_images/modules.png" src="_images/modules.png" />
+<p class="caption"><span class="caption-text">Schematic view of (most of) the library modules (in green)
+and of some required external modules (in red).</span></p>
+</div>
+<p>The library is organised  as follow:</p>
+<ul>
+<li><p class="first"><a class="reference internal" href="library/misc.misc.html#module-vacumm.misc.misc" title="vacumm.misc.misc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">misc</span></code></a> : Generic place where to put what cannot be placed elsewhere.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.axes.html#module-vacumm.misc.axes" title="vacumm.misc.axes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">axes</span></code></a> : Utilities about CDAT axes.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.atime.html#module-vacumm.misc.atime" title="vacumm.misc.atime"><code class="xref py py-mod docutils literal notranslate"><span class="pre">atime</span></code></a> : Working with time.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.color.html#module-vacumm.misc.color" title="vacumm.misc.color"><code class="xref py py-mod docutils literal notranslate"><span class="pre">color</span></code></a> : Working with colors and colorbars (<code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code>).</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.config.html#module-vacumm.misc.config" title="vacumm.misc.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">config</span></code></a> : Managing advanced configuration (<code class="xref py py-mod docutils literal notranslate"><span class="pre">configobj</span></code>).</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.core_plot.html#module-vacumm.misc.core_plot" title="vacumm.misc.core_plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core_plot</span></code></a> : Core classes used by <a class="reference internal" href="library/misc.plot.html#module-vacumm.misc.plot" title="vacumm.misc.plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">plot</span></code></a>.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.filters.html#module-vacumm.misc.filters" title="vacumm.misc.filters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">filters</span></code></a> : 1D et 2D filters.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.plot.html#module-vacumm.misc.plot" title="vacumm.misc.plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">plot</span></code></a> : Plot functions.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.stats.html#module-vacumm.misc.stats" title="vacumm.misc.stats"><code class="xref py py-mod docutils literal notranslate"><span class="pre">stats</span></code></a> : Special statistical functions.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.grid.html#module-vacumm.misc.grid" title="vacumm.misc.grid"><code class="xref py py-mod docutils literal notranslate"><span class="pre">grid</span></code></a> : About CDAT grids.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="library/misc.grid.misc.html#module-vacumm.misc.grid.misc" title="vacumm.misc.grid.misc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">misc</span></code></a> : General functions.</li>
+<li><a class="reference internal" href="library/misc.grid.regridding.html#module-vacumm.misc.grid.regridding" title="vacumm.misc.grid.regridding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regridding</span></code></a> : Interpolation and regidding.</li>
+<li><a class="reference internal" href="library/misc.grid.kriging.html#module-vacumm.misc.grid.kriging" title="vacumm.misc.grid.kriging"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kriging</span></code></a> : Pure kriging.</li>
+<li><a class="reference internal" href="library/misc.grid.masking.html#module-vacumm.misc.grid.masking" title="vacumm.misc.grid.masking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">masking</span></code></a> : Masking data.</li>
+<li><a class="reference internal" href="library/misc.grid.basemap.html#module-vacumm.misc.grid.basemap" title="vacumm.misc.grid.basemap"><code class="xref py py-mod docutils literal notranslate"><span class="pre">basemap</span></code></a> : Utilities related to geographic maps
+(<a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#module-mpl_toolkits.basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">basemap</span></code></a>).</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="library/misc.phys.html#module-vacumm.misc.phys" title="vacumm.misc.phys"><code class="xref py py-mod docutils literal notranslate"><span class="pre">phys</span></code></a> : About physics.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="library/misc.phys.constants.html#module-vacumm.misc.phys.constants" title="vacumm.misc.phys.constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">constants</span></code></a> : Useful constants.</li>
+<li><a class="reference internal" href="library/misc.phys.units.html#module-vacumm.misc.phys.units" title="vacumm.misc.phys.units"><code class="xref py py-mod docutils literal notranslate"><span class="pre">units</span></code></a> : Units conversions.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="library/data.html#module-vacumm.data" title="vacumm.data"><code class="xref py py-mod docutils literal notranslate"><span class="pre">data</span></code></a> : Advanced interfaces to datasets.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="library/diag.html#module-vacumm.diag" title="vacumm.diag"><code class="xref py py-mod docutils literal notranslate"><span class="pre">diag</span></code></a> : Advanced diagnostics.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="cdat-as-numeric-basis">
+<span id="user-desc-cdat"></span><h2>1.5.1.2. CDAT as numeric basis<a class="headerlink" href="#cdat-as-numeric-basis" title="Permalink to this headline">¶</a></h2>
+<p>The choice was made to take <a class="reference external" href="http://www2-pcmdi.llnl.gov/cdat">CDAT</a>
+as the basis for all library developments.</p>
+<div class="section" id="array-as-extended-variables-mv2">
+<h3>1.5.1.2.1. Array as extended variables [<code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code>]<a class="headerlink" href="#array-as-extended-variables-mv2" title="Permalink to this headline">¶</a></h3>
+<p>The numerical vectors used are generated by the module  <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> (<code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code>) of CDAT,
+if they represent a quantity located in space and/or time.
+These tables are not purely numerical and contain in particular:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>numerical</strong> values,</li>
+<li>the associated <strong>mask</strong>,</li>
+<li>the <strong>axes</strong> (1D or 2D) that locate the variable (longitude, time…),</li>
+<li><strong>attributes</strong> (name, units…).</li>
+</ul>
+</div></blockquote>
+<p>The advantage is that you do not have to pass explicitly and separately
+to the functions all this information in addition to the numerical vector.
+In addition, these “extended” tables are associated with a large number of functionalities
+developed by CDAT, adapted to an oceanographic and meteorological framework.
+Finally, let’s note that CDAT is an excellent interface for reading and
+writing netcdf files.</p>
+<p>Consequently, reading and drawing a map will be done
+for example as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cdms2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;file.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sst</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;sst&#39;</span><span class="p">)</span> <span class="c1"># Lecture</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="nb">map</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="p">(</span><span class="n">sst</span><span class="p">)</span> <span class="c1"># Plot</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-time-cdtime">
+<h3>1.5.1.2.2. The time [<code class="xref py py-mod docutils literal notranslate"><span class="pre">cdtime</span></code>]<a class="headerlink" href="#the-time-cdtime" title="Permalink to this headline">¶</a></h3>
+<p>The time in the sense of the module <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdtime</span></code> of CDAT allows to manage
+several types of calendar, consider absolute times (year, month, etc.)
+or relative (number and units since a given date)
+with no age limit,
+and to integrate naturally in the variables <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> to
+across time axes.</p>
+<p>This is the type of time used as the basis in the library.
+Nevertheless, many functions (see <a class="reference internal" href="library/misc.atime.html#module-vacumm.misc.atime" title="vacumm.misc.atime"><code class="xref py py-mod docutils literal notranslate"><span class="pre">atime</span></code></a>)
+allow conversions to be made to other
+time types (string, numeric, <a class="reference external" href="https://docs.python.org/dev/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a>, etc).</p>
+</div>
+</div>
+<div class="section" id="matplotlib-as-graphic-basis">
+<span id="user-desc-mpl"></span><h2>1.5.1.3. Matplotlib as graphic basis<a class="headerlink" href="#matplotlib-as-graphic-basis" title="Permalink to this headline">¶</a></h2>
+<p>The library is based almost exclusively on <a class="reference external" href="http://matplotlib.org">Matplotlib</a> and
+<a class="reference external" href="http://matplotlib.org/basemap">Basemap</a> for all graphics.
+Matplotlib is a library allowing to make representations
+digital data graphics, in an environment close to Matlab.
+The graphics generated are of excellent quality,
+and are potentially available in many formats.</p>
+<p>The module <a class="reference internal" href="library/misc.plot.html#module-vacumm.misc.plot" title="vacumm.misc.plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.plot</span></code></a> merges CDAT and matplotlib.
+It contains a set of functions taking as argument CDAT variables.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

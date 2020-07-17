@@ -1,0 +1,211 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.8.4. vacumm.diag.atmos – Atmospheric diagnostics &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.8.4. <code class="docutils literal notranslate"><span class="pre">vacumm.diag.atmos</span></code> – Atmospheric diagnostics</a><ul>
+<li><a class="reference internal" href="#overview">2.8.4.1. Overview</a></li>
+<li><a class="reference internal" href="#module-vacumm.diag.atmos">2.8.4.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/diag.atmos.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-diag-atmos-atmospheric-diagnostics">
+<span id="lib-diag-atmos"></span><h1>2.8.4. <a class="reference internal" href="#module-vacumm.diag.atmos" title="vacumm.diag.atmos"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.diag.atmos</span></code></a> – Atmospheric diagnostics<a class="headerlink" href="#vacumm-diag-atmos-atmospheric-diagnostics" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.8.4.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.diag.atmos.wind_stress" title="vacumm.diag.atmos.wind_stress"><code class="xref py py-func docutils literal notranslate"><span class="pre">wind_stress()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.diag.atmos.ws2w" title="vacumm.diag.atmos.ws2w"><code class="xref py py-func docutils literal notranslate"><span class="pre">ws2w()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vacumm.diag.atmos">
+<span id="content"></span><h2>2.8.4.2. Content<a class="headerlink" href="#module-vacumm.diag.atmos" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="vacumm.diag.atmos.wind_stress">
+<code class="descname">wind_stress</code><span class="sig-paren">(</span><em>u</em>, <em>v</em>, <em>rhoa=1.25</em>, <em>cd=0.016</em>, <em>format_axes=False</em>, <em>alongxy=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/diag/atmos.html#wind_stress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.diag.atmos.wind_stress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the sea surface zonal and meridional wind stress from 10m wind components</p>
+<p>Output variables are formatted using <a class="reference internal" href="data.cf.html#vacumm.data.cf.format_var" title="vacumm.data.cf.format_var"><code class="xref py py-func docutils literal notranslate"><span class="pre">format_var()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Formula:</th><td class="field-body"><div class="first math">
+<p><img src="../_images/math/56a529eafef39fe91ba60fd2d717a3df9ed4b083.png" alt="\tau_x = \rho_a C_d (U_{10m}^2+V_{10m}^2)^{\frac{1}{2}}U_{10m}
+
+\tau_y = \rho_a C_d (U_{10m}^2+V_{10m}^2)^{\frac{1}{2}}V_{10m}"/></p>
+</div></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>u/v</strong>: Wind at 10m above sea surface.</li>
+<li><strong>rhoa</strong>, optional: Air density (in kg.m-3).</li>
+<li><strong>cd</strong>,  optional: Drag coefficient.</li>
+<li><strong>format_axes</strong>, optional: Also format axes using
+<a class="reference internal" href="data.cf.html#vacumm.data.cf.format_axis" title="vacumm.data.cf.format_axis"><code class="xref py py-func docutils literal notranslate"><span class="pre">format_axis()</span></code></a>.</li>
+<li><strong>alongxy</strong>, optional: Format variables considering components are along X/Y
+direction and not along zonal/meridional direction.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">us,</span> <span class="pre">vs</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.diag.atmos.ws2w">
+<code class="descname">ws2w</code><span class="sig-paren">(</span><em>us</em>, <em>vs</em>, <em>rhoa=1.25</em>, <em>cd=0.016</em>, <em>format_axes=False</em>, <em>alongxy=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/diag/atmos.html#ws2w"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.diag.atmos.ws2w" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from wind stress to 10m wind components</p>
+<p>This function is the reverse one of <a class="reference internal" href="#vacumm.diag.atmos.wind_stress" title="vacumm.diag.atmos.wind_stress"><code class="xref py py-func docutils literal notranslate"><span class="pre">wind_stress()</span></code></a>.
+Output variables are formatted using <a class="reference internal" href="data.cf.html#vacumm.data.cf.format_var" title="vacumm.data.cf.format_var"><code class="xref py py-func docutils literal notranslate"><span class="pre">format_var()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Formula:</th><td class="field-body"><div class="first math">
+<p><img src="../_images/math/c03e6444ef30a2b4dbc4307a6d3d3b8683bf7a24.png" alt="U_{10m} = (\rho_a C_d)^{-\frac{1}{2}}
+(\tau_x^2+\tau_y^2)^{-\frac{1}{4}} \tau_x
+
+V_{10m} = (\rho_a C_d)^{-\frac{1}{2}}
+(\tau_x^2+\tau_y^2)^{-\frac{1}{4}} \tau_y"/></p>
+</div></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>us/vs</strong>: Wind stress components.</li>
+<li><strong>rhoa</strong>, optional: Air density (in kg.m-3).</li>
+<li><strong>cd</strong>,  optional: Drag coefficient.</li>
+<li><strong>format_axes</strong>, optional: Also format axes using
+<a class="reference internal" href="data.cf.html#vacumm.data.cf.format_axis" title="vacumm.data.cf.format_axis"><code class="xref py py-func docutils literal notranslate"><span class="pre">format_axis()</span></code></a>.</li>
+<li><strong>alongxy</strong>, optional: Format variables considering components are along X/Y
+direction and not along zonal/meridional direction.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">u,</span> <span class="pre">v</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

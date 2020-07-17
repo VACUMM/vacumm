@@ -1,0 +1,835 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.5. vacumm.misc.bases – Base classes and utilities &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.5. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.bases</span></code> – Base classes and utilities</a><ul>
+<li><a class="reference internal" href="#overview">2.3.5.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.5.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.bases.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-bases-base-classes-and-utilities">
+<span id="lib-misc-bases"></span><h1>2.3.5. <a class="reference internal" href="#module-vacumm.misc.bases" title="vacumm.misc.bases"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.bases</span></code></a> – Base classes and utilities<a class="headerlink" href="#vacumm-misc-bases-base-classes-and-utilities" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.3.5.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">isfreezed</span></code></li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">memorized_metaclasses_map</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">prog</span></code></li>
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">progdir</span></code></li>
+</ul>
+</td><td><ul class="simple">
+<li><code class="xref py py-attr docutils literal notranslate"><span class="pre">progname</span></code></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.bases.add_logging_proxies" title="vacumm.misc.bases.add_logging_proxies"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_logging_proxies()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.classmaker" title="vacumm.misc.bases.classmaker"><code class="xref py py-func docutils literal notranslate"><span class="pre">classmaker()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.code_base_name" title="vacumm.misc.bases.code_base_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">code_base_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.code_dir_name" title="vacumm.misc.bases.code_dir_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">code_dir_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.code_file_name" title="vacumm.misc.bases.code_file_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">code_file_name()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.bases.describe" title="vacumm.misc.bases.describe"><code class="xref py py-func docutils literal notranslate"><span class="pre">describe()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.func_name" title="vacumm.misc.bases.func_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">func_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.get_noconflict_metaclass" title="vacumm.misc.bases.get_noconflict_metaclass"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_noconflict_metaclass()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.get_prog_dir" title="vacumm.misc.bases.get_prog_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_prog_dir()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.get_prog_name" title="vacumm.misc.bases.get_prog_name"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_prog_name()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.bases.psinfo" title="vacumm.misc.bases.psinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">psinfo()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.remove_redundant" title="vacumm.misc.bases.remove_redundant"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_redundant()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.skip_redundant" title="vacumm.misc.bases.skip_redundant"><code class="xref py py-func docutils literal notranslate"><span class="pre">skip_redundant()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.stack_trace" title="vacumm.misc.bases.stack_trace"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack_trace()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.bases.Class" title="vacumm.misc.bases.Class"><code class="xref py py-class docutils literal notranslate"><span class="pre">Class</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">Object</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.config" title="vacumm.misc.bases.Object.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.critical" title="vacumm.misc.bases.Object.critical"><code class="xref py py-attr docutils literal notranslate"><span class="pre">critical</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.debug" title="vacumm.misc.bases.Object.debug"><code class="xref py py-attr docutils literal notranslate"><span class="pre">debug</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.error" title="vacumm.misc.bases.Object.error"><code class="xref py py-attr docutils literal notranslate"><span class="pre">error</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.exception" title="vacumm.misc.bases.Object.exception"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exception</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_logger" title="vacumm.misc.bases.Object.get_logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_logger</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_loglevel" title="vacumm.misc.bases.Object.get_loglevel"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_loglevel</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.info" title="vacumm.misc.bases.Object.info"><code class="xref py py-attr docutils literal notranslate"><span class="pre">info</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.is_debug" title="vacumm.misc.bases.Object.is_debug"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_debug</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.is_verbose" title="vacumm.misc.bases.Object.is_verbose"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_verbose</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.logger" title="vacumm.misc.bases.Object.logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.notice" title="vacumm.misc.bases.Object.notice"><code class="xref py py-attr docutils literal notranslate"><span class="pre">notice</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.notset" title="vacumm.misc.bases.Object.notset"><code class="xref py py-attr docutils literal notranslate"><span class="pre">notset</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.options" title="vacumm.misc.bases.Object.options"><code class="xref py py-attr docutils literal notranslate"><span class="pre">options</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.set_logger" title="vacumm.misc.bases.Object.set_logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_logger</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.set_loglevel" title="vacumm.misc.bases.Object.set_loglevel"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_loglevel</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.verbose" title="vacumm.misc.bases.Object.verbose"><code class="xref py py-attr docutils literal notranslate"><span class="pre">verbose</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.warning" title="vacumm.misc.bases.Object.warning"><code class="xref py py-attr docutils literal notranslate"><span class="pre">warning</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.apply_config" title="vacumm.misc.bases.Object.apply_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.apply_default_config" title="vacumm.misc.bases.Object.apply_default_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_default_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.describe" title="vacumm.misc.bases.Object.describe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">describe()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.exception_trace" title="vacumm.misc.bases.Object.exception_trace"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exception_trace()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.from_config" title="vacumm.misc.bases.Object.from_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.func_name" title="vacumm.misc.bases.Object.func_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">func_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_class_logger" title="vacumm.misc.bases.Object.get_class_logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_class_logger()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_config_manager" title="vacumm.misc.bases.Object.get_config_manager"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_config_manager()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_config_section_name" title="vacumm.misc.bases.Object.get_config_section_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_config_section_name()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_config_spec_file" title="vacumm.misc.bases.Object.get_config_spec_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_config_spec_file()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_config_spec" title="vacumm.misc.bases.Object.get_config_spec"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_config_spec()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_config_str" title="vacumm.misc.bases.Object.get_config_str"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_config_str()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_config" title="vacumm.misc.bases.Object.get_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_default_config_str" title="vacumm.misc.bases.Object.get_default_config_str"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_default_config_str()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_default_config" title="vacumm.misc.bases.Object.get_default_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_default_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_options" title="vacumm.misc.bases.Object.get_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_options()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.get_parent_config_spec" title="vacumm.misc.bases.Object.get_parent_config_spec"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_parent_config_spec()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.init_class" title="vacumm.misc.bases.Object.init_class"><code class="xref py py-meth docutils literal notranslate"><span class="pre">init_class()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.kwfilter" title="vacumm.misc.bases.Object.kwfilter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">kwfilter()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.load_config" title="vacumm.misc.bases.Object.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.load_default_config" title="vacumm.misc.bases.Object.load_default_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_default_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.pformat" title="vacumm.misc.bases.Object.pformat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pformat()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.save_config" title="vacumm.misc.bases.Object.save_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.set_class_logger" title="vacumm.misc.bases.Object.set_class_logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_class_logger()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.bases.Object.trace" title="vacumm.misc.bases.Object.trace"><code class="xref py py-meth docutils literal notranslate"><span class="pre">trace()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.bases.classinstancemethod" title="vacumm.misc.bases.classinstancemethod"><code class="xref py py-class docutils literal notranslate"><span class="pre">classinstancemethod</span></code></a></p>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.3.5.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vacumm.misc.bases"></span><p>This module is intented to provide features like logging, configuration and
+debugging into a base class.</p>
+<p>The main tool of this module is the <cite>class:`Object</cite> class which
+may be used in high level components of your applications by inheriting from this
+base class.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">You must be aware that all <cite>class:`Object</cite> instances hold
+a logger and an configuration manager.
+Therefore you should not inherit from <cite>class:`Object</cite> in all of
+your specialized classes especially when your application instanciate and holds
+a lot of instances of this class.
+The <cite>class:`Object</cite> class should only be used in main classes
+of your application.</p>
+</div>
+<dl class="class">
+<dt id="vacumm.misc.bases.Class">
+<em class="property">class </em><code class="descname">Class</code><span class="sig-paren">(</span><em>name</em>, <em>bases</em>, <em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#type" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a></p>
+<p>Vacumm’s base metaclass used to initialize implementing classes.</p>
+<p>The implementing classes (in fact via the <a class="reference internal" href="#vacumm.misc.bases.Object" title="vacumm.misc.bases.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">Object</span></code></a> class below) can have methods
+called at the class definition (at present, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">Object._init_class()</span></code> classmethod).</p>
+<p>Usefull to initialize class attributes such like class configuration, logging, debugging…</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.bases.Object">
+<em class="property">class </em><code class="descname">Object</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Vacumm’s base class proving common usefull features:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt>configuration management</dt>
+<dd><ul class="first last">
+<li>keeping trace of parent class configs</li>
+<li>allowing per-instance config usage (default to class config)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>logging</li>
+<li><dl class="first docutils">
+<dt>debugging</dt>
+<dd><ul class="first last">
+<li>tracking (pdb)</li>
+<li>exceptions details</li>
+<li>process memory usage</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Most features work at class level to reduce variables in instances.</p>
+<p>This class is designed to be implemented by the main working classes,
+but there is no real restriction about that.</p>
+<p>The default configuration is automatically loaded when importing the class module, this
+behavior is also applied for subclasses in other modules.</p>
+<p>Instance initial configuration (<a class="reference internal" href="#vacumm.misc.bases.Object.get_config" title="vacumm.misc.bases.Object.get_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_config()</span></code></a>) is a copy of the class
+configuration (<a class="reference internal" href="#vacumm.misc.bases.Object.get_default_config" title="vacumm.misc.bases.Object.get_default_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_default_config()</span></code></a>) made at instance creation time.</p>
+<dl class="method">
+<dt id="vacumm.misc.bases.Object.apply_config">
+<code class="descname">apply_config</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.apply_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.apply_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subclasses may override this to apply/update according to the new config</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong>: The new config loaded by <a class="reference internal" href="#vacumm.misc.bases.Object.load_config" title="vacumm.misc.bases.Object.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>overriding this method will obviously shunt its default beahvior,
+you’ll then have to call original method if needed</li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.apply_default_config">
+<em class="property">classmethod </em><code class="descname">apply_default_config</code><span class="sig-paren">(</span><em>config=None</em>, <em>encoding=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.apply_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.apply_default_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will turn on debug mode of various features (config, objects stats)
+if the loglevel of nested Logger configuration is debug.</p>
+<p>Set the default log level for the newly created objects based on nested
+Logger configuration.</p>
+<p>Subclasses may override this to apply/update according to the new config</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config</strong>: The new config loaded by <a class="reference internal" href="#vacumm.misc.bases.Object.load_default_config" title="vacumm.misc.bases.Object.load_default_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_default_config()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>overriding this method will obviously shunt its default beahvior, you’ll then have to call original method if needed</li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.config">
+<code class="descname">config</code><a class="headerlink" href="#vacumm.misc.bases.Object.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current configuration</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.critical">
+<code class="descname">critical</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.critical" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.debug">
+<code class="descname">debug</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.describe">
+<em class="property">classmethod </em><code class="descname">describe</code><span class="sig-paren">(</span><em>obj</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.describe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.describe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.error">
+<code class="descname">error</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.exception">
+<code class="descname">exception</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.exception" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.exception_trace">
+<em class="property">classmethod </em><code class="descname">exception_trace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.exception_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.exception_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a huge detailed exception traceback</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.from_config">
+<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>config</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.from_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a cls instance using args and kwargs and load config.</p>
+<p>The <strong>nested</strong> named argument (in kwargs) is extracted before
+creating the instance and then passed to load_config.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>config</strong>: A configuration file (str) or object (ConfigObj).</li>
+<li><strong>args</strong> and <strong>kwargs</strong>: Passed to the object constructor, without parmeters described above.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>The created object of class cls</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.func_name">
+<em class="property">classmethod </em><code class="descname">func_name</code><span class="sig-paren">(</span><em>iframe=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.func_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.func_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.get_class_logger">
+<em class="property">classmethod </em><code class="descname">get_class_logger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_class_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_class_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code> instance bound to this class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.bases.Object.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><em>copy=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the instance’s config</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.get_config_manager">
+<em class="property">classmethod </em><code class="descname">get_config_manager</code><span class="sig-paren">(</span><em>reload=False</em>, <em>encoding=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_config_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_config_manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the configuration manager for this class (cls).
+This manager and its underlying configuration specification
+must not be dynamically changed as it is fixed at design time.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this method is also the config manager lazy loader</p>
+</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.get_config_section_name">
+<em class="property">classmethod </em><code class="descname">get_config_section_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_config_section_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_config_section_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return (and define) the class specification section name</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.get_config_spec">
+<em class="property">classmethod </em><code class="descname">get_config_spec</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_config_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_config_spec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the config specs as ConfigObj object</p>
+<p>It merges the specs of the current class and those of parents classes</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.get_config_spec_file">
+<em class="property">classmethod </em><code class="descname">get_config_spec_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_config_spec_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_config_spec_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return (and define) the class specification file path</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.bases.Object.get_config_str">
+<code class="descname">get_config_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_config_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_config_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the instance’s config as a string</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.get_default_config">
+<em class="property">classmethod </em><code class="descname">get_default_config</code><span class="sig-paren">(</span><em>encoding=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_default_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the default configuration (copy)</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.get_default_config_str">
+<em class="property">classmethod </em><code class="descname">get_default_config_str</code><span class="sig-paren">(</span><em>encoding=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_default_config_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_default_config_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the default configuration as a string</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.get_logger">
+<code class="descname">get_logger</code><em class="property"> = &lt;bound class method Object.get_logger&gt;</em><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.get_loglevel">
+<code class="descname">get_loglevel</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.get_loglevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.bases.Object.get_options">
+<code class="descname">get_options</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get <a class="reference internal" href="#vacumm.misc.bases.Object.options" title="vacumm.misc.bases.Object.options"><code class="xref py py-attr docutils literal notranslate"><span class="pre">options</span></code></a></p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.get_parent_config_spec">
+<em class="property">classmethod </em><code class="descname">get_parent_config_spec</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.get_parent_config_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.get_parent_config_spec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the merged config specifications of all parents</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.info">
+<code class="descname">info</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.init_class">
+<em class="property">classmethod </em><code class="descname">init_class</code><span class="sig-paren">(</span><em>name</em>, <em>bases</em>, <em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.init_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.init_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Redefine this method if you need class initialization</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.is_debug">
+<code class="descname">is_debug</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.is_debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.is_verbose">
+<code class="descname">is_verbose</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.is_verbose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.kwfilter">
+<em class="property">classmethod </em><code class="descname">kwfilter</code><span class="sig-paren">(</span><em>kwargs</em>, <em>filters=None</em>, <em>*args</em>, <em>**kwa</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.kwfilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.kwfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="misc.misc.html#vacumm.misc.misc.kwfilter" title="vacumm.misc.misc.kwfilter"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm.misc.misc.kwfilter()</span></code></a> with a filters argument which
+defaults to this class lowercase name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.bases.Object.load_config">
+<code class="descname">load_config</code><span class="sig-paren">(</span><em>config=None</em>, <em>nested=None</em>, <em>apply=True</em>, <em>cfgpatch=None</em>, <em>encoding=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.load_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load / update the instance configuration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>config</strong>: A configuration file (str) or object (ConfigObj) or
+None to load defaults, or an <a class="reference external" href="https://docs.python.org/dev/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code></a> object.</li>
+<li><dl class="first docutils">
+<dt><strong>nested</strong>: Load from a nested config section instead of the whole config.</dt>
+<dd>If True, use the section name returned by <a class="reference internal" href="#vacumm.misc.bases.Object.get_config_section_name" title="vacumm.misc.bases.Object.get_config_section_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_config_section_name()</span></code></a>
+Else if a string, use the section name defined by the <strong>nested</strong> string</dd>
+</dl>
+</li>
+<li><strong>cfgpatch</strong>: A manual patch to apply to the config once loaded.</li>
+<li>Other options are passed to
+<a class="reference internal" href="misc.config.html#vacumm.misc.config.ConfigManager.arg_parse" title="vacumm.misc.config.ConfigManager.arg_parse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arg_parse()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">A <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code> object or <code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigObj</span></code>,options tuple if
+an <a class="reference external" href="https://docs.python.org/dev/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code></a> object has been passed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.load_default_config">
+<em class="property">classmethod </em><code class="descname">load_default_config</code><span class="sig-paren">(</span><em>config=None</em>, <em>nested=None</em>, <em>apply=True</em>, <em>encoding=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.load_default_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.load_default_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load / update the class (unique) default configuration</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.logger">
+<code class="descname">logger</code><a class="headerlink" href="#vacumm.misc.bases.Object.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code> instance. You can use this object for all logging operations related to this class</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.notice">
+<code class="descname">notice</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.notice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.notset">
+<code class="descname">notset</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.notset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.options">
+<code class="descname">options</code><a class="headerlink" href="#vacumm.misc.bases.Object.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options loaded from the commandline parser or None</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.pformat">
+<em class="property">classmethod </em><code class="descname">pformat</code><span class="sig-paren">(</span><em>obj</em>, <em>indent=2</em>, <em>width=80</em>, <em>depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.pformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.pformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pretty print an object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.misc.bases.Object.save_config">
+<code class="descname">save_config</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>nested=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.save_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.save_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.set_class_logger">
+<em class="property">classmethod </em><code class="descname">set_class_logger</code><span class="sig-paren">(</span><em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.set_class_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.set_class_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the <code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code> instance bound to this class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.set_logger">
+<code class="descname">set_logger</code><em class="property"> = &lt;bound class method Object.set_logger&gt;</em><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.set_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.set_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.set_loglevel">
+<code class="descname">set_loglevel</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.set_loglevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="vacumm.misc.bases.Object.stack_trace">
+<em class="property">static </em><code class="descname">stack_trace</code><span class="sig-paren">(</span><em>iframe=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.stack_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.stack_trace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="vacumm.misc.bases.Object.trace">
+<em class="property">classmethod </em><code class="descname">trace</code><span class="sig-paren">(</span><em>iframe=0</em>, <em>iftty=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#Object.trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.Object.trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start pdb debugger</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iframe</strong>: frame index entry point of the debugger, relative to the caller</li>
+<li><strong>iftty</strong>: if True, disable this call in a non interactive execution</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>For debugging purpose only: do not let trace calls in a production
+environment, even if an interactive test is done !</li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.verbose">
+<code class="descname">verbose</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.verbose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.misc.bases.Object.warning">
+<code class="descname">warning</code><em class="property"> = &lt;bound class method Object.wrapper&gt;</em><a class="headerlink" href="#vacumm.misc.bases.Object.warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.add_logging_proxies">
+<code class="descname">add_logging_proxies</code><span class="sig-paren">(</span><em>cls</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#add_logging_proxies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.add_logging_proxies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register some Logger shortcuts for a given class (cls.&lt;method&gt; =&gt; cls.get_logger().&lt;method&gt;):</p>
+<blockquote>
+<div><ul class="simple">
+<li>notset =&gt; notset</li>
+<li>debug =&gt; debug</li>
+<li>verbose =&gt; verbose</li>
+<li>info =&gt; info</li>
+<li>notice =&gt; notice</li>
+<li>warning =&gt; warning</li>
+<li>error =&gt; error</li>
+<li>critical =&gt; critical</li>
+<li>exception =&gt; exception</li>
+<li>get_loglevel =&gt; get_level_name</li>
+<li>set_loglevel =&gt; set_level</li>
+<li>is_verbose =&gt; is_verbose</li>
+<li>is_debug =&gt; is_debug</li>
+</ul>
+</div></blockquote>
+<p>These shortcuts will be bound to the class and its instances using its get_logger method
+which must return a <code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code> instance, so this method must be callable from the class or its
+instances (you may use the <a class="reference internal" href="#vacumm.misc.bases.classinstancemethod" title="vacumm.misc.bases.classinstancemethod"><code class="xref py py-class docutils literal notranslate"><span class="pre">classinstancemethod</span></code></a> decorator as of <a class="reference internal" href="#vacumm.misc.bases.Object.get_logger" title="vacumm.misc.bases.Object.get_logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Object.get_logger()</span></code></a>)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.misc.bases.classinstancemethod">
+<em class="property">class </em><code class="descname">classinstancemethod</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#classinstancemethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.classinstancemethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Decorator which acts like a class method when called from a class, like an
+instance method when called by an instance.  The method should
+take two arguments, ‘self’ and ‘cls’; one of these will be None
+depending on how the method was called.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.classmaker">
+<code class="descname">classmaker</code><span class="sig-paren">(</span><em>left_metas=()</em>, <em>right_metas=()</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#classmaker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.classmaker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Avoid conflicts when using metaclass.
+To use this:</p>
+<dl class="docutils">
+<dt>class MyClass(AMetaclassedA, AMetaclassedB):</dt>
+<dd><p class="first">__metaclass__ = classmaker()</p>
+<p class="last"># then put the rest of your code …</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.code_base_name">
+<code class="descname">code_base_name</code><span class="sig-paren">(</span><em>iframe=0</em>, <em>ext=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#code_base_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.code_base_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the basename of the file that hosts the code where it is called</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><ul class="first last simple">
+<li><strong>iframe</strong>: int: Get the iframe’th caller function name.</li>
+<li><strong>ext</strong>: Remove extension if False, replace it if string,
+or leave it.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.code_dir_name">
+<code class="descname">code_dir_name</code><span class="sig-paren">(</span><em>iframe=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#code_dir_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.code_dir_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the dirname of the file that hosts the code where it is called</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><ul class="first last simple">
+<li><strong>iframe</strong>: int: Get the iframe’th caller function name.</li>
+<li><strong>ext</strong>: Remove extension if False, replace it if string,
+or leave it.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.code_file_name">
+<code class="descname">code_file_name</code><span class="sig-paren">(</span><em>iframe=0</em>, <em>ext=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#code_file_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.code_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the file that hosts the code where it is called</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><ul class="first last simple">
+<li><strong>iframe</strong>: int: Get the iframe’th caller function name.</li>
+<li><strong>ext</strong>: Remove extension if False, replace it if string,
+or leave it.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.describe">
+<code class="descname">describe</code><span class="sig-paren">(</span><em>obj</em>, <em>stats=None</em>, <em>format=&lt;function pformat&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#describe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.describe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the object decription depending on its type.</p>
+<p>Usefull with numpy and cdms variables/axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong>: The object to describe.</li>
+<li><strong>stats</strong>: If True, include numerical information like min, max, mean, count, …</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>The object’s summary string</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.func_name">
+<code class="descname">func_name</code><span class="sig-paren">(</span><em>iframe=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#func_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.func_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the calling function</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><ul class="first last simple">
+<li><strong>iframe</strong>: int: Get the iframe’th caller function name.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.get_noconflict_metaclass">
+<code class="descname">get_noconflict_metaclass</code><span class="sig-paren">(</span><em>bases</em>, <em>left_metas</em>, <em>right_metas</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#get_noconflict_metaclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.get_noconflict_metaclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not intended to be used outside of this module, unless you know
+what you are doing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.get_prog_dir">
+<code class="descname">get_prog_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#get_prog_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.get_prog_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the currently running program’s directory.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.get_prog_name">
+<code class="descname">get_prog_name</code><span class="sig-paren">(</span><em>noext=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#get_prog_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.get_prog_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the currently running program name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>noext</strong>: If True, remove extension from program name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last simple">
+<li>str: The program name, or “python” in interactive interpreter mode.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.psinfo">
+<code class="descname">psinfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#psinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.psinfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get cpu and memory usage string (require <strong>psutil</strong> module)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.remove_redundant">
+<code class="descname">remove_redundant</code><span class="sig-paren">(</span><em>metaclasses</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#remove_redundant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.remove_redundant" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.skip_redundant">
+<code class="descname">skip_redundant</code><span class="sig-paren">(</span><em>iterable</em>, <em>skipset=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#skip_redundant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.skip_redundant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Redundant items are repeated items or items in the original skipset.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.bases.stack_trace">
+<code class="descname">stack_trace</code><span class="sig-paren">(</span><em>iframe=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/bases.html#stack_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.bases.stack_trace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

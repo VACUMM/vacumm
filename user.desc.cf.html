@@ -1,0 +1,182 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.5.3. CF conventions usage and extensions &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.5.3. CF conventions usage and extensions</a><ul>
+<li><a class="reference internal" href="#structure-of-the-specification-dictionaries">1.5.3.1. Structure of the specification dictionaries</a></li>
+<li><a class="reference internal" href="#searching-for-variables-and-axes">1.5.3.2. Searching for variables and axes</a></li>
+<li><a class="reference internal" href="#formatting-variables-and-axes">1.5.3.3. Formatting variables and axes</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.desc.cf.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cf-conventions-usage-and-extensions">
+<span id="user-desc-cf"></span><h1>1.5.3. CF conventions usage and extensions<a class="headerlink" href="#cf-conventions-usage-and-extensions" title="Permalink to this headline">¶</a></h1>
+<p>The module <a class="reference internal" href="library/data.cf.html#module-vacumm.data.cf" title="vacumm.data.cf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.data.cf</span></code></a> defines and exploits
+specifications inspired from CF conventions.
+These specifications are separated in two dictionaries:
+- one for variables: <code class="xref py py-attr docutils literal notranslate"><span class="pre">var_specs</span></code>,
+- one for axes: <code class="xref py py-attr docutils literal notranslate"><span class="pre">axis_specs</span></code>.</p>
+<p>These specifications are used in the library to search
+and format variables or axes.</p>
+<div class="section" id="structure-of-the-specification-dictionaries">
+<span id="user-desc-cf-specs"></span><h2>1.5.3.1. Structure of the specification dictionaries<a class="headerlink" href="#structure-of-the-specification-dictionaries" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">u3d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;uz&#39;</span><span class="p">,</span> <span class="s1">&#39;u3d&#39;</span><span class="p">],</span>
+    <span class="n">standard_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sea_water_x_velocity&#39;</span><span class="p">,</span> <span class="s1">&#39;eastward_sea_water_velocity&#39;</span><span class="p">],</span>
+    <span class="n">long_names</span> <span class="o">=</span> <span class="s2">&quot;Sea water velocity along X&quot;</span><span class="p">,</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;m s-1&quot;</span><span class="p">,</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lon_u&#39;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat_u&#39;</span><span class="p">]),</span>
+    <span class="n">physloc</span> <span class="o">=</span> <span class="s1">&#39;u&#39;</span><span class="p">,</span>
+    <span class="n">atlocs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">],</span>
+<span class="p">),</span>
+</pre></div>
+</div>
+<p>Each entry has a key that is a short name that will be used
+as a generic netcdf name (here <code class="docutils literal notranslate"><span class="pre">u3d</span></code>).
+The value of an entry is a dictionary that can define de following specifications:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>names</strong>: A list of lower case short name that can be found in netcdf files.
+The short name the entry (<code class="docutils literal notranslate"><span class="pre">u3d</span></code>) is insert automatically at the beginning of this list.</li>
+<li><strong>standard_names</strong>: A list of possible standard_names to search for the variable in
+a netcdf file. The first one is used to format variables.</li>
+<li><strong>long_names</strong>: One or several long_names. The first one is used to format variables.</li>
+<li><strong>units</strong>: One or several long_names. The first one is used to format variables.</li>
+<li><strong>axes</strong>: A dictionary of axis names used to format axes when they are recongnized
+as geographic axes (xyzt). Each axis name must be an entry of <code class="xref py py-attr docutils literal notranslate"><span class="pre">vacumm.data.cf.axis_specs</span></code>.</li>
+<li><strong>physloc</strong>: The physical grid location of this variable on an Arakawa grid.</li>
+<li><strong>atlocs</strong>: A list of grid locations (see <code class="xref py py-attr docutils literal notranslate"><span class="pre">locations</span></code>)
+that will be used to deplicate this entry to match another location
+(with <a class="reference internal" href="library/data.cf.html#vacumm.data.cf.dupl_loc_specs" title="vacumm.data.cf.dupl_loc_specs"><code class="xref py py-func docutils literal notranslate"><span class="pre">dupl_loc_specs()</span></code></a>).
+For instance <code class="docutils literal notranslate"><span class="pre">u3d</span></code> entry will create <code class="docutils literal notranslate"><span class="pre">u3d_t</span></code>, <code class="docutils literal notranslate"><span class="pre">u3d_u</span></code> and <code class="docutils literal notranslate"><span class="pre">u3d_v</span></code> entries.
+Then <code class="docutils literal notranslate"><span class="pre">u3d</span></code> entry is merged with these new entries to be more generic.</li>
+<li><strong>inherit</strong>: It can be used to inherit the specifications from another entry.</li>
+<li><strong>i/jaxis</strong>: Name of elemental axis for 2D axes.</li>
+<li>The other key/val are used as attributes when formatting a variable.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="searching-for-variables-and-axes">
+<h2>1.5.3.2. Searching for variables and axes<a class="headerlink" href="#searching-for-variables-and-axes" title="Permalink to this headline">¶</a></h2>
+<p>You can search for variables and axes in netcdf files with
+the <a class="reference internal" href="library/misc.io.html#vacumm.misc.io.ncfind_obj" title="vacumm.misc.io.ncfind_obj"><code class="xref py py-func docutils literal notranslate"><span class="pre">ncfind_obj()</span></code></a> function.
+The main search argument can be a simple tuple of netcdf names,
+or a dictionary of names, standard_names, or even long_names and units.
+This dictionary can be automatically formed by the <a class="reference internal" href="library/data.cf.html#vacumm.data.cf.cf2search" title="vacumm.data.cf.cf2search"><code class="xref py py-func docutils literal notranslate"><span class="pre">cf2search()</span></code></a>
+function for a given generic name (such as “sst”).
+This way of searching is used by the <a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> classes.</p>
+</div>
+<div class="section" id="formatting-variables-and-axes">
+<h2>1.5.3.3. Formatting variables and axes<a class="headerlink" href="#formatting-variables-and-axes" title="Permalink to this headline">¶</a></h2>
+<p>You can format variables and axes to make sure they meet CF standards,
+with the functions <a class="reference internal" href="library/data.cf.html#vacumm.data.cf.format_var" title="vacumm.data.cf.format_var"><code class="xref py py-func docutils literal notranslate"><span class="pre">format_var()</span></code></a> and <a class="reference internal" href="library/data.cf.html#vacumm.data.cf.format_axis" title="vacumm.data.cf.format_axis"><code class="xref py py-func docutils literal notranslate"><span class="pre">format_axis()</span></code></a>.
+The attributes are defined by the <a class="reference internal" href="library/data.cf.html#vacumm.data.cf.cf2atts" title="vacumm.data.cf.cf2atts"><code class="xref py py-func docutils literal notranslate"><span class="pre">cf2atts()</span></code></a> function.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,280 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.2.3. Installations &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.2.3. Installations</a><ul>
+<li><a class="reference internal" href="#quick-installation-with-conda">1.2.3.1. Quick installation with <strong class="program">conda</strong></a></li>
+<li><a class="reference internal" href="#from-sources">1.2.3.2. From sources</a><ul>
+<li><a class="reference internal" href="#in-short">1.2.3.2.1. In short</a></li>
+<li><a class="reference internal" href="#for-all-users">1.2.3.2.2. For all users</a></li>
+<li><a class="reference internal" href="#for-our-own-usage">1.2.3.2.3. For our own usage</a></li>
+<li><a class="reference internal" href="#local-installation-for-a-developper">1.2.3.2.4. Local installation for a developper</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tuning-the-installation">1.2.3.3. Tuning the installation</a></li>
+<li><a class="reference internal" href="#user-configuration-of-the-modules">1.2.3.4. User configuration of the modules</a></li>
+<li><a class="reference internal" href="#check-your-installation">1.2.3.5. Check your installation</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.install.installs.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installations">
+<span id="user-install-installs"></span><h1>1.2.3. Installations<a class="headerlink" href="#installations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="quick-installation-with-conda">
+<h2>1.2.3.1. Quick installation with <strong class="program">conda</strong><a class="headerlink" href="#quick-installation-with-conda" title="Permalink to this headline">¶</a></h2>
+<p>Conda is a package manager that provides pre-compiled binaries
+for Windows, OSX and Linux.</p>
+<p>Install <a class="reference external" href="https://conda.io/docs/index.html">conda</a> first
+from this <a class="reference external" href="https://conda.io/docs/install/quick.html">page</a>.
+Miniconda is a mini installer it is good to start with.</p>
+<p>Then, you can install vacumm and its dependecies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install -c vacumm -c conda-forge -c cdat vacumm
+</pre></div>
+</div>
+<p>For more option, please read the conda documentation.</p>
+</div>
+<div class="section" id="from-sources">
+<h2>1.2.3.2. From sources<a class="headerlink" href="#from-sources" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="in-short">
+<h3>1.2.3.2.1. In short<a class="headerlink" href="#in-short" title="Permalink to this headline">¶</a></h3>
+<p>Here is an example of basic installation inside CDAT,
+with some OpenMP parallelisation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ cp setup.cfg.omp setup.cfg
+$ python setup.py install
+</pre></div>
+</div>
+</div>
+<div class="section" id="for-all-users">
+<h3>1.2.3.2.2. For all users<a class="headerlink" href="#for-all-users" title="Permalink to this headline">¶</a></h3>
+<p>This installation puts the library within the python tree.
+The <strong class="program">python</strong> excutable must be the one provided by CDAT
+(see <a class="reference internal" href="user.install.prereq.html#user-install-prereq"><span class="std std-ref">Prerequisites</span></a>).</p>
+<p>One compile and install VACUMM from the main directory of the package with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py install
+</pre></div>
+</div>
+<p>For more options:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py --help
+</pre></div>
+</div>
+</div>
+<div class="section" id="for-our-own-usage">
+<h3>1.2.3.2.3. For our own usage<a class="headerlink" href="#for-our-own-usage" title="Permalink to this headline">¶</a></h3>
+<p>In this case, the library is installed in the user’s directory.</p>
+<p>First, compile:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py build
+</pre></div>
+</div>
+<p>Then, install in the default user’s directory
+(typically  <code class="file docutils literal notranslate"><span class="pre">$HOME/.local/lib/python2.</span><em><span class="pre">x</span></em><span class="pre">/site-packages</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py install --user
+</pre></div>
+</div>
+<p>If the library must be installed in a special directory, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py install --prefix<span class="o">=</span>/my/special/dir
+</pre></div>
+</div>
+<p>Then, set your environment variables to have acces both to the python library
+and to the executables:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>/my/special/dir/bin
+$ <span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>/my/special/dir/lib/python<span class="o">{</span>x.x<span class="o">}</span>/site-packages  <span class="c1"># {x.x} refers to the python version</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="local-installation-for-a-developper">
+<span id="user-install-install-dev"></span><h3>1.2.3.2.4. Local installation for a developper<a class="headerlink" href="#local-installation-for-a-developper" title="Permalink to this headline">¶</a></h3>
+<p>VACUMM must be used directly after an untar or a checkout by
+compiling the extensions and setting the variables:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ make lib <span class="c1"># or python setup.py build_ext --inplace</span>
+$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>~/path/to/vacumm-trunk/bin
+$ <span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>~/path/to/vacumm-trunk/lib/python
+</pre></div>
+</div>
+<p>You can also use the environment module provided
+with the package as presented at section <a class="reference internal" href="user.install.modenv.html#user-install-modenv-dev"><span class="std std-ref">The developer side</span></a>.</p>
+</div>
+</div>
+<div class="section" id="tuning-the-installation">
+<h2>1.2.3.3. Tuning the installation<a class="headerlink" href="#tuning-the-installation" title="Permalink to this headline">¶</a></h2>
+<p>You can tune the installation with the <code class="file docutils literal notranslate"><span class="pre">setup.cfg</span></code> file,
+following the instruction of the official documentations
+(<a class="reference external" href="https://docs.python.org/2/distutils/configfile.html#writing-the-setup-configuration-file">here</a>).
+Two examples are provided, which differ in the way the fortran extension
+is compilated:</p>
+<ul>
+<li><p class="first">The <code class="file docutils literal notranslate"><span class="pre">setup.cfg.simple</span></code> simply specifies the compiler type:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[config_fc]</span>
+<span class="na">fcompiler</span><span class="o">=</span><span class="s">gnu95</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">The <code class="file docutils literal notranslate"><span class="pre">setup.cfg.omp</span></code> makes the compilation to use OpenMP:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[config_fc]</span>
+<span class="na">fcompiler</span><span class="o">=</span><span class="s">gnu95</span>
+<span class="na">opt</span><span class="o">=</span><span class="s">-fopenmp -O3 -funroll-loops</span>
+
+<span class="k">[build_ext]</span>
+<span class="na">libraries</span><span class="o">=</span><span class="s">gomp</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>For example, to quickly allow OpenMP parallelisation,
+link to the right setup configuration file before installing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ cp setup.cfg.omp setup.cfg
+$ python setup.py build_ext --force <span class="c1"># to force the recompilation</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the <code class="file docutils literal notranslate"><span class="pre">setup.cfg</span></code> file doesn’t exist, the <strong class="program">setup.py</strong>
+will copy file:<cite>setup.cfg.simple</cite> into <code class="file docutils literal notranslate"><span class="pre">setup.cfg</span></code>.</p>
+</div>
+</div>
+<div class="section" id="user-configuration-of-the-modules">
+<span id="user-install-install-config"></span><h2>1.2.3.4. User configuration of the modules<a class="headerlink" href="#user-configuration-of-the-modules" title="Permalink to this headline">¶</a></h2>
+<p>Some of the modules can be configured to change their default behaviour.
+Configurations store for instance default paths.</p>
+<p>The library is configured by default for a use on the supercomputer
+from IFREMER (datarmor).
+If you are on your own system or you want to change your configuration,
+please check the documentation section <a class="reference internal" href="user.install.config.html#user-install-config"><span class="std std-ref">Library configuration</span></a>.</p>
+<p>During the installation process using the <strong class="program">setup.py</strong>,
+you can provide a general configuration file and secondary configuration
+files with <code class="xref std std-option docutils literal notranslate"><span class="pre">--cfgfiles</span></code> option (comma separated).
+All these files will be installed in the <code class="file docutils literal notranslate"><span class="pre">vacumm-config</span></code> directory.</p>
+<p>For instance, the configuration of the <a class="reference internal" href="library/bathy.bathy.html#module-vacumm.bathy.bathy" title="vacumm.bathy.bathy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.bathy.bathy</span></code></a>
+module makes a reference to a secondary configuration file
+refered in the config section <code class="docutils literal notranslate"><span class="pre">[vacumm.bathy.bathy]</span></code> with the
+key <code class="docutils literal notranslate"><span class="pre">cfgfile_gridded</span></code>.
+To alter this configuration, proceed in this way:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">Specify the name of the secondary config file in the main config file by prefixing it with <code class="docutils literal notranslate"><span class="pre">%(conf_dir)s</span></code>, which is the directory where config files will be installed (see <a class="reference internal" href="user.install.config.html#user-install-config"><span class="std std-ref">Library configuration</span></a>):</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[vacumm.bathy.bathy]</span>
+<span class="na">cfgfile_gridded</span><span class="o">=</span><span class="s">%(conf_dir)s/bathy.gridded.cfg</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Then specify the list of config files as comandline option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py install --cfgfiles<span class="o">=</span>myconfig.cfg,path/to/bathy.gridded.cfg
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="check-your-installation">
+<h2>1.2.3.5. Check your installation<a class="headerlink" href="#check-your-installation" title="Permalink to this headline">¶</a></h2>
+<p>Run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ vacumm_config.py print
+$ python -c <span class="s1">&#39;import vcmq&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

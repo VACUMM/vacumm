@@ -1,0 +1,1967 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.9.1. vacumm.bathy.bathy – Bathymetry &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.9.1. <code class="docutils literal notranslate"><span class="pre">vacumm.bathy.bathy</span></code> – Bathymetry</a><ul>
+<li><a class="reference internal" href="#overview">2.9.1.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.9.1.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/bathy.bathy.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-bathy-bathy-bathymetry">
+<span id="lib-bathy-bathy"></span><h1>2.9.1. <a class="reference internal" href="#module-vacumm.bathy.bathy" title="vacumm.bathy.bathy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.bathy.bathy</span></code></a> – Bathymetry<a class="headerlink" href="#vacumm-bathy-bathy-bathymetry" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.9.1.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.print_bathy_list" title="vacumm.bathy.bathy.print_bathy_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_bathy_list()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.plot_bathy" title="vacumm.bathy.bathy.plot_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_bathy()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.fmt_bathy" title="vacumm.bathy.bathy.fmt_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">fmt_bathy()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.bathy_list" title="vacumm.bathy.bathy.bathy_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">bathy_list()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.Bathy" title="vacumm.bathy.bathy.Bathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bathy</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.Bathy.lat" title="vacumm.bathy.bathy.Bathy.lat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lat()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.Bathy.lon" title="vacumm.bathy.bathy.Bathy.lon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lon()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.Bathy.plot" title="vacumm.bathy.bathy.Bathy.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.Bathy.show" title="vacumm.bathy.bathy.Bathy.show"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.Bathy.write_ascii" title="vacumm.bathy.bathy.Bathy.write_ascii"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_ascii()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.Bathy.write_netcdf" title="vacumm.bathy.bathy.Bathy.write_netcdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_netcdf()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.Bathy.zoom" title="vacumm.bathy.bathy.Bathy.zoom"><code class="xref py py-meth docutils literal notranslate"><span class="pre">zoom()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy" title="vacumm.bathy.bathy.XYZBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathy</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.bathy" title="vacumm.bathy.bathy.XYZBathy.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.plot" title="vacumm.bathy.bathy.XYZBathy.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.togrid" title="vacumm.bathy.bathy.XYZBathy.togrid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">togrid()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBankClient" title="vacumm.bathy.bathy.XYZBathyBankClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathyBankClient</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBankClient.load" title="vacumm.bathy.bathy.XYZBathyBankClient.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBankClient.plot" title="vacumm.bathy.bathy.XYZBathyBankClient.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBankClient.save" title="vacumm.bathy.bathy.XYZBathyBankClient.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank" title="vacumm.bathy.bathy.XYZBathyBank"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathyBank</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.add" title="vacumm.bathy.bathy.XYZBathyBank.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.copy" title="vacumm.bathy.bathy.XYZBathyBank.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">copy()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.get_order" title="vacumm.bathy.bathy.XYZBathyBank.get_order"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_order()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.ids" title="vacumm.bathy.bathy.XYZBathyBank.ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ids()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.list" title="vacumm.bathy.bathy.XYZBathyBank.list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.load" title="vacumm.bathy.bathy.XYZBathyBank.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.merger" title="vacumm.bathy.bathy.XYZBathyBank.merger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">merger()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.plot" title="vacumm.bathy.bathy.XYZBathyBank.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.remove" title="vacumm.bathy.bathy.XYZBathyBank.remove"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.save" title="vacumm.bathy.bathy.XYZBathyBank.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.select" title="vacumm.bathy.bathy.XYZBathyBank.select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.set_order" title="vacumm.bathy.bathy.XYZBathyBank.set_order"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_order()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyMerger" title="vacumm.bathy.bathy.XYZBathyMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathyMerger</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyMerger.bathy" title="vacumm.bathy.bathy.XYZBathyMerger.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyMerger.from_bank" title="vacumm.bathy.bathy.XYZBathyMerger.from_bank"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_bank()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyMerger.plot" title="vacumm.bathy.bathy.XYZBathyMerger.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy" title="vacumm.bathy.bathy.GriddedBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">GriddedBathy</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.bathy" title="vacumm.bathy.bathy.GriddedBathy.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.get_grid" title="vacumm.bathy.bathy.GriddedBathy.get_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.get_lat" title="vacumm.bathy.bathy.GriddedBathy.get_lat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lat()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.get_lon" title="vacumm.bathy.bathy.GriddedBathy.get_lon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_lon()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.get_res" title="vacumm.bathy.bathy.GriddedBathy.get_res"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_res()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.plot" title="vacumm.bathy.bathy.GriddedBathy.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.regrid" title="vacumm.bathy.bathy.GriddedBathy.regrid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">regrid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.save" title="vacumm.bathy.bathy.GriddedBathy.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathyMerger" title="vacumm.bathy.bathy.GriddedBathyMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">GriddedBathyMerger</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathyMerger.bathy" title="vacumm.bathy.bathy.GriddedBathyMerger.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathyMerger.merge" title="vacumm.bathy.bathy.GriddedBathyMerger.merge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathyMerger.plot" title="vacumm.bathy.bathy.GriddedBathyMerger.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.NcGriddedBathy" title="vacumm.bathy.bathy.NcGriddedBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">NcGriddedBathy</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.bathy.bathy.NcGriddedBathyError" title="vacumm.bathy.bathy.NcGriddedBathyError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NcGriddedBathyError</span></code></a></p>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.9.1.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Inheritance diagram:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="graphviz"><img src="../_images/inheritance-1a2d9f0918c2e778b0c4c90e081b0b65bf7e9915.png" alt="Inheritance diagram of vacumm.bathy.bathy.BathyFormatter, vacumm.bathy.bathy.GriddedBathyMerger, vacumm.bathy.bathy.XYZBathyMerger" usemap="#inheritance09a7177fa4" class="inheritance graphviz" /></div>
+<map id="inheritance09a7177fa4" name="inheritance09a7177fa4">
+<area shape="poly" id="node4" href="#vacumm.bathy.bathy.GriddedBathy" target="_top" title="Interface to gridded bathymetries" alt="" coords="257,34,254,25,246,17,232,11,215,7,196,5,178,7,161,11,147,17,138,25,135,34,138,43,147,51,161,57,178,61,196,63,215,61,232,57,246,51,254,43"/>
+<area shape="poly" id="node5" href="#vacumm.bathy.bathy.GriddedBathyMerger" target="_top" title="Merger of gridded variables" alt="" coords="351,139,346,130,334,122,315,116,291,112,264,111,238,112,214,116,195,122,182,130,178,139,182,148,195,156,214,163,238,167,264,168,291,167,315,163,334,156,346,148"/>
+<area shape="poly" id="node6" href="misc.grid.regridding.html#vacumm.misc.grid.regridding.GriddedMerger" target="_top" title="Merge several gridded variables onto a grid" alt="" coords="412,34,409,25,400,17,385,11,367,7,347,5,327,7,309,11,294,17,285,25,282,34,285,43,294,51,309,57,327,61,347,63,367,61,385,57,400,51,409,43"/>
+<area shape="poly" id="node7" href="#vacumm.bathy.bathy.XYZBathyMerger" target="_top" title="Mix different bathymetries" alt="" coords="560,139,557,130,547,122,531,116,511,112,488,111,466,112,446,116,430,122,420,130,416,139,420,148,430,156,446,163,466,167,488,168,511,167,531,163,547,156,557,148"/>
+<area shape="poly" id="node8" href="misc.io.html#vacumm.misc.io.XYZMerger" target="_top" title="Mix different bathymetries" alt="" coords="540,34,537,25,530,17,519,11,504,7,488,5,473,7,458,11,447,17,440,25,437,34,440,43,447,51,458,57,473,61,488,63,504,61,519,57,530,51,537,43"/>
+</map><span class="target" id="module-vacumm.bathy.bathy"></span><p>Bathmetry tools</p>
+<dl class="function">
+<dt id="vacumm.bathy.bathy.print_bathy_list">
+<code class="descname">print_bathy_list</code><span class="sig-paren">(</span><em>cfgfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#print_bathy_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.print_bathy_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print available bathymetries</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.bathy.Bathy">
+<em class="property">class </em><code class="descname">Bathy</code><span class="sig-paren">(</span><em>lon=None</em>, <em>lat=None</em>, <em>name='etopo2'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#Bathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.Bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Get a portion of the gridded bathymetry</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This class is <strong>DEPRECATED</strong>.
+Please use <a class="reference internal" href="#vacumm.bathy.bathy.NcGriddedBathy" title="vacumm.bathy.bathy.NcGriddedBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">NcGriddedBathy</span></code></a> instead.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><em>lon</em>: Longitude range [default: None]</li>
+<li><em>lat</em>: Latitude range [default: None]</li>
+<li><em>sampling</em>: Sampling in both directions [default: 1]</li>
+<li><em>fill</em>: If True, fill positive values with 0. [default: True]</li>
+<li><em>mask_function</em>: To mask points. Should be ‘greater’ or ‘less’.
+If empty or None, no mask is applied [default: ‘greater’]</li>
+<li><em>mask_value</em>: Value used with mask_function [default: 0.]</li>
+<li><em>name</em>: Name of bathymetry within is list given by print_bathy_list()</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">Bathy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gg</span> <span class="o">=</span> <span class="n">Bathy</span><span class="p">((</span><span class="o">-</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">40</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span><span class="s1">&#39;etopo2&#39;</span><span class="p">)</span> <span class="c1"># object creation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gg</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c1"># quick plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gg</span><span class="o">.</span><span class="n">zoom</span><span class="p">((</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">42</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span> <span class="c1"># Select another zoom (lon/lat)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mybathyvar</span> <span class="o">=</span> <span class="n">gg</span><span class="p">()</span> <span class="c1"># Get the current zoom</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mybathyvar</span> <span class="o">=</span> <span class="n">gg</span><span class="p">((</span><span class="o">-</span><span class="mi">9</span><span class="p">,</span><span class="o">-</span><span class="mi">8</span><span class="p">),(</span><span class="mi">45</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span> <span class="c1"># Get another zoom</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gg</span><span class="o">.</span><span class="n">write_ascii</span><span class="p">(</span><span class="s1">&#39;/home/yoman/mybathy.dat&#39;</span><span class="p">)</span> <span class="c1"># dump to file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gg</span><span class="o">.</span><span class="n">write_netcdf</span><span class="p">(</span><span class="s1">&#39;/home/yoman/mybathy.nc&#39;</span><span class="p">)</span> <span class="c1"># same for a netcdf file</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="vacumm.bathy.bathy.Bathy.lat">
+<code class="descname">lat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#Bathy.lat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.Bathy.lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Latitude axis</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.Bathy.lon">
+<code class="descname">lon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#Bathy.lon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.Bathy.lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Longitude axis</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.Bathy.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>lon=None</em>, <em>lat=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.Bathy.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the current bathymetry</p>
+<ul class="simple">
+<li><em>lon</em>: Longitude range.</li>
+<li><em>lat</em>: Latitude range.</li>
+</ul>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.bathy.bathy.plot_bathy" title="vacumm.bathy.bathy.plot_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_bathy()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.Bathy.show">
+<code class="descname">show</code><span class="sig-paren">(</span><em>lon=None</em>, <em>lat=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#Bathy.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.Bathy.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the current bathymetry</p>
+<ul class="simple">
+<li><em>lon</em>: Longitude range.</li>
+<li><em>lat</em>: Latitude range.</li>
+</ul>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.bathy.bathy.plot_bathy" title="vacumm.bathy.bathy.plot_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_bathy()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.Bathy.write_ascii">
+<code class="descname">write_ascii</code><span class="sig-paren">(</span><em>file</em>, <em>fmt='%10f %10f %10f'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#Bathy.write_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.Bathy.write_ascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the bathymetry as an ascii file in the format : x y z</p>
+<ul class="simple">
+<li><strong>file</strong>: Output file name</li>
+<li><em>fmt</em>: Format of lines [default: ‘%10f %10f %10f’]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.Bathy.write_netcdf">
+<code class="descname">write_netcdf</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#Bathy.write_netcdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.Bathy.write_netcdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the bathymetry as netcdf file</p>
+<ul class="simple">
+<li><strong>file</strong>: Output netcdf file name</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.Bathy.zoom">
+<code class="descname">zoom</code><span class="sig-paren">(</span><em>lon=None</em>, <em>lat=None</em>, <em>sampling=None</em>, <em>fill=None</em>, <em>mask_function='greater'</em>, <em>mask_value=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#Bathy.zoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.Bathy.zoom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select a zoom and set the current variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><em>lon</em>: Longitude range [default: None]</li>
+<li><em>lat</em>: Latitude range [default: None]</li>
+<li><em>sampling</em>: Sampling in both directions [default: 1]</li>
+<li><em>fill</em>: If True, fill positive values with 0. [default: True]</li>
+<li><em>mask_function</em>: To mask points. Should be ‘greater’ or ‘less’.
+If empty or None, no mask is applied [default: ‘greater’]</li>
+<li><em>mask_value</em>: Value used with mask_function [default: 0.]</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.bathy.bathy.plot_bathy">
+<code class="descname">plot_bathy</code><span class="sig-paren">(</span><em>bathy</em>, <em>shadow=True</em>, <em>contour=True</em>, <em>shadow_stretch=1.0</em>, <em>shadow_shapiro=False</em>, <em>show=True</em>, <em>shadow_alpha=1.0</em>, <em>shadow_black=0.3</em>, <em>white_deep=False</em>, <em>nmax=30</em>, <em>m=None</em>, <em>alpha=1.0</em>, <em>zmin=None</em>, <em>zmax=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#plot_bathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.plot_bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a bathymetry</p>
+<ul class="simple">
+<li><em>lon</em>: Longitude range.</li>
+<li><em>lat</em>: Latitude range.</li>
+<li><em>show</em>:Display the figure [default: True]</li>
+<li><em>pcolor</em>: Use pcolor instead of contour [default: False]</li>
+<li><em>contour</em>: Add line contours [default: True]</li>
+<li><em>shadow</em>:Plot south-west shadows instead of filled contours.</li>
+<li><em>nmax</em>: Max number of levels for contours [default: 30]</li>
+<li><em>white_deep</em>: Deep contours are white [default: False]</li>
+<li>All other keyword are passed to <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-func docutils literal notranslate"><span class="pre">map2()</span></code></a></li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.bathy.bathy.fmt_bathy">
+<code class="descname">fmt_bathy</code><span class="sig-paren">(</span><em>bathy</em>, <em>id=None</em>, <em>long_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#fmt_bathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.fmt_bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format a bathymetry variable</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.bathy.bathy.bathy_list">
+<code class="descname">bathy_list</code><span class="sig-paren">(</span><em>name=None</em>, <em>cfgfile=None</em>, <em>minstatus=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#bathy_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.bathy_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of bathymetries as dict</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>name</strong>, optional: Request this bathymetry.</p>
+</li>
+<li><p class="first"><strong>cfgfile</strong>, optional: Load this bathymetry config file.</p>
+</li>
+<li><p class="first"><strong>minstatus</strong>, optional: Minimal status of availability
+of the bathymetry (see <a class="reference internal" href="config.html#vacumm.config.check_data_file" title="vacumm.config.check_data_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm.config.check_data_file()</span></code></a>):</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code>: Bathy file not on disk and not downloadable
+(however, user can specify the path manually).</li>
+<li><code class="docutils literal notranslate"><span class="pre">1</span></code>: File is not on disk, but downloadable.</li>
+<li><code class="docutils literal notranslate"><span class="pre">2</span></code>: File is on disk.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><ul class="first last">
+<li><p class="first">If <code class="docutils literal notranslate"><span class="pre">name</span></code> is not provided, a dict of subdicts like this one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;etopo2&#39;</span><span class="p">:{</span><span class="s1">&#39;file&#39;</span><span class="p">:</span><span class="s1">&#39;/home/me/bathy.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;var&#39;</span><span class="p">:</span><span class="s1">&#39;btdata&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">},</span> <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Else, the subdict of the requested bathy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;file&#39;</span><span class="p">:</span><span class="s1">&#39;/home/me/bathy.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;var&#39;</span><span class="p">:</span><span class="s1">&#39;btdata&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.bathy.XYZBathy">
+<em class="property">class </em><code class="descname">XYZBathy</code><span class="sig-paren">(</span><em>xyz</em>, <em>check_sign=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.io.XYZ</span></code></a></p>
+<p>For random bathymetries, like mnt files</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>xyz</strong>: A (x,y,z) tuple or a xyz file.</li>
+<li><em>long_name</em>: Long name (like a title) for this bathymetry.</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Bathymetry is supposed to be positive over water.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xzy1</span> <span class="o">=</span> <span class="n">XZY</span><span class="p">(</span><span class="s1">&#39;bathy1.xzy&#39;</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;My bathy&#39;</span><span class="p">)</span>           <span class="c1"># Load</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz1</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">48</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz1</span> <span class="o">+=</span> <span class="n">XZY</span><span class="p">(</span><span class="s1">&#39;bathy2.xzy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">x</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bathy</span> <span class="o">=</span> <span class="n">xyz1</span><span class="o">.</span><span class="n">togrid</span><span class="p">(</span><span class="n">mygrid</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> <code class="xref py py-class docutils literal notranslate"><span class="pre">shoreline</span></code> <a class="reference internal" href="tide.station_info.html#vacumm.tide.station_info.MeanSeaLevel" title="vacumm.tide.station_info.MeanSeaLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeanSeaLevel</span></code></a></p>
+</div>
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.astuple">
+<code class="descname">astuple</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.astuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <code class="docutils literal notranslate"><span class="pre">xyz(split=True)</span></code> (see <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.xyz" title="vacumm.bathy.bathy.XYZBathy.xyz"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xyz()</span></code></a>)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathy.bathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.togrid" title="vacumm.bathy.bathy.XYZBathy.togrid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">togrid()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone=None</em>, <em>margin=None</em>, <em>inverse=False</em>, <em>mask=False</em>, <em>id=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geographical selection of part of the data</p>
+<ul class="simple">
+<li><em>zone</em>: (xmin,ymin,xmax,ymax) or a float/int a complex polygon (see <a class="reference internal" href="misc.grid.masking.html#vacumm.misc.grid.masking.polygons" title="vacumm.misc.grid.masking.polygons"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygons()</span></code></a>).</li>
+<li><em>margin</em>: Margin around <code class="docutils literal notranslate"><span class="pre">zone</span></code> relative to the resolution (see <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.resol" title="vacumm.bathy.bathy.XYZBathy.resol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resol()</span></code></a>)</li>
+<li><em>inverse</em>: Inverse the selection.</li>
+<li><em>mask</em>: <code class="docutils literal notranslate"><span class="pre">zone</span></code> must be interpreted as a mask</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.consolidate">
+<code class="descname">consolidate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.consolidate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply radius undersampling and all exclusions and selections to data and reset them</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.contains">
+<code class="descname">contains</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if one or several points are within a the convex hull</p>
+<ul class="simple">
+<li><strong>x,y</strong>: X,Y positions as floats or lists or an <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> arrays.</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deep copy</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.del_rsamp">
+<code class="descname">del_rsamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.del_rsamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset <code class="xref py py-attr docutils literal notranslate"><span class="pre">rsamp</span></code> without affecting data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.exclude">
+<code class="descname">exclude</code><span class="sig-paren">(</span><em>*zones</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.exclude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add one or more zones where data are not used.</p>
+<p>A zone can be :</p>
+<ul class="simple">
+<li>an argument to <a class="reference internal" href="misc.grid.masking.html#vacumm.misc.grid.masking.polygons" title="vacumm.misc.grid.masking.polygons"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygons()</span></code></a> to get a <code class="xref py py-class docutils literal notranslate"><span class="pre">_geoslib.Polygon</span></code> instance,</li>
+<li>another :class:XYZ` instance from which the convex hull (see <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.hull" title="vacumm.bathy.bathy.XYZBathy.hull"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hull()</span></code></a>) is used as a delimiting area</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span><span class="o">.</span><span class="n">exclude</span><span class="p">([[</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span><span class="mi">43</span><span class="p">],[</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">43</span><span class="p">],[</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="mf">45.</span><span class="p">]],[[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">45</span><span class="p">],[</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span><span class="mi">47</span><span class="p">],[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mf">49.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">polygon1</span><span class="p">,</span><span class="n">polygon2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">xyz1</span><span class="p">,[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">42</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mf">48.</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.select" title="vacumm.bathy.bathy.XYZBathy.select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select()</span></code></a> <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.exclusions" title="vacumm.bathy.bathy.XYZBathy.exclusions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exclusions()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.exclusions">
+<code class="descname">exclusions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.exclusions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all exclusion polygons as a tuple</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_grid">
+<code class="descname">get_grid</code><span class="sig-paren">(</span><em>res=None</em>, <em>xmin=None</em>, <em>xmax=None</em>, <em>ymin=None</em>, <em>ymax=None</em>, <em>relres=0.5</em>, <em>degres=False</em>, <em>id='xyz_grid'</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a rectangular grid based on x/y positions and resolution</p>
+<ul>
+<li><p class="first"><em>res</em>: Resolution. It can be:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a float where then <code class="docutils literal notranslate"><span class="pre">xres=yres=res</span></code></li>
+<li>a tuple as <code class="docutils literal notranslate"><span class="pre">(xres,yres)</span></code></li>
+<li>else it is guessed using <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.get_res" title="vacumm.bathy.bathy.XYZBathy.get_res"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_res()</span></code></a> (and maybe <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.resol" title="vacumm.bathy.bathy.XYZBathy.resol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resol()</span></code></a>)` and multiplied by <code class="docutils literal notranslate"><span class="pre">relres</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>relres</em>: Relative resolution factor applied to <code class="docutils literal notranslate"><span class="pre">res</span></code> when resolution is guessed (<code class="docutils literal notranslate"><span class="pre">res=None</span></code>)</p>
+</li>
+<li><p class="first"><em>degres</em>: When <code class="docutils literal notranslate"><span class="pre">res</span></code> is explicitly given, it interpreted as degrees is <code class="docutils literal notranslate"><span class="pre">degres</span></code> is True.</p>
+</li>
+<li><p class="first"><em>xmin,xmax,ymin,ymax</em>: Bounds of the grid. If not specified, bounds of the dataset are used (see <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.xmin" title="vacumm.bathy.bathy.XYZBathy.xmin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xmin()</span></code></a>, etc).</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Resolutions are adjusted when they are not mutiple of grid extensions (slightly decreased).
+Therefore, extensions of the grid are always preserved.</p>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.resol" title="vacumm.bathy.bathy.XYZBathy.resol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resol()</span></code></a>, <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.togrid" title="vacumm.bathy.bathy.XYZBathy.togrid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">togrid()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_magnet">
+<code class="descname">get_magnet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_magnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the magnet integer attribute</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Useful only for mixing <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instances</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_res">
+<code class="descname">get_res</code><span class="sig-paren">(</span><em>deg=False</em>, <em>auto=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the mean X and Y resolutions in meters or degrees</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_rsamp">
+<code class="descname">get_rsamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_rsamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the radius sampling <code class="xref py py-attr docutils literal notranslate"><span class="pre">rsamp</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_transp">
+<code class="descname">get_transp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_transp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.transp" title="vacumm.bathy.bathy.XYZBathy.transp"><code class="xref py py-attr docutils literal notranslate"><span class="pre">transp</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Useful only for mixing <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instances</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_x">
+<code class="descname">get_x</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get valid X positions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_xmax">
+<code class="descname">get_xmax</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_xmax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_xmin">
+<code class="descname">get_xmin</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_xmin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return coordinates as a (2, npts) array <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.xy" title="vacumm.bathy.bathy.XYZBathy.xy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xy</span></code></a></p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">xy()[0]</span></code>: X</li>
+<li><code class="docutils literal notranslate"><span class="pre">xy()[1]</span></code>: Y</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_xyz">
+<code class="descname">get_xyz</code><span class="sig-paren">(</span><em>mask=True</em>, <em>split=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return coordinates and data as a (3, npts) array <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.xyz" title="vacumm.bathy.bathy.XYZBathy.xyz"><code class="xref py py-attr docutils literal notranslate"><span class="pre">xyz</span></code></a></p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">xy()[0]</span></code>: X</li>
+<li><code class="docutils literal notranslate"><span class="pre">xy()[1]</span></code>: Y</li>
+<li><code class="docutils literal notranslate"><span class="pre">xy()[2]</span></code>: Z</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_y">
+<code class="descname">get_y</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get valid Y positions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_ymax">
+<code class="descname">get_ymax</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_ymax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_ymin">
+<code class="descname">get_ymin</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_ymin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_z">
+<code class="descname">get_z</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get valid Z values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_zmax">
+<code class="descname">get_zmax</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_zmax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.get_zmin">
+<code class="descname">get_zmin</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.get_zmin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.grid">
+<code class="descname">grid</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rectangular grid based on x/y positions and resolution</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.hull">
+<code class="descname">hull</code><span class="sig-paren">(</span><em>out='xy'</em>, <em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.hull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the convex hull</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Depends on <code class="docutils literal notranslate"><span class="pre">out</span></code></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>: (xhull, yhull)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;ind&quot;</span></code>: indices of points</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;poly&quot;</span></code>: <code class="xref py py-class docutils literal notranslate"><span class="pre">_geoslib.Polygon</span></code> instance</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.interp">
+<code class="descname">interp</code><span class="sig-paren">(</span><em>xyo</em>, <em>xyz=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.interp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate to (xo,yo) positions using <code class="xref py py-class docutils literal notranslate"><span class="pre">nat.Natgrid</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xo</strong>: Output X</li>
+<li><strong>yo</strong>: Output Y</li>
+<li><em>xyz</em>: If True, return a <code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code> instance instead of a <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> array</li>
+<li><strong>interp_&lt;param&gt;</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&lt;param&gt;</span></code> is passed to the
+<a class="reference internal" href="misc.grid.regridding.html#vacumm.misc.grid.regridding.xy2xy" title="vacumm.misc.grid.regridding.xy2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">xy2xy()</span></code></a> interpolation routine.</li>
+<li>Other params are passed to XYZ initialization for the output dataset.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">An XYZ instance</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.magnet">
+<code class="descname">magnet</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.magnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Magnet integer attribute</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.mask">
+<code class="descname">mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current mask due to exclusion and selection polygons</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.exclude" title="vacumm.bathy.bathy.XYZBathy.exclude"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exclude()</span></code></a> <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.select" title="vacumm.bathy.bathy.XYZBathy.select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>m=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathy.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scatter plot of bathymetry points</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mode</strong>, optional: ‘valid’, ‘masked’ or ‘both’.</li>
+<li><strong>size</strong>, optional: Size of markers.</li>
+<li><strong>color</strong>, optional: Color of markers.</li>
+<li><strong>alpha</strong>, optional: Alpha transparency of markers.</li>
+<li><strong>zorder</strong>, optional: zorder of markers.</li>
+<li><strong>m</strong>, optional: Use this <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance
+to plot the points.</li>
+<li><strong>masked_size</strong>, optional: Size of masked markers.</li>
+<li><strong>masked_alpha</strong>, optional: Alpha transparency of masked markers.</li>
+<li><strong>masked_zorder</strong>, optional: zorder of masked markers.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">For value of default parameters: <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ.plot" title="vacumm.misc.io.XYZ.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.reset_exclusions">
+<code class="descname">reset_exclusions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.reset_exclusions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all exclusions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.reset_rsamp">
+<code class="descname">reset_rsamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.reset_rsamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset <code class="xref py py-attr docutils literal notranslate"><span class="pre">rsamp</span></code> without affecting data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.reset_selections">
+<code class="descname">reset_selections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.reset_selections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all selections</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>convex_hull_method='delaunay'</em>, <em>exc=[]</em>, <em>deg=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the mean resolution.</p>
+<p>Algorithm: Median distances between facets of triangles</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(xres,yres)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.rsmap">
+<code class="descname">rsmap</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.rsmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Radius of unsersampling</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>xyzfile</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save to a file</p>
+<ul>
+<li><p class="first"><strong>xyzfile</strong>: Output file name</p>
+<blockquote>
+<div><ul class="simple">
+<li>write a netcdf file if it ends with “.nc” or “.grd”</li>
+<li>write a sinux file if it ends with “.snx”</li>
+<li>else write an ascii file with 3 columns</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Other keywords are passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.savetxt()</span></code> for ascii saving</p>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>*zones</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add one or more zone (polygons) where only these data are used</p>
+<p>A zone is an argument to <a class="reference internal" href="misc.grid.masking.html#vacumm.misc.grid.masking.polygons" title="vacumm.misc.grid.masking.polygons"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygons()</span></code></a> to get a <code class="xref py py-class docutils literal notranslate"><span class="pre">_geoslib.Polygon</span></code> instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span><span class="o">.</span><span class="n">select</span><span class="p">([[</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span><span class="mi">43</span><span class="p">],[</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">43</span><span class="p">],[</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="mf">45.</span><span class="p">]],[[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">45</span><span class="p">],[</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span><span class="mi">47</span><span class="p">],[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mf">49.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">polygon1</span><span class="p">,</span><span class="n">polygon2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.exclude" title="vacumm.bathy.bathy.XYZBathy.exclude"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exclude()</span></code></a>  <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.selections" title="vacumm.bathy.bathy.XYZBathy.selections"><code class="xref py py-meth docutils literal notranslate"><span class="pre">selections()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.selections">
+<code class="descname">selections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.selections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all selection polygons as a tuple</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.set_magnet">
+<code class="descname">set_magnet</code><span class="sig-paren">(</span><em>magnet</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.set_magnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the magnet integer attribute.
+If set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, no magnet effect.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Useful only for mixing <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instances</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.set_res">
+<code class="descname">set_res</code><span class="sig-paren">(</span><em>xres</em>, <em>yres=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.set_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the resolution of the dataset</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">yres</span></code> is not, it is set to <code class="docutils literal notranslate"><span class="pre">xres</span></code>.
+When a value is <strong>negative</strong>, it is supposed to be in <strong>meters</strong> (not in degrees)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.set_rsamp">
+<code class="descname">set_rsamp</code><span class="sig-paren">(</span><em>rsamp</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.set_rsamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the radius sampling <code class="xref py py-attr docutils literal notranslate"><span class="pre">rsamp</span></code>
+If set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, no sampling.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.set_transp">
+<code class="descname">set_transp</code><span class="sig-paren">(</span><em>transp</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.set_transp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.transp" title="vacumm.bathy.bathy.XYZBathy.transp"><code class="xref py py-attr docutils literal notranslate"><span class="pre">transp</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Useful only for mixing <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a> instances</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.shadows">
+<code class="descname">shadows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.shadows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the polygons defining the ‘shadow’ of this dataset.</p>
+<p>It consists of a tuple of two elements:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the convex hull as a polygon,</li>
+<li>a list of exclusion polygons that intersect the convex hull.</li>
+</ul>
+</div></blockquote>
+<p>Therefore, a point in the shadow must be inside the convex hull polygon,
+and outside the exclusion polygons.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(hull_poly, [exclusion_poly1,…])</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.tocfg">
+<code class="descname">tocfg</code><span class="sig-paren">(</span><em>cfg</em>, <em>section</em>, <em>param=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.tocfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump one or all parameters as options to a cfg section</p>
+<ul class="simple">
+<li><strong>cfg</strong>: ConfigParser object</li>
+<li><strong>section</strong>: Section of cfg</li>
+<li><em>param</em>: A single or a list of parameter names</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.togrid">
+<code class="descname">togrid</code><span class="sig-paren">(</span><em>grid=None</em>, <em>mask=None</em>, <em>cgrid=False</em>, <em>proj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathy.togrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.togrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate to a regular grid</p>
+<ul>
+<li><p class="first"><strong>grid</strong>: The output grid. It can be either:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a (x,y) tuple or a grid or a <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> variable with a grid,</li>
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>, thus guessed using <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.grid" title="vacumm.bathy.bathy.XYZBathy.grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grid()</span></code></a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>mask</em>: It can be either:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">MV2.nomask</span></code>: no masking</li>
+<li>an array: this mask array is directly applied</li>
+<li>a <code class="xref py py-class docutils literal notranslate"><span class="pre">Shapes</span></code> instance (or <a class="reference internal" href="bathy.shorelines.html#vacumm.bathy.shorelines.ShoreLine" title="vacumm.bathy.shorelines.ShoreLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShoreLine</span></code></a>) or a single char GSHHS resolution (and optionally ‘s’ for Histolitt)</li>
+<li>a callable fonction so that <code class="docutils literal notranslate"><span class="pre">mask</span> <span class="pre">=</span> <span class="pre">thisfunc(mask,</span> <span class="pre">**kwmask)</span></code></li>
+<li>a float: data with this value are masked</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>mask_&lt;param&gt;</em>: &lt;param&gt; is passed to <a class="reference internal" href="misc.grid.masking.html#vacumm.misc.grid.masking.polygon_mask" title="vacumm.misc.grid.masking.polygon_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygon_mask()</span></code></a> for evaluation of mask thanks to the polygons.</p>
+</li>
+<li><p class="first"><em>grid_&lt;param&gt;</em>: &lt;param&gt; is passed to <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.grid" title="vacumm.bathy.bathy.XYZBathy.grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid()</span></code></a>.</p>
+</li>
+<li><p class="first"><em>cgrid</em>: If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns bathy at U- and V-points, else at T-points</p>
+</li>
+<li><p class="first">Other keyparam are passed to <a class="reference internal" href="misc.grid.regridding.html#vacumm.misc.grid.regridding.griddata" title="vacumm.misc.grid.regridding.griddata"><code class="xref py py-func docutils literal notranslate"><span class="pre">griddata()</span></code></a> for regridding.</p>
+</li>
+</ul>
+<p>Return: <code class="docutils literal notranslate"><span class="pre">(Zx,Zy)</span></code> OR <code class="docutils literal notranslate"><span class="pre">Z</span></code> depending on cgrid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.toxy">
+<code class="descname">toxy</code><span class="sig-paren">(</span><em>xo</em>, <em>yo</em>, <em>mask=None</em>, <em>outtype='tuple'</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.toxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate on random points using <a class="reference internal" href="misc.grid.regridding.html#vacumm.misc.grid.regridding.xy2xy" title="vacumm.misc.grid.regridding.xy2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">xy2xy()</span></code></a></p>
+<ul>
+<li><p class="first"><strong>xo,yo</strong>: Output positions</p>
+</li>
+<li><p class="first"><em>mask</em>: It can be either:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">MV2.nomask</span></code>: no masking</li>
+<li>a <code class="xref py py-class docutils literal notranslate"><span class="pre">Shapes</span></code> instance (or <a class="reference internal" href="bathy.shorelines.html#vacumm.bathy.shorelines.ShoreLine" title="vacumm.bathy.shorelines.ShoreLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShoreLine</span></code></a>) or a single char GSHHS resolution (and optionally ‘s’ for Histolitt)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>outtype</em>: Define output type</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;tuple&quot;</span></code>: as a tuple (x, y, z)</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;xyz&quot;</span></code>: as xyz block</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;XYZ&quot;</span></code>: as an <code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code> (or subclass) instance</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.transp">
+<code class="descname">transp</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.transp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transparency boolean attribute</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.x">
+<code class="descname">x</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Valid X positions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.xmax">
+<code class="descname">xmax</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.xmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>X max</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.xmin">
+<code class="descname">xmin</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.xmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>X min</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.xy">
+<code class="descname">xy</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates as a (2, npts) array</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.xyz">
+<code class="descname">xyz</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates and data as a (3, npts) array</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.y">
+<code class="descname">y</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Valid Y positions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.ymax">
+<code class="descname">ymax</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.ymax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Y max</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.ymin">
+<code class="descname">ymin</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.ymin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Y min</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.z">
+<code class="descname">z</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Valid Z values</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.zmax">
+<code class="descname">zmax</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.zmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Z max</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathy.zmin">
+<code class="descname">zmin</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.zmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Z min</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathy.zone">
+<code class="descname">zone</code><span class="sig-paren">(</span><em>poly=False</em>, <em>mask=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathy.zone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get xmin,ymin,xmax,ymax</p>
+<ul class="simple">
+<li><em>poly</em>: if True, return zone as a Polygon instance</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.bathy.XYZBathyBankClient">
+<em class="property">class </em><code class="descname">XYZBathyBankClient</code><span class="sig-paren">(</span><em>bank</em>, <em>id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBankClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBankClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An single element (bathy infos) of the <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank" title="vacumm.bathy.bathy.XYZBathyBank"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathyBank</span></code></a></p>
+<ul class="simple">
+<li><strong>bank</strong>: A bank instance.</li>
+<li><strong>id</strong>:Id of this bathy.</li>
+<li>Other keywords are set as attributes (like long_name, etc).</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Let <code class="docutils literal notranslate"><span class="pre">xyzbc</span></code> being an element of the bank.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">xyzbc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyzbc</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;New long name&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyzbc</span><span class="o">.</span><span class="n">xmax</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyzbc</span><span class="o">.</span><span class="n">transp</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyzbc</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;iroise&#39;</span>             <span class="c1"># Rename in the bank</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyzbc</span><span class="o">.</span><span class="n">xyzfile</span> <span class="o">=</span> <span class="s1">&#39;newfile.mnt&#39;</span>   <span class="c1"># xmin, xmax, ymin, ymax updated</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span> <span class="o">=</span> <span class="n">xyzbc</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBankClient.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>zone=None</em>, <em>margin=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBankClient.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBankClient.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the bathymetry as a <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy" title="vacumm.bathy.bathy.XYZBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathy</span></code></a> instance</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ.clip" title="vacumm.misc.io.XYZ.clip"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clip()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBankClient.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBankClient.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBankClient.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and plot this bathy</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBankClient.save">
+<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBankClient.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBankClient.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the bank</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.bathy.XYZBathyBank">
+<em class="property">class </em><code class="descname">XYZBathyBank</code><span class="sig-paren">(</span><em>cfgfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Bank of XYZ bathymetry infos</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBankClient" title="vacumm.bathy.bathy.XYZBathyBankClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathyBankClient</span></code></a></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xyzb</span> <span class="o">=</span> <span class="n">XYZBathyBank</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>xyzfile</em>, <em>id=None</em>, <em>force=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a bathy to the bank</p>
+<ul class="simple">
+<li><strong>xyzfile</strong>: xyz file.</li>
+<li><dl class="first docutils">
+<dt><em>id</em>: Id of the bank. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is guessed from the file name:</dt>
+<dd><code class="docutils literal notranslate"><span class="pre">xyzfile=&quot;/path/toto.xyz&quot;</span></code> -&gt;  <code class="docutils literal notranslate"><span class="pre">id=&quot;toto&quot;</span></code></dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><em>id1</em>, <em>id2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy bathy infos to another</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.get_order">
+<code class="descname">get_order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.get_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.get_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of ids that define the order</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.ids">
+<code class="descname">ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of bathy ids</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.list">
+<code class="descname">list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all clients of the bank as a list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a bathymetry as a <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy" title="vacumm.bathy.bathy.XYZBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathy</span></code></a> instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.merger">
+<code class="descname">merger</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.merger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.merger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyMerger" title="vacumm.bathy.bathy.XYZBathyMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathyMerger</span></code></a> instance using the current bank</p>
+<p>Keywords are passed to <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.select" title="vacumm.bathy.bathy.XYZBathyBank.select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot current bathies using a <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyMerger" title="vacumm.bathy.bathy.XYZBathyMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathyMerger</span></code></a> instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a bathy from the bank</p>
+<p><em>id</em>: A bathy id or <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBankClient" title="vacumm.bathy.bathy.XYZBathyBankClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZBathyBankClient</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>cfgfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>xmin=None</em>, <em>xmax=None</em>, <em>ymin=None</em>, <em>ymax=None</em>, <em>load=True</em>, <em>margin=None</em>, <em>ordered=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of bathymetries relevant to the specified region</p>
+<ul>
+<li><p class="first"><em>margin</em>: Margin for loading xyz bathies:</p>
+<blockquote>
+<div><ul class="simple">
+<li>if None, the whole bathy is loaded from the bank,</li>
+<li>else it should be a value relative to the approximative resolution (see <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathy.resol" title="vacumm.bathy.bathy.XYZBathy.resol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">XYZBathy.resol()</span></code></a>)</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyBank.set_order">
+<code class="descname">set_order</code><span class="sig-paren">(</span><em>order</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyBank.set_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyBank.set_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a list of ids to define the order</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger">
+<em class="property">class </em><code class="descname">XYZBathyMerger</code><span class="sig-paren">(</span><em>xmin=None</em>, <em>xmax=None</em>, <em>ymin=None</em>, <em>ymax=None</em>, <em>long_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyMerger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZMerger" title="vacumm.misc.io.XYZMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.io.XYZMerger</span></code></a></p>
+<p>Mix different bathymetries</p>
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a dataset to the merger</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>grid=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyMerger.bathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a gridded bathymetry</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all current dataset</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.from_bank">
+<code class="descname">from_bank</code><span class="sig-paren">(</span><em>margin=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyMerger.from_bank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.from_bank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append all bathymetries from the bank that cover the grid</p>
+<ul class="simple">
+<li><em>margin</em>: Relative margin for clipping datasets from the bank (see <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ.clip" title="vacumm.misc.io.XYZ.clip"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clip()</span></code></a> and <a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ.resol" title="vacumm.misc.io.XYZ.resol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resol()</span></code></a>)</li>
+</ul>
+<p>All parameters are passed to <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyBank.select" title="vacumm.bathy.bathy.XYZBathyBank.select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">XYZBathyBank.select()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.get_xyz">
+<code class="descname">get_xyz</code><span class="sig-paren">(</span><em>mask=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.get_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge current dataset</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.ids">
+<code class="descname">ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.ids" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.merge">
+<code class="descname">merge</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.bathy.bathy.XYZBathyMerger.xyz" title="vacumm.bathy.bathy.XYZBathyMerger.xyz"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xyz()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>color=None</em>, <em>marker=None</em>, <em>mode='cluster'</em>, <em>title='XYZ merger'</em>, <em>m=True</em>, <em>show=True</em>, <em>colorbar=True</em>, <em>savefig=None</em>, <em>savefigs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#XYZBathyMerger.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.plot" title="Permalink to this definition">¶</a></dt>
+<dd><ul>
+<li><p class="first"><em>alpha</em>: Alpha transparency:</p>
+<blockquote>
+<div><ul class="simple">
+<li>applied to <strong>all</strong> points if <code class="docutils literal notranslate"><span class="pre">mode=&quot;cluster&quot;</span></code></li>
+<li>applied to <strong>hidden</strong> points if <code class="docutils literal notranslate"><span class="pre">mode=&quot;data&quot;</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>mode</em>: Display mode:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;cluster&quot;</span></code>: Points from different datasets have different colors and markers,</dt>
+<dd>and hidden points are transparent.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;data&quot;</span></code>: Points have the same marker, colors depends on Z value and hidden</dt>
+<dd>points are masked.</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>marker</em>: Define a single or several markers to be used.</p>
+</li>
+<li><p class="first"><em>legend</em>: Show a legend if <code class="docutils literal notranslate"><span class="pre">mode=&quot;cluster&quot;</span></code>.</p>
+</li>
+<li><p class="first"><em>title</em>: Title of the plot.</p>
+</li>
+<li><p class="first"><em>m</em>: <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Basemap</span></code></a> instance.</p>
+</li>
+<li><p class="first"><em>m_margin</em>: Margin for <code class="docutils literal notranslate"><span class="pre">m</span></code>, relative to the mean resolution (see <code class="xref py py-meth docutils literal notranslate"><span class="pre">XYZ.resol()</span></code>)</p>
+</li>
+<li><p class="first"><em>m_&lt;keywords&gt;</em>: Keywords are passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">map()</span></code>.</p>
+</li>
+<li><p class="first">Extra keywords are passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">XYZ.plot()</span></code>.</p>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a dataset from the merger</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.togrid">
+<code class="descname">togrid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.togrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate merged bathymetries to a grid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.tolist">
+<code class="descname">tolist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the merger as a list of datasets</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.XYZBathyMerger.xyz">
+<code class="descname">xyz</code><a class="headerlink" href="#vacumm.bathy.bathy.XYZBathyMerger.xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates and data as a (3, npts) array</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.bathy.GriddedBathy">
+<em class="property">class </em><code class="descname">GriddedBathy</code><span class="sig-paren">(</span><em>var</em>, <em>maxvalue=0.0</em>, <em>fillvalue=0.0</em>, <em>shoreline=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.bathy._GriddedBathyMasked_</span></code></p>
+<p>Interface to gridded bathymetries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">GriddedBathy</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">shoreline</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">plot_bathy</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Bathymetry&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;bathy.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newvar</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">bathy</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>mask=True</em>, <em>id=None</em>, <em>long_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy.bathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the bathymetry variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><em>mask</em>: If True and if a shoreline is set (with <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.set_shoreline" title="vacumm.bathy.bathy.GriddedBathy.set_shoreline"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_shoreline()</span></code></a>), apply a mask due to this shoreline.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.get_grid">
+<code class="descname">get_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy.get_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.get_lat">
+<code class="descname">get_lat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy.get_lat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.get_lat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.get_lon">
+<code class="descname">get_lon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy.get_lon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.get_lon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.get_res">
+<code class="descname">get_res</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy.get_res"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.get_res" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.get_shoreline_mask">
+<code class="descname">get_shoreline_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.get_shoreline_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the shoreline mask</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.masked_bathy">
+<code class="descname">masked_bathy</code><span class="sig-paren">(</span><em>id=None</em>, <em>long_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.masked_bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a masked version of the bathymetry</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>mask=True</em>, <em>id=None</em>, <em>long_name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot using <a class="reference internal" href="#vacumm.bathy.bathy.plot_bathy" title="vacumm.bathy.bathy.plot_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_bathy()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.regrid">
+<code class="descname">regrid</code><span class="sig-paren">(</span><em>grid</em>, <em>method='auto'</em>, <em>mask=True</em>, <em>id=None</em>, <em>long_name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy.regrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.regrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regrid bathy to another grid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.reset_shoreline">
+<code class="descname">reset_shoreline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.reset_shoreline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the shoreline</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>ncfile</em>, <em>mask=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathy.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save bathy to a netcdf file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ncfile</strong>: Output netcdf file name</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.bathy" title="vacumm.bathy.bathy.GriddedBathy.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.set_fillvalue">
+<code class="descname">set_fillvalue</code><span class="sig-paren">(</span><em>fillvalue</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.set_fillvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set filling value when bathy is masked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fillvalue</strong>: If not set to a scalar, bathy is not filled when masked.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.set_maxvalue">
+<code class="descname">set_maxvalue</code><span class="sig-paren">(</span><em>maxvalue</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.set_maxvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value over which bathy is masked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>maxvalue</strong>: If not set to a scalar, bathy is not masked in this way.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathy.set_shoreline">
+<code class="descname">set_shoreline</code><span class="sig-paren">(</span><em>shoreline</em>, <em>margin=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathy.set_shoreline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the shoreline that to create a mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>shoreline</strong>: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ShoreLine</span></code> instance,
+argument to <code class="xref py py-func docutils literal notranslate"><span class="pre">get_shoreline()</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, shoreline is not used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The mask is applied only if <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.masked_bathy" title="vacumm.bathy.bathy.GriddedBathy.masked_bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">masked_bathy()</span></code></a> is called.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger">
+<em class="property">class </em><code class="descname">GriddedBathyMerger</code><span class="sig-paren">(</span><em>grid</em>, <em>shoreline=None</em>, <em>id=None</em>, <em>long_name=None</em>, <em>maxvalue=0.0</em>, <em>fillvalue=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathyMerger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="misc.grid.regridding.html#vacumm.misc.grid.regridding.GriddedMerger" title="vacumm.misc.grid.regridding.GriddedMerger"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.misc.grid.regridding.GriddedMerger</span></code></a>, <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy" title="vacumm.bathy.bathy.GriddedBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.bathy.GriddedBathy</span></code></a></p>
+<p>Merger of gridded variables</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Usage:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">merger</span> <span class="o">=</span> <span class="n">GriddedMerger</span><span class="p">(</span><span class="n">mygrid</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;My bathy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merger</span> <span class="o">+=</span> <span class="n">etopo2</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merger</span> <span class="o">+=</span> <span class="n">my_bathy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merger</span><span class="o">.</span><span class="n">set_shoreline</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merged_bathy</span> <span class="o">=</span> <span class="n">merger</span><span class="o">.</span><span class="n">bathy</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathyMerger.append" title="vacumm.bathy.bathy.GriddedBathyMerger.append"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>var</em>, <em>method='auto'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a bathymetry to the top of the merger</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathyMerger.bathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathyMerger.merge" title="vacumm.bathy.bathy.GriddedBathyMerger.merge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">merge()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.get_grid">
+<code class="descname">get_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the grid for merging</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.get_lat">
+<code class="descname">get_lat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.get_lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the loatitudes of the grid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.get_lon">
+<code class="descname">get_lon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.get_lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the longitudes of the grid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.get_res">
+<code class="descname">get_res</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.get_res" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.get_shoreline_mask">
+<code class="descname">get_shoreline_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.get_shoreline_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the shoreline mask</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>idx</em>, <em>var</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.masked_bathy">
+<code class="descname">masked_bathy</code><span class="sig-paren">(</span><em>id=None</em>, <em>long_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.masked_bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a masked version of the bathymetry</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.merge">
+<code class="descname">merge</code><span class="sig-paren">(</span><em>res_ratio=0.5</em>, <em>mask=True</em>, <em>id=None</em>, <em>long_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathyMerger.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge all variables onto the grid and apply final mask</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#GriddedBathyMerger.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot merged bathy</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy.plot" title="vacumm.bathy.bathy.GriddedBathy.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GriddedBathy.plot()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.regrid">
+<code class="descname">regrid</code><span class="sig-paren">(</span><em>grid</em>, <em>method='auto'</em>, <em>mask=True</em>, <em>id=None</em>, <em>long_name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.regrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regrid bathy to another grid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.reset_shoreline">
+<code class="descname">reset_shoreline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.reset_shoreline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the shoreline</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>ncfile</em>, <em>mask=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save bathy to a netcdf file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ncfile</strong>: Output netcdf file name</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathyMerger.bathy" title="vacumm.bathy.bathy.GriddedBathyMerger.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.set_fillvalue">
+<code class="descname">set_fillvalue</code><span class="sig-paren">(</span><em>fillvalue</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.set_fillvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set filling value when bathy is masked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fillvalue</strong>: If not set to a scalar, bathy is not filled when masked.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.set_grid">
+<code class="descname">set_grid</code><span class="sig-paren">(</span><em>grid</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.set_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the grid for merging</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.set_maxvalue">
+<code class="descname">set_maxvalue</code><span class="sig-paren">(</span><em>maxvalue</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.set_maxvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value over which bathy is masked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>maxvalue</strong>: If not set to a scalar, bathy is not masked in this way.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.GriddedBathyMerger.set_shoreline">
+<code class="descname">set_shoreline</code><span class="sig-paren">(</span><em>shoreline</em>, <em>margin=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.GriddedBathyMerger.set_shoreline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the shoreline that to create a mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>shoreline</strong>: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ShoreLine</span></code> instance,
+argument to <code class="xref py py-func docutils literal notranslate"><span class="pre">get_shoreline()</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, shoreline is not used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The mask is applied only if <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathyMerger.masked_bathy" title="vacumm.bathy.bathy.GriddedBathyMerger.masked_bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">masked_bathy()</span></code></a> is called.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy">
+<em class="property">class </em><code class="descname">NcGriddedBathy</code><span class="sig-paren">(</span><em>lon=None</em>, <em>lat=None</em>, <em>name=None</em>, <em>cfgfile=None</em>, <em>reverse=False</em>, <em>varname=None</em>, <em>lonname=None</em>, <em>latname=None</em>, <em>shoreline=None</em>, <em>maxvalue=0.0</em>, <em>fillvalue=0.0</em>, <em>imargin=0</em>, <em>jmargin=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#NcGriddedBathy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vacumm.bathy.bathy.GriddedBathy" title="vacumm.bathy.bathy.GriddedBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.bathy.GriddedBathy</span></code></a></p>
+<p>Get a gridded bathymetry from file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>lon/lat</strong>, optional: Longitude and latitude selection.</p>
+</li>
+<li><p class="first"><strong>name</strong>, optional: It is either</p>
+<blockquote>
+<div><ul class="simple">
+<li>the name of bathymetry within the list given by <a class="reference internal" href="#vacumm.bathy.bathy.print_bathy_list" title="vacumm.bathy.bathy.print_bathy_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_bathy_list()</span></code></a></li>
+<li>the name of netcdf file.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>i/jmargin</strong>: Add or suppress a marginal grid points to the selected area (integer).</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">NcGriddedBathy</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span><span class="mi">49</span><span class="p">),</span> <span class="n">maxvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;bathy.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">regrid</span><span class="p">(</span><span class="n">mygrid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">savefig</span><span class="o">=</span><span class="s1">&#39;bathy.png&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b2</span> <span class="o">=</span> <span class="n">NcGriddedBathy</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;bathy.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.bathy">
+<code class="descname">bathy</code><span class="sig-paren">(</span><em>mask=True</em>, <em>id=None</em>, <em>long_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the bathymetry variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><em>mask</em>: If True and if a shoreline is set (with <a class="reference internal" href="#vacumm.bathy.bathy.NcGriddedBathy.set_shoreline" title="vacumm.bathy.bathy.NcGriddedBathy.set_shoreline"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_shoreline()</span></code></a>), apply a mask due to this shoreline.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.get_grid">
+<code class="descname">get_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.get_lat">
+<code class="descname">get_lat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.get_lat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.get_lon">
+<code class="descname">get_lon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.get_lon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.get_res">
+<code class="descname">get_res</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.get_res" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.get_shoreline_mask">
+<code class="descname">get_shoreline_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.get_shoreline_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the shoreline mask</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.masked_bathy">
+<code class="descname">masked_bathy</code><span class="sig-paren">(</span><em>id=None</em>, <em>long_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.masked_bathy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a masked version of the bathymetry</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>mask=True</em>, <em>id=None</em>, <em>long_name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot using <a class="reference internal" href="#vacumm.bathy.bathy.plot_bathy" title="vacumm.bathy.bathy.plot_bathy"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_bathy()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.regrid">
+<code class="descname">regrid</code><span class="sig-paren">(</span><em>grid</em>, <em>method='auto'</em>, <em>mask=True</em>, <em>id=None</em>, <em>long_name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.regrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regrid bathy to another grid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.reset_shoreline">
+<code class="descname">reset_shoreline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.reset_shoreline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the shoreline</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>ncfile</em>, <em>mask=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save bathy to a netcdf file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ncfile</strong>: Output netcdf file name</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.bathy.bathy.NcGriddedBathy.bathy" title="vacumm.bathy.bathy.NcGriddedBathy.bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bathy()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.set_fillvalue">
+<code class="descname">set_fillvalue</code><span class="sig-paren">(</span><em>fillvalue</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.set_fillvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set filling value when bathy is masked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fillvalue</strong>: If not set to a scalar, bathy is not filled when masked.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.set_maxvalue">
+<code class="descname">set_maxvalue</code><span class="sig-paren">(</span><em>maxvalue</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.set_maxvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value over which bathy is masked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>maxvalue</strong>: If not set to a scalar, bathy is not masked in this way.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.bathy.bathy.NcGriddedBathy.set_shoreline">
+<code class="descname">set_shoreline</code><span class="sig-paren">(</span><em>shoreline</em>, <em>margin=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathy.set_shoreline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the shoreline that to create a mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>shoreline</strong>: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ShoreLine</span></code> instance,
+argument to <code class="xref py py-func docutils literal notranslate"><span class="pre">get_shoreline()</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, shoreline is not used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The mask is applied only if <a class="reference internal" href="#vacumm.bathy.bathy.NcGriddedBathy.masked_bathy" title="vacumm.bathy.bathy.NcGriddedBathy.masked_bathy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">masked_bathy()</span></code></a> is called.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.bathy.bathy.NcGriddedBathyError">
+<em class="property">exception </em><code class="descname">NcGriddedBathyError</code><a class="reference internal" href="../_modules/vacumm/bathy/bathy.html#NcGriddedBathyError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathyError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Exception" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></a></p>
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.NcGriddedBathyError.args">
+<code class="descname">args</code><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathyError.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.bathy.bathy.NcGriddedBathyError.message">
+<code class="descname">message</code><a class="headerlink" href="#vacumm.bathy.bathy.NcGriddedBathyError.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

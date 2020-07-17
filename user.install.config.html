@@ -1,0 +1,271 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.2.6. Library configuration &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.2.6. Library configuration</a><ul>
+<li><a class="reference internal" href="#purpose">1.2.6.1. Purpose</a></li>
+<li><a class="reference internal" href="#operating">1.2.6.2. Operating</a></li>
+<li><a class="reference internal" href="#default-configuration">1.2.6.3. Default configuration</a></li>
+<li><a class="reference internal" href="#user-configuration">1.2.6.4. User configuration</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.install.config.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="library-configuration">
+<span id="user-install-config"></span><h1>1.2.6. Library configuration<a class="headerlink" href="#library-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="sidebar">
+<p class="first sidebar-title">What is my configuration?</p>
+<p>If your library is not too old, type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.config</span> <span class="k">import</span> <span class="n">print_config</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print_config</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Or directly in the shell:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vacumm_print_config.py
+</pre></div>
+</div>
+<p class="last">See <a class="reference internal" href="user.scripts.vacumm_print_config.html#user-scripts-vacumm-print-config"><span class="std std-ref">vacumm_print_config.py – Print your VACUMM configuration (DEPRECATED)</span></a>.</p>
+</div>
+<div class="section" id="purpose">
+<h2>1.2.6.1. Purpose<a class="headerlink" href="#purpose" title="Permalink to this headline">¶</a></h2>
+<p>Some modules need for instance to access external files (such as a bathymetric file)
+that are not included directly in the library because they are too bulky.
+To make the installation generic and portable on different networks,
+it is necessary not to put these paths hardcoded in the code:
+so it uses a system configuration.
+There is thus a default configuration (that of IFREMER network),
+and it is possible to alter the configuration
+for example to adapt to his or her needs or network.
+For example, Actimar has its own configuration.
+And each user can also have its configuration
+which affects partly these parameters.</p>
+<p>The concept of configuration is at two levels:</p>
+<ul class="simple">
+<li>At the user’s level who can change its personal configuration file.</li>
+<li>At the developer’s leve who will appeal to the API (<a class="reference internal" href="library/config.html#module-vacumm.config" title="vacumm.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.config</span></code></a>)
+to define and use the configuration in its code.</li>
+</ul>
+</div>
+<div class="section" id="operating">
+<h2>1.2.6.2. Operating<a class="headerlink" href="#operating" title="Permalink to this headline">¶</a></h2>
+<p>A number of modules have a default configuration in the form of a
+<code class="file docutils literal notranslate"><span class="pre">config.cfg</span></code> file in the same directory as the module
+or in the root directory of the library.
+The module configuration is then accessible at the section of the same name.
+For example, if the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.toto.tutu</span></code> module is configurable,
+its configuration file may be <code class="file docutils literal notranslate"><span class="pre">vacumm/toto/config.cfg</span></code>, with the content:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[vacumm.toto.tutu]</span>
+<span class="na">masection</span> <span class="o">=</span> <span class="s">mavaleur</span>
+</pre></div>
+</div>
+<p>In addition, the configuration files of support the expansion of variables in two ways:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">An options inserted in a value is automatically replaced
+by its value (it is “extended”) when it is present in the classical
+form <code class="docutils literal notranslate"><span class="pre">%(option)s</span></code>. For example:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[vacumm.toto.tutu]</span>
+<span class="na">option1</span> <span class="o">=</span> <span class="s">foo</span>
+<span class="na">option2</span> <span class="o">=</span> <span class="s">%(option1)bar</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">option2</span></code> takes the value <code class="docutils literal notranslate"><span class="pre">foobar</span></code>.
+There are several directory names that are currently systematically extended:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">lib_dir</span></code> : Root directory of the library
+(see <a class="reference internal" href="library/config.html#vacumm.config.get_lib_dir" title="vacumm.config.get_lib_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_lib_dir()</span></code></a>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">data_dir</span></code> : Directory that stores the data used by the library and tutorials
+(see <a class="reference internal" href="library/config.html#vacumm.config.get_data_dir" title="vacumm.config.get_data_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_data_dir()</span></code></a>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">tut_dir</span></code> : Directory containing tutorial scripts
+(see <a class="reference internal" href="library/config.html#vacumm.config.get_tut_dir" title="vacumm.config.get_tut_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tut_dir()</span></code></a>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">dist_dir</span></code> : Directory of packet distribution for developers
+(see <a class="reference internal" href="library/config.html#vacumm.config.get_dist_dir" title="vacumm.config.get_dist_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_dist_dir()</span></code></a>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">conf_dir</span></code> : General directory containing the configuration files
+(see <code class="xref py py-func docutils literal notranslate"><span class="pre">get_conf_dir()</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">user_conf_dir</span></code> : Directory containing user configuration files
+(see <a class="reference internal" href="library/config.html#vacumm.config.get_user_conf_dir" title="vacumm.config.get_user_conf_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_user_conf_dir()</span></code></a>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">mod_dir</span></code> : Directory of the module
+(see <code class="xref py py-func docutils literal notranslate"><span class="pre">get_mod_dir()</span></code>).</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">The path <code class="docutils literal notranslate"><span class="pre">~</span></code> is automatically replaced by the user home,
+and environment variables that have the form <code class="docutils literal notranslate"><span class="pre">$HOME</span></code> ou <code class="docutils literal notranslate"><span class="pre">${HOME}</span></code>
+are replaced by their value.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Developers that need to manage configuration can refer
+to the documentation of the module <a class="reference internal" href="library/config.html#module-vacumm.config" title="vacumm.config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.config</span></code></a>.</p>
+</div>
+</li>
+</ol>
+</div></blockquote>
+<p>Configuration values are accessible with the function
+<a class="reference internal" href="library/config.html#vacumm.config.get_config_value" title="vacumm.config.get_config_value"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm.config.get_config_value()</span></code></a>.</p>
+</div>
+<div class="section" id="default-configuration">
+<h2>1.2.6.3. Default configuration<a class="headerlink" href="#default-configuration" title="Permalink to this headline">¶</a></h2>
+<p>The general default configuration (loaded with <a class="reference internal" href="library/config.html#vacumm.config.get_default_config" title="vacumm.config.get_default_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_default_config()</span></code></a>)
+is following:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[vacumm]</span>
+<span class="na">url</span> <span class="o">=</span> <span class="s">http://www.ifremer.fr/vacumm</span>
+<span class="na">url_recent</span> <span class="o">=</span> <span class="s">http://relay.actimar.fr/~raynaud/vacumm</span>
+
+<span class="k">[vacumm.bathy.shorelines]</span>
+<span class="na">shapefile_histolitt</span> <span class="o">=</span> <span class="s">/home1/caparmor/sraynaud/data/shorelines/Histolitt/TCHistolitt-V1-0-RGF93-polygone</span>
+<span class="na">shapefile_histolitt_url</span> <span class="o">=</span> <span class="s">http://relay.actimar.fr/~raynaud/vacumm_data/TCHistolitt-V1-0-RGF93-polygone</span>
+<span class="na">shapefile_histolitt_license</span> <span class="o">=</span> <span class="s">IGN-SHOM 2009: http://www.shom.fr/fr_page/fr_prod_num/tch_licence.html</span>
+<span class="na">shapefile_eurosion</span> <span class="o">=</span> <span class="s">/home1/caparmor/sraynaud/data/shorelines/EUROSION/CLEUER100kV2_2</span>
+<span class="na">shapefile_eurosion_url</span> <span class="o">=</span> <span class="s">http://relay.actimar.fr/~raynaud/vacumm_data/CLEUER100kV2_2</span>
+<span class="na">shapefile_eurosion_license</span> <span class="o">=</span> <span class="s">EUROSION shoreline: http://www.eurosion.org/index.html</span>
+<span class="na">shapefile_gshhs</span> <span class="o">=</span> <span class="s">/home1/caparmor/sraynaud/data/shorelines/gshhs/gshhs_land</span>
+<span class="na">shapefile_gshhs_url</span> <span class="o">=</span> <span class="s">http://relay.actimar.fr/~raynaud/vacumm_data/gshhs_land</span>
+<span class="na">shapefile_gshhs_license</span> <span class="o">=</span> <span class="s">NOAA / GSHHS: http://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html</span>
+
+<span class="k">[vacumm.bathy.bathy]</span>
+<span class="na">cfgfile_gridded</span> <span class="o">=</span> <span class="s">%(mod_dir)s/bathy.gridded.cfg</span>
+<span class="na">cfgfile_xyz</span> <span class="o">=</span> <span class="s">%(mod_dir)s/bathy.xyz.cfg</span>
+
+<span class="k">[vacumm.misc.plot]</span>
+<span class="na">fill</span> <span class="o">=</span> <span class="s">pcolor</span>
+<span class="na">nmax_levels</span> <span class="o">=</span> <span class="s">12</span>
+<span class="na">levels_mode</span> <span class="o">=</span> <span class="s">auto</span>
+<span class="na">clabel</span> <span class="o">=</span> <span class="s">False</span>
+<span class="na">keepminmax</span> <span class="o">=</span> <span class="s">0</span>
+<span class="na">cmap</span> <span class="o">=</span> <span class="s">auto</span>
+<span class="na">cmap_positive</span> <span class="o">=</span> <span class="s">speed</span>
+<span class="na">cmap_negative</span> <span class="o">=</span> <span class="s">tempo_r</span>
+<span class="na">cmap_symetric</span> <span class="o">=</span> <span class="s">balance</span>
+
+<span class="k">[vacumm.misc.docstrings]</span>
+<span class="na">verbose</span> <span class="o">=</span> <span class="s">False</span>
+
+<span class="k">[vacumm.misc.grid.basemap]</span>
+<span class="na">proj</span> <span class="o">=</span> <span class="s">laea</span>
+<span class="na">max_cache_size</span> <span class="o">=</span> <span class="s">50*1024*1024</span>
+
+<span class="k">[vacumm.tide.station_info]</span>
+<span class="na">ports_file</span> <span class="o">=</span> <span class="s">%(data_dir)s/sea_level/ports.txt</span>
+<span class="na">meansealevel_file</span> <span class="o">=</span> <span class="s">%(data_dir)s/sea_level/niv_moy.txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="user-configuration">
+<h2>1.2.6.4. User configuration<a class="headerlink" href="#user-configuration" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to alter for a user the default configuration of one or more modules.
+The best way is to edit the file <code class="file docutils literal notranslate"><span class="pre">$HOME/.config/vacumm/vacumm.cfg</span></code>.
+To quickly <strong>edit</strong> this file, use this script: <a class="reference internal" href="user.scripts.vacumm_edit_config.html#user-scripts-vacumm-edit-config"><span class="std std-ref">vacumm_edit_config.py – Edit your user configuration file (DEPRECATED)</span></a>.</p>
+<p>If you personally install the library,
+you can configure it for the users using option <code class="xref std std-option docutils literal notranslate"><span class="pre">--cfgfiles</span></code> of the <code class="file docutils literal notranslate"><span class="pre">setup.py</span></code>
+installation script
+(see <a class="reference internal" href="user.install.installs.html#user-install-install-config"><span class="std std-ref">User configuration of the modules</span></a>).</p>
+<p>Finally, you can alter this configuration online through function
+<a class="reference internal" href="library/config.html#vacumm.config.set_config_value" title="vacumm.config.set_config_value"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacumm.config.set_config_value()</span></code></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

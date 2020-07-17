@@ -1,0 +1,644 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.tide.marigraph &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../index.html"><img src="../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.tide.marigraph</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provides a class to perform basic operations on marigraphic sea level data</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2011-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span><span class="o">,</span><span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">MA</span><span class="o">,</span><span class="nn">cdms2</span> <span class="k">as</span> <span class="nn">cdms</span><span class="o">,</span><span class="nn">MV2</span> <span class="k">as</span> <span class="nn">MV</span><span class="o">,</span><span class="nn">cdtime</span>
+<span class="kn">from</span> <span class="nn">genutil</span> <span class="k">import</span> <span class="n">minmax</span>
+<span class="kn">from</span> <span class="nn">genutil.statistics</span> <span class="k">import</span> <span class="n">std</span> <span class="k">as</span> <span class="n">STD</span>
+
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">P</span><span class="o">,</span><span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">S</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">isNumberType</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Marigraph&#39;</span><span class="p">]</span>
+
+<span class="n">_docs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">time_range</span><span class="o">=</span> <span class="s2">&quot;time range for data selection (like (&#39;1999&#39;,&#39;2000-01-01&#39;,&#39;co&#39;)). If None, time range is reset [default: None]&quot;</span><span class="p">,</span>
+    <span class="n">tide_filter</span><span class="o">=</span>    <span class="s2">&quot;Tide ilter name within [False,&#39;demerliac&#39;,&#39;godin&#39;]. Default: False&quot;</span>
+<span class="p">)</span>
+
+
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">_docs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ss</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">val</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">))</span>
+    <span class="n">_docs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;- </span><span class="si">%(ss)s%(key)s%(ss)s</span><span class="s1">: </span><span class="si">%(val)s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ss</span><span class="o">=</span><span class="n">ss</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+<span class="n">_docs</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n\t\t\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">_docs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="s1">&#39;time_range&#39;</span><span class="p">,</span> <span class="s1">&#39;tide_filter&#39;</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">_fmtdoc_</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="c1">#   try:</span>
+<span class="c1">#       func.__doc__ = func.__doc__ % _docs</span>
+<span class="c1">#   except:</span>
+<span class="c1">#       pass</span>
+    <span class="k">return</span> <span class="n">func</span>
+
+
+
+<div class="viewcode-block" id="Marigraph"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph">[docs]</a><span class="k">class</span> <span class="nc">Marigraph</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A marigraph class that support statistics and plots.</span>
+
+<span class="sd">    You give as input a 1D cdms sea level variable with a suitable time,</span>
+<span class="sd">    or a tide.StationInfo() object, or simply a 5-letter shom ID.</span>
+<span class="sd">    The class will design an object with high and low tides,</span>
+<span class="sd">    and pure tidal and without tidal signal.</span>
+<span class="sd">    You can optionnally specify a time axis on wich the input signal</span>
+<span class="sd">    is to be interpolated before any processing.</span>
+<span class="sd">    You can also restrict the time range and perfom a running average.</span>
+
+<span class="sd">    :Parameters:</span>
+
+<span class="sd">        All parameters are passed to :meth:`set`</span>
+
+<span class="sd">            - **data** : It can be either</span>
+
+<span class="sd">                - A ``cdms2`` 1D array with a time axis.</span>
+<span class="sd">                - A :class:`~vacumm.tide.StationInfo` instance.</span>
+<span class="sd">                - The name of a station that can be search for using :class:`~vacumm.tide.StationInfo`.</span>
+
+<span class="sd">            - *select*: time range for data selection (like (&#39;1999&#39;,&#39;2000-01-01&#39;,&#39;co&#39;)). If None, time range is reset [default: None],</span>
+<span class="sd">            - *global_anomaly*: First remove the anomaly of the whole signal before any processing [default: False]</span>
+<span class="sd">            - *anomaly*: Remove the anomaly of the restricted sample before any processing [default: False]</span>
+<span class="sd">            - *shom_anomaly*: Same but removed mean is get from observation at correspondind shom station [default: False]</span>
+<span class="sd">%s</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; # Get data</span>
+<span class="sd">    &gt;&gt;&gt; from vacumm.tide import Marigraph</span>
+<span class="sd">    &gt;&gt;&gt; brest = Marigraph(&#39;BREST&#39;,range=(&#39;2006-03&#39;,&#39;2006-08&#39;),hourly=True)</span>
+<span class="sd">    &gt;&gt;&gt; # Plot</span>
+<span class="sd">    &gt;&gt;&gt; brest.plot_sea_level()</span>
+<span class="sd">    &gt;&gt;&gt; brest.plot_low_high()</span>
+<span class="sd">    &gt;&gt;&gt; brest.plot_cotes()</span>
+<span class="sd">    &gt;&gt;&gt; # Change time range</span>
+<span class="sd">    &gt;&gt;&gt; brest.set_time_range((&#39;2006-07&#39;,&#39;2006-08&#39;,&#39;co&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; # Change tide filter</span>
+<span class="sd">    &gt;&gt;&gt; brest.set_tide_filter(&#39;godin&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; # Save</span>
+<span class="sd">    &gt;&gt;&gt; f = cdms.open(&#39;mytide.nc&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; f.write(brest.cotes())</span>
+<span class="sd">    &gt;&gt;&gt; f.write(brest.high())</span>
+<span class="sd">    &gt;&gt;&gt; f.write(brest.low())</span>
+<span class="sd">    &gt;&gt;&gt; f.write(brest.zeros())</span>
+<span class="sd">    &gt;&gt;&gt; f.close()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Initialization</span>
+    <span class="c1"># --------------</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">,</span> <span class="n">tide_filter</span><span class="o">=</span><span class="s1">&#39;demerliac&#39;</span><span class="p">,</span>
+        <span class="n">outside_std</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span><span class="n">bad_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># Data synchronisation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_check_tide_filter_&#39;</span><span class="p">,</span><span class="s1">&#39;_check_low_high_&#39;</span><span class="p">,]</span>
+
+        <span class="sd">&quot;&quot;&quot;Assign a data object to the marigraph</span>
+
+<span class="sd">        :Parameters:</span>
+
+<span class="sd">            - **data** : It can be either</span>
+
+<span class="sd">                - A ``cdms2`` 1D array with a time axis.</span>
+<span class="sd">                - A :class:`~vacumm.tide.StationInfo` instance.</span>
+<span class="sd">                - The name of a station that can be search for using :class:`~vacumm.tide.StationInfo`.</span>
+
+<span class="sd">            - *global_anomaly*: First remove the anomaly of the whole signal before any processing [default: False]</span>
+<span class="sd">            - *anomaly*: Remove the anomaly of the restricted sample before any processing [default: False]</span>
+<span class="sd">            - *shom_anomaly*: Same but removed mean is get from observation at correspondind shom station [default: False]</span>
+<span class="sd">%s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">StationInfo</span><span class="p">)</span> <span class="ow">or</span> \
+               <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">):</span>
+            <span class="c1"># Data is not a variable, but a StationInfo object or a string = shom id</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="c1"># We start from a shom id</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span> <span class="s1">&#39;Searching for SHOM station &quot;&#39;</span><span class="o">+</span><span class="n">data</span><span class="o">+</span><span class="s1">&#39;&quot;...&#39;</span>
+                    <span class="nb">print</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">80</span>
+                <span class="n">station</span> <span class="o">=</span> <span class="n">StationInfo</span><span class="p">(</span><span class="n">shom</span><span class="o">=</span><span class="n">data</span><span class="p">,</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">station</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">print</span> <span class="s1">&#39;Not found&#39;</span>
+                    <span class="k">raise</span> <span class="n">StandardError</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">80</span>
+                <span class="n">shom</span> <span class="o">=</span> <span class="n">data</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">name</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">longitude</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">longitude</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">latitude</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">latitude</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># We already have a station info</span>
+                <span class="n">shom</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shom</span>
+                <span class="k">if</span> <span class="n">shom</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">StandardError</span><span class="p">,</span> <span class="s1">&#39;Not a valid SHOM station&#39;</span>
+                <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">nom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nom</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">longitude</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">longitude</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">latitude</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">latitude</span>
+
+            <span class="kn">from</span> <span class="nn">vacumm.tide.sonel_mareg</span> <span class="k">import</span> <span class="n">get_slv_shom</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">get_slv_shom</span><span class="p">(</span><span class="n">shom</span><span class="p">,</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">bad</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tide_filter&#39;</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">mean</span> <span class="o">==</span> <span class="s1">&#39;shom&#39;</span><span class="p">:</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">nm</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Here we have cdms variable, so we just check it</span>
+            <span class="k">assert</span> <span class="n">cdms</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> \
+                   <span class="s1">&#39;The marigraph data object is not a valid cdms variable&#39;</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+            <span class="c1"># Check time axis</span>
+            <span class="n">taxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">taxis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">taxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">designateTime</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">taxis</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">),</span> <span class="s1">&#39;Time axis has no units&#39;</span>
+
+            <span class="c1"># Must be a vector</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Reorder</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">getOrder</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">):</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="s1">&#39;...t&#39;</span><span class="p">)</span>
+                <span class="c1"># Reshape to average</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">data</span>  <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">temp</span>
+
+            <span class="c1"># Get some attributes</span>
+            <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span><span class="s1">&#39;latitude&#39;</span><span class="p">]:</span>
+                <span class="n">latt</span> <span class="o">=</span> <span class="s1">&#39;station_&#39;</span><span class="o">+</span><span class="n">att</span>
+                <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">latt</span><span class="p">):</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">att</span><span class="p">,</span><span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">latt</span><span class="p">))</span>
+
+        <span class="c1"># Remove extrem values</span>
+        <span class="k">if</span> <span class="n">outside_std</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="mf">0.</span><span class="p">]:</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tmpmean</span> <span class="o">=</span> <span class="n">mean</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tmpmean</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV</span><span class="o">.</span><span class="n">masked_outside</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">tmpmean</span><span class="o">-</span><span class="n">outside_std</span><span class="o">*</span><span class="n">std</span><span class="p">,</span>   <span class="n">tmpmean</span><span class="o">+</span><span class="n">outside_std</span><span class="o">*</span><span class="n">std</span><span class="p">)</span>
+
+        <span class="c1"># Attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s1">&#39;long_name&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;Sea level&#39;</span>
+
+        <span class="c1"># Real mean</span>
+        <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">][:]</span> <span class="o">-=</span> <span class="n">mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">+=</span> <span class="s1">&#39;_anom&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Anomaly of &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">long_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tide_filter</span> <span class="o">=</span> <span class="n">tide_filter</span>
+
+
+
+
+    <span class="c1"># Apply tide filters</span>
+    <span class="c1"># ------------------</span>
+<div class="viewcode-block" id="Marigraph.mean"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.mean">[docs]</a>    <span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mean sea level&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span></div>
+
+<div class="viewcode-block" id="Marigraph.anomaly"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.anomaly">[docs]</a>    <span class="k">def</span> <span class="nf">anomaly</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sea level anomaly&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Marigraph.set_tide_filter"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.set_tide_filter">[docs]</a>    <span class="nd">@_fmtdoc_</span>
+    <span class="k">def</span> <span class="nf">set_tide_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tide_filter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the tide filter</span>
+
+<span class="sd">        :Parameters:</span>
+<span class="sd">            %(tide_filter)s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_tide_filter_</span><span class="p">(</span><span class="n">tide_filter</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_check_tide_filter_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tide_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># Do we have something?</span>
+        <span class="n">need</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;tide&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+
+        <span class="c1"># A filter is specified</span>
+        <span class="k">if</span> <span class="n">tide_filter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tide_filter</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="c1"># Default filter</span>
+                <span class="n">tide_filter</span> <span class="o">=</span> <span class="s1">&#39;demerliac&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Valid filter?</span>
+                <span class="n">valid_filters</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;demerliac&#39;</span><span class="p">,</span><span class="s1">&#39;godin&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">tide_filter</span> <span class="ow">in</span> <span class="n">valid_filters</span><span class="p">,</span>  <span class="s2">&quot;Wrong filter name. Must be within </span><span class="si">%s</span><span class="s2">. Please use set_tide_filter()) method.&quot;</span><span class="o">%</span><span class="nb">str</span><span class="p">(</span><span class="n">valid_filters</span><span class="p">)</span>
+            <span class="c1"># Change?</span>
+            <span class="n">need</span> <span class="o">=</span> <span class="n">need</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tide_filter</span> <span class="o">!=</span> <span class="n">tide_filter</span><span class="p">)</span>
+
+        <span class="c1"># Something changed?</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">need</span><span class="p">:</span> <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tide_filter</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="c1"># Reset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;tide&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;cotes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;cotes&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Apply filter</span>
+            <span class="n">filter_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="n">tide_filter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;cotes&#39;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;tide&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filter_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">],</span><span class="n">get_tide</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="s1">&#39;Computed tide signal using </span><span class="si">%s</span><span class="s1"> filter&#39;</span> <span class="o">%</span> <span class="n">tide_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tide_filter</span> <span class="o">=</span> <span class="n">tide_filter</span>
+
+
+    <span class="c1"># Low and high tides</span>
+    <span class="c1"># ------------------</span>
+    <span class="k">def</span> <span class="nf">_check_low_high_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computes high and low tides from a sea level anomaly. It defines following variables: high,low</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check changes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;lows&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
+
+        <span class="c1"># Reference</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lowhigh_ref</span> <span class="o">=</span> <span class="n">ref</span>
+        <span class="k">if</span> <span class="n">ref</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;demerliac&#39;</span><span class="p">,</span> <span class="s1">&#39;godin&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tide_filter</span> <span class="o">!=</span> <span class="n">ref</span><span class="p">:</span>
+                <span class="n">ref</span><span class="p">,</span> <span class="n">tide</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="n">ref</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;cotes&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Call to extema</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;lows&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;highs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">extrema</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">],</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;zeros&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;anom&#39;</span><span class="p">],</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="s1">&#39;lows&#39;</span><span class="p">,</span> <span class="s1">&#39;highs&#39;</span><span class="p">,</span> <span class="s1">&#39;zeros&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ex</span><span class="p">][:]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;Computed low and high tides&#39;</span>
+
+
+
+    <span class="c1"># Check changes</span>
+    <span class="c1"># -------------</span>
+
+
+    <span class="c1">#### Get data</span>
+<div class="viewcode-block" id="Marigraph.sea_level"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.sea_level">[docs]</a>    <span class="k">def</span> <span class="nf">sea_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sea level&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Marigraph.tide"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.tide">[docs]</a>    <span class="nd">@_fmtdoc_</span>
+    <span class="k">def</span> <span class="nf">tide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">anom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the tide signal: this signal is obtained by filtering the original sea level signal</span>
+<span class="sd">          using a demerliac or a godin filer.</span>
+
+<span class="sd">        %(ref)s</span>
+
+<span class="sd">        .. seealso:</span>
+
+<span class="sd">            :meth:`set_tide_filter`, :meth:`cotes`, :mod:`vacumm.tide.filters`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_tide_filter_</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;tide&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">anom</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[:]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="Marigraph.cotes"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.cotes">[docs]</a>    <span class="nd">@_fmtdoc_</span>
+    <span class="k">def</span> <span class="nf">cotes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">anom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the sea level without the tide signal (surcotes and decotes). You must specify the filter before using this method.</span>
+
+<span class="sd">        %(ref)s</span>
+
+<span class="sd">        .. seealso:</span>
+
+<span class="sd">            :meth:`set_tide_filter`, :meth:`tide`, :mod:`vacumm.tide.filters`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_tide_filter_</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;cotes&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">anom</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[:]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="Marigraph.lows"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.lows">[docs]</a>    <span class="nd">@_fmtdoc_</span>
+    <span class="k">def</span> <span class="nf">lows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Low tides</span>
+
+<span class="sd">        %(ref)s</span>
+
+<span class="sd">        .. seealso:</span>
+<span class="sd">            :meth:`high`, :meth:`zeros`, :mod:`vacumm.tide.filters`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_low_high_</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;lows&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Marigraph.highs"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.highs">[docs]</a>    <span class="nd">@_fmtdoc_</span>
+    <span class="k">def</span> <span class="nf">highs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;High tides</span>
+
+<span class="sd">        %(ref)s</span>
+
+<span class="sd">        .. seealso:</span>
+<span class="sd">            :meth:`low`, :meth:`zeros`, :mod:`vacumm.tide.filters`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_low_high_</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;highs&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Marigraph.zeros"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.zeros">[docs]</a>    <span class="nd">@_fmtdoc_</span>
+    <span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Zeros of sea level anomaly</span>
+
+<span class="sd">        %(ref)s</span>
+
+<span class="sd">        .. seealso:</span>
+<span class="sd">            :meth:`low`, :meth:`high`, :mod:`vacumm.tide.filters`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_low_high_</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;zeros&#39;</span><span class="p">]</span></div>
+
+
+    <span class="c1">#### Misc methods</span>
+
+<div class="viewcode-block" id="Marigraph.clean"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Clean out the marigraph object &quot;&quot;&quot;</span>
+        <span class="c1"># Data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="s1">&#39;tide&#39;</span><span class="p">,</span> <span class="s1">&#39;cotes&#39;</span><span class="p">,</span> <span class="s1">&#39;lows&#39;</span><span class="p">,</span> <span class="s1">&#39;highs&#39;</span><span class="p">,</span> <span class="s1">&#39;zeros&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Filters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tide_filter</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Misc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">longitude</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latitude</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_sea_level</span> <span class="o">=</span> <span class="o">-</span><span class="mf">999.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_mean_sea_level</span> <span class="o">=</span> <span class="o">-</span><span class="mf">999.</span></div>
+
+    <span class="k">def</span> <span class="nf">_clean_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">kwargs</span><span class="p">,</span><span class="n">bad</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tide_filter&#39;</span><span class="p">]):</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">bad</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">kw</span><span class="p">):</span>
+                <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">kwargs</span>
+
+<div class="viewcode-block" id="Marigraph.name"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set or return the station name &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="Marigraph.longitude"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.longitude">[docs]</a>    <span class="k">def</span> <span class="nf">longitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set or return the station longitude &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">longitude</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">longitude</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="Marigraph.latitude"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.latitude">[docs]</a>    <span class="k">def</span> <span class="nf">latitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">val</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set or return the station latitude &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">latitude</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">latitude</span> <span class="o">=</span> <span class="n">val</span></div>
+
+
+
+    <span class="c1">#### Plots</span>
+
+<div class="viewcode-block" id="Marigraph.plot"><a class="viewcode-back" href="../../../library/tide.marigraph.html#vacumm.tide.marigraph.Marigraph.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tide</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cotes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">highs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lows</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">savefig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">savefigs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># Which variable?</span>
+        <span class="n">vtypes</span> <span class="o">=</span> <span class="s1">&#39;orig&#39;</span><span class="p">,</span> <span class="s1">&#39;tide&#39;</span><span class="p">,</span> <span class="s1">&#39;highs&#39;</span><span class="p">,</span> <span class="s1">&#39;lows&#39;</span><span class="p">,</span> <span class="s1">&#39;zeros&#39;</span><span class="p">,</span> <span class="s1">&#39;cotes&#39;</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">vtypes</span>
+            <span class="k">for</span> <span class="n">vt</span> <span class="ow">in</span> <span class="n">vtypes</span><span class="p">:</span>
+                <span class="n">exec</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">vt</span><span class="p">,</span> <span class="n">vt</span><span class="o">==</span><span class="n">var</span><span class="p">)</span>
+
+        <span class="c1"># Plot params</span>
+        <span class="c1"># - specific</span>
+        <span class="n">kwplot</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">vt</span> <span class="ow">in</span> <span class="n">vtypes</span><span class="p">:</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="n">vt</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">vt</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="n">vt</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="n">vt</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># - global</span>
+        <span class="n">nt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">mpl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">nt</span><span class="p">:</span><span class="n">nt</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">getTime</span><span class="p">())</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;xmin&#39;</span><span class="p">,</span> <span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;xmax&#39;</span><span class="p">,</span> <span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1"># - complete</span>
+        <span class="k">for</span> <span class="n">vt</span> <span class="ow">in</span> <span class="n">vtypes</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwplot</span><span class="p">[</span><span class="n">vt</span><span class="p">])</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="n">vt</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+        <span class="n">anom</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="n">orig</span> <span class="ow">or</span> <span class="n">highs</span> <span class="ow">or</span> <span class="n">lows</span> <span class="ow">or</span> <span class="n">zeros</span><span class="p">)</span>
+
+        <span class="c1"># Original signal</span>
+        <span class="k">if</span> <span class="n">orig</span><span class="p">:</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;orig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;#888888&#39;</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;orig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;zorder&#39;</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span><span class="p">)</span>
+            <span class="n">curve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sea_level</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;orig&#39;</span><span class="p">])</span>
+
+        <span class="c1"># High tides</span>
+        <span class="k">if</span> <span class="n">highs</span><span class="p">:</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;highs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;highs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;linewidth&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;highs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;markersize&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;highs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;zorder&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">)</span>
+            <span class="n">curve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highs</span><span class="p">(),</span> <span class="n">marker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;highs&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Low tides</span>
+        <span class="k">if</span> <span class="n">lows</span><span class="p">:</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;lows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;lows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;linewidth&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;lows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;markersize&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;lows&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;zorder&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">)</span>
+            <span class="n">curve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lows</span><span class="p">(),</span> <span class="n">marker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;lows&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Zeros</span>
+        <span class="k">if</span> <span class="n">zeros</span><span class="p">:</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;zeros&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;zeros&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;linewidth&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;zeros&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;markersize&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;zeros&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;zorder&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">)</span>
+            <span class="n">curve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zeros</span><span class="p">(),</span> <span class="n">marker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;zeros&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Tidal signal</span>
+        <span class="k">if</span> <span class="n">tide</span><span class="p">:</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;orig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;orig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;zorder&#39;</span><span class="p">,</span> <span class="s1">&#39;11&#39;</span><span class="p">)</span>
+            <span class="n">curve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tide</span><span class="p">(</span><span class="n">anom</span><span class="o">=</span><span class="n">anom</span><span class="p">),</span> <span class="o">**</span><span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;tide&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Surcote/decotes</span>
+        <span class="k">if</span> <span class="n">cotes</span><span class="p">:</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;cotes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">)</span>
+            <span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;cotes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;zorder&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">)</span>
+            <span class="n">curve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cotes</span><span class="p">(</span><span class="n">anom</span><span class="o">=</span><span class="n">anom</span><span class="p">),</span> <span class="o">**</span><span class="n">kwplot</span><span class="p">[</span><span class="s1">&#39;cotes&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Misc</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Marigraph&#39;</span>
+        <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">savefig</span><span class="p">,</span>  <span class="o">**</span><span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;savefig&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">savefigs</span><span class="p">:</span>
+            <span class="n">Savefigs</span><span class="p">(</span><span class="n">savefigs</span><span class="p">,</span>  <span class="o">**</span><span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;savefigs&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+
+
+
+
+
+<span class="kn">from</span> <span class="nn">station_info</span> <span class="k">import</span> <span class="n">StationInfo</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid</span> <span class="k">import</span> <span class="n">bounds1d</span>
+<span class="kn">import</span> <span class="nn">vacumm.misc.atime</span> <span class="k">as</span> <span class="nn">T</span><span class="o">,</span> <span class="nn">filters</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc</span> <span class="k">import</span> <span class="n">kwfilter</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.plot</span> <span class="k">import</span> <span class="n">curve2</span> <span class="k">as</span> <span class="n">curve</span><span class="p">,</span> <span class="n">savefigs</span> <span class="k">as</span> <span class="n">Savefigs</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

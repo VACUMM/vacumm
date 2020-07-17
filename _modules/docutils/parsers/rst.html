@@ -1,0 +1,516 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>docutils.parsers.rst &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../index.html"><img src="../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for docutils.parsers.rst</h1><div class="highlight"><pre>
+<span></span><span class="c1"># $Id: __init__.py 8068 2017-05-08 22:10:39Z milde $</span>
+<span class="c1"># Author: David Goodger &lt;goodger@python.org&gt;</span>
+<span class="c1"># Copyright: This module has been placed in the public domain.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is ``docutils.parsers.rst`` package. It exports a single class, `Parser`,</span>
+<span class="sd">the reStructuredText parser.</span>
+
+
+<span class="sd">Usage</span>
+<span class="sd">=====</span>
+
+<span class="sd">1. Create a parser::</span>
+
+<span class="sd">       parser = docutils.parsers.rst.Parser()</span>
+
+<span class="sd">   Several optional arguments may be passed to modify the parser&#39;s behavior.</span>
+<span class="sd">   Please see `Customizing the Parser`_ below for details.</span>
+
+<span class="sd">2. Gather input (a multi-line string), by reading a file or the standard</span>
+<span class="sd">   input::</span>
+
+<span class="sd">       input = sys.stdin.read()</span>
+
+<span class="sd">3. Create a new empty `docutils.nodes.document` tree::</span>
+
+<span class="sd">       document = docutils.utils.new_document(source, settings)</span>
+
+<span class="sd">   See `docutils.utils.new_document()` for parameter details.</span>
+
+<span class="sd">4. Run the parser, populating the document tree::</span>
+
+<span class="sd">       parser.parse(input, document)</span>
+
+
+<span class="sd">Parser Overview</span>
+<span class="sd">===============</span>
+
+<span class="sd">The reStructuredText parser is implemented as a state machine, examining its</span>
+<span class="sd">input one line at a time. To understand how the parser works, please first</span>
+<span class="sd">become familiar with the `docutils.statemachine` module, then see the</span>
+<span class="sd">`states` module.</span>
+
+
+<span class="sd">Customizing the Parser</span>
+<span class="sd">----------------------</span>
+
+<span class="sd">Anything that isn&#39;t already customizable is that way simply because that type</span>
+<span class="sd">of customizability hasn&#39;t been implemented yet.  Patches welcome!</span>
+
+<span class="sd">When instantiating an object of the `Parser` class, two parameters may be</span>
+<span class="sd">passed: ``rfc2822`` and ``inliner``.  Pass ``rfc2822=True`` to enable an</span>
+<span class="sd">initial RFC-2822 style header block, parsed as a &quot;field_list&quot; element (with</span>
+<span class="sd">&quot;class&quot; attribute set to &quot;rfc2822&quot;).  Currently this is the only body-level</span>
+<span class="sd">element which is customizable without subclassing.  (Tip: subclass `Parser`</span>
+<span class="sd">and change its &quot;state_classes&quot; and &quot;initial_state&quot; attributes to refer to new</span>
+<span class="sd">classes. Contact the author if you need more details.)</span>
+
+<span class="sd">The ``inliner`` parameter takes an instance of `states.Inliner` or a subclass.</span>
+<span class="sd">It handles inline markup recognition.  A common extension is the addition of</span>
+<span class="sd">further implicit hyperlinks, like &quot;RFC 2822&quot;.  This can be done by subclassing</span>
+<span class="sd">`states.Inliner`, adding a new method for the implicit markup, and adding a</span>
+<span class="sd">``(pattern, method)`` pair to the &quot;implicit_dispatch&quot; attribute of the</span>
+<span class="sd">subclass.  See `states.Inliner.implicit_inline()` for details.  Explicit</span>
+<span class="sd">inline markup can be customized in a `states.Inliner` subclass via the</span>
+<span class="sd">``patterns.initial`` and ``dispatch`` attributes (and new methods as</span>
+<span class="sd">appropriate).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__docformat__</span> <span class="o">=</span> <span class="s1">&#39;reStructuredText&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">docutils.parsers</span>
+<span class="kn">import</span> <span class="nn">docutils.statemachine</span>
+<span class="kn">from</span> <span class="nn">docutils.parsers.rst</span> <span class="k">import</span> <span class="n">states</span>
+<span class="kn">from</span> <span class="nn">docutils</span> <span class="k">import</span> <span class="n">frontend</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">docutils.transforms</span> <span class="k">import</span> <span class="n">universal</span>
+
+
+<span class="k">class</span> <span class="nc">Parser</span><span class="p">(</span><span class="n">docutils</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">Parser</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;The reStructuredText parser.&quot;&quot;&quot;</span>
+
+    <span class="n">supported</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;restructuredtext&#39;</span><span class="p">,</span> <span class="s1">&#39;rst&#39;</span><span class="p">,</span> <span class="s1">&#39;rest&#39;</span><span class="p">,</span> <span class="s1">&#39;restx&#39;</span><span class="p">,</span> <span class="s1">&#39;rtxt&#39;</span><span class="p">,</span> <span class="s1">&#39;rstx&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Aliases this parser supports.&quot;&quot;&quot;</span>
+
+    <span class="n">settings_spec</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;reStructuredText Parser Options&#39;</span><span class="p">,</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="p">((</span><span class="s1">&#39;Recognize and link to standalone PEP references (like &quot;PEP 258&quot;).&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--pep-references&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_boolean</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Base URL for PEP references &#39;</span>
+          <span class="s1">&#39;(default &quot;http://www.python.org/dev/peps/&quot;).&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--pep-base-url&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;metavar&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;URL&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.python.org/dev/peps/&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_url_trailing_slash</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Template for PEP file part of URL. (default &quot;pep-</span><span class="si">%04d</span><span class="s1">&quot;)&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--pep-file-url-template&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;metavar&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;URL&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;pep-</span><span class="si">%04d</span><span class="s1">&#39;</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Recognize and link to standalone RFC references (like &quot;RFC 822&quot;).&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--rfc-references&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_boolean</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Base URL for RFC references (default &quot;http://tools.ietf.org/html/&quot;).&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--rfc-base-url&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;metavar&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;URL&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;http://tools.ietf.org/html/&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_url_trailing_slash</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Set number of spaces for tab expansion (default 8).&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--tab-width&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;metavar&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;width&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+           <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_nonnegative_int</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Remove spaces before footnote references.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--trim-footnote-reference-space&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_boolean</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Leave spaces before footnote references.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--leave-footnote-reference-space&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="s1">&#39;trim_footnote_reference_space&#39;</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Disable directives that insert the contents of external file &#39;</span>
+          <span class="s1">&#39;(&quot;include&quot; &amp; &quot;raw&quot;); replaced with a &quot;warning&quot; system message.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--no-file-insertion&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+           <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="s1">&#39;file_insertion_enabled&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_boolean</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Enable directives that insert the contents of external file &#39;</span>
+          <span class="s1">&#39;(&quot;include&quot; &amp; &quot;raw&quot;).  Enabled by default.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--file-insertion-enabled&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_true&#39;</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Disable the &quot;raw&quot; directives; replaced with a &quot;warning&quot; &#39;</span>
+          <span class="s1">&#39;system message.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--no-raw&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="s1">&#39;raw_enabled&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_boolean</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Enable the &quot;raw&quot; directive.  Enabled by default.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--raw-enabled&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_true&#39;</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Token name set for parsing code with Pygments: one of &#39;</span>
+          <span class="s1">&#39;&quot;long&quot;, &quot;short&quot;, or &quot;none (no parsing)&quot;. Default is &quot;long&quot;.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--syntax-highlight&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;choices&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;long&#39;</span><span class="p">,</span> <span class="s1">&#39;short&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">],</span>
+           <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;long&#39;</span><span class="p">,</span> <span class="s1">&#39;metavar&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;format&gt;&#39;</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Change straight quotation marks to typographic form: &#39;</span>
+          <span class="s1">&#39;one of &quot;yes&quot;, &quot;no&quot;, &quot;alt[ernative]&quot; (default &quot;no&quot;).&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--smart-quotes&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;metavar&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;yes/no/alt&gt;&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_ternary</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Characters to use as &quot;smart quotes&quot; for &lt;language&gt;. &#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--smartquotes-locales&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;metavar&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;language:quotes[,language:quotes,...]&gt;&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;append&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">frontend</span><span class="o">.</span><span class="n">validate_smartquotes_locales</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Inline markup recognized at word boundaries only &#39;</span>
+          <span class="s1">&#39;(adjacent to punctuation or whitespace). &#39;</span>
+          <span class="s1">&#39;Force character-level inline markup recognition with &#39;</span>
+          <span class="s1">&#39;&quot;</span><span class="se">\\</span><span class="s1"> &quot; (backslash + space). Default.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--word-level-inline-markup&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="s1">&#39;character_level_inline_markup&#39;</span><span class="p">}),</span>
+         <span class="p">(</span><span class="s1">&#39;Inline markup recognized anywhere, regardless of surrounding &#39;</span>
+          <span class="s1">&#39;characters. Backslash-escapes must be used to avoid unwanted &#39;</span>
+          <span class="s1">&#39;markup recognition. Useful for East Asian languages. &#39;</span>
+          <span class="s1">&#39;Experimental.&#39;</span><span class="p">,</span>
+          <span class="p">[</span><span class="s1">&#39;--character-level-inline-markup&#39;</span><span class="p">],</span>
+          <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+           <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="s1">&#39;character_level_inline_markup&#39;</span><span class="p">}),</span>
+        <span class="p">))</span>
+
+    <span class="n">config_section</span> <span class="o">=</span> <span class="s1">&#39;restructuredtext parser&#39;</span>
+    <span class="n">config_section_dependencies</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;parsers&#39;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rfc2822</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inliner</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">rfc2822</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_state</span> <span class="o">=</span> <span class="s1">&#39;RFC2822Body&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_state</span> <span class="o">=</span> <span class="s1">&#39;Body&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_classes</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">state_classes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inliner</span> <span class="o">=</span> <span class="n">inliner</span>
+
+    <span class="k">def</span> <span class="nf">get_transforms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Component</span><span class="o">.</span><span class="n">get_transforms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="n">universal</span><span class="o">.</span><span class="n">SmartQuotes</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputstring</span><span class="p">,</span> <span class="n">document</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parse `inputstring` and populate `document`, a document tree.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_parse</span><span class="p">(</span><span class="n">inputstring</span><span class="p">,</span> <span class="n">document</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">statemachine</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">RSTStateMachine</span><span class="p">(</span>
+              <span class="n">state_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state_classes</span><span class="p">,</span>
+              <span class="n">initial_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_state</span><span class="p">,</span>
+              <span class="n">debug</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">reporter</span><span class="o">.</span><span class="n">debug_flag</span><span class="p">)</span>
+        <span class="n">inputlines</span> <span class="o">=</span> <span class="n">docutils</span><span class="o">.</span><span class="n">statemachine</span><span class="o">.</span><span class="n">string2lines</span><span class="p">(</span>
+              <span class="n">inputstring</span><span class="p">,</span> <span class="n">tab_width</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">tab_width</span><span class="p">,</span>
+              <span class="n">convert_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">statemachine</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputlines</span><span class="p">,</span> <span class="n">document</span><span class="p">,</span> <span class="n">inliner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inliner</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finish_parse</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">DirectiveError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Store a message and a system message level.</span>
+
+<span class="sd">    To be thrown from inside directive code.</span>
+
+<span class="sd">    Do not instantiate directly -- use `Directive.directive_error()`</span>
+<span class="sd">    instead!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set error `message` and `level`&quot;&quot;&quot;</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">message</span>
+
+
+<span class="k">class</span> <span class="nc">Directive</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for reStructuredText directives.</span>
+
+<span class="sd">    The following attributes may be set by subclasses.  They are</span>
+<span class="sd">    interpreted by the directive parser (which runs the directive</span>
+<span class="sd">    class):</span>
+
+<span class="sd">    - `required_arguments`: The number of required arguments (default:</span>
+<span class="sd">      0).</span>
+
+<span class="sd">    - `optional_arguments`: The number of optional arguments (default:</span>
+<span class="sd">      0).</span>
+
+<span class="sd">    - `final_argument_whitespace`: A boolean, indicating if the final</span>
+<span class="sd">      argument may contain whitespace (default: False).</span>
+
+<span class="sd">    - `option_spec`: A dictionary, mapping known option names to</span>
+<span class="sd">      conversion functions such as `int` or `float` (default: {}, no</span>
+<span class="sd">      options).  Several conversion functions are defined in the</span>
+<span class="sd">      directives/__init__.py module.</span>
+
+<span class="sd">      Option conversion functions take a single parameter, the option</span>
+<span class="sd">      argument (a string or ``None``), validate it and/or convert it</span>
+<span class="sd">      to the appropriate form.  Conversion functions may raise</span>
+<span class="sd">      `ValueError` and `TypeError` exceptions.</span>
+
+<span class="sd">    - `has_content`: A boolean; True if content is allowed.  Client</span>
+<span class="sd">      code must handle the case where content is required but not</span>
+<span class="sd">      supplied (an empty content list will be supplied).</span>
+
+<span class="sd">    Arguments are normally single whitespace-separated words.  The</span>
+<span class="sd">    final argument may contain whitespace and/or newlines if</span>
+<span class="sd">    `final_argument_whitespace` is True.</span>
+
+<span class="sd">    If the form of the arguments is more complex, specify only one</span>
+<span class="sd">    argument (either required or optional) and set</span>
+<span class="sd">    `final_argument_whitespace` to True; the client code must do any</span>
+<span class="sd">    context-sensitive parsing.</span>
+
+<span class="sd">    When a directive implementation is being run, the directive class</span>
+<span class="sd">    is instantiated, and the `run()` method is executed.  During</span>
+<span class="sd">    instantiation, the following instance variables are set:</span>
+
+<span class="sd">    - ``name`` is the directive type or name (string).</span>
+
+<span class="sd">    - ``arguments`` is the list of positional arguments (strings).</span>
+
+<span class="sd">    - ``options`` is a dictionary mapping option names (strings) to</span>
+<span class="sd">      values (type depends on option conversion functions; see</span>
+<span class="sd">      `option_spec` above).</span>
+
+<span class="sd">    - ``content`` is a list of strings, the directive content line by line.</span>
+
+<span class="sd">    - ``lineno`` is the absolute line number of the first line</span>
+<span class="sd">      of the directive.</span>
+
+<span class="sd">    - ``content_offset`` is the line offset of the first line of the content from</span>
+<span class="sd">      the beginning of the current input.  Used when initiating a nested parse.</span>
+
+<span class="sd">    - ``block_text`` is a string containing the entire directive.</span>
+
+<span class="sd">    - ``state`` is the state which called the directive function.</span>
+
+<span class="sd">    - ``state_machine`` is the state machine which controls the state which called</span>
+<span class="sd">      the directive function.</span>
+
+<span class="sd">    Directive functions return a list of nodes which will be inserted</span>
+<span class="sd">    into the document tree at the point where the directive was</span>
+<span class="sd">    encountered.  This can be an empty list if there is nothing to</span>
+<span class="sd">    insert.</span>
+
+<span class="sd">    For ordinary directives, the list must contain body elements or</span>
+<span class="sd">    structural elements.  Some directives are intended specifically</span>
+<span class="sd">    for substitution definitions, and must return a list of `Text`</span>
+<span class="sd">    nodes and/or inline elements (suitable for inline insertion, in</span>
+<span class="sd">    place of the substitution reference).  Such directives must verify</span>
+<span class="sd">    substitution definition context, typically using code like this::</span>
+
+<span class="sd">        if not isinstance(state, states.SubstitutionDef):</span>
+<span class="sd">            error = state_machine.reporter.error(</span>
+<span class="sd">                &#39;Invalid context: the &quot;%s&quot; directive can only be used &#39;</span>
+<span class="sd">                &#39;within a substitution definition.&#39; % (name),</span>
+<span class="sd">                nodes.literal_block(block_text, block_text), line=lineno)</span>
+<span class="sd">            return [error]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># There is a &quot;Creating reStructuredText Directives&quot; how-to at</span>
+    <span class="c1"># &lt;http://docutils.sf.net/docs/howto/rst-directives.html&gt;.  If you</span>
+    <span class="c1"># update this docstring, please update the how-to as well.</span>
+
+    <span class="n">required_arguments</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="sd">&quot;&quot;&quot;Number of required directive arguments.&quot;&quot;&quot;</span>
+
+    <span class="n">optional_arguments</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="sd">&quot;&quot;&quot;Number of optional arguments after the required arguments.&quot;&quot;&quot;</span>
+
+    <span class="n">final_argument_whitespace</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;May the final argument contain whitespace?&quot;&quot;&quot;</span>
+
+    <span class="n">option_spec</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Mapping of option names to validator functions.&quot;&quot;&quot;</span>
+
+    <span class="n">has_content</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;May the directive have content?&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span>
+                 <span class="n">content_offset</span><span class="p">,</span> <span class="n">block_text</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">state_machine</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arguments</span> <span class="o">=</span> <span class="n">arguments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineno</span> <span class="o">=</span> <span class="n">lineno</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content_offset</span> <span class="o">=</span> <span class="n">content_offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_text</span> <span class="o">=</span> <span class="n">block_text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span> <span class="o">=</span> <span class="n">state_machine</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Must override run() is subclass.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Directive errors:</span>
+
+    <span class="k">def</span> <span class="nf">directive_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a DirectiveError suitable for being thrown as an exception.</span>
+
+<span class="sd">        Call &quot;raise self.directive_error(level, message)&quot; from within</span>
+<span class="sd">        a directive implementation to return one single system message</span>
+<span class="sd">        at level `level`, which automatically gets the directive block</span>
+<span class="sd">        and the line number added.</span>
+
+<span class="sd">        Preferably use the `debug`, `info`, `warning`, `error`, or `severe`</span>
+<span class="sd">        wrapper methods, e.g. ``self.error(message)`` to generate an</span>
+<span class="sd">        ERROR-level directive error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DirectiveError</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">directive_error</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">directive_error</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">directive_error</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">directive_error</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">severe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">directive_error</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+
+    <span class="c1"># Convenience methods:</span>
+
+    <span class="k">def</span> <span class="nf">assert_has_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Throw an ERROR-level DirectiveError if the directive doesn&#39;t</span>
+<span class="sd">        have contents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Content block expected for the &quot;</span><span class="si">%s</span><span class="s1">&quot; directive; &#39;</span>
+                             <span class="s1">&#39;none found.&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Append self.options[&#39;name&#39;] to node[&#39;names&#39;] if it exists.</span>
+
+<span class="sd">        Also normalize the name string and register it as explicit target.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">fully_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+                <span class="k">del</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+            <span class="n">node</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">note_explicit_target</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">convert_directive_function</span><span class="p">(</span><span class="n">directive_fn</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Define &amp; return a directive class generated from `directive_fn`.</span>
+
+<span class="sd">    `directive_fn` uses the old-style, functional interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">FunctionalDirective</span><span class="p">(</span><span class="n">Directive</span><span class="p">):</span>
+
+        <span class="n">option_spec</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">directive_fn</span><span class="p">,</span> <span class="s1">&#39;options&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">has_content</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">directive_fn</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">_argument_spec</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">directive_fn</span><span class="p">,</span> <span class="s1">&#39;arguments&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+        <span class="n">required_arguments</span><span class="p">,</span> <span class="n">optional_arguments</span><span class="p">,</span> <span class="n">final_argument_whitespace</span> \
+            <span class="o">=</span> <span class="n">_argument_spec</span>
+
+        <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">directive_fn</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arguments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_offset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_text</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="p">)</span>
+
+    <span class="c1"># Return new-style directive.</span>
+    <span class="k">return</span> <span class="n">FunctionalDirective</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

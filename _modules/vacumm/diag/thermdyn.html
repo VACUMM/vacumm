@@ -1,0 +1,508 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.diag.thermdyn &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../index.html"><img src="../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.diag.thermdyn</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Diagnostics about thermodynamics&quot;&quot;&quot;</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2010-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span><span class="o">,</span> <span class="nn">cdms2</span><span class="o">,</span> <span class="nn">MV2</span>
+<span class="kn">from</span> <span class="nn">genutil.grower</span> <span class="k">import</span> <span class="n">grower</span>
+<span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">VACUMMError</span>
+<span class="kn">from</span> <span class="nn">vacumm.data.cf</span> <span class="k">import</span> <span class="n">format_var</span><span class="p">,</span> <span class="n">match_var</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid</span> <span class="k">import</span> <span class="n">get_zdim</span><span class="p">,</span> <span class="n">get_axis_slices</span><span class="p">,</span> <span class="n">get_grid</span><span class="p">,</span> <span class="n">set_grid</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.axes</span> <span class="k">import</span> <span class="n">islat</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc</span> <span class="k">import</span> <span class="n">N_choose</span><span class="p">,</span> <span class="n">grow_depth</span><span class="p">,</span> <span class="n">grow_lat</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.misc</span> <span class="k">import</span> <span class="n">grow_variables</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">seawater</span> <span class="k">import</span> <span class="n">pres</span> <span class="k">as</span> <span class="n">sw_pres</span><span class="p">,</span> <span class="n">dens</span> <span class="k">as</span> <span class="n">sw_dens</span><span class="p">,</span> <span class="n">dens0</span> <span class="k">as</span> <span class="n">sw_dens0</span><span class="p">,</span> \
+        <span class="n">dpth</span> <span class="k">as</span> <span class="n">sw_depth</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">seawater.csiro</span> <span class="k">import</span> <span class="n">pres</span> <span class="k">as</span> <span class="n">sw_pres</span><span class="p">,</span> <span class="n">dens</span> <span class="k">as</span> <span class="n">sw_dens</span><span class="p">,</span> <span class="n">dens0</span> <span class="k">as</span> <span class="n">sw_dens0</span><span class="p">,</span> \
+            <span class="n">depth</span> <span class="k">as</span> <span class="n">sw_depth</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Failed to import seawater functions&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="density"><a class="viewcode-back" href="../../../library/diag.thermdyn.html#vacumm.diag.thermdyn.density">[docs]</a><span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">sal</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">getdepth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">getlat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">format_axes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute density from temperature, salinity and depth (and latitude)</span>
+
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **temp**: Insitu or potential temperature.</span>
+<span class="sd">        - **sal**: Salinity.</span>
+<span class="sd">        - **depth**, optional: Depth at temperature and salinty points.</span>
+<span class="sd">          Assumed to be 0 if not found.</span>
+<span class="sd">        - **lat**, optional: Latitude. Error when not found.</span>
+<span class="sd">        - **potential**, optional: True to get the potential density (at atmospheric</span>
+<span class="sd">          pressure).</span>
+
+<span class="sd">    :Algo:</span>
+
+<span class="sd">        &gt;&gt;&gt; pressure = seawater.csiro.pres(depth, lat)</span>
+<span class="sd">        &gt;&gt;&gt; density = seawater.csiro.dens(sal, temp, depth)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Compute</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">potential</span> <span class="ow">and</span> <span class="n">depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># In-situ</span>
+
+        <span class="c1"># Get depth and latitude</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">grow_lat</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">getvar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s1">&#39;No latitude found for density&#39;</span><span class="p">)</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">grow_depth</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">getvar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">depth</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="o">&lt;</span><span class="n">N</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">depth</span><span class="o">.</span><span class="n">min</span><span class="p">()):</span> <span class="c1"># positive</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="o">-</span><span class="n">depth</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">depth</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span><span class="o">-</span><span class="n">depth</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="c1"># top=0</span>
+
+        <span class="c1"># Get density</span>
+        <span class="n">pres</span> <span class="o">=</span> <span class="n">sw_pres</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+        <span class="n">dens</span> <span class="o">=</span> <span class="n">sw_dens</span><span class="p">(</span><span class="n">sal</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">pres</span><span class="p">)</span> <span class="p">;</span> <span class="k">del</span> <span class="n">pres</span>
+
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># Potential</span>
+
+        <span class="n">dens</span> <span class="o">=</span> <span class="n">sw_dens0</span><span class="p">(</span><span class="n">sal</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+        <span class="n">getdepth</span> <span class="o">=</span> <span class="n">getlat</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Format</span>
+    <span class="n">dens</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">getAxisList</span><span class="p">())</span>
+    <span class="n">set_grid</span><span class="p">(</span><span class="n">dens</span><span class="p">,</span> <span class="n">get_grid</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>
+    <span class="n">format_var</span><span class="p">(</span><span class="n">dens</span><span class="p">,</span> <span class="s1">&#39;dens&#39;</span><span class="p">,</span> <span class="n">format_axes</span><span class="o">=</span><span class="n">format_axes</span><span class="p">)</span>
+
+    <span class="c1"># Out</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">getdepth</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">getlat</span><span class="p">:</span> <span class="k">return</span> <span class="n">dens</span>
+    <span class="n">dens</span> <span class="o">=</span> <span class="n">dens</span><span class="p">,</span>
+    <span class="k">if</span> <span class="n">getdepth</span><span class="p">:</span> <span class="n">dens</span> <span class="o">+=</span> <span class="n">depth</span><span class="p">,</span>
+    <span class="k">if</span> <span class="n">getlat</span><span class="p">:</span> <span class="n">dens</span> <span class="o">+=</span> <span class="n">lat</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">dens</span></div>
+
+
+<div class="viewcode-block" id="mixed_layer_depth"><a class="viewcode-back" href="../../../library/diag.thermdyn.html#vacumm.diag.thermdyn.mixed_layer_depth">[docs]</a><span class="k">def</span> <span class="nf">mixed_layer_depth</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zaxis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deltatemp</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span> <span class="n">deltadens</span><span class="o">=.</span><span class="mi">03</span><span class="p">,</span> <span class="n">kzmax</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">,</span>
+    <span class="n">potential</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_axes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get mixed layer depth from temperature and salinity</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **temp**: Insitu or potential temperature.</span>
+<span class="sd">        - **sal**: Salinity.</span>
+<span class="sd">        - **depth**, optional: Depth at temperature and salinty points.</span>
+<span class="sd">        - **lat**, optional: Latitude.</span>
+<span class="sd">        - **mode**, optional: ``&quot;deltatemp&quot;``, ``&quot;deltadens&quot;``, ``&quot;kz&quot;``</span>
+<span class="sd">          or ``&quot;twolayers&quot;``</span>
+
+
+<span class="sd">    :Raise: :class:`~vacumm.VACUMMError` if can&#39;t get depth (and latitude for density).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: positive up</span>
+
+    <span class="c1"># Inspection</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span> <span class="c1"># data = temp,sal</span>
+
+        <span class="n">temp</span><span class="p">,</span> <span class="n">sal</span><span class="o">=</span><span class="n">data</span>
+
+        <span class="c1"># Get density</span>
+        <span class="k">if</span> <span class="n">mode</span><span class="o">!=</span><span class="s1">&#39;deltatemp&#39;</span><span class="p">:</span>
+
+            <span class="n">res</span> <span class="o">=</span> <span class="n">density</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">sal</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span>
+                <span class="n">format_axes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="n">potential</span><span class="p">,</span> <span class="n">getdepth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">dens</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">res</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dens</span> <span class="o">=</span> <span class="n">res</span>
+            <span class="n">dens</span> <span class="o">=</span> <span class="n">dens</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;deltadens&#39;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Check mode</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;kz&#39;</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Switching MLD computation mode to &#39;deltadens&#39;&quot;</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;deltadens&quot;</span>
+
+    <span class="k">elif</span> <span class="n">match_var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;temp&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nslu&#39;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mode</span><span class="o">!=</span><span class="s1">&#39;deltatemp&#39;</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Switching MLD computation mode to &#39;deltatemp&#39;&quot;</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;deltatemp&#39;</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">elif</span> <span class="n">match_var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;dens&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nslu&#39;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;kz&#39;</span><span class="p">,</span> <span class="s1">&#39;deltatemp&#39;</span><span class="p">]:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Switching MLD computation mode to &#39;deltadens&#39;&quot;</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;deltadens&quot;</span>
+        <span class="n">dens</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">elif</span> <span class="n">match_var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;kz&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nslu&#39;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;kz&quot;</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;kz&quot;</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Switching MLD computation mode to &#39;kz&#39;&quot;</span><span class="p">)</span>
+        <span class="n">kz</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;deltadens&#39;</span><span class="p">,</span> <span class="s1">&#39;twolayers&#39;</span><span class="p">]:</span>
+            <span class="n">dens</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;deltatemp&quot;</span><span class="p">:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;kz&quot;</span><span class="p">:</span>
+            <span class="n">kz</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Invalid MLD computation mode : &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="o">%</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t guess MLD computation mode&quot;</span><span class="p">)</span>
+
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">delta</span>
+
+    <span class="c1"># Find Z dim</span>
+    <span class="n">data0</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">data</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">grow_depth</span><span class="p">(</span><span class="n">data0</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">getvar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">zaxis</span> <span class="o">=</span> <span class="n">get_zdim</span><span class="p">(</span><span class="n">data0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">zaxis</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">zaxis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t guess zaxis&quot;</span><span class="p">)</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">get_axis_slices</span><span class="p">(</span><span class="n">data0</span><span class="p">,</span> <span class="n">zaxis</span><span class="p">)</span>
+
+    <span class="c1"># Init MLD</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">data0</span><span class="o">.</span><span class="n">getAxisList</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">axes</span><span class="p">[</span><span class="n">zaxis</span><span class="p">]</span>
+    <span class="n">mld</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data0</span><span class="o">.</span><span class="n">asma</span><span class="p">()[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;first&#39;</span><span class="p">]],</span> <span class="n">copy</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">copyaxes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">set_grid</span><span class="p">(</span><span class="n">mld</span><span class="p">,</span> <span class="n">get_grid</span><span class="p">(</span><span class="n">data0</span><span class="p">))</span>
+    <span class="n">format_var</span><span class="p">(</span><span class="n">mld</span><span class="p">,</span> <span class="s1">&#39;mld&#39;</span><span class="p">,</span> <span class="n">format_axes</span><span class="o">=</span><span class="n">format_axes</span><span class="p">)</span>
+    <span class="n">mld</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">masked</span>
+
+    <span class="c1"># Two-layers</span>
+    <span class="k">if</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;twolayers&#39;</span><span class="p">:</span>
+
+        <span class="n">densbot</span> <span class="o">=</span> <span class="n">dens</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;first&#39;</span><span class="p">]]</span>
+        <span class="n">denstop</span> <span class="o">=</span> <span class="n">dens</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;last&#39;</span><span class="p">]]</span>
+        <span class="k">del</span> <span class="n">dens</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="mf">1.5</span><span class="o">*</span><span class="n">depth</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;first&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">depth</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;firstp1&#39;</span><span class="p">]]</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.5</span><span class="o">*</span><span class="n">depth</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;last&#39;</span><span class="p">]]</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">depth</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;lastm1&#39;</span><span class="p">]]</span>
+        <span class="n">mld</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">H</span><span class="o">*</span><span class="p">(</span><span class="n">densbot</span><span class="o">-</span><span class="n">denstop</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">densbot</span><span class="o">-</span><span class="n">denstop</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">H</span>
+
+    <span class="k">elif</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;deltadens&#39;</span><span class="p">:</span>
+
+        <span class="n">denscrit</span> <span class="o">=</span> <span class="n">dens</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;last&#39;</span><span class="p">]]</span><span class="o">+</span><span class="n">deltadens</span>
+        <span class="n">mld</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">_val2z_</span><span class="p">(</span><span class="n">dens</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">denscrit</span><span class="p">,</span> <span class="n">zaxis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">dens</span>
+
+    <span class="k">elif</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;deltatemp&#39;</span><span class="p">:</span>
+
+        <span class="n">tempcrit</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="s1">&#39;last&#39;</span><span class="p">]]</span><span class="o">-</span><span class="n">deltatemp</span>
+        <span class="n">mld</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">_val2z_</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">tempcrit</span><span class="p">,</span> <span class="n">zaxis</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;kz&#39;</span><span class="p">:</span>
+
+        <span class="n">mld</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">_valmin2z_</span><span class="p">(</span><span class="n">kz</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">kzmax</span><span class="p">,</span> <span class="n">zaxis</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Invalid mode for computing MLD (</span><span class="si">%s</span><span class="s2">).&quot;</span><span class="o">%</span><span class="n">mode</span> <span class="o">+</span>
+            <span class="s2">&quot;Please choose one of: deltadens, twolayers&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Mask zeros</span>
+    <span class="n">mld</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">masked_values</span><span class="p">(</span><span class="n">mld</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mld</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_val2z_</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">varref</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">monosign</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute depth for a given reference data value&quot;&quot;&quot;</span>
+
+    <span class="c1"># Inits with Z axis first</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span> <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">else</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">dep</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span> <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span> <span class="k">else</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span>
+    <span class="n">dep</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">varref</span> <span class="o">=</span> <span class="n">varref</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span> <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">varref</span><span class="p">)</span> <span class="k">else</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">varref</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dep</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">varref</span> <span class="o">=</span> <span class="n">varref</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">rvar</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">var</span>
+    <span class="n">rdep</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">dep</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">dep</span>
+    <span class="n">rdepref</span> <span class="o">=</span> <span class="n">rdep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">rvar</span> <span class="o">=</span> <span class="n">rvar</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">rvar</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># nb of elements along the first axis (z in general)</span>
+    <span class="n">maskland</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">rvar</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Monotonic</span>
+    <span class="n">rvar</span> <span class="o">*=</span> <span class="n">monosign</span>
+    <span class="n">varref</span> <span class="o">*=</span> <span class="n">monosign</span>
+    <span class="n">dvar</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">rvar</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Find z index</span>
+    <span class="n">dvarref</span> <span class="o">=</span> <span class="n">rvar</span><span class="o">-</span><span class="n">varref</span>
+    <span class="n">iiz0</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+    <span class="n">iiz0</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">iiz0</span><span class="p">,</span> <span class="n">rvar</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">rvar</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">nz</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">iiz0</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">dvarref</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">,</span> <span class="n">iiz0</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">iz0</span> <span class="o">=</span> <span class="n">iiz0</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">iiz0</span>
+    <span class="n">maskdz</span> <span class="o">=</span> <span class="n">iz0</span><span class="o">.</span><span class="n">mask</span>
+    <span class="n">iz0</span> <span class="o">=</span> <span class="n">iz0</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+
+
+    <span class="c1"># Interpolation</span>
+    <span class="n">dvar0</span> <span class="o">=</span> <span class="n">N_choose</span><span class="p">(</span><span class="n">iz0</span><span class="p">,</span> <span class="n">dvar</span><span class="p">)</span>
+    <span class="n">dvar0</span><span class="p">[</span><span class="n">maskdz</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+    <span class="n">w1</span> <span class="o">=</span> <span class="o">-</span><span class="n">N_choose</span><span class="p">(</span><span class="n">iz0</span><span class="p">,</span> <span class="n">dvarref</span><span class="p">)</span><span class="o">/</span><span class="n">dvar0</span>
+    <span class="n">w1</span><span class="o">.</span><span class="n">set_fill_value</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+    <span class="n">rdep</span><span class="o">.</span><span class="n">set_fill_value</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+    <span class="n">rdepref</span> <span class="o">=</span> <span class="n">N_choose</span><span class="p">(</span><span class="n">iz0</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">rdep</span><span class="p">)</span><span class="o">*</span><span class="n">w1</span>
+    <span class="n">rdepref</span> <span class="o">+=</span> <span class="n">N_choose</span><span class="p">(</span><span class="n">iz0</span><span class="p">,</span> <span class="n">rdep</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">w1</span><span class="p">)</span>
+
+    <span class="c1"># Masking</span>
+    <span class="n">rdepref</span><span class="p">[</span><span class="n">maskland</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked</span>
+    <span class="n">rdepref</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="n">maskland</span><span class="o">&amp;</span><span class="n">maskdz</span><span class="p">,</span> <span class="n">rdep</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">rdepref</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rdepref</span>
+
+
+<span class="k">def</span> <span class="nf">_valmin2z_</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">dep</span><span class="p">,</span> <span class="n">varmax</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">monosign</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute depth at which data value at lower than a reference value&quot;&quot;&quot;</span>
+
+    <span class="c1"># Inits with Z axis first</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span> <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">else</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">dep</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span> <span class="k">if</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span> <span class="k">else</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dep</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">rvar</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">var</span>
+    <span class="n">rdep</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">dep</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">dep</span>
+    <span class="n">rvar</span> <span class="o">=</span> <span class="n">rvar</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">rvar</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">maskland</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">rvar</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Monotonic (greater at surface)</span>
+    <span class="n">rvar</span> <span class="o">*=</span> <span class="n">monosign</span>
+
+    <span class="c1"># Find z index</span>
+    <span class="n">iiz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+    <span class="n">iiz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">iiz</span><span class="p">,</span> <span class="n">rvar</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">rvar</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">iiz</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">rvar</span><span class="o">&gt;</span><span class="n">varmax</span><span class="p">,</span> <span class="n">iiz</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">iz0</span> <span class="o">=</span> <span class="n">iiz</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">iiz</span>
+    <span class="n">maskz</span> <span class="o">=</span> <span class="n">iz0</span><span class="o">.</span><span class="n">mask</span>
+    <span class="n">iz0</span> <span class="o">=</span> <span class="n">iz0</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+
+    <span class="c1"># Values</span>
+    <span class="n">rdepref</span> <span class="o">=</span> <span class="n">N_choose</span><span class="p">(</span><span class="n">iz0</span><span class="p">,</span> <span class="n">rdep</span><span class="p">)</span>
+
+    <span class="c1"># Masking</span>
+    <span class="n">rdepref</span><span class="p">[</span><span class="n">maskland</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked</span>
+    <span class="n">rdepref</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="n">maskland</span><span class="o">&amp;</span><span class="n">maskz</span><span class="p">,</span> <span class="n">rdep</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">rdepref</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rdepref</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+
+
+<span class="c1">#    print &#39;hoho&#39;</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="o">*</span><span class="n">nx</span><span class="o">*</span><span class="n">ny</span><span class="o">**</span><span class="mf">1.</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span><span class="o">-</span><span class="n">depth</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="c1"># partie ci-dessus inutile en fait</span>
+
+<span class="c1">#    var = N.round(N.sqrt(-depth)*10)</span>
+<span class="c1">#    var[:,1, 2] = N.ma.masked</span>
+<span class="c1">#</span>
+<span class="c1">#    varref = var[-1]+44#15.7</span>
+<span class="c1">#    varref[:] = 23</span>
+<span class="c1">#    varref[:] = 67.5</span>
+<span class="c1">#</span>
+<span class="c1">#    var = var[::-1]</span>
+<span class="c1">#    varref = var[-1]*0+67.5</span>
+<span class="c1">#</span>
+    <span class="c1"># tableaux 1D (29 elements)</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">13.1168556213</span><span class="p">,</span> <span class="mf">13.120059967</span><span class="p">,</span> <span class="mf">13.1211280823</span><span class="p">,</span> <span class="mf">13.1211280823</span><span class="p">,</span> <span class="mf">13.1211280823</span>
+<span class="p">,</span> <span class="mf">13.1211280823</span><span class="p">,</span> <span class="mf">13.1179237366</span><span class="p">,</span> <span class="mf">13.1136512756</span><span class="p">,</span> <span class="mf">13.1093788147</span><span class="p">,</span> <span class="mf">13.1083106995</span>
+<span class="p">,</span> <span class="mf">13.1072416306</span><span class="p">,</span> <span class="mf">13.1019010544</span><span class="p">,</span> <span class="mf">13.066652298</span><span class="p">,</span> <span class="mf">13.0527667999</span><span class="p">,</span> <span class="mf">13.0784015656</span>
+<span class="p">,</span> <span class="mf">13.1136512756</span><span class="p">,</span> <span class="mf">13.1905574799</span><span class="p">,</span> <span class="mf">13.2461013794</span><span class="p">,</span> <span class="mf">13.2503738403</span><span class="p">,</span> <span class="mf">13.2236700058</span>
+<span class="p">,</span> <span class="mf">13.2236700058</span><span class="p">,</span> <span class="mf">13.5729541779</span><span class="p">,</span> <span class="mf">14.4798116684</span><span class="p">,</span> <span class="mf">15.1249732971</span><span class="p">,</span> <span class="mf">15.0694293976</span>
+<span class="p">,</span> <span class="mf">15.0683612823</span><span class="p">,</span> <span class="mf">15.0672931671</span><span class="p">,</span> <span class="mf">15.0651569366</span><span class="p">,</span> <span class="mf">15.0608844757</span><span class="p">])</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2340.67651367</span><span class="p">,</span> <span class="o">-</span><span class="mf">2240.55786133</span><span class="p">,</span> <span class="o">-</span><span class="mf">2134.18212891</span><span class="p">,</span> <span class="o">-</span><span class="mf">2021.54858398</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">1908.9152832</span><span class="p">,</span> <span class="o">-</span><span class="mf">1796.28186035</span><span class="p">,</span> <span class="o">-</span><span class="mf">1683.64868164</span><span class="p">,</span> <span class="o">-</span><span class="mf">1571.01525879</span><span class="p">,</span> <span class="o">-</span><span class="mf">1458.38183594</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">1345.74865723</span><span class="p">,</span> <span class="o">-</span><span class="mf">1233.11523438</span><span class="p">,</span> <span class="o">-</span><span class="mf">1120.48181152</span><span class="p">,</span> <span class="o">-</span><span class="mf">1007.84857178</span><span class="p">,</span> <span class="o">-</span><span class="mf">895.215148926</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">782.581848145</span><span class="p">,</span> <span class="o">-</span><span class="mf">669.948547363</span><span class="p">,</span> <span class="o">-</span><span class="mf">563.572570801</span><span class="p">,</span> <span class="o">-</span><span class="mf">463.454071045</span><span class="p">,</span> <span class="o">-</span><span class="mf">369.592926025</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">284.4921875</span><span class="p">,</span> <span class="o">-</span><span class="mf">209.403320312</span><span class="p">,</span> <span class="o">-</span><span class="mf">150.583679199</span><span class="p">,</span> <span class="o">-</span><span class="mf">106.781829834</span><span class="p">,</span> <span class="o">-</span><span class="mf">75.4947891235</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">50.4651565552</span><span class="p">,</span> <span class="o">-</span><span class="mf">27.9384918213</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.9207115173</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.41182279587</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.65737783909</span><span class="p">])</span>
+
+    <span class="n">varref</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mf">0.2</span>
+    <span class="nb">print</span> <span class="n">varref</span><span class="p">,</span> <span class="n">var</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">var</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">13.1157875061</span><span class="p">,</span> <span class="mf">13.1157875061</span><span class="p">,</span> <span class="mf">13.1157875061</span><span class="p">,</span> <span class="mf">13.1157875061</span><span class="p">,</span> <span class="mf">13.1157875061</span>
+<span class="p">,</span> <span class="mf">13.1168556213</span><span class="p">,</span> <span class="mf">13.1168556213</span><span class="p">,</span> <span class="mf">13.1168556213</span><span class="p">,</span> <span class="mf">13.1168556213</span><span class="p">,</span> <span class="mf">13.1179237366</span>
+<span class="p">,</span> <span class="mf">13.1189918518</span><span class="p">,</span> <span class="mf">13.1275367737</span><span class="p">,</span> <span class="mf">13.1414222717</span><span class="p">,</span> <span class="mf">13.1168556213</span><span class="p">,</span> <span class="mf">13.1019010544</span>
+<span class="p">,</span> <span class="mf">13.1798763275</span><span class="p">,</span> <span class="mf">13.2610549927</span><span class="p">,</span> <span class="mf">13.2589187622</span><span class="p">,</span> <span class="mf">13.2450332642</span><span class="p">,</span> <span class="mf">13.2428970337</span>
+<span class="p">,</span> <span class="mf">13.2450332642</span><span class="p">,</span> <span class="mf">13.5654773712</span><span class="p">,</span> <span class="mf">14.426404953</span><span class="p">,</span> <span class="mf">15.0363168716</span><span class="p">,</span> <span class="mf">14.9070711136</span>
+<span class="p">,</span> <span class="mf">14.9401836395</span><span class="p">,</span> <span class="mf">14.9700918198</span><span class="p">,</span> <span class="mf">14.9668874741</span><span class="p">,</span> <span class="mf">14.9604787827</span><span class="p">])</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2478.62475586</span><span class="p">,</span> <span class="o">-</span><span class="mf">2372.61083984</span><span class="p">,</span> <span class="o">-</span><span class="mf">2259.97119141</span><span class="p">,</span> <span class="o">-</span><span class="mf">2140.70556641</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">2021.44006348</span><span class="p">,</span> <span class="o">-</span><span class="mf">1902.17443848</span><span class="p">,</span> <span class="o">-</span><span class="mf">1782.90893555</span><span class="p">,</span> <span class="o">-</span><span class="mf">1663.64331055</span><span class="p">,</span> <span class="o">-</span><span class="mf">1544.37768555</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">1425.11218262</span><span class="p">,</span> <span class="o">-</span><span class="mf">1305.84655762</span><span class="p">,</span> <span class="o">-</span><span class="mf">1186.58093262</span><span class="p">,</span> <span class="o">-</span><span class="mf">1067.31530762</span><span class="p">,</span> <span class="o">-</span><span class="mf">948.049682617</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">828.784118652</span><span class="p">,</span> <span class="o">-</span><span class="mf">709.518554688</span><span class="p">,</span> <span class="o">-</span><span class="mf">596.87878418</span><span class="p">,</span> <span class="o">-</span><span class="mf">490.864959717</span><span class="p">,</span> <span class="o">-</span><span class="mf">391.476959229</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">301.365203857</span><span class="p">,</span> <span class="o">-</span><span class="mf">221.854782104</span><span class="p">,</span> <span class="o">-</span><span class="mf">159.571640015</span><span class="p">,</span> <span class="o">-</span><span class="mf">113.190582275</span><span class="p">,</span> <span class="o">-</span><span class="mf">80.0612487793</span>
+<span class="p">,</span> <span class="o">-</span><span class="mf">53.5577850342</span><span class="p">,</span> <span class="o">-</span><span class="mf">29.7046699524</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.8025913239</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.85155200958</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.87603235245</span><span class="p">])</span>
+    <span class="n">varref</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mf">0.2</span>
+    <span class="nb">print</span> <span class="n">varref</span><span class="p">,</span> <span class="n">var</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">depref</span> <span class="o">=</span> <span class="n">_val2z_</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">varref</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">#    print &#39;var&#39;,var[:,0]</span>
+<span class="c1">#    print &#39;varref&#39;, varref[0]</span>
+<span class="c1">#    print &#39;dep&#39;,depth[:,0]</span>
+<span class="c1">#    print &#39;res&#39;,depref[0]</span>
+    <span class="nb">print</span> <span class="n">depref</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

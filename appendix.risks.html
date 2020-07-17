@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.4. Unstable routines &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/appendix.risks.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="unstable-routines">
+<span id="appendix-risks"></span><h1>3.4. Unstable routines<a class="headerlink" href="#unstable-routines" title="Permalink to this headline">¶</a></h1>
+<p>This section lists the modules, functions, classes and methods
+whose stability is little or not proven.
+The user is cautioned as to their uses.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This list is probably not exhaustive or updated because
+there is no direct link between the technical development of a code,
+and the update of this part of the documentation.
+It is likely that you can glean some information about the stability
+of the code in its own documentation.</p>
+</div>
+<table border="1" class="colwidths-given docutils" id="id1">
+<caption><span class="caption-text"><em>List of instabilities</em></span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="29%" />
+<col width="36%" />
+<col width="21%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head stub">Routine</th>
+<th class="head">Statut</th>
+<th class="head">TODO</th>
+<th class="head">Priorité (1&gt;2&gt;…)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><th class="stub"><a class="reference internal" href="library/data.cf.html#module-vacumm.data.cf" title="vacumm.data.cf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cf</span></code></a></th>
+<td>Beta version</td>
+<td>Check post-processing of specifications</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><th class="stub"><a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.Dataset" title="vacumm.data.misc.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></th>
+<td>Beta version</td>
+<td>Test the behavior of getting variables at different grid horizontal positions.</td>
+<td>1</td>
+</tr>
+<tr class="row-even"><th class="stub"><a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.Dataset.get_dx" title="vacumm.data.misc.dataset.Dataset.get_dx"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_dx()</span></code></a> et al</th>
+<td>Beta version</td>
+<td>Must be tester</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><th class="stub"><a class="reference internal" href="library/data.misc.dataset.html#vacumm.data.misc.dataset.OceanDataset.get_depth" title="vacumm.data.misc.dataset.OceanDataset.get_depth"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_depth()</span></code></a></th>
+<td>Beta version</td>
+<td>Test the behavior of getting depth at different grid vertical positions</td>
+<td>1</td>
+</tr>
+<tr class="row-even"><th class="stub"><a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.regrid2d" title="vacumm.misc.grid.regridding.regrid2d"><code class="xref py py-meth docutils literal notranslate"><span class="pre">regrid2d()</span></code></a> and <a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.CDATRegridder" title="vacumm.misc.grid.regridding.CDATRegridder"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CDATRegridder()</span></code></a></th>
+<td>Beta version</td>
+<td>Test it on all kind of grids (values and mask)</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><th class="stub"><a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.regular" title="vacumm.misc.grid.regridding.regular"><code class="xref py py-func docutils literal notranslate"><span class="pre">regular()</span></code></a></th>
+<td>Pas utilisée depuis longtemps</td>
+<td>Needs more tests</td>
+<td>2</td>
+</tr>
+<tr class="row-even"><th class="stub"><a class="reference internal" href="library/misc.grid.regridding.html#vacumm.misc.grid.regridding.regular_fill1d" title="vacumm.misc.grid.regridding.regular_fill1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regular_fill1d()</span></code></a></th>
+<td>Pas utilisée depuis longtemps</td>
+<td>Needs more tests</td>
+<td>2</td>
+</tr>
+<tr class="row-odd"><th class="stub"><a class="reference internal" href="library/misc.grid.masking.html#vacumm.misc.grid.masking.check_poly_islands" title="vacumm.misc.grid.masking.check_poly_islands"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_poly_islands()</span></code></a></th>
+<td>Not really used</td>
+<td>Need tests or rewriting</td>
+<td>3</td>
+</tr>
+<tr class="row-even"><th class="stub"><a class="reference internal" href="library/misc.grid.masking.html#vacumm.misc.grid.masking.check_poly_straits" title="vacumm.misc.grid.masking.check_poly_straits"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_poly_straits()</span></code></a></th>
+<td>Not really used</td>
+<td>Need tests or rewriting</td>
+<td>3</td>
+</tr>
+<tr class="row-odd"><th class="stub"><a class="reference internal" href="library/misc.filters.html#vacumm.misc.filters.running_average" title="vacumm.misc.filters.running_average"><code class="xref py py-func docutils literal notranslate"><span class="pre">running_average()</span></code></a></th>
+<td>Obsolete</td>
+<td>À virer ?</td>
+<td>3</td>
+</tr>
+<tr class="row-even"><th class="stub"><a class="reference internal" href="library/misc.plot.html#vacumm.misc.plot.add_colorbar" title="vacumm.misc.plot.add_colorbar"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_colorbar()</span></code></a></th>
+<td>Little used</td>
+<td>To rewrite</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

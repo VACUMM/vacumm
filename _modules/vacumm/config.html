@@ -1,0 +1,1417 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.config &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><img src="../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.config</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Utilities to manage VACUMM basic configuration of modules&quot;&quot;&quot;</span>
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2010-2015)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span>  <span class="nn">shlex</span>
+<span class="kn">import</span> <span class="nn">numpy.distutils</span>
+<span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="k">import</span> <span class="n">SafeConfigParser</span><span class="p">,</span> <span class="n">ConfigParser</span>
+<span class="kn">import</span> <span class="nn">StringIO</span>
+<span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">VACUMMError</span>
+
+<div class="viewcode-block" id="get_lib_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_lib_dir">[docs]</a><span class="k">def</span> <span class="nf">get_lib_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Directory of the :mod:`vacumm` package&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_dist_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_dist_dir">[docs]</a><span class="k">def</span> <span class="nf">get_dist_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Upper directory of VACUMM distribution tree or ``None`` for an installed package&quot;&quot;&quot;</span>
+    <span class="n">lib_dir</span> <span class="o">=</span> <span class="n">get_lib_dir</span><span class="p">()</span>
+    <span class="n">dist_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s1">&#39;../../..&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dist_dir</span><span class="p">,</span> <span class="s1">&#39;setup.py&#39;</span><span class="p">)):</span> <span class="k">return</span>
+    <span class="k">return</span> <span class="n">dist_dir</span></div>
+
+<div class="viewcode-block" id="get_data_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_data_dir">[docs]</a><span class="k">def</span> <span class="nf">get_data_dir</span><span class="p">(</span><span class="n">raiseerr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the data directory absolute path</span>
+
+<span class="sd">    This directory contains data samples and other needed files.</span>
+<span class="sd">    It can be at two different places, depending on if the library is</span>
+<span class="sd">    an installed version or a developers version.</span>
+
+<span class="sd">    - If installed : in :file:`vacumm-data` subdirectory in the</span>
+<span class="sd">      installed package directory (see :meth:`get_lib_dir`).</span>
+<span class="sd">    - Else in the :file:`data` subdirectory of the main distribution tree</span>
+<span class="sd">      (see :meth:`get_dist_dir`).</span>
+
+<span class="sd">    .. warning:: It raises an :class:`VACUMMError` error if not found</span>
+<span class="sd">        and if ``raiseerr`` is True, else return &#39;&#39;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Installed librairy</span>
+    <span class="n">lib_dir</span> <span class="o">=</span> <span class="n">get_lib_dir</span><span class="p">()</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s1">&#39;vacumm-data&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_dir</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">data_dir</span>
+
+    <span class="c1"># Distributed library (dev)</span>
+    <span class="n">dist_dir</span> <span class="o">=</span> <span class="n">get_dist_dir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dist_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dist_dir</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_dir</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">data_dir</span>
+
+    <span class="k">if</span> <span class="n">raiseerr</span><span class="p">:</span> <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find a valid data directory&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="data_sample"><a class="viewcode-back" href="../../library/config.html#vacumm.config.data_sample">[docs]</a><span class="k">def</span> <span class="nf">data_sample</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transform the relative path of a sample file to an absolute path</span>
+
+<span class="sd">    This can be either in the VACUMM data directory (:func:`get_data_dir`),</span>
+<span class="sd">    or in the UVCDAT data directory.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **data_file**: File basename.</span>
+<span class="sd">        - **mode**, optional:</span>
+
+<span class="sd">            - ``&quot;all&quot;`` or ``None``: Look first into VACUMM dir then</span>
+<span class="sd">              and into UVCDAT dir if not found. If finally not found,</span>
+<span class="sd">              return the VACUMM sample path.</span>
+<span class="sd">            - ``&quot;vacumm&quot;``: Look only into the VACUMM data dir only.</span>
+<span class="sd">            - ``&quot;uvcdat&quot;``: Look only into the UVCDAT data dir only.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="c1"># VACUMM</span>
+    <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">vacpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_data_dir</span><span class="p">(</span><span class="n">raiseerr</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">data_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">):</span> <span class="k">return</span> <span class="n">path</span>
+
+    <span class="c1"># UVCDAT</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="s1">&#39;sample_data&#39;</span><span class="p">,</span> <span class="n">data_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">):</span> <span class="k">return</span> <span class="n">path</span>
+    <span class="k">return</span> <span class="n">vacpath</span></div>
+
+
+<div class="viewcode-block" id="get_scripts_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_scripts_dir">[docs]</a><span class="k">def</span> <span class="nf">get_scripts_dir</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raiseerr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the scripts directory absolute path</span>
+
+<span class="sd">    This directory contains examples of script.</span>
+<span class="sd">    It can be at two different places, depending on if the library is</span>
+<span class="sd">    an installed version or a developers version.</span>
+
+<span class="sd">    - If installed : in :file:`vacumm-scripts` subdirectory in the</span>
+<span class="sd">      installed package directory (see :meth:`get_lib_dir`).</span>
+<span class="sd">    - Else in the :file:`scripts` subdirectory of the main distribution tree</span>
+<span class="sd">      (see :meth:`get_dist_dir`).</span>
+
+<span class="sd">    .. warning:: It raises an :class:`VACUMMError` error if not found</span>
+<span class="sd">        and if ``raiseerr`` is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Installed librairy</span>
+    <span class="n">lib_dir</span> <span class="o">=</span> <span class="n">get_lib_dir</span><span class="p">()</span>
+    <span class="n">scripts_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s1">&#39;vacumm-scripts&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">scripts_dir</span><span class="p">):</span> <span class="n">scripts_dir</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Distributed library (dev)</span>
+    <span class="k">if</span> <span class="n">scripts_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dist_dir</span> <span class="o">=</span> <span class="n">get_dist_dir</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dist_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scripts_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dist_dir</span><span class="p">,</span> <span class="s1">&#39;scripts&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">scripts_dir</span><span class="p">):</span> <span class="n">scripts_dir</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Not found</span>
+    <span class="k">if</span> <span class="n">scripts_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">raiseerr</span><span class="p">:</span> <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find a valid scripts directory&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># Subdir</span>
+    <span class="k">if</span> <span class="n">subdir</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subdir</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="n">scripts_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scripts_dir</span><span class="p">,</span> <span class="n">subdir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">scripts_dir</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Invalid subdirectory of the scripts directory: &quot;</span><span class="o">+</span><span class="n">subdir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">scripts_dir</span></div>
+
+
+<div class="viewcode-block" id="get_tut_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_tut_dir">[docs]</a><span class="k">def</span> <span class="nf">get_tut_dir</span><span class="p">(</span><span class="n">raiseerr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the tutorials directory absolute path</span>
+
+<span class="sd">    This directory contains all tutorials used by the documentation.</span>
+<span class="sd">    It can be at two different places, depending on if the library is</span>
+<span class="sd">    an installed version or developers version.</span>
+
+<span class="sd">    - If installed : in :file:`vacumm-scripts/tutorials` subdirectory in the</span>
+<span class="sd">      installed package directory (see :meth:`get_lib_dir`).</span>
+<span class="sd">    - Else in the :file:`scripts/tutorials`</span>
+<span class="sd">      subdirectory of the main distribution tree</span>
+<span class="sd">      (see :meth:`get_dist_dir`).</span>
+
+<span class="sd">    .. warning:: It raises an :class:`VACUMMError` error if not found</span>
+<span class="sd">        and if ``raiseerr`` is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_scripts_dir</span><span class="p">(</span><span class="s1">&#39;tutorials&#39;</span><span class="p">,</span> <span class="n">raiseerr</span><span class="o">=</span><span class="n">raiseerr</span><span class="p">)</span></div>
+
+<span class="c1">#def get_conf_dir():</span>
+<span class="c1">#    &quot;&quot;&quot;Get directory of secondary configuration files</span>
+<span class="c1">#</span>
+<span class="c1">#    This directory contains secondary configuration files.</span>
+<span class="c1">#    These files are usually referenced in the general configuration file.</span>
+<span class="c1">#    It can be at two different places, depending on if the library is</span>
+<span class="c1">#    an installed version or developers version.</span>
+<span class="c1">#</span>
+<span class="c1">#    - If installed : in :file:`vacumm-config` subdirectory in the</span>
+<span class="c1">#      installed package directory (see :meth:`get_lib_dir`).</span>
+<span class="c1">#    - Else in the :file:`config` subdirectory of the main distribution tree</span>
+<span class="c1">#      (see :meth:`get_dist_dir`).</span>
+<span class="c1">#    &quot;&quot;&quot;</span>
+<span class="c1">#    # Installed librairy</span>
+<span class="c1">#    lib_dir = get_lib_dir()</span>
+<span class="c1">#    conf_dir = os.path.join(lib_dir, &#39;vacumm-config&#39;)</span>
+<span class="c1">#    if os.path.exists(conf_dir):</span>
+<span class="c1">#        return conf_dir</span>
+<span class="c1">#</span>
+<span class="c1">#    # Distributed library (dev)</span>
+<span class="c1">#    dist_dir = get_dist_dir()</span>
+<span class="c1">#    if dist_dir is not None:</span>
+<span class="c1">#        return os.path.join(dist_dir, &#39;config&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#    # Fall back to the use config dir</span>
+<span class="c1">#    return get_user_conf_dir()</span>
+
+<div class="viewcode-block" id="get_home_conf_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_home_conf_dir">[docs]</a><span class="k">def</span> <span class="nf">get_home_conf_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the directory which contains the user config dir</span>
+
+<span class="sd">    It defaults to :file:`~/.config` and may be set with the :envvar:`XDG_CONFIG_HOME`</span>
+<span class="sd">    environmement variable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XDG_CONFIG_HOME&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">base_dir</span><span class="p">:</span>
+        <span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">,</span> <span class="s1">&#39;.config&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">base_dir</span></div>
+
+<div class="viewcode-block" id="get_user_conf_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_user_conf_dir">[docs]</a><span class="k">def</span> <span class="nf">get_user_conf_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get directory that contains user configuration files</span>
+
+<span class="sd">    This directory contains main and secondary configuration files.</span>
+<span class="sd">    These files are usually referenced in the general configuration file.</span>
+<span class="sd">    On linux, it should be :file:`~/.config/vacumm`.</span>
+<span class="sd">    It may be set with the :envvar:`VACUMM_CONFIG_DIR`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conf_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;VACUMM_CONFIG_DIR&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">conf_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">conf_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_home_conf_dir</span><span class="p">(),</span> <span class="s1">&#39;vacumm&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">conf_dir</span></div>
+
+<div class="viewcode-block" id="get_com_conf_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_com_conf_dir">[docs]</a><span class="k">def</span> <span class="nf">get_com_conf_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get directory of common alternate configuration files</span>
+
+<span class="sd">    These files are not included in the distribution.</span>
+<span class="sd">    They have a similar role to user config files but they</span>
+<span class="sd">    are accessible to all users.</span>
+<span class="sd">    This directory can be at two different places, depending on if the library is</span>
+<span class="sd">    an installed version or developers version.</span>
+
+<span class="sd">    - If installed : in :file:`vacumm-config` subdirectory in the</span>
+<span class="sd">      installed package directory (see :meth:`get_lib_dir`).</span>
+<span class="sd">    - Else in the :file:`config` subdirectory of the main distribution tree</span>
+<span class="sd">      (see :meth:`get_dist_dir`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Installed librairy</span>
+    <span class="n">lib_dir</span> <span class="o">=</span> <span class="n">get_lib_dir</span><span class="p">()</span>
+    <span class="n">conf_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s1">&#39;vacumm-config&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">conf_dir</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">conf_dir</span>
+
+    <span class="c1"># Distributed library (dev)</span>
+    <span class="n">dist_dir</span> <span class="o">=</span> <span class="n">get_dist_dir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dist_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dist_dir</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Fall back to the use config dir</span>
+    <span class="k">return</span> <span class="n">get_user_conf_dir</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="get_user_conf_file"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_user_conf_file">[docs]</a><span class="k">def</span> <span class="nf">get_user_conf_file</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get main user configuration file</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **fname**, optional: Relative or absolute file name.</span>
+<span class="sd">          It may be set with the :envvar:`VACUMM_CONFIG_FILE`.</span>
+<span class="sd">          The config directory is prepended if the file name</span>
+<span class="sd">          is relative.</span>
+
+<span class="sd">    Shortcut for::</span>
+
+<span class="sd">        os.path.join(get_user_conf_dir(), fname)</span>
+
+<span class="sd">    :See also: :func:`get_user_conf_dir`, :func:`edit_user_conf_file`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;VACUMM_CONFIG_FILE&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;vacumm.cfg&#39;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span> <span class="k">return</span> <span class="n">fname</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_user_conf_dir</span><span class="p">(),</span> <span class="n">fname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_com_conf_file"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_com_conf_file">[docs]</a><span class="k">def</span> <span class="nf">get_com_conf_file</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get common user configuration file</span>
+
+
+<span class="sd">    Shortcut for::</span>
+
+<span class="sd">        os.path.join(get_com_conf_dir(), &#39;vacumm.cfg&#39;)</span>
+
+<span class="sd">    :See also: :func:`get_com_conf_dir`, :func:`get_user_conf_file`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_user_conf_dir</span><span class="p">(),</span> <span class="s1">&#39;vacumm.cfg&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_dir_dict"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_dir_dict">[docs]</a><span class="k">def</span> <span class="nf">get_dir_dict</span><span class="p">(</span><span class="n">modname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the following directory names as a dictionary</span>
+
+<span class="sd">    - ``lib_dir`` (see :func:`get_lib_dir`)</span>
+<span class="sd">    - ``data_dir`` (see :func:`get_data_dir`)</span>
+<span class="sd">    - ``dist_dir`` (see :func:`get_dist_dir`)</span>
+<span class="sd">    - ``tut_dir`` (see :func:`get_tut_dir`)</span>
+<span class="sd">    - ``com_conf_dir`` (see :func:`get_com_conf_dir`)</span>
+<span class="sd">    - ``user_conf_dir`` (see :func:`get_user_conf_dir`)</span>
+<span class="sd">    - ``scripts_dir`` (see :func:`get_scripts_dir`)</span>
+<span class="sd">    - ``mod_dir`` (directory of ``modname``)</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **modname**, optional: Module name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dd</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data_dir</span><span class="o">=</span><span class="n">get_data_dir</span><span class="p">(),</span> <span class="n">lib_dir</span><span class="o">=</span><span class="n">get_lib_dir</span><span class="p">(),</span>
+        <span class="n">tut_dir</span><span class="o">=</span><span class="n">get_tut_dir</span><span class="p">(),</span> <span class="n">dist_dir</span><span class="o">=</span><span class="n">get_dist_dir</span><span class="p">(),</span>
+        <span class="n">com_conf_dir</span><span class="o">=</span><span class="n">get_com_conf_dir</span><span class="p">(),</span> <span class="n">conf_dir</span><span class="o">=</span><span class="n">get_user_conf_dir</span><span class="p">(),</span>
+        <span class="n">user_conf_dir</span><span class="o">=</span><span class="n">get_user_conf_dir</span><span class="p">(),</span> <span class="n">scripts_dir</span><span class="o">=</span><span class="n">get_scripts_dir</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">modname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">modname</span><span class="p">):</span>
+                <span class="n">mod_dir</span> <span class="o">=</span> <span class="n">modname</span>
+                <span class="n">modname</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">exec</span> <span class="s1">&#39;import </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">modname</span>
+                    <span class="n">modname</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">modname</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">mod_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_lib_dir</span><span class="p">(),</span> <span class="o">*</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">modname</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">modname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mod_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">modname</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+        <span class="n">dd</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mod_dir</span><span class="o">=</span><span class="n">mod_dir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dd</span></div>
+
+<div class="viewcode-block" id="get_dl_dir"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_dl_dir">[docs]</a><span class="k">def</span> <span class="nf">get_dl_dir</span><span class="p">(</span><span class="n">suggest</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filedesc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the download directory&quot;&quot;&quot;</span>
+    <span class="c1"># Try what is suggested</span>
+    <span class="k">if</span> <span class="n">suggest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">suggest</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">X_OK</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">suggest</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">suggest</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">suggest</span>
+
+    <span class="c1"># Already chosen?</span>
+    <span class="n">dl_dir</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">&#39;vacumm&#39;</span><span class="p">,</span> <span class="s1">&#39;dl_dir&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dl_dir</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dl_dir</span><span class="p">):</span> <span class="k">return</span> <span class="n">dl_dir</span>
+
+    <span class="c1"># Download</span>
+    <span class="n">user_data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_user_conf_dir</span><span class="p">(),</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">quiet</span><span class="p">:</span> <span class="c1"># Into config dir</span>
+        <span class="n">dl_dir</span> <span class="o">=</span> <span class="n">user_data_dir</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># Ask</span>
+
+        <span class="c1"># Possible directories</span>
+        <span class="n">home_data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">))</span>
+        <span class="n">dl_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">user_data_dir</span><span class="p">,</span> <span class="n">home_data_dir</span><span class="p">]</span>
+        <span class="n">vacumm_data_dir</span> <span class="o">=</span> <span class="n">get_data_dir</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">vacumm_data_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">X_OK</span><span class="p">):</span>
+            <span class="n">dl_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vacumm_data_dir</span><span class="p">)</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">dl_dirs</span><span class="p">])</span>
+
+        <span class="c1"># Message</span>
+        <span class="k">if</span> <span class="n">filedesc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">filedesc</span> <span class="o">=</span> <span class="s1">&#39;missing data file&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Please specifiy or choose a directory where to download </span><span class="si">%s</span><span class="s1">:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">filedesc</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;- specify it -&gt; enter a valid path</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dl_dirs</span><span class="p">):</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span> <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;- </span><span class="si">%s</span><span class="s1"> -&gt; </span><span class="si">%i%s</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;? &quot;</span>
+
+        <span class="c1"># Ask choice</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span> <span class="c1">#in range(1, len(dl_dirs)+1):</span>
+            <span class="n">choice</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">choice</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span>
+                <span class="nb">print</span> <span class="s1">&#39;1&#39;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">choice</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span> <span class="c1"># choose within the list of dirs</span>
+                <span class="n">choice</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">choice</span><span class="o">&lt;</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">choice</span><span class="o">&gt;</span><span class="n">nc</span><span class="p">:</span>
+                    <span class="nb">print</span> <span class="s2">&quot;Wrong choice: </span><span class="si">%i</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">choice</span>
+                    <span class="k">continue</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">choice</span><span class="p">:</span> <span class="c1"># specifiy dir</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">choice</span><span class="p">):</span> <span class="c1"># does not exist</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="nb">print</span> <span class="s2">&quot;Can&#39;t create directory: &quot;</span><span class="o">+</span><span class="n">choice</span>
+                        <span class="k">continue</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">choice</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">X_OK</span><span class="p">):</span> <span class="c1"># no access</span>
+                    <span class="nb">print</span> <span class="s2">&quot;No write access to directory: &quot;</span><span class="o">+</span><span class="n">choice</span>
+                    <span class="k">continue</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">choice</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">dl_dir</span> <span class="o">=</span> <span class="n">dl_dirs</span><span class="p">[</span><span class="n">choice</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dl_dir</span> <span class="o">=</span> <span class="n">choice</span>
+
+    <span class="c1"># Remember it</span>
+    <span class="n">rem</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">(</span><span class="s1">&#39;Remember this choice? [Y/n] &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">rem</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">):</span>
+        <span class="n">set_config_value</span><span class="p">(</span><span class="s1">&#39;vacumm&#39;</span><span class="p">,</span> <span class="s1">&#39;dl_dir&#39;</span><span class="p">,</span> <span class="n">dl_dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dl_dir</span></div>
+
+<div class="viewcode-block" id="get_config_files"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_config_files">[docs]</a><span class="k">def</span> <span class="nf">get_config_files</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the list of configuration files that can be loaded</span>
+
+<span class="sd">    It lists all configuration files that should be loaded</span>
+<span class="sd">    to search for a configuration value. It first list</span>
+<span class="sd">    default configuration files, then add user specific files.</span>
+
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **section**, optional: Target section of the configuration files.</span>
+<span class="sd">          It is generally a module name.</span>
+<span class="sd">          In this case, user and default configuration files</span>
+<span class="sd">          located in the where the module is are inserted</span>
+<span class="sd">          into the list.</span>
+<span class="sd">          It can also be a list of module name.</span>
+<span class="sd">          Eventually, if the special value ``&quot;__all__&quot;`` is passed, it searches</span>
+<span class="sd">          for all configuration files named :file:`vacumm.cfg`</span>
+<span class="sd">          in the whole library tree.</span>
+<span class="sd">        - **user**, optional: If ``False`` or ``0``, load only default config.</span>
+<span class="sd">          If ``1`` or ``True``, append user configuration files</span>
+<span class="sd">          to the list. If ``2``, list only user config files.</span>
+
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        Suppose you are in directory :file:`/home/me/myproject`,</span>
+<span class="sd">        :func:`get_config_files` is called from module</span>
+<span class="sd">        :mod:`vacumm.bathy.shorelines`, and your use VACUMM</span>
+<span class="sd">        as a developper, i.e. the library is not installed but used</span>
+<span class="sd">        directly in the installation tree whose path is</span>
+<span class="sd">        :file:`/home/me/python/vacumm`:</span>
+
+<span class="sd">        &gt;&gt;&gt; get_config_files(&#39;vacumm.bathy.shorelines&#39;)</span>
+
+<span class="sd">        The following list is returned :</span>
+
+<span class="sd">            #. /home/me/python/vacumm/lib/python/vacumm/bathy/shorelines/vacumm.cfg (defaults)</span>
+<span class="sd">            #. /home/me/python/vacumm/lib/python/vacumm/vacumm-config/vacumm.cfg (defaults)</span>
+<span class="sd">            #. /home/me/.config/vacumm/vacumm.cfg</span>
+
+<span class="sd">        **Content of last files overides content of first files.**</span>
+
+<span class="sd">        Other usages:</span>
+
+<span class="sd">        &gt;&gt;&gt; get_config_files(&#39;__all__&#39;, user=False)</span>
+<span class="sd">        &gt;&gt;&gt; get_config_files([&#39;toto.tutu&#39;, &#39;tutu.tata&#39;])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Some directories</span>
+    <span class="n">lib_dir</span> <span class="o">=</span> <span class="n">get_lib_dir</span><span class="p">()</span>
+    <span class="n">com_conf_dir</span> <span class="o">=</span> <span class="n">get_com_conf_dir</span><span class="p">()</span>
+    <span class="n">user_conf_dir</span> <span class="o">=</span> <span class="n">get_user_conf_dir</span><span class="p">()</span>
+    <span class="n">mod_dirs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">section</span><span class="o">==</span><span class="s1">&#39;__all__&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;.svn&#39;</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+                <span class="n">dirs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;.svn&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;vacumm-&#39;</span><span class="p">)</span> <span class="ow">or</span> \
+                        <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="s1">&#39;__init__.py&#39;</span><span class="p">)):</span>
+                    <span class="n">dirs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;vacumm.cfg&#39;</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">mod_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">section</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">):</span>
+            <span class="n">section</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">section</span> <span class="o">=</span> <span class="p">[</span><span class="n">section</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sec</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;vacumm.&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">sec</span><span class="o">==</span><span class="s1">&#39;vacumm&#39;</span><span class="p">:</span>
+                <span class="n">subnames</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="c1"># skip &quot;vacumm&quot;</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subnames</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">subnames</span> <span class="o">=</span> <span class="n">subnames</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># skip file name</span>
+                <span class="n">mod_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="o">*</span><span class="n">subnames</span><span class="p">))</span>
+    <span class="n">dist_dir</span> <span class="o">=</span> <span class="n">get_dist_dir</span><span class="p">()</span>
+
+    <span class="c1"># Configuration files to scan (no check)</span>
+    <span class="n">cfgfiles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">user</span><span class="o">!=</span><span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mod_dirs</span><span class="p">:</span>
+            <span class="n">cfgfiles</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mod_dir</span><span class="p">,</span> <span class="s1">&#39;vacumm.cfg&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">mod_dir</span> <span class="ow">in</span> <span class="n">mod_dirs</span><span class="p">])</span>  <span class="c1"># module level / default</span>
+    <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">cfgfiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">com_conf_dir</span><span class="p">,</span> <span class="s1">&#39;vacumm.cfg&#39;</span><span class="p">))</span> <span class="c1"># global tree / user</span>
+        <span class="n">cfgfiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_conf_dir</span><span class="p">,</span> <span class="s1">&#39;vacumm.cfg&#39;</span><span class="p">))</span> <span class="c1"># global tree / user</span>
+
+    <span class="c1"># check existence</span>
+    <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+        <span class="n">cfgfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">cfgfiles</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">cfgfiles</span></div>
+
+<div class="viewcode-block" id="get_config_value"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_config_value">[docs]</a><span class="k">def</span> <span class="nf">get_config_value</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">regexp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ispath</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">umode</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getcfg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">parent_section</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent_option</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the a config value in available VACUMM configuration files</span>
+
+<span class="sd">    The list of possible configuration files is provided by :func:`get_config_files`.</span>
+
+<span class="sd">    Configuration values can use expanded variables in two ways:</span>
+
+<span class="sd">        1. Internal option name are automatically expanded to their value</span>
+<span class="sd">           if found in the form ``%(option_name)s``. In addition to internal</span>
+<span class="sd">           options, you can provide your own (var_name,value) pairs by</span>
+<span class="sd">           passing a dictionary to the ``vars`` keyword.</span>
+<span class="sd">           Some external options pointing to directory names are provided</span>
+<span class="sd">           automatically (but can be overidden):</span>
+
+<span class="sd">            - ``lib_dir`` (see :func:`get_lib_dir`)</span>
+<span class="sd">            - ``data_dir`` (see :func:`get_data_dir`)</span>
+<span class="sd">            - ``dist_dir`` (see :func:`get_dist_dir`)</span>
+<span class="sd">            - ``tut_dir`` (see :func:`get_tut_dir`)</span>
+<span class="sd">            - ``user_conf_dir`` or ``conf_dir`` (see :func:`get_user_conf_dir`)</span>
+<span class="sd">            - ``scripts_dir`` (see :func:`get_scripts_dir`)</span>
+<span class="sd">            - ``mod_dir`` (directory of the module when ``section`` is a module name)</span>
+
+<span class="sd">        2. User home ``~`` and environement variable (in the form ``${HOME}``</span>
+<span class="sd">           are expanded if keyword ``expand`` is set to ``True``.</span>
+
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **section**: A section in the config, typically a full module name</span>
+<span class="sd">          (see :func:`get_config_files`)</span>
+<span class="sd">        - **option**: Option to read in the section.</span>
+<span class="sd">        - **regexp**, optional: ``option`` is interpreted a regular expression.</span>
+<span class="sd">          If ``True``, it returns a dictionary of (option,value) items found.</span>
+<span class="sd">        - **ispath**, optional: if ``True``, value is converted using</span>
+<span class="sd">          :func:`numpy.distutils.misc_util.allpath`.</span>
+<span class="sd">        - **vars**, optional: Dictionary used to expand variables in the form</span>
+<span class="sd">          ``%(var_name)s``.</span>
+<span class="sd">        - **user**, optional: Also scan user files. If ``raw`` is True, value</span>
+<span class="sd">          with ``conf_dir`` expanded using ``user_conf_dir``, and if differents values</span>
+<span class="sd">          are found, they are treated depending on ``mode``.</span>
+<span class="sd">        - **umode**, optional: If ``user`` is True, and two possible values are found</span>
+<span class="sd">          (one with ``conf_dir``, one with ``user_conf_dir``), they are treated</span>
+<span class="sd">          depending on ``umode``:</span>
+
+<span class="sd">            - ``&quot;merge&quot;``: Value found using ``user_conf_dir`` has priority</span>
+<span class="sd">              over value found using ``conf_dir``.</span>
+<span class="sd">            - ``&quot;all&quot;``: A two-element list is returned if elements are different.</span>
+<span class="sd">            - Else, if value seems to be a config file (ending with &quot;.ini&quot;</span>
+<span class="sd">              or &quot;.cfg&quot;), ``mode=&quot;all&quot;`` else ``mode=&quot;merge&quot;``.</span>
+<span class="sd">        - **cfg**, optional: External :class:`ConfigParser.ConfigParser` instance</span>
+<span class="sd">          or an external config file. If not provided, configuration is given</span>
+<span class="sd">          by :func:`get_config` (internal configuration).</span>
+
+<span class="sd">    :Returns: If ``regexp`` is `` False``, return the value or None if not found,</span>
+<span class="sd">        else return a dictionary.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; path = get_config_value(&#39;vacumm.bathy.shorelines&#39;, &#39;shapefile_histolitt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; paths = get_config_value(&#39;vacumm.bathy.shorelines&#39;, &#39;shapefile_.*&#39;, regexp=True)</span>
+<span class="sd">        &gt;&gt;&gt; paths = get_config_value(&#39;my.module&#39;, vars=dict(mydir=&#39;/home/me/dir&#39;))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ispath</span><span class="o">=</span><span class="kc">False</span> <span class="c1"># buggy</span>
+
+    <span class="c1"># Load configuration(s)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="p">(</span><span class="n">basestring</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">cfgfile</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">ConfigParser</span><span class="p">):</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">parent_section</span><span class="o">=</span><span class="n">parent_section</span><span class="p">,</span>
+            <span class="n">parent_option</span><span class="o">=</span><span class="n">parent_option</span><span class="p">)</span>
+
+    <span class="c1"># Always have a tuple of configurations</span>
+    <span class="n">cfgs</span> <span class="o">=</span> <span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">cfg</span>
+
+    <span class="c1"># Directory names (for expansion)</span>
+    <span class="n">kwget</span> <span class="o">=</span> <span class="n">get_dir_dict</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+    <span class="n">kwget</span><span class="p">[</span><span class="s1">&#39;conf_dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">|</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">kwget</span><span class="p">[</span><span class="s1">&#39;com_conf_dir&#39;</span><span class="p">],</span> <span class="n">kwget</span><span class="p">[</span><span class="s1">&#39;user_conf_dir&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">vars</span><span class="p">:</span>
+        <span class="n">kwget</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span>
+
+    <span class="c1"># Get value(s)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">regexp</span><span class="p">:</span>
+
+        <span class="c1"># Collect</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[(</span><span class="n">cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">kwget</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">cfg</span> <span class="ow">in</span> <span class="n">cfgs</span><span class="p">]</span>
+
+        <span class="c1"># Detect tuple of values</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">_opt2tuple_</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># Filter</span>
+        <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_filter_uvalues_</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">umode</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># Only options that matches regular expression</span>
+
+        <span class="c1"># Collect</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">cfg</span> <span class="ow">in</span> <span class="n">cfgs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+                <span class="n">re_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span><span class="o">.</span><span class="n">match</span>
+                <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+                    <span class="n">m</span> <span class="o">=</span> <span class="n">re_match</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                        <span class="n">value</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="p">[])</span>
+                        <span class="n">value</span><span class="p">[</span><span class="n">opt</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">kwget</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">))</span>
+
+        <span class="c1"># Filters</span>
+        <span class="k">for</span> <span class="n">opt</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># Detect tuple of values</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">_opt2tuple_</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="o">=</span> <span class="n">_filter_uvalues_</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">umode</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Operator on values</span>
+    <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+
+        <span class="c1"># Operators</span>
+        <span class="n">ops</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># - fix path</span>
+        <span class="k">if</span> <span class="n">ispath</span><span class="p">:</span>
+            <span class="n">ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">distutils</span><span class="o">.</span><span class="n">misc_util</span><span class="o">.</span><span class="n">allpath</span><span class="p">)</span>
+        <span class="c1"># - expand user name and environment variables</span>
+        <span class="k">if</span> <span class="n">expand</span><span class="p">:</span>
+            <span class="n">ops</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">])</span>
+
+        <span class="c1"># Apply</span>
+        <span class="k">if</span> <span class="n">ops</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_ops_on_values_</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">ops</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">cfgs</span><span class="p">)</span> <span class="k">if</span> <span class="n">getcfg</span> <span class="k">else</span> <span class="n">value</span></div>
+
+<span class="k">def</span> <span class="nf">_ops_on_values_</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="o">*</span><span class="n">ops</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply operators on tuple, list, dict or scalar values&quot;&quot;&quot;</span>
+
+    <span class="c1"># Dict</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_ops_on_values_</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="o">*</span><span class="n">ops</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="c1"># Scalar</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="c1"># Tuple, list</span>
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">values</span><span class="p">)(</span><span class="n">_ops_on_values_</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">*</span><span class="n">ops</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_filter_uvalues_</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">umode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Filter values depending on umode</span>
+
+<span class="sd">    umode is guess if &quot;auto&quot;</span>
+
+<span class="sd">    values is a N-element list:</span>
+
+<span class="sd">        - first: default value</span>
+<span class="sd">        - others: user values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Auto mode = &#39;all&#39; if config files as values</span>
+    <span class="k">if</span> <span class="n">umode</span><span class="o">!=</span><span class="s1">&#39;all&#39;</span> <span class="ow">and</span> <span class="n">umode</span><span class="o">!=</span><span class="s1">&#39;merge&#39;</span><span class="p">:</span>
+        <span class="n">umode</span> <span class="o">=</span> <span class="s1">&#39;merge&#39;</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_re_cfgfile</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="n">umode</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+                <span class="k">break</span>
+
+    <span class="c1"># Remove Nones</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+    <span class="c1"># Merge values (take last)</span>
+    <span class="k">if</span> <span class="n">umode</span><span class="o">==</span><span class="s2">&quot;merge&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span> <span class="k">else</span> <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Unique</span>
+    <span class="n">vv</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vv</span><span class="p">:</span>
+            <span class="n">vv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span>
+
+<div class="viewcode-block" id="get_config_sections"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_config_sections">[docs]</a><span class="k">def</span> <span class="nf">get_config_sections</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent_section</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent_option</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">getcfg</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get sections names</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **parent_section/option**, optional: Section (module name) and option of</span>
+<span class="sd">          the main vacumm configuration that give the path to the target configuration</span>
+<span class="sd">          file. If not provided, it uses `cfg` the main vacumm configuration.</span>
+<span class="sd">        - **getcfg**, optional: Also return the configurations object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cfgs</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span> <span class="n">parent_section</span><span class="o">=</span><span class="n">parent_section</span><span class="p">,</span> <span class="n">parent_option</span><span class="o">=</span><span class="n">parent_option</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfgs</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span> <span class="n">cfgs</span> <span class="o">=</span> <span class="n">cfgs</span><span class="p">,</span>
+    <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cfg</span> <span class="ow">in</span> <span class="n">cfgs</span><span class="p">:</span>
+        <span class="n">sections</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">getcfg</span><span class="p">:</span> <span class="k">return</span> <span class="n">sections</span><span class="p">,</span> <span class="n">cfg</span>
+    <span class="k">return</span> <span class="n">sections</span></div>
+
+
+<div class="viewcode-block" id="load_configs"><a class="viewcode-back" href="../../library/config.html#vacumm.config.load_configs">[docs]</a><span class="k">def</span> <span class="nf">load_configs</span><span class="p">(</span><span class="n">cfgfiles</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read configuration files in merged and separate configuations</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **cfgfiles**: Configuration files.</span>
+
+<span class="sd">            - If a file, simply return the associated :class:`~ConfigParser.SafeConfigParser`</span>
+<span class="sd">              instance.</span>
+<span class="sd">            - If a list of files, does the same merging all the files.</span>
+<span class="sd">            - If a tuple, create a configuration for each of its elements.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; cfg = load_configs(&#39;myfile.cfg&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; cfg = load_configs([&#39;myfile1.cfg&#39;, &#39;myfile2.cfg&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; cfg1, cfg2 = load_configs((&#39;vacumm.cfg&#39;, [&#39;myfile1.cfg&#39;, &#39;myfile2.cfg&#39;]))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">single</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfgfiles</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">single</span><span class="p">:</span>
+        <span class="n">cfgfiles</span> <span class="o">=</span> <span class="p">(</span><span class="n">cfgfiles</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">cfgs</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="k">for</span> <span class="n">cfgfile</span> <span class="ow">in</span> <span class="n">cfgfiles</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">cfgfile</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfgfile</span><span class="p">]</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">)</span>
+        <span class="n">cfgs</span> <span class="o">+=</span> <span class="n">cfg</span><span class="p">,</span>
+    <span class="k">if</span> <span class="n">single</span><span class="p">:</span> <span class="k">return</span> <span class="n">cfgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">cfgs</span></div>
+
+
+
+
+<div class="viewcode-block" id="get_config"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_config">[docs]</a><span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">asstring</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">parent_section</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent_option</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a :class:`ConfigParser.SafeConfigParser` instance of current configuration or as a string</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **section**, optional: A module or its name, or ``&quot;__all__&quot;``</span>
+<span class="sd">          to get a full config (config files in module drectories are also scanned).</span>
+<span class="sd">        - **user**, optional: Also scan available user configuration files.</span>
+<span class="sd">        - **asstring**, optional: Get it as string.</span>
+<span class="sd">        - **parent_section/option**, optional: Section (module name) and option of</span>
+<span class="sd">          the main vacumm configuration that give the path to the target configuration</span>
+<span class="sd">          file. If not provided, it uses `cfg` the main vacumm configuration.</span>
+
+<span class="sd">    :See also: :func:`get_config_files`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Already there?</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">ConfigParser</span><span class="p">):</span> <span class="c1"># No</span>
+
+        <span class="c1"># List of files to scan</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span> <span class="c1"># Single file name</span>
+            <span class="n">cfgfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfg</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span> <span class="c1"># A list of files</span>
+            <span class="n">cfgfiles</span> <span class="o">=</span> <span class="n">cfg</span>
+
+        <span class="k">elif</span> <span class="n">parent_section</span> <span class="ow">and</span> <span class="n">parent_option</span><span class="p">:</span> <span class="c1"># File name from parent config</span>
+            <span class="n">cfgfiles</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="n">parent_section</span><span class="p">,</span> <span class="n">parent_option</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">umode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfgfiles</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">cfgfiles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cfgfiles</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># General config files</span>
+            <span class="n">cfgfiles</span> <span class="o">=</span> <span class="n">get_config_files</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+                <span class="n">cfgfiles</span> <span class="o">=</span> <span class="p">(</span><span class="n">cfgfiles</span><span class="p">,</span> <span class="n">get_com_conf_file</span><span class="p">(),</span> <span class="n">get_user_conf_file</span><span class="p">())</span>
+
+        <span class="c1"># Load configurations</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">load_configs</span><span class="p">(</span><span class="n">cfgfiles</span><span class="p">)</span>
+
+
+    <span class="c1"># Return config</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">asstring</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cfg</span>
+
+    <span class="c1"># As string</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">merge_configs</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">StringIO</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+    <span class="n">S</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">s</span></div>
+
+<span class="n">_re_opt2tuple_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(?:\(([^|)]+)\|([^|)]+)(?:\|([^|)]+))?(?:\|([^|)]+))?\))([^)]*)$&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">match</span>
+<span class="k">def</span> <span class="nf">_opt2tuple_</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split &quot;(a|b)c&quot; into (&quot;ab&quot;,&quot;bc&quot;)&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">]</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">_re_opt2tuple_match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+            <span class="n">vv</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">g</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">g</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vv</span><span class="p">):</span>
+                    <span class="n">vv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">g</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+
+<span class="n">_re_cfgfile</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\.(cfg|ini)$&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span>
+<div class="viewcode-block" id="merge_configs"><a class="viewcode-back" href="../../library/config.html#vacumm.config.merge_configs">[docs]</a><span class="k">def</span> <span class="nf">merge_configs</span><span class="p">(</span><span class="n">cfgs</span><span class="p">,</span> <span class="n">forprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Merge configurations</span>
+
+<span class="sd">    Options of the last config overrides options of the other ones,</span>
+<span class="sd">    except for config file names (values then end with .ini or .cfg)</span>
+<span class="sd">    that are store as a tuple.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This makes output config incompatible with</span>
+<span class="sd">        :meth:`~ConfigParser.ConfigParser.getint`, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Init</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfgs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">cfgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfgs</span><span class="p">]</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
+
+    <span class="c1"># Loop on configs</span>
+    <span class="n">kwget</span> <span class="o">=</span> <span class="n">get_dir_dict</span><span class="p">()</span>
+    <span class="n">kwget</span><span class="p">[</span><span class="s1">&#39;mod_dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%%</span><span class="s1">(mod_dir)s&#39;</span>
+    <span class="n">pending</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">cfgi</span> <span class="ow">in</span> <span class="n">cfgs</span><span class="p">:</span>
+<span class="c1">#        print &#39;-&#39;*50</span>
+<span class="c1">#        S = StringIO.StringIO()</span>
+<span class="c1">#        cfgi.write(S)</span>
+<span class="c1">#        s = S.getvalue()</span>
+<span class="c1">#        S.close()</span>
+<span class="c1">#        print s</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfgi</span><span class="p">,</span> <span class="n">SafeConfigParser</span><span class="p">):</span>
+            <span class="n">cfgfiles</span> <span class="o">=</span> <span class="n">cfgi</span>
+            <span class="n">cfgi</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
+            <span class="n">cfgi</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfgfiles</span><span class="p">)</span>
+
+        <span class="n">cfg</span><span class="o">.</span><span class="n">_defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cfgi</span><span class="o">.</span><span class="n">defaults</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">cfgi</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+            <span class="n">pending</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="p">{})</span>
+
+            <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">rvali</span> <span class="ow">in</span> <span class="n">cfgi</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">pending</span><span class="p">[</span><span class="n">section</span><span class="p">]:</span> <span class="c1"># already identified as an option of config files</span>
+                    <span class="k">if</span> <span class="n">rvali</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pending</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="n">option</span><span class="p">]:</span>
+                        <span class="n">pending</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pending</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="n">option</span><span class="p">])</span> <span class="o">+</span> <span class="p">(</span><span class="n">rvali</span><span class="p">,)</span>
+                <span class="k">elif</span> <span class="n">_re_cfgfile</span><span class="p">(</span><span class="n">cfgi</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">kwget</span><span class="p">)):</span>
+                    <span class="n">pending</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="n">rvali</span><span class="p">,</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">rvali</span><span class="p">)</span>
+
+    <span class="c1"># Convert pending options</span>
+    <span class="k">for</span> <span class="n">section</span><span class="p">,</span> <span class="n">options</span> <span class="ow">in</span> <span class="n">pending</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">forprint</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="c1">#            print section, option, value</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cfg</span></div>
+
+<span class="k">def</span> <span class="nf">_print_header_</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">nc</span><span class="p">):</span>
+    <span class="nb">print</span> <span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="n">nc</span>
+    <span class="nb">print</span> <span class="s1">&#39;##  </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">text</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">nc</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="n">nc</span>
+
+<div class="viewcode-block" id="print_config"><a class="viewcode-back" href="../../library/config.html#vacumm.config.print_config">[docs]</a><span class="k">def</span> <span class="nf">print_config</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;__all__&#39;</span><span class="p">,</span> <span class="n">system</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">packages</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">extended</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Print current configuration</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **system**: print the base of the config.</span>
+<span class="sd">        - **direc**: print key directories of vacumm.</span>
+<span class="sd">        - **config**: print the vacumm config.</span>
+<span class="sd">        - **packages**: print the version of some important packages.</span>
+<span class="sd">        - **extended**: force printing everything.</span>
+
+<span class="sd">    This is equivalent to (if ``extended=False``)::</span>
+
+<span class="sd">        &gt;&gt;&gt; print get_config(section, user, asstring=True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="mi">70</span>
+    <span class="k">if</span> <span class="n">extended</span><span class="p">:</span> <span class="n">base</span> <span class="o">=</span> <span class="n">config</span> <span class="o">=</span> <span class="n">packages</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">headers</span><span class="p">:</span> <span class="n">_print_header_</span><span class="p">(</span><span class="s1">&#39;System&#39;</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="s1">&#39;Python executable: &#39;</span><span class="o">+</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span>
+        <span class="nb">print</span> <span class="s1">&#39;Python version: &#39;</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+        <span class="nb">print</span> <span class="s1">&#39;Platform: &#39;</span><span class="o">+</span><span class="n">sys</span><span class="o">.</span><span class="n">platform</span>
+    <span class="k">if</span> <span class="n">direc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">headers</span><span class="p">:</span> <span class="n">_print_header_</span><span class="p">(</span><span class="s1">&#39;VACUMM directories&#39;</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">dd</span> <span class="ow">in</span> <span class="n">get_dir_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">dd</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">headers</span><span class="p">:</span> <span class="n">_print_header_</span><span class="p">(</span><span class="s1">&#39;VACUMM configuration&#39;</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="n">get_config</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">asstring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">packages</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">headers</span><span class="p">:</span> <span class="n">_print_header_</span><span class="p">(</span><span class="s1">&#39;Versions&#39;</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">__init__</span> <span class="k">import</span> <span class="n">__version__</span>
+        <span class="nb">print</span> <span class="s1">&#39;VACUMM: &#39;</span><span class="o">+</span><span class="n">__version__</span>
+        <span class="k">for</span> <span class="n">mname</span> <span class="ow">in</span> <span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;matplotlib&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;mpl_toolkits.basemap&#39;</span><span class="p">,</span> <span class="s1">&#39;basemap&#39;</span><span class="p">),</span> <span class="s1">&#39;scipy&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mname</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="n">m</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">__import__</span><span class="p">(</span><span class="n">mname</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">mname</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">m</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">mname</span><span class="p">)</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">__version__</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="s1">&#39;ERROR: &#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">message</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mname</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span> <span class="n">mname</span> <span class="o">=</span> <span class="n">mname</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="nb">print</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_default_config"><a class="viewcode-back" href="../../library/config.html#vacumm.config.get_default_config">[docs]</a><span class="k">def</span> <span class="nf">get_default_config</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="s1">&#39;__all__&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Shortcut to::</span>
+
+<span class="sd">        get_config(section=&#39;__all__&#39;, user=False)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_config</span><span class="p">(</span><span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="write_default_config"><a class="viewcode-back" href="../../library/config.html#vacumm.config.write_default_config">[docs]</a><span class="k">def</span> <span class="nf">write_default_config</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write the defaults config (see :func:`get_default_config`) to a file&quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">get_default_config</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="set_config_value"><a class="viewcode-back" href="../../library/config.html#vacumm.config.set_config_value">[docs]</a><span class="k">def</span> <span class="nf">set_config_value</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cfgfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create or update user configuration file</span>
+
+<span class="sd">    The directory of this file is given by :func:`get_user_conf_dir`</span>
+<span class="sd">    and its name is :file:`vacumm.cfg`. Therefore it should be:</span>
+<span class="sd">    :file:`~/.config/vacumm/vacumm.cfg`.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **section**: A module or its name.</span>
+<span class="sd">        - **option**: Option name.</span>
+<span class="sd">        - **value**: Value of the option. If ``None``, option is removed.</span>
+<span class="sd">        - **cfgfile**, optional: Configuration file. If not provided,</span>
+<span class="sd">          internal user configuration file is used</span>
+<span class="sd">          (:file:`vacumm.cfg` in user config directory -- given by :func:`get_user_conf_dir`).</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; set_config_value(&#39;vacumm.bathy.bathy&#39;, &#39;cfgfile_gridded&#39;,</span>
+<span class="sd">            &#39;%(mod_dir)s/bathy.gridded.cfg&#39;) # set</span>
+<span class="sd">        &gt;&gt;&gt; import vacumm.bathy.bathy as B</span>
+<span class="sd">        &gt;&gt;&gt; set_config_value(B, &#39;cfgfile_gridded&#39;) # remove</span>
+
+<span class="sd">    :Output: Path of the configuration file</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">):</span>
+        <span class="n">section</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="c1"># Load or check</span>
+    <span class="k">if</span> <span class="n">cfgfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cfgfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_user_conf_dir</span><span class="p">(),</span> <span class="s1">&#39;vacumm.cfg&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t write to config file: &quot;</span><span class="o">+</span><span class="n">cfgfile</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">udir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">udir</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t write to config file: &quot;</span><span class="o">+</span><span class="n">cfgfile</span><span class="p">)</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">)</span>
+
+    <span class="c1"># Update</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;Updated user configuration file (</span><span class="si">%s</span><span class="s1">) with:&#39;</span><span class="o">%</span><span class="n">cfgfile</span>
+            <span class="nb">print</span> <span class="s1">&#39; [</span><span class="si">%(section)s</span><span class="s1">]</span><span class="se">\n</span><span class="s1">  </span><span class="si">%(option)s</span><span class="s1">=</span><span class="si">%(value)s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">locals</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">remove_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s1">&#39;Removed the following option from user configuration file (</span><span class="si">%s</span><span class="s1">):&#39;</span><span class="o">%</span><span class="n">cfgfile</span>
+            <span class="nb">print</span> <span class="s1">&#39; [</span><span class="si">%(section)s</span><span class="s1">]</span><span class="se">\n</span><span class="s1">  </span><span class="si">%(option)s</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">locals</span><span class="p">()</span>
+
+    <span class="c1"># Save</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">cfgfile</span></div>
+
+<div class="viewcode-block" id="check_data_file"><a class="viewcode-back" href="../../library/config.html#vacumm.config.check_data_file">[docs]</a><span class="k">def</span> <span class="nf">check_data_file</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">parent_section</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent_option</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">quiet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">avail</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_license</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the existence of a file whose path is stored in a configuration file</span>
+
+<span class="sd">    Two cases are treated:</span>
+
+<span class="sd">        1. Path value is accessible from the vacumm configuration (:func:`get_config`),</span>
+<span class="sd">           using ``section`` (module name) and ``option``.</span>
+<span class="sd">        2. Path value is accessible from a secondary configuration file using</span>
+<span class="sd">           ``parent_section`` (module name) and ``parent_option``, and the</span>
+<span class="sd">           path value of this config file is accessible from the vacumm configuration</span>
+<span class="sd">           using ``section`` and ``name``.</span>
+
+<span class="sd">    If the file is not found, it may download it using an url whose value is</span>
+<span class="sd">    accessible at the same place as the path and with the same option</span>
+<span class="sd">    name + &#39;_url&#39;.</span>
+
+<span class="sd">    :Tasks:</span>
+
+<span class="sd">        #. If ``suffix`` is a list, call itself in a loop with ``suffix``</span>
+<span class="sd">           set to each element of the list.</span>
+<span class="sd">        #. Get the ``path``, ``url`` and ``license`` of the data file.</span>
+<span class="sd">        #. If ``avail is True``, only check the existence and return the status.</span>
+<span class="sd">        #. If the file is not found (and ``quiet is False``), ask the user</span>
+<span class="sd">           for it. If the path specified is empty, simply go further.</span>
+<span class="sd">           If is not empty, update the configuration and return</span>
+<span class="sd">           it, else raise an error.</span>
+<span class="sd">        #. If a license info is present, tell the user that he must</span>
+<span class="sd">           have the authorization to download it. If the user does not agree,</span>
+<span class="sd">           raise an error.</span>
+<span class="sd">        #. Ask the user where to download the file using :func:`get_dl_dir`.</span>
+<span class="sd">        #. Download the file using :func:`download_file`.</span>
+<span class="sd">        #. Update the configuration if needed.</span>
+<span class="sd">        #. Return the path.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **section**: Section where to find the path to data.</span>
+<span class="sd">        - **option**: Option to read the path.</span>
+<span class="sd">        - **parent_section**, optional: Section of the vacumm configuration</span>
+<span class="sd">          where to find the path to the secondary configuration file that has</span>
+<span class="sd">          the path stored within.</span>
+<span class="sd">        - **parent_option**, optional: Option of the vacumm configuration</span>
+<span class="sd">          to read the path to the secondary configuration.</span>
+<span class="sd">        - **quiet**, optional: Don&#39;t ask question about where to download the</span>
+<span class="sd">          file, don&#39;t display any info, don&#39;t ask for authorization.</span>
+<span class="sd">        - **suffix**, optional: A suffix or a list of suffixes to append to</span>
+<span class="sd">          the path and url before using it.</span>
+<span class="sd">        - **check_license**, optional: If a license info is found,</span>
+<span class="sd">          show ot and ask the user if he has autorization for downloading it.</span>
+<span class="sd">        - **avail**, optional: Check availability only (see below).</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - A single path or a list of paths.</span>
+<span class="sd">        - ``None`` or a list of them if nothing found.</span>
+<span class="sd">        - If ``avail=True``:</span>
+
+<span class="sd">            - ``0``: Data file not on disk and not downloadable</span>
+<span class="sd">              (however, user can specify the path manually).</span>
+<span class="sd">            - ``1``: File is not on disk, but downloadable.</span>
+<span class="sd">            - ``2``: File is on disk.</span>
+
+<span class="sd">    :Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; check_data_file(&#39;vacumm.bathy.shorelines&#39;, &#39;shapefile_histolitt&#39;, suffix=[&#39;.shp&#39;, &#39;.dbf&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; check_data_file(&#39;etopo2&#39;, &#39;file&#39;, parent_section=&#39;vacumm.bathy.bathy&#39;,</span>
+<span class="sd">        ... parent_option=&#39;cfgfile_gridded&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">quiet</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">quiet</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">isatty</span><span class="p">()</span>
+    <span class="c1"># Loop on suffixes</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">suf</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">suffix</span><span class="p">):</span>
+            <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">check_data_file</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">parent_section</span><span class="o">=</span><span class="n">parent_section</span><span class="p">,</span>
+                <span class="n">parent_option</span><span class="o">=</span><span class="n">parent_option</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suf</span><span class="p">,</span> <span class="n">check_license</span><span class="o">=</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">paths</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># Get local and remote file names</span>
+    <span class="n">path</span><span class="p">,</span> <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">umode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="n">getcfg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">parent_section</span><span class="o">=</span><span class="n">parent_section</span><span class="p">,</span> <span class="n">parent_option</span><span class="o">=</span><span class="n">parent_option</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="o">+</span><span class="s1">&#39;_url&#39;</span><span class="p">,</span> <span class="n">umode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
+    <span class="n">license</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="o">+</span><span class="s1">&#39;_license&#39;</span><span class="p">,</span> <span class="n">umode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t determine path of data file. Here are the config specs:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;section=&#39;</span><span class="si">%(section)s</span><span class="s2">&#39;,  option=&#39;</span><span class="si">%(option)s</span><span class="s2">&#39;, parent_section=&#39;</span><span class="si">%(parent_section)s</span><span class="s2">&#39;, parent_option=&#39;</span><span class="si">%(parent_option)s</span><span class="s2">&#39;&quot;</span><span class="o">%</span><span class="nb">locals</span><span class="p">())</span>
+    <span class="n">path</span> <span class="o">+=</span> <span class="n">suffix</span>
+    <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">url</span> <span class="o">+=</span> <span class="n">suffix</span>
+
+    <span class="c1"># Only check availability</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">avail</span><span class="p">:</span> <span class="k">return</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">if</span> <span class="n">avail</span><span class="p">:</span>
+       <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">1</span>
+
+    <span class="c1"># Ask for this path</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s2">&quot;Can&#39;t find data file: &quot;</span><span class="o">+</span><span class="n">path</span>
+        <span class="n">guessed</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">(</span><span class="s2">&quot;If you know what is this file and where it is on your system,</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;please enter its name here, or leave it empty: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">guessed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">guessed</span><span class="p">):</span>
+                <span class="nb">print</span> <span class="s1">&#39;File not found&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_set_config_path_</span><span class="p">(</span><span class="n">guessed</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">parent_section</span><span class="p">,</span>
+                    <span class="n">parent_option</span><span class="p">,</span> <span class="n">parent</span> <span class="ow">and</span> <span class="n">cfgpath</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">guessed</span>
+
+    <span class="c1"># Check url</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">url</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">quiet</span><span class="p">:</span> <span class="k">return</span>
+        <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s1">&#39;Data file not found and not url provided for downloading it: &#39;</span><span class="o">+</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="c1"># License for downloading</span>
+    <span class="k">if</span> <span class="n">license</span> <span class="ow">and</span> <span class="n">check_license</span><span class="p">:</span>
+        <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">license</span><span class="p">)</span><span class="o">+</span><span class="mi">4</span>
+        <span class="n">lic</span> <span class="o">=</span> <span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="n">nc</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">lic</span> <span class="o">+=</span> <span class="s1">&#39;# </span><span class="si">%s</span><span class="s1"> #</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">license</span>
+        <span class="n">lic</span> <span class="o">+=</span> <span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="n">nc</span>
+        <span class="nb">print</span> <span class="s2">&quot;VACUMM is about to download this data file: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">url</span> <span class="o">+</span> \
+            <span class="s2">&quot;We suppose you have requested the authorization and are not responsible for your choice.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
+            <span class="s2">&quot;If you&#39;re not sure you are allowed to do it, please abort.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
+            <span class="s2">&quot;For more information about this data file and associated distribution license, check this:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">lic</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">(</span><span class="s2">&quot;Would you like to download it? [y/N]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;n&#39;</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Download interrupted -&gt; can&#39;t access to data&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">):</span> <span class="k">break</span>
+
+    <span class="c1"># Download directory</span>
+    <span class="n">dl_dir</span> <span class="o">=</span> <span class="n">path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">dl_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">X_OK</span><span class="p">):</span>
+        <span class="n">dl_dir</span> <span class="o">=</span> <span class="n">get_dl_dir</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span> <span class="n">suggest</span><span class="o">=</span><span class="n">dl_dir</span><span class="p">)</span>
+
+    <span class="c1"># Download</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dl_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dl_dir</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
+    <span class="n">download_file</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">dl_path</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
+
+    <span class="c1"># Fix configuration</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">!=</span><span class="n">dl_path</span><span class="p">:</span>
+        <span class="n">_set_config_path_</span><span class="p">(</span><span class="n">dl_path</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">parent_section</span><span class="p">,</span>
+            <span class="n">parent_option</span><span class="p">,</span> <span class="n">parent_section</span> <span class="ow">and</span> <span class="n">cfgpath</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dl_path</span></div>
+
+<span class="k">def</span> <span class="nf">_set_config_path_</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">parent_section</span><span class="p">,</span> <span class="n">parent_option</span><span class="p">,</span> <span class="n">cfgpath</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save path into config&quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">parent_option</span> <span class="ow">and</span> <span class="n">parent_section</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;vacumm.&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfgpath</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span> <span class="n">cfgpath</span> <span class="o">=</span> <span class="n">cfgpath</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="kc">True</span><span class="p">:</span> <span class="c1">#not os.access(cfgpath,  os.W_OK|os.R_OK): # new config file</span>
+            <span class="n">cfgpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_user_conf_dir</span><span class="p">(),</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">cfgpath</span><span class="p">))</span>
+        <span class="n">set_config_value</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cfgfile</span><span class="o">=</span><span class="n">cfgpath</span><span class="p">)</span> <span class="c1"># save data path</span>
+        <span class="n">set_config_value</span><span class="p">(</span><span class="n">parent_section</span><span class="p">,</span> <span class="n">parent_option</span><span class="p">,</span> <span class="n">cfgpath</span><span class="p">)</span> <span class="c1"># save config path</span>
+    <span class="k">elif</span> <span class="n">section</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;vacumm.&#39;</span><span class="p">):</span>
+        <span class="n">set_config_value</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span>
+
+
+<span class="c1"># UTILITIES</span>
+
+<div class="viewcode-block" id="URLLibProgressBar"><a class="viewcode-back" href="../../library/config.html#vacumm.config.URLLibProgressBar">[docs]</a><span class="k">class</span> <span class="nc">URLLibProgressBar</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Progress bar compatible with :func:`urllib.urlretrieve`</span>
+
+<span class="sd">    It looks like::</span>
+
+<span class="sd">        [=======&gt;        22%                  ]</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; import urllib</span>
+<span class="sd">        &gt;&gt;&gt; mybar = URLProgress(width=50)</span>
+<span class="sd">        &gt;&gt;&gt; urllib.urlretrieve(&quot;http://web.net/file&quot;, &quot;myfile&quot;, reporthook=mybar)</span>
+
+<span class="sd">    :Inspired from: http://code.activestate.com/recipes/168639-progress-bar-class/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prog</span> <span class="o">=</span> <span class="s2">&quot;[]&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Init</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">blocksize</span><span class="p">,</span> <span class="n">totalsize</span><span class="p">):</span>
+        <span class="n">amount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="o">*</span><span class="n">blocksize</span><span class="o">*</span><span class="mf">100.</span><span class="o">/</span><span class="n">totalsize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">amount</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span><span class="p">:</span> <span class="k">return</span>
+        <span class="n">end</span> <span class="o">=</span>  <span class="n">amount</span><span class="o">&gt;=</span><span class="mi">100</span>
+        <span class="n">amount</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">pwidth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">2</span>
+        <span class="n">np</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">amount</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">pwidth</span><span class="p">)),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">np</span><span class="o">==</span><span class="n">np</span><span class="p">:</span> <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="n">np</span>
+        <span class="k">if</span> <span class="n">np</span> <span class="o">==</span> <span class="n">pwidth</span><span class="p">:</span>
+            <span class="n">prog</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="n">pwidth</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prog</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">&gt;</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39; &#39;</span><span class="o">*</span><span class="p">(</span><span class="n">pwidth</span><span class="o">-</span><span class="n">np</span><span class="p">))</span>
+        <span class="n">percentPlace</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">amount</span><span class="p">))</span>
+        <span class="n">percentString</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span>
+        <span class="n">prog</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">prog</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">percentPlace</span><span class="p">],</span> <span class="n">percentString</span><span class="p">,</span>
+            <span class="n">prog</span><span class="p">[</span><span class="n">percentPlace</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">percentString</span><span class="p">):]])</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">prog</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">end</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<span class="kn">import</span> <span class="nn">urllib</span><span class="o">,</span> <span class="nn">sys</span>
+
+<div class="viewcode-block" id="download_file"><a class="viewcode-back" href="../../library/config.html#vacumm.config.download_file">[docs]</a><span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">locfile</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download a file with a progress bar using :func:`urllib.urlretrieve`&quot;&quot;&quot;</span>
+    <span class="n">locfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">locfile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="s1">&#39;Downloading </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">locfile</span><span class="p">)</span>
+    <span class="n">dl_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">locfile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dl_dir</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dl_dir</span><span class="p">)</span>
+    <span class="n">urllib</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">locfile</span><span class="p">,</span> <span class="n">reporthook</span><span class="o">=</span><span class="n">URLLibProgressBar</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">locfile</span></div>
+
+
+<div class="viewcode-block" id="edit_file"><a class="viewcode-back" href="../../library/config.html#vacumm.config.edit_file">[docs]</a><span class="k">def</span> <span class="nf">edit_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">editor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Edit a file</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **fname**: File name.</span>
+<span class="sd">        - **editor**, optional: Editor to use (default to :envvar:`VISUAL` or</span>
+<span class="sd">          :envvar:`EDITOR`.</span>
+
+<span class="sd">    :Source: Mercurial code</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># File name</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;File not found: &#39;</span><span class="o">+</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="c1"># Guess editor</span>
+    <span class="k">if</span> <span class="n">editor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">editor</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VISUAL&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EDITOR&quot;</span><span class="p">,</span> <span class="s2">&quot;vi&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Run editor</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span> <span class="s1">&#39;Editing user configuration file: &#39;</span><span class="o">+</span><span class="n">fname</span>
+    <span class="k">if</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="n">fname</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="n">VACUMMError</span><span class="p">(</span><span class="s2">&quot;Error editing file: &quot;</span><span class="o">+</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span> <span class="s1">&#39;End of file edition&#39;</span></div>
+
+<div class="viewcode-block" id="edit_user_conf_file"><a class="viewcode-back" href="../../library/config.html#vacumm.config.edit_user_conf_file">[docs]</a><span class="k">def</span> <span class="nf">edit_user_conf_file</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">&#39;vacumm.cfg&#39;</span><span class="p">,</span> <span class="n">editor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Edit the user configuration file</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **fname**, optional: Relative file name, which defaults to :file:`vacumm.cfg`.</span>
+<span class="sd">        - **editor**, optional: Editor to use (default to :envvar:`VISUAL` or</span>
+<span class="sd">          :envvar:`EDITOR`.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; edit_user_conf_file()</span>
+<span class="sd">        &gt;&gt;&gt; edit_user_conf_file(&#39;my_other_config.cfg&#39;, editor=&#39;gedit&#39;)</span>
+
+<span class="sd">    :See also: :func:`edit_file` and :func:`get_user_conf_file`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edit_file</span><span class="p">(</span><span class="n">get_user_conf_file</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">editor</span><span class="o">=</span><span class="n">editor</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="handle_print_args"><a class="viewcode-back" href="../../library/config.html#vacumm.config.handle_print_args">[docs]</a><span class="k">def</span> <span class="nf">handle_print_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handle argparse args from ``vacumm_config.py print ...``&quot;&quot;&quot;</span>
+
+    <span class="c1"># Options</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">system</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">direc</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">):</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">direc</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">packages</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Print</span>
+    <span class="n">print_config</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">system</span><span class="p">,</span> <span class="n">direc</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">direc</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+        <span class="n">packages</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">packages</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_header</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="handle_edit_args"><a class="viewcode-back" href="../../library/config.html#vacumm.config.handle_edit_args">[docs]</a><span class="k">def</span> <span class="nf">handle_edit_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handle argparse args from ``vacumm_config.py edit ...``&quot;&quot;&quot;</span>
+
+    <span class="n">edit_user_conf_file</span><span class="p">(</span><span class="n">editor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">editor</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="c1">#    print_config()</span>
+
+
+    <span class="kn">import</span> <span class="nn">vacumm.config2</span><span class="p">;</span><span class="n">reload</span><span class="p">(</span> <span class="n">vacumm</span><span class="o">.</span><span class="n">config2</span><span class="p">);</span> <span class="nb">print</span> <span class="n">vacumm</span><span class="o">.</span><span class="n">config2</span><span class="o">.</span><span class="n">get_config_value</span><span class="p">(</span><span class="s1">&#39;vacumm.bathy.bathy&#39;</span><span class="p">,</span><span class="s1">&#39;cfgfile_gridded&#39;</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

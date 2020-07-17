@@ -1,0 +1,241 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1.6.4.2. eval_run_profiles2.py &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.6.4.2. <strong class="program">eval_run_profiles2.py</strong></a><ul>
+<li><a class="reference internal" href="#prealables">1.6.4.2.1. Préalables</a></li>
+<li><a class="reference internal" href="#fonctionnement">1.6.4.2.2. Fonctionnement</a></li>
+<li><a class="reference internal" href="#utilisation">1.6.4.2.3. Utilisation</a></li>
+<li><a class="reference internal" href="#exemple-d-utilisation">1.6.4.2.4. Exemple d’utilisation:</a><ul>
+<li><a class="reference internal" href="#apercu-des-sorties">1.6.4.2.4.1. Aperçu des sorties</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user.scripts.evalrunprofiles.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="eval-run-profiles2-py">
+<span id="user-scripts-evalrunprofiles"></span><h1>1.6.4.2. <strong class="program">eval_run_profiles2.py</strong><a class="headerlink" href="#eval-run-profiles2-py" title="Permalink to this headline">¶</a></h1>
+<p>Ce script permet de compiler des statistiques concernant la température et la salinité dans la colonne d’eau sur une période de temps donnée choisie ou en mode opérationnel (temps réel).</p>
+<p>Ce script permet également de produire des figures (format png) ainsi que des fichiers NetCDF (un par statistique), entre autre à destination du site previmer.org.</p>
+<div class="section" id="prealables">
+<h2>1.6.4.2.1. Préalables<a class="headerlink" href="#prealables" title="Permalink to this headline">¶</a></h2>
+<p>Les données d’entrée nécessaires au script sont:</p>
+<ul class="simple">
+<li>les résultats de simulation numériques disponibles au format NetCDF.</li>
+<li>les observations RECOPESCA disponibles au format .csv.</li>
+</ul>
+</div>
+<div class="section" id="fonctionnement">
+<h2>1.6.4.2.2. Fonctionnement<a class="headerlink" href="#fonctionnement" title="Permalink to this headline">¶</a></h2>
+<p>Ce script permet de calculer et d’afficher:</p>
+<ul class="simple">
+<li>les différences de température dans la colonne d’eau entre le modèle et les observations RECOPESCA,</li>
+<li>les différence en salinité dans la colonne d’eau entre le modèle et les observations RECOPESCA,</li>
+<li>les moyennes temporelles et spatiales,</li>
+<li>les sections verticales d’une suite temporelle dans une sous-région donnée.</li>
+</ul>
+</div>
+<div class="section" id="utilisation">
+<h2>1.6.4.2.3. Utilisation<a class="headerlink" href="#utilisation" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Les réglages s’effectuent au moyen du fichier config_profiles.cfg. Les attributs suivants de ce fichiers sont à vérifier avant de lancer une évaluation: ::</dt>
+<dd><dl class="first last docutils">
+<dt>[Time Period]</dt>
+<dd>Les dates (année, mois, jours, heures) de début et de fin de la période considérée.</dd>
+<dt>[Action]</dt>
+<dd>Définit les statistiques et les figures à génerer.</dd>
+<dt>[Output]</dt>
+<dd>Définit le répertoire cible où seront enregistrés les fichiers binaires .nc</dd>
+<dt>[Histogram]</dt>
+<dd>Produit ou non les histogrammes de séries temporelles des profils observés.</dd>
+<dt>[Env]</dt>
+<dd>Prise en compte des sorties modèles.</dd>
+<dt>[Domain]</dt>
+<dd>Définit le domaine étudié</dd>
+<dt>[SubArea]</dt>
+<dd>Définit le sous-domaine étudié</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Pour le bon fonctionnement de ce script il faut que soient présents dans le même répertoire les fichiers suivants:</p>
+<blockquote class="last">
+<div><p>cprofile.py;</p>
+<p>config_profiles.cfg ;</p>
+<p>config_profiles.ini;</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="exemple-d-utilisation">
+<h2>1.6.4.2.4. Exemple d’utilisation:<a class="headerlink" href="#exemple-d-utilisation" title="Permalink to this headline">¶</a></h2>
+<p>Configuration du Config.cfg pour générer toutes les stats possibles globalement et régionalement.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Time Period<span class="o">]</span>
+
+<span class="nv">mdeb</span><span class="o">=</span><span class="m">6</span>
+<span class="nv">jdeb</span><span class="o">=</span><span class="m">01</span>
+<span class="nv">andeb</span><span class="o">=</span><span class="m">2012</span>
+<span class="nv">mfin</span><span class="o">=</span><span class="m">6</span>
+<span class="nv">jfin</span><span class="o">=</span><span class="m">10</span>
+<span class="nv">anfin</span><span class="o">=</span><span class="m">2012</span>
+
+<span class="o">[</span>Action<span class="o">]</span>
+
+<span class="nv">single_profiles</span><span class="o">=</span>False
+<span class="nv">map_profiles</span><span class="o">=</span>True
+<span class="nv">hist_profiles</span><span class="o">=</span>True
+<span class="nv">timeserie_profile</span><span class="o">=</span>True
+<span class="nv">Valid_Stats</span><span class="o">=</span> True
+<span class="nv">Control_Stats</span><span class="o">=</span> False
+<span class="nv">Vertical_Section</span><span class="o">=</span>True
+<span class="o">[</span>Output<span class="o">]</span>
+<span class="nv">title</span><span class="o">=</span> mars_manga
+<span class="nv">rep_ecriture</span><span class="o">=</span> /work/sskrypni/netcdf/RECOPESCA
+
+<span class="o">[</span>Histogram<span class="o">]</span>
+
+<span class="nv">tstep</span><span class="o">=</span><span class="m">1</span>
+<span class="nv">tstep_unit</span><span class="o">=</span>day
+
+<span class="o">[</span>Env<span class="o">]</span>
+
+<span class="nv">use_model</span><span class="o">=</span>True
+
+<span class="o">[</span>Domain<span class="o">]</span>
+
+<span class="nv">Lamax</span> <span class="o">=</span> <span class="m">52</span>
+<span class="nv">Lomax</span> <span class="o">=</span> <span class="m">4</span>.25
+<span class="nv">Lomin</span> <span class="o">=</span> -8
+<span class="nv">Lamin</span> <span class="o">=</span> <span class="m">43</span>.2
+
+<span class="o">[</span>SubArea<span class="o">]</span>
+
+<span class="nv">Lamax</span> <span class="o">=</span> <span class="m">47</span>
+<span class="nv">Lomax</span> <span class="o">=</span> -2
+<span class="nv">Lomin</span> <span class="o">=</span> -6
+<span class="nv">Lamin</span> <span class="o">=</span> <span class="m">46</span>
+</pre></div>
+</div>
+<p>Le code doit être exécuté de la manière suivante sur caparmor:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python eval_run_profiles2.py <span class="nv">cfgfile</span><span class="o">=</span><span class="s2">&quot;config_profiles.cfg&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">cfgfile=”config_profiles.cfg” définit le fichier de configuration spécifique à chaque utilisateur qui implémentera le fichier de configuration par défaut config_profiles.ini.
+Chaque utilisateur peut ainsi définir ses propres options de configuration.</p>
+</div>
+<div class="section" id="apercu-des-sorties">
+<h3>1.6.4.2.4.1. Aperçu des sorties<a class="headerlink" href="#apercu-des-sorties" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="_images/Map_RECOPESCA_profile_20120609172349_1-72099995613W_43-4146995544N.png"><img alt="_images/Map_RECOPESCA_profile_20120609172349_1-72099995613W_43-4146995544N.png" src="_images/Map_RECOPESCA_profile_20120609172349_1-72099995613W_43-4146995544N.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/Vertical_Section_temp2012060100000020120610230000.png"><img alt="_images/Vertical_Section_temp2012060100000020120610230000.png" src="_images/Vertical_Section_temp2012060100000020120610230000.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/Control_stats2012060100000020120610230000.png"><img alt="_images/Control_stats2012060100000020120610230000.png" src="_images/Control_stats2012060100000020120610230000.png" style="width: 80%;" /></a>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

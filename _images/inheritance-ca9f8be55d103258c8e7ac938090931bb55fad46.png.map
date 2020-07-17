@@ -1,0 +1,10 @@
+<map id="inheritancea5df1f39e4" name="inheritancea5df1f39e4">
+<area shape="poly" id="node8" title="An in&#45;memory variable." alt="" coords="221,245,217,236,207,228,191,221,171,217,148,216,126,217,105,221,89,228,79,236,75,245,79,254,89,262,105,268,126,272,148,273,171,272,191,268,207,262,217,254"/>
+<area shape="poly" id="node3" title="Slab is the cu api" alt="" coords="335,34,333,25,328,17,320,11,310,7,299,5,288,7,278,11,270,17,264,25,263,34,264,43,270,51,278,57,288,61,299,63,310,61,320,57,328,51,333,43"/>
+<area shape="poly" id="node4" title="Tick location is seconds since the epoch. &#160;Use a :func:`strftime`" alt="" coords="504,245,501,236,492,228,477,221,459,217,439,216,418,217,400,221,386,228,377,236,373,245,377,254,386,262,400,268,418,272,439,273,459,272,477,268,492,262,501,254"/>
+<area shape="poly" id="node11" href="#vacumm.misc.atime.SpecialDateFormatter" target="_top" title="Special formatter for dates" alt="" coords="529,350,525,341,512,333,492,327,467,323,439,321,411,323,385,327,365,333,352,341,348,350,352,359,365,367,385,373,411,377,439,379,467,377,492,373,512,367,525,359"/>
+<area shape="poly" id="node5" title="Create a string based on a tick value and location." alt="" coords="487,139,485,130,478,122,467,116,454,112,439,111,424,112,410,116,400,122,393,130,390,139,393,148,400,156,410,163,424,167,439,168,454,167,467,163,478,156,485,148"/>
+<area shape="poly" id="node7" href="#vacumm.misc.atime.Gaps" target="_top" title="Find time gaps in a variable" alt="" coords="184,350,182,341,177,333,169,327,159,323,148,321,137,323,127,327,119,333,114,341,112,350,114,359,119,367,127,373,137,377,148,379,159,377,169,373,177,367,182,359"/>
+<area shape="poly" id="node9" title="An array class with possibly masked values." alt="" coords="123,139,120,130,112,122,99,116,82,112,64,111,46,112,30,116,17,122,8,130,5,139,8,148,17,156,30,163,46,167,64,168,82,167,99,163,112,156,120,148"/>
+<area shape="poly" id="node10" title="ndarray(shape, dtype=float, buffer=None, offset=0," alt="" coords="103,34,102,25,96,17,87,11,76,7,64,5,52,7,41,11,32,17,27,25,25,34,27,43,32,51,41,57,52,61,64,63,76,61,87,57,96,51,102,43"/>
+</map>

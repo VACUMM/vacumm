@@ -1,0 +1,696 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>vacumm.misc.grid.basemap &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../../../index.html"><img src="../../../../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" accesskey="U">vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vacumm.misc.grid.basemap</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Utilities derived from mpl_toolkits.basemap&quot;&quot;&quot;</span>
+
+<span class="c1"># Copyright or © or Copr. Actimar/IFREMER (2010-2016)</span>
+<span class="c1">#</span>
+<span class="c1"># This software is a computer program whose purpose is to provide</span>
+<span class="c1"># utilities for handling oceanographic and atmospheric data,</span>
+<span class="c1"># with the ultimate goal of validating the MARS model from IFREMER.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is governed by the CeCILL license under French law and</span>
+<span class="c1"># abiding by the rules of distribution of free software.  You can  use,</span>
+<span class="c1"># modify and/ or redistribute the software under the terms of the CeCILL</span>
+<span class="c1"># license as circulated by CEA, CNRS and INRIA at the following URL</span>
+<span class="c1"># &quot;http://www.cecill.info&quot;.</span>
+<span class="c1">#</span>
+<span class="c1"># As a counterpart to the access to the source code and  rights to copy,</span>
+<span class="c1"># modify and redistribute granted by the license, users are provided only</span>
+<span class="c1"># with a limited warranty  and the software&#39;s author,  the holder of the</span>
+<span class="c1"># economic rights,  and the successive licensors  have only  limited</span>
+<span class="c1"># liability.</span>
+<span class="c1">#</span>
+<span class="c1"># In this respect, the user&#39;s attention is drawn to the risks associated</span>
+<span class="c1"># with loading,  using,  modifying and/or developing or reproducing the</span>
+<span class="c1"># software by the user in light of its specific status of free software,</span>
+<span class="c1"># that may mean  that it is complicated to manipulate,  and  that  also</span>
+<span class="c1"># therefore means  that it is reserved for developers  and  experienced</span>
+<span class="c1"># professionals having in-depth computer knowledge. Users are therefore</span>
+<span class="c1"># encouraged to load and test the software&#39;s suitability as regards their</span>
+<span class="c1"># requirements in conditions enabling the security of their systems and/or</span>
+<span class="c1"># data to be ensured and,  more generally, to use and operate it in the</span>
+<span class="c1"># same conditions as regards security.</span>
+<span class="c1">#</span>
+<span class="c1"># The fact that you are presently reading this means that you have had</span>
+<span class="c1"># knowledge of the CeCILL license and that you accept its terms.</span>
+<span class="c1">#</span>
+<span class="n">__all__</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gshhs_reslist&#39;</span><span class="p">,</span> <span class="s1">&#39;gshhs_autores&#39;</span><span class="p">,</span> <span class="s1">&#39;cached_map&#39;</span><span class="p">,</span> <span class="s1">&#39;cache_map&#39;</span><span class="p">,</span> <span class="s1">&#39;get_map&#39;</span><span class="p">,</span>
+<span class="s1">&#39;GSHHS_BM&#39;</span><span class="p">,</span> <span class="s1">&#39;merc&#39;</span><span class="p">,</span> <span class="s1">&#39;clean_cache&#39;</span><span class="p">,</span> <span class="s1">&#39;reset_cache&#39;</span><span class="p">,</span> <span class="s1">&#39;get_map_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;get_proj&#39;</span><span class="p">,</span>
+<span class="s1">&#39;create_map&#39;</span><span class="p">,</span> <span class="s1">&#39;RSHPERE_WGS84&#39;</span><span class="p">,</span> <span class="s1">&#39;GSHHS_RESLIST&#39;</span><span class="p">]</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">N</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.basemap</span> <span class="k">import</span> <span class="n">Basemap</span><span class="p">,</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">basemap_version</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.basemap.proj</span> <span class="k">import</span> <span class="n">Proj</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">get_configdir</span>
+<span class="kn">import</span> <span class="nn">cPickle</span><span class="o">,</span> <span class="nn">stat</span>
+<span class="c1">#FIXME:imports</span>
+<span class="kn">from</span> <span class="nn">...misc.io</span> <span class="k">import</span> <span class="n">Shapes</span>
+<span class="kn">from</span> <span class="nn">misc</span> <span class="k">import</span> <span class="n">get_xy</span>
+<span class="kn">from</span> <span class="nn">...misc.phys.constants</span> <span class="k">import</span> <span class="n">R</span> <span class="k">as</span> <span class="n">rsphere_mean</span>
+<span class="kn">from</span> <span class="nn">...misc.phys.units</span> <span class="k">import</span> <span class="n">deg2m</span><span class="p">,</span> <span class="n">m2deg</span>
+<span class="kn">from</span> <span class="nn">...misc.misc</span> <span class="k">import</span> <span class="n">kwfilter</span><span class="p">,</span> <span class="n">dict_check_defaults</span><span class="p">,</span>  <span class="n">zoombox</span>
+<span class="kn">from</span> <span class="nn">vacumm.config</span> <span class="k">import</span> <span class="n">get_config_value</span>
+<span class="kn">from</span> <span class="nn">...__init__</span> <span class="k">import</span> <span class="n">vacumm_warn</span>
+
+<span class="c1">#: Earth radius of wgs84 ellipsoid</span>
+<span class="n">RSHPERE_WGS84</span> <span class="o">=</span> <span class="p">(</span><span class="mf">6378137.0</span><span class="p">,</span><span class="mf">6356752.3141</span><span class="p">)</span>
+<span class="n">rshpere_wgs84</span> <span class="o">=</span> <span class="n">RSHPERE_WGS84</span>
+
+<span class="c1">#: GSHHS shorelines letters</span>
+<span class="n">GSHHS_RESLIST</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">]</span>
+<span class="n">gshhs_reslist</span> <span class="o">=</span> <span class="n">GSHHS_RESLIST</span>
+
+<div class="viewcode-block" id="gshhs_autores"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.gshhs_autores">[docs]</a><span class="k">def</span> <span class="nf">gshhs_autores</span><span class="p">(</span><span class="n">lon_min</span><span class="p">,</span> <span class="n">lon_max</span><span class="p">,</span> <span class="n">lat_min</span><span class="p">,</span> <span class="n">lat_max</span><span class="p">,</span> <span class="n">asindex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Guess best resolution from lon/lat bounds&quot;&quot;&quot;</span>
+    <span class="n">testresol</span><span class="o">=</span><span class="p">((</span><span class="n">lon_max</span><span class="o">-</span><span class="n">lon_min</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">lat_max</span><span class="o">-</span><span class="n">lat_min</span><span class="p">))</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">ires</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span><span class="mf">1.</span> <span class="p">,</span><span class="mf">5.</span><span class="p">,</span><span class="mf">15.</span><span class="p">,</span><span class="mf">50.</span><span class="p">])</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">testresol</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">ires</span> <span class="o">+=</span> <span class="n">shift</span>
+        <span class="n">ires</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">ires</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">GSHHS_RESLIST</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">asindex</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ires</span>
+    <span class="k">return</span> <span class="n">GSHHS_RESLIST</span><span class="p">[</span><span class="n">ires</span><span class="p">]</span></div>
+
+<span class="c1"># Cached maps</span>
+<div class="viewcode-block" id="cached_map"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.cached_map">[docs]</a><span class="k">def</span> <span class="nf">cached_map</span><span class="p">(</span><span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if we have a cached map</span>
+
+<span class="sd">    - *m*: A Basemap instance [Default: None]</span>
+<span class="sd">    - *mapdir*: Where are stored the cached maps. If ``None``,</span>
+<span class="sd">      :func:`matplotlib.get_configdir` is used as a parent directory,</span>
+<span class="sd">      which is the matplotlib configuration directory</span>
+<span class="sd">      (:file:`~/.matplotlib` undex linux), and</span>
+<span class="sd">      :file:`basemap/cached_maps` as the subdirectory.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; m = cached_map(lon_min=-5, lon_max=6, lat_min=40, lat_max=50, projection=&#39;lcc&#39;, resolution=&#39;f&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; m = cached_map(m) # Does only caching of map</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># We already have one in live memory</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">Basemap</span><span class="p">):</span>
+        <span class="c1"># Save it</span>
+        <span class="n">cache_map</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">mapdir</span><span class="o">=</span><span class="n">mapdir</span><span class="p">)</span>
+        <span class="c1"># Get it</span>
+        <span class="k">return</span> <span class="n">m</span>
+    <span class="c1"># Guess</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">_cached_map_file_</span><span class="p">(</span><span class="n">mapdir</span><span class="o">=</span><span class="n">mapdir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span> <span class="s1">&#39;Checking&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file</span><span class="p">):</span> <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span> <span class="s1">&#39;Loadind cached map from &#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">cPickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">m</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">vacumm_warn</span><span class="p">(</span><span class="s1">&#39;Error while loading cached basemap instance from dir: &#39;</span><span class="o">+</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="cache_map"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.cache_map">[docs]</a><span class="k">def</span> <span class="nf">cache_map</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">mapdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cache a map if still not cached&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">m</span><span class="o">.</span><span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">_cached_map_file_</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">mapdir</span><span class="o">=</span><span class="n">mapdir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+
+        <span class="c1"># Dump</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">cPickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">vacumm_warn</span><span class="p">(</span><span class="s1">&#39;Error while trying to cache basemap instance into: &#39;</span><span class="o">+</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Access to all if not in user directory</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IROTH</span><span class="o">+</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IWOTH</span><span class="o">+</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IWGRP</span><span class="o">+</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IRGRP</span><span class="o">+</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IWUSR</span><span class="o">+</span><span class="n">stat</span><span class="o">.</span><span class="n">S_IRUSR</span><span class="p">)</span>
+
+        <span class="c1"># Clean</span>
+        <span class="n">clean_cache</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="clean_cache"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.clean_cache">[docs]</a><span class="k">def</span> <span class="nf">clean_cache</span><span class="p">(</span><span class="n">mapdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Clean cache directory by checking its size</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **mapdir**, optional: Directory where maps are cached</span>
+<span class="sd">        - **maxsize**, optional: Maximal size of directory in bytes.</span>
+<span class="sd">          Default value from :confopt:`[vacumm.misc.grid.basemap]max_cache_size`</span>
+<span class="sd">          configuration value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">...misc.misc</span> <span class="k">import</span> <span class="n">dirsize</span>
+    <span class="n">mapdir</span> <span class="o">=</span> <span class="n">get_map_dir</span><span class="p">(</span><span class="n">mapdir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mapdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mapdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_configdir</span><span class="p">(),</span> <span class="s1">&#39;basemap&#39;</span><span class="p">,</span> <span class="s1">&#39;cached_maps&#39;</span><span class="p">)</span>
+    <span class="n">cache_size</span> <span class="o">=</span> <span class="n">dirsize</span><span class="p">(</span><span class="n">mapdir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">maxsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">maxsize</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">get_config_value</span><span class="p">(</span><span class="s1">&#39;vacumm.misc.grid.basemap&#39;</span><span class="p">,</span> <span class="s1">&#39;max_cache_size&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">cache_size</span><span class="o">&gt;</span><span class="n">maxsize</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mapdir</span><span class="p">,</span> <span class="n">ff</span><span class="p">)</span> <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">mapdir</span><span class="p">)]</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="nb">cmp</span><span class="o">=</span><span class="k">lambda</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">:</span> <span class="nb">cmp</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">f1</span><span class="p">)[</span><span class="mi">8</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">f2</span><span class="p">)[</span><span class="mi">8</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">cache_size</span> <span class="o">-=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">ff</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ff</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">vacumm_warn</span><span class="p">(</span><span class="s1">&#39;Error while trying to clean basemap cache in: &#39;</span><span class="o">+</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ff</span><span class="p">))</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">cache_size</span><span class="o">&lt;=</span><span class="n">maxsize</span><span class="p">:</span> <span class="k">break</span></div>
+
+<div class="viewcode-block" id="reset_cache"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.reset_cache">[docs]</a><span class="k">def</span> <span class="nf">reset_cache</span><span class="p">(</span><span class="n">mapdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove all cached maps&quot;&quot;&quot;</span>
+    <span class="n">mapdir</span> <span class="o">=</span> <span class="n">get_map_dir</span><span class="p">(</span><span class="n">mapdir</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mapdir</span><span class="p">,</span> <span class="n">ff</span><span class="p">)</span> <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">mapdir</span><span class="p">)]:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_map_dir"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.get_map_dir">[docs]</a><span class="k">def</span> <span class="nf">get_map_dir</span><span class="p">(</span><span class="n">mapdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the directory where cqched maps are stored&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mapdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mapdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_configdir</span><span class="p">(),</span> <span class="s1">&#39;basemap&#39;</span><span class="p">,</span> <span class="s1">&#39;cached_maps&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mapdir</span></div>
+
+<span class="k">def</span> <span class="nf">_cached_map_file_</span><span class="p">(</span><span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">mapdir</span> <span class="o">=</span> <span class="n">get_map_dir</span><span class="p">(</span><span class="n">mapdir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">mapdir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">mapdir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s1">&#39;resolution&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">Basemap</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">m</span><span class="o">.</span><span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">resolution</span>
+    <span class="n">srs</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">srs</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;+res=&#39;</span><span class="o">+</span><span class="n">res</span>
+    <span class="n">szone</span> <span class="o">=</span> <span class="s1">&#39;+</span><span class="si">%.5f</span><span class="s1">+</span><span class="si">%.5f</span><span class="s1">+</span><span class="si">%.5f</span><span class="s1">+</span><span class="si">%.5f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">llcrnrlon</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">llcrnrlat</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">urcrnrlon</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">urcrnrlat</span><span class="p">)</span>
+<span class="c1">#    bversion = &#39;.&#39;.join(basemap_version.split(&#39;.&#39;)[:2])</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mapdir</span><span class="p">,</span> <span class="s1">&#39;basemap-</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">.pyk&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">basemap_version</span><span class="p">,</span> <span class="n">srs</span><span class="p">,</span> <span class="n">szone</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="create_map"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.create_map">[docs]</a><span class="k">def</span> <span class="nf">create_map</span><span class="p">(</span><span class="n">lon_min</span><span class="o">=-</span><span class="mf">180.</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">=</span><span class="mf">180.</span><span class="p">,</span> <span class="n">lat_min</span><span class="o">=-</span><span class="mf">90.</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">=</span><span class="mf">90.</span><span class="p">,</span>
+        <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;cyl&#39;</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">epsg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">lon_center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lat_center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lat_ts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fullscreen</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generic creation of a :class:`Basemap` instance with caching</span>
+
+<span class="sd">    .. todo:: Merge :func:`get_map` with :func:`create_map`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwmap</span> <span class="o">=</span> <span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;basemap&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;area_thresh&#39;</span><span class="p">:</span><span class="mf">0.</span><span class="p">})</span>
+    <span class="n">kwmap</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwfilter</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;map_&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Map arguments</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;area_thresh&#39;</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;rsphere&#39;</span><span class="p">,</span> <span class="n">RSHPERE_WGS84</span><span class="p">)</span> <span class="c1"># WGS-84</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;rsphere&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span> <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;rsphere&#39;</span><span class="p">]</span>
+    <span class="n">projection</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;proj&#39;</span><span class="p">,</span> <span class="n">projection</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lon_center</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">lon_center</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">lon_min</span><span class="o">+</span><span class="n">lon_max</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lat_center</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">lat_center</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">lat_min</span><span class="o">+</span><span class="n">lat_max</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lat_ts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">lat_ts</span> <span class="o">=</span> <span class="n">lat_center</span>
+    <span class="k">if</span> <span class="n">lon_max</span><span class="o">-</span><span class="n">lon_min</span><span class="o">&lt;</span><span class="mf">1.e-5</span><span class="p">:</span>
+        <span class="n">lon_min</span> <span class="o">=</span> <span class="n">lon_center</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">lon_max</span> <span class="o">=</span> <span class="n">lon_center</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">lat_max</span><span class="o">-</span><span class="n">lat_min</span><span class="o">&lt;</span><span class="mf">1.e-5</span><span class="p">:</span>
+        <span class="n">lat_min</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lat_center</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
+        <span class="n">lat_max</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lat_center</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">zoom</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="n">lon_min</span><span class="p">,</span> <span class="n">lat_min</span><span class="p">,</span> <span class="n">lon_max</span><span class="p">,</span> <span class="n">lat_max</span> <span class="o">=</span> <span class="n">zoombox</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">lon_min</span><span class="p">,</span> <span class="n">lat_min</span><span class="p">,</span> <span class="n">lon_max</span><span class="p">,</span> <span class="n">lat_max</span><span class="p">],</span> <span class="n">zoom</span><span class="p">)</span>
+
+    <span class="c1"># Special overlay case</span>
+    <span class="k">if</span> <span class="n">overlay</span><span class="p">:</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="s1">&#39;merc&#39;</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">lat_center</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">lon_center</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">projection</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="s1">&#39;cyl&#39;</span>
+
+    <span class="c1"># Guess resolution</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;res&#39;</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
+    <span class="k">elif</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">res</span><span class="o">==</span><span class="s1">&#39;None&#39;</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">GSHHS_RESLIST</span><span class="p">[</span><span class="mi">4</span><span class="o">-</span><span class="n">res</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">res</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">gshhs_autores</span><span class="p">(</span><span class="n">lon_min</span><span class="p">,</span> <span class="n">lon_max</span><span class="p">,</span> <span class="n">lat_min</span><span class="p">,</span> <span class="n">lat_max</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">GSHHS_RESLIST</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;resolution&#39;</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Basemap args</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">projection</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">projection</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;rgf93&#39;</span> <span class="p">:</span>
+        <span class="c1"># RGF93</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">lon_0</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">lat_0</span><span class="o">=</span><span class="mf">46.5</span><span class="p">,</span> <span class="n">lat_1</span><span class="o">=</span><span class="mi">44</span><span class="p">,</span> <span class="n">lat_2</span><span class="o">=</span><span class="mi">49</span><span class="p">,</span>
+            <span class="n">rsphere</span><span class="o">=</span><span class="n">RSHPERE_WGS84</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;lcc&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># standard</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lon_0&#39;</span><span class="p">,</span> <span class="n">lon_center</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lat_0&#39;</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lat_center</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lat_1&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;lat_0&#39;</span><span class="p">])</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lat_2&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;lat_1&#39;</span><span class="p">])</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lat_ts&#39;</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lat_center</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;projection&#39;</span><span class="p">,</span> <span class="n">projection</span><span class="p">)</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;llcrnrlon&#39;</span><span class="p">,</span> <span class="n">lon_min</span><span class="p">)</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;urcrnrlon&#39;</span><span class="p">,</span> <span class="n">lon_max</span><span class="p">)</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;llcrnrlat&#39;</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lat_min</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;urcrnrlat&#39;</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lat_max</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;epsg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">epsg</span>
+
+    <span class="c1"># Check the cache</span>
+    <span class="n">kwcache</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwcache</span><span class="p">[</span><span class="s1">&#39;mapdir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache_dir</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nocache</span><span class="p">:</span>
+        <span class="n">mymap</span> <span class="o">=</span> <span class="n">cached_map</span><span class="p">(</span><span class="o">**</span><span class="n">kwcache</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mymap</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Create the map object</span>
+    <span class="k">if</span> <span class="n">mymap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mymap</span> <span class="o">=</span> <span class="n">Basemap</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Cache it?</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">nocache</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwcache</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mapdir&#39;</span><span class="p">:</span><span class="n">cache_dir</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">kwcache</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">cache_map</span><span class="p">(</span><span class="n">mymap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwcache</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mymap</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+    <span class="n">mymap</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="n">mymap</span></div>
+
+
+<div class="viewcode-block" id="get_map"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.get_map">[docs]</a><span class="k">def</span> <span class="nf">get_map</span><span class="p">(</span><span class="n">gg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">proj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Quickly create :class:`Basemap` instance</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **gg**, optional: cdms grid or variable, or (xx,yy).</span>
+<span class="sd">        - **res**, optional: Resolution.</span>
+<span class="sd">        - **proj**, optional: Projection [default: None-&gt;&#39;merc&#39;]</span>
+<span class="sd">        - **auto**, optional: If True, get geo specs according to grid. If False, whole earth.</span>
+<span class="sd">          If None, auto = res is None.</span>
+
+<span class="sd">    .. todo:: Merge with :func:`create_map`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">vacumm.misc.grid</span> <span class="k">import</span> <span class="n">misc</span>
+    <span class="k">if</span> <span class="n">proj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">proj</span> <span class="o">=</span> <span class="s1">&#39;merc&#39;</span>
+    <span class="k">if</span> <span class="n">auto</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">auto</span> <span class="o">=</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">gg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">auto</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">kwmap</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">proj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">auto</span><span class="p">:</span>
+        <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">misc</span><span class="o">.</span><span class="n">get_xy</span><span class="p">(</span><span class="n">gg</span><span class="p">,</span> <span class="n">proj</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">lat_center</span> <span class="o">=</span> <span class="n">yy</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">lon_center</span> <span class="o">=</span> <span class="n">xx</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">kwmap</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">llcrnrlon</span> <span class="o">=</span> <span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+            <span class="n">urcrnrlon</span> <span class="o">=</span> <span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+            <span class="n">llcrnrlat</span> <span class="o">=</span> <span class="n">yy</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+            <span class="n">urcrnrlat</span> <span class="o">=</span> <span class="n">yy</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lat_center</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">lon_center</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">return</span> <span class="n">Basemap</span><span class="p">(</span><span class="n">lat_ts</span><span class="o">=</span><span class="n">lat_center</span><span class="p">,</span> <span class="n">lat_0</span><span class="o">=</span><span class="n">lat_center</span><span class="p">,</span> <span class="n">lon_0</span><span class="o">=</span><span class="n">lon_center</span><span class="p">,</span>  <span class="o">**</span><span class="n">kwmap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GSHHS_BM"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.GSHHS_BM">[docs]</a><span class="k">class</span> <span class="nc">GSHHS_BM</span><span class="p">(</span><span class="n">Shapes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shoreline from USGS using Basemap</span>
+
+<span class="sd">    Initialized with a valid Basemap instance with resolution not equal to None,</span>
+<span class="sd">    or thanks to arguments passed to :func:`create_mapplot.map`</span>
+
+<span class="sd">    - *input*: Basemap or Shapes instance [default: None]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">proj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># From another Shapes instance</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Shapes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">clip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># m is not None and</span>
+                <span class="n">clip</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">xmax</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">ymax</span><span class="p">]</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">_m</span>
+
+        <span class="c1"># Get the map without projection</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Basemap</span><span class="p">):</span>
+
+            <span class="c1"># Base to create the map</span>
+            <span class="n">kwmap</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">kwmap</span><span class="p">[</span><span class="s1">&#39;res&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">kwmap</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+            <span class="c1"># Clipping zone</span>
+            <span class="k">if</span> <span class="n">clip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="c1"># Vertices</span>
+                <span class="n">clip</span> <span class="o">=</span> <span class="n">create_polygon</span><span class="p">(</span><span class="n">clip</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;verts&#39;</span><span class="p">)</span>
+
+
+                <span class="c1"># Map extension from clip bounds</span>
+                <span class="n">kwmap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lon_min&#39;</span><span class="p">,</span> <span class="n">clip</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+                <span class="n">kwmap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lon_max&#39;</span><span class="p">,</span> <span class="n">clip</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+                <span class="n">kwmap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lat_min&#39;</span><span class="p">,</span> <span class="n">clip</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+                <span class="n">kwmap</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lat_max&#39;</span><span class="p">,</span> <span class="n">clip</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+            <span class="c1"># Default resolution is &#39;i&#39; if nothing to estimate it</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;res&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s1">&#39;resolution&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span> <span class="ow">and</span> \
+                <span class="p">(</span>   <span class="p">(</span><span class="ow">not</span> <span class="s1">&#39;lon&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="ow">not</span> <span class="s1">&#39;lon_min&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;lon_max&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span><span class="p">))</span> <span class="ow">or</span>
+                    <span class="p">(</span><span class="ow">not</span> <span class="s1">&#39;lat&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="ow">not</span> <span class="s1">&#39;lat_min&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;lat_max&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span><span class="p">))):</span>
+                <span class="n">kwmap</span><span class="p">[</span><span class="s1">&#39;res&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;i&#39;</span>
+
+            <span class="c1"># Check lats</span>
+            <span class="k">if</span> <span class="s1">&#39;lat_min&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span><span class="p">:</span> <span class="n">kwmap</span><span class="p">[</span><span class="s1">&#39;lat_min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">kwmap</span><span class="p">[</span><span class="s1">&#39;lat_min&#39;</span><span class="p">],</span> <span class="o">-</span><span class="mf">89.99</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;lat_max&#39;</span> <span class="ow">in</span> <span class="n">kwmap</span><span class="p">:</span> <span class="n">kwmap</span><span class="p">[</span><span class="s1">&#39;lat_max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">kwmap</span><span class="p">[</span><span class="s1">&#39;lat_max&#39;</span><span class="p">],</span> <span class="mf">89.99</span><span class="p">)</span>
+
+            <span class="c1"># Build the map</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">create_map</span><span class="p">(</span><span class="o">**</span><span class="n">kwmap</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">resolution</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">clip</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="nb">input</span>
+
+        <span class="c1"># Get unprojected polygons vertices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">resolution</span>
+        <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">resolution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Your map needs its resolution to be set&#39;</span>
+        <span class="n">all_verts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">verts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">coastpolygons</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">coastpolygontypes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">]:</span> <span class="k">continue</span> <span class="c1"># Skip lakes</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">projection</span><span class="o">!=</span><span class="s1">&#39;cyl&#39;</span><span class="p">:</span> <span class="c1"># Project back</span>
+                <span class="n">verts</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">projtran</span><span class="p">(</span><span class="n">verts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">verts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">all_verts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">verts</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="c1"># Final initialization</span>
+        <span class="n">Shapes</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_verts</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="n">clip</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort</span><span class="p">,</span> <span class="n">proj</span><span class="o">=</span><span class="n">proj</span><span class="p">,</span>
+            <span class="n">shapetype</span><span class="o">=</span><span class="n">Shapes</span><span class="o">.</span><span class="n">POLYGON</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1">#    def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):</span>
+<span class="c1">#        # Clipping argument</span>
+<span class="c1">#        if clip is not None:</span>
+<span class="c1">#            clip = create_polygon(clip)</span>
+<span class="c1">#</span>
+<span class="c1">#        from_map = not isinstance(input, Shapes)</span>
+<span class="c1">#        if not from_map:</span>
+<span class="c1">#            # Already a Shapes instance</span>
+<span class="c1">#            self._m = input._m</span>
+<span class="c1">#            self._proj = input.get_proj(proj)</span>
+<span class="c1">#            polys = input.get_shapes(proj=proj)</span>
+<span class="c1">#</span>
+<span class="c1">#        else:</span>
+<span class="c1">#            # Get the map</span>
+<span class="c1">#            if isinstance(input, Basemap):</span>
+<span class="c1">#                assert input.resolution is not None, &#39;Your map needs its resolution to be set&#39;</span>
+<span class="c1">#                m = input</span>
+<span class="c1">#            else:</span>
+<span class="c1">#                if isinstance(input, str):</span>
+<span class="c1">#                    kwargs[&#39;res&#39;] = input</span>
+<span class="c1">#                elif isinstance(input, dict):</span>
+<span class="c1">#                    kwargs.update(input)</span>
+<span class="c1">#</span>
+<span class="c1">#                # Map extension from clip bounds</span>
+<span class="c1">#                if clip is not None:</span>
+<span class="c1">#                    bb = clip.boundary</span>
+<span class="c1">#                    kwargs.setdefault(&#39;lon_min&#39;, bb[:, 0].min())</span>
+<span class="c1">#                    kwargs.setdefault(&#39;lon_max&#39;, bb[:, 0].max())</span>
+<span class="c1">#                    kwargs.setdefault(&#39;lat_min&#39;, bb[:, 1].min())</span>
+<span class="c1">#                    kwargs.setdefault(&#39;lat_max&#39;, bb[:, 1].max())</span>
+<span class="c1">#</span>
+<span class="c1">#                # Default resolution is &#39;i&#39; if nothing to estimate it</span>
+<span class="c1">#                if not kwargs.has_key(&#39;res&#39;) and not kwargs.has_key(&#39;resolution&#39;) and \</span>
+<span class="c1">#                    (   (not kwargs.has_key(&#39;lon&#39;) and</span>
+<span class="c1">#                            (not kwargs.has_key(&#39;lon_min&#39;) or not kwargs.has_key(&#39;lon_max&#39;))) or</span>
+<span class="c1">#                        (not kwargs.has_key(&#39;lat&#39;) and</span>
+<span class="c1">#                            (not kwargs.has_key(&#39;lat_min&#39;) or not kwargs.has_key(&#39;lat_max&#39;)))):</span>
+<span class="c1">#                    kwargs[&#39;res&#39;] = &#39;i&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#                # Check lats</span>
+<span class="c1">#                if kwargs.has_key(&#39;lat_min&#39;): kwargs[&#39;lat_min&#39;] = max(kwargs[&#39;lat_min&#39;], -90)</span>
+<span class="c1">#                if kwargs.has_key(&#39;lat_max&#39;): kwargs[&#39;lat_max&#39;] = min(kwargs[&#39;lat_max&#39;], 90)</span>
+<span class="c1">#</span>
+<span class="c1">#                # Build the map</span>
+<span class="c1">#                m = create_map(**kwargs)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#            polys = m.coastpolygons</span>
+<span class="c1">#            self._m = m</span>
+<span class="c1">#            self._proj = proj</span>
+<span class="c1">#</span>
+<span class="c1">#        # Convert to GEOS polygons and clip</span>
+<span class="c1">#        self._shapes = []</span>
+<span class="c1">#        for i, pp in enumerate(polys):</span>
+<span class="c1">#</span>
+<span class="c1">#            # Get the polygon with good projection</span>
+<span class="c1">#            if not from_map:</span>
+<span class="c1">#                poly = pp</span>
+<span class="c1">#            else:</span>
+<span class="c1">#                if m.coastpolygontypes[i] in [2,4]: continue # Skip lakes</span>
+<span class="c1">#                if callable(proj) and m.projection!=&#39;cyl&#39;: # Project back for reprojection</span>
+<span class="c1">#                    pp = m.projtran(pp[0], pp[1], inverse=True)</span>
+<span class="c1">#                poly = create_polygon(pp, proj=proj)</span>
+<span class="c1">#</span>
+<span class="c1">#            # Clip it</span>
+<span class="c1">#            self._shapes.extend(clip_shape(poly, clip))</span>
+<span class="c1">#</span>
+<span class="c1">#        # Save some info</span>
+<span class="c1">#        self._info = []</span>
+<span class="c1">#        self._type = 2</span>
+<span class="c1">#        self._shaper = Polygon</span>
+<span class="c1">#        if self._shapes:</span>
+<span class="c1">#            xy = N.concatenate([s.boundary for s in self._shapes])</span>
+<span class="c1">#            self.xmin = xy[:, 0].min()</span>
+<span class="c1">#            self.xmax = xy[:, 0].max()</span>
+<span class="c1">#            self.ymin = xy[:, 1].min()</span>
+<span class="c1">#            self.ymax = xy[:, 1].max()</span>
+<span class="c1">#            del xy</span>
+<span class="c1">#        else:</span>
+<span class="c1">#            xmin = N.inf</span>
+<span class="c1">#            xmax = -N.inf</span>
+<span class="c1">#            ymin = N.inf</span>
+<span class="c1">#            ymax = -N.inf</span>
+<span class="c1">#</span>
+<span class="c1">#        # Sort polygons?</span>
+<span class="c1">#        if sort:</span>
+<span class="c1">#            self.sort(reverse=reverse)</span>
+
+<div class="viewcode-block" id="merc"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.merc">[docs]</a><span class="k">def</span> <span class="nf">merc</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mercator map</span>
+
+<span class="sd">    - Extra keywords are passed to :class:`mpl_toolkits.basemap.Basemap`</span>
+<span class="sd">    - *lon*: Longitudes to define ``llcrnrlon`` and ``urcrnrlon``</span>
+<span class="sd">    - *lat*: Latitudes to define  ``lat_ts``, ``llcrnrlat`` and ``urcrnrlat``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;resolution&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;llcrnrlon&#39;</span><span class="p">,</span> <span class="n">lon</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;urcrnrlon&#39;</span><span class="p">,</span> <span class="n">lon</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">lat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;llcrnrlat&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;urcrnrlat&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">lat_ts</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lat_ts</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lat_ts&#39;</span><span class="p">,</span><span class="n">lat_ts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Basemap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;merc&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="c1">#proj = merc()</span>
+
+<span class="k">def</span> <span class="nf">basic_proj</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A basic projection using :func:`vacumm.misc.phys.units.deg2m`</span>
+<span class="sd">    and :func:`vacumm.misc.phys.units.deg2m`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">inverse</span><span class="p">:</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">m2deg</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">m2deg</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">),</span> <span class="n">yy</span>
+    <span class="k">return</span> <span class="n">deg2m</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">),</span> <span class="n">deg2m</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span>
+
+<div class="viewcode-block" id="get_proj"><a class="viewcode-back" href="../../../../library/misc.grid.basemap.html#vacumm.bathy.shorelines.get_proj">[docs]</a><span class="k">def</span> <span class="nf">get_proj</span><span class="p">(</span><span class="n">gg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">proj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Setup a default projection using x,y coordinates and</span>
+<span class="sd">    :class:`~mpl_toolkits.basemap.proj.Proj` or :func:`basic_proj`</span>
+
+<span class="sd">    Projection is set by default to &quot;basic&quot;.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **gg**, optional: Grid or coordinates (see :func:`~vacumm.misc.grid.misc.get_xy`).</span>
+<span class="sd">          If not provided, lon bounds are set to (-180,180) and lat bounds to (-89.99,89.99).</span>
+<span class="sd">        - Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`. One of</span>
+<span class="sd">          them is the projection type, which defaults to configuration option</span>
+<span class="sd">          :confopt:`[vacumm.misc.grid.basemap] proj`.</span>
+
+<span class="sd">    :Return:</span>
+<span class="sd">        A :class:`mpl_toolkits.basemap.proj.Proj` instance</span>
+<span class="sd">        or :func:`basic_proj`</span>
+
+<span class="sd">    :Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; proj = get_proj(sst.getGrid(), proj=&#39;laea&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; x, y = proj(lon, lat)</span>
+
+<span class="sd">        &gt;&gt;&gt; proj = get_proj((lon, lat))</span>
+<span class="sd">        &gt;&gt;&gt; xx, yy = N.meshgrid(lon, lat)</span>
+<span class="sd">        &gt;&gt;&gt; xx, yy = proj(xx, yy)</span>
+<span class="sd">        &gt;&gt;&gt; print proj(xx, yy, inverse=True)</span>
+
+<span class="sd">        &gt;&gt;&gt; proj = get_proj(R=6000000.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">proj</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">proj</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">proj</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">proj</span> <span class="o">=</span> <span class="s1">&#39;basic&#39;</span>
+    <span class="k">if</span> <span class="n">proj</span> <span class="o">==</span> <span class="s1">&#39;basic&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">basic_proj</span>
+    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">proj</span><span class="p">):</span> <span class="k">return</span> <span class="n">proj</span>
+    <span class="k">if</span> <span class="n">gg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">get_xy</span><span class="p">(</span><span class="n">gg</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">90</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">projparams</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ymax</span><span class="p">,</span> <span class="mf">89.99</span><span class="p">)</span>
+    <span class="n">ymin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="o">-</span><span class="mf">89.99</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">proj</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">&#39;vacumm.misc.grid.basemap&#39;</span><span class="p">,</span> <span class="s1">&#39;proj&#39;</span><span class="p">)</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">projparams</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="n">rsphere_mean</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span>
+        <span class="n">proj</span><span class="o">=</span><span class="n">proj</span><span class="p">,</span>
+        <span class="n">lat_ts</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">10</span> <span class="k">else</span> <span class="n">N</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+        <span class="n">lon_0</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">10</span> <span class="k">else</span> <span class="n">N</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">dict_check_defaults</span><span class="p">(</span><span class="n">projparams</span><span class="p">,</span> <span class="n">lat_0</span><span class="o">=</span><span class="n">projparams</span><span class="p">[</span><span class="s1">&#39;lat_ts&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">Proj</span><span class="p">(</span><span class="n">projparams</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span></div>
+
+
+<span class="kn">from</span> <span class="nn">masking</span> <span class="k">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">create_polygon</span><span class="p">,</span> <span class="n">proj_shape</span><span class="p">,</span> <span class="n">clip_shape</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../../../../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../../../../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../../../../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../../../../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../vacumm.html" >vacumm</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

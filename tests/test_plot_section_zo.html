@@ -1,0 +1,148 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.5.3.16. test_plot_section_zo.py – Test section2() with a Z- variable &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tests/test_plot_section_zo.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="test-plot-section-zo-py-test-section2-with-a-z-variable">
+<h1>3.5.3.16. <strong class="program">test_plot_section_zo.py</strong> – Test <a class="reference internal" href="../library/misc.plot.html#vacumm.misc.plot.section2" title="vacumm.misc.plot.section2"><code class="xref py py-func docutils literal notranslate"><span class="pre">section2()</span></code></a> with a Z- variable<a class="headerlink" href="#test-plot-section-zo-py-test-section2-with-a-z-variable" title="Permalink to this headline">¶</a></h1>
+<div class="figure">
+<img alt="../_images/test_plot_section_zo.png" src="../_images/test_plot_section_zo.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Test :func:`~vacumm.misc.plot.section2` with a Z- variable&quot;&quot;&quot;</span>
+
+<span class="c1"># Imports</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">N</span><span class="p">,</span> <span class="n">MV2</span><span class="p">,</span> <span class="n">cdms2</span><span class="p">,</span> <span class="n">create_dep</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">section2</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">,</span> <span class="n">os</span>
+
+<span class="c1"># Init data with z 1D</span>
+<span class="n">nz</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">nd</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">var</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nd</span><span class="p">))</span>
+<span class="n">var</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nd</span><span class="p">))</span>
+<span class="n">d</span><span class="o">.</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;km&#39;</span>
+<span class="n">d</span><span class="o">.</span><span class="n">long_name</span><span class="o">=</span><span class="s1">&#39;Distance&#39;</span>
+<span class="n">z1d</span> <span class="o">=</span> <span class="n">create_dep</span><span class="p">((</span><span class="o">-</span><span class="n">nz</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.</span><span class="p">))</span>
+<span class="n">var</span><span class="o">.</span><span class="n">setAxis</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">z1d</span><span class="p">)</span>
+<span class="n">var</span><span class="o">.</span><span class="n">setAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">z2d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">z1d</span><span class="p">[:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nz</span><span class="p">),</span> <span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">z2d</span> <span class="o">*=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">nd</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">nd</span>
+
+<span class="c1"># Plot with z 1D</span>
+<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="s1">&#39;0.5&#39;</span><span class="p">)</span>
+<span class="n">section2</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="mi">211</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<span class="c1"># Plot with z 2D</span>
+<span class="n">figfile</span> <span class="o">=</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">figfile</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">figfile</span><span class="p">)</span>
+<span class="n">section2</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">yaxis</span><span class="o">=</span><span class="n">z2d</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="mi">212</span><span class="p">,</span> <span class="n">savefig</span><span class="o">=</span><span class="n">figfile</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<span class="c1"># Result</span>
+<span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="n">figfile</span><span class="p">)</span>
+
+
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

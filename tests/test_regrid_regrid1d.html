@@ -1,0 +1,258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.5.6.33. test_regrid_regrid1d.py – Test the regrid1d() function &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tests/test_regrid_regrid1d.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="test-regrid-regrid1d-py-test-the-regrid1d-function">
+<h1>3.5.6.33. <strong class="program">test_regrid_regrid1d.py</strong> – Test the <a class="reference internal" href="../library/misc.grid.regridding.html#vacumm.misc.grid.regridding.regrid1d" title="vacumm.misc.grid.regridding.regrid1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">regrid1d()</span></code></a> function<a class="headerlink" href="#test-regrid-regrid1d-py-test-the-regrid1d-function" title="Permalink to this headline">¶</a></h1>
+<div class="figure">
+<img alt="../_images/test_regrid_regrid1d_0.png" src="../_images/test_regrid_regrid1d_0.png" />
+</div>
+<div class="figure">
+<img alt="../_images/test_regrid_regrid1d_1.png" src="../_images/test_regrid_regrid1d_1.png" />
+</div>
+<div class="figure">
+<img alt="../_images/test_regrid_regrid1d_2.png" src="../_images/test_regrid_regrid1d_2.png" />
+</div>
+<div class="figure">
+<img alt="../_images/test_regrid_regrid1d_3.png" src="../_images/test_regrid_regrid1d_3.png" />
+</div>
+<div class="figure">
+<img alt="../_images/test_regrid_regrid1d_4.png" src="../_images/test_regrid_regrid1d_4.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Test the :func:`~vacumm.misc.grid.regridding.regrid1d` function&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">N</span><span class="p">,</span><span class="n">MV2</span><span class="p">,</span> <span class="n">create_dep</span><span class="p">,</span> <span class="n">create_time</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span><span class="n">meshcells</span><span class="p">,</span> <span class="n">minmax</span><span class="p">,</span> <span class="n">code_file_name</span>
+<span class="kn">from</span> <span class="nn">vacumm.misc.grid.regridding</span> <span class="k">import</span> <span class="n">regrid1d</span>
+
+<span class="n">nt</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="k">def</span> <span class="nf">myplot</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depi</span><span class="p">,</span> <span class="n">varol</span><span class="p">,</span> <span class="n">varoc</span><span class="p">,</span> <span class="n">depo</span><span class="p">,</span> <span class="n">figfile</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getdv</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">dep</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="n">dep</span><span class="p">[:]</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="n">var</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="n">dep</span> <span class="o">=</span> <span class="n">dep</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">elif</span> <span class="n">dep</span><span class="p">[:]</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+            <span class="n">dep</span> <span class="o">=</span> <span class="n">dep</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">xb</span><span class="p">,</span> <span class="n">yb</span> <span class="o">=</span> <span class="n">meshcells</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xb</span><span class="p">,</span> <span class="n">yb</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">asma</span><span class="p">()</span>
+    <span class="n">xbi</span><span class="p">,</span> <span class="n">ybi</span><span class="p">,</span> <span class="n">vi</span> <span class="o">=</span> <span class="n">getdv</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depi</span><span class="p">)</span>
+    <span class="n">xbo</span><span class="p">,</span> <span class="n">ybo</span><span class="p">,</span> <span class="n">vol</span> <span class="o">=</span> <span class="n">getdv</span><span class="p">(</span><span class="n">varol</span><span class="p">,</span> <span class="n">depo</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">voc</span> <span class="o">=</span> <span class="n">getdv</span><span class="p">(</span><span class="n">varoc</span><span class="p">,</span> <span class="n">depo</span><span class="p">)</span>
+    <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">minmax</span><span class="p">(</span><span class="n">vi</span><span class="p">,</span> <span class="n">vol</span><span class="p">,</span> <span class="n">voc</span><span class="p">)</span>
+    <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">131</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xbi</span><span class="p">,</span> <span class="n">ybi</span><span class="p">,</span> <span class="n">vi</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">132</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xbo</span><span class="p">,</span> <span class="n">ybo</span><span class="p">,</span> <span class="n">vol</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Linear&#39;</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">133</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xbo</span><span class="p">,</span> <span class="n">ybo</span><span class="p">,</span> <span class="n">voc</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">ybi</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ybo</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="n">ymax</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">ybi</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">ybo</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Cellave&#39;</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">figfile</span><span class="p">)</span>
+
+
+<span class="c1"># 1d-&gt;1d</span>
+<span class="n">depi1d</span> <span class="o">=</span> <span class="n">create_dep</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4500.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="n">depo1d</span> <span class="o">=</span> <span class="n">create_dep</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4000.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">333.33</span><span class="p">))</span>
+<span class="n">nzi</span> <span class="o">=</span> <span class="n">depi1d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">vari</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">depi1d</span><span class="p">[:],</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">nzi</span><span class="p">))</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="n">vari</span><span class="o">.</span><span class="n">setAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">depi1d</span><span class="p">)</span>
+<span class="n">varol1</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+<span class="n">varol2</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iaxo</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi1d</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;assertEqual&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">varol1</span><span class="o">-</span><span class="n">varol2</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="n">varoc</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">)</span>
+<span class="n">myplot</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depi1d</span><span class="p">,</span> <span class="n">varol1</span><span class="p">,</span> <span class="n">varoc</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;_0.png&#39;</span><span class="p">))</span>
+
+
+<span class="c1"># 4d-&gt;1d</span>
+<span class="n">depi1d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4500.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">nzi</span> <span class="o">=</span> <span class="n">depi1d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">depi4d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">depi1d</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nzi</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nzi</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+<span class="n">depi4d</span> <span class="o">+=</span> <span class="mi">500</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">depi4d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">depo1d</span> <span class="o">=</span> <span class="n">create_dep</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4000.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">333.33</span><span class="p">))</span>
+<span class="n">vari</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mf">1e20</span><span class="p">)</span>
+<span class="n">vari</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">depi4d</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">depi4d</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">varol1</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">varol2</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;assertEqual&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">varol1</span><span class="o">-</span><span class="n">varol2</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="n">varoc</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">myplot</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depi4d</span><span class="p">,</span> <span class="n">varol1</span><span class="p">,</span> <span class="n">varoc</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;_1.png&#39;</span><span class="p">))</span>
+
+
+<span class="c1"># 4d-&gt;4d</span>
+<span class="n">depi1d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4500.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">nzi</span> <span class="o">=</span> <span class="n">depi1d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">depi4d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">depi1d</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nzi</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nzi</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+<span class="n">depi4d</span> <span class="o">+=</span> <span class="mi">500</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">depi4d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">depo1d</span> <span class="o">=</span> <span class="n">create_dep</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4000.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">333.33</span><span class="p">))</span>
+<span class="n">nzo</span> <span class="o">=</span> <span class="n">depo1d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">depo4d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">depo1d</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nzo</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nzo</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+<span class="n">depo4d</span> <span class="o">+=</span> <span class="mi">500</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">depo4d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">vari</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mf">1e20</span><span class="p">)</span>
+<span class="n">vari</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">depi4d</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">depi4d</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">depo4d</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">depo4d</span><span class="p">)</span>
+<span class="n">depo4d</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">varol1</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo4d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">varol2</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo4d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">iaxo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;assertEqual&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">varol1</span><span class="o">-</span><span class="n">varol2</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="n">varoc</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo4d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">iaxo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">myplot</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depi4d</span><span class="p">,</span> <span class="n">varol1</span><span class="p">,</span> <span class="n">varoc</span><span class="p">,</span> <span class="n">depo4d</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;_2.png&#39;</span><span class="p">))</span>
+
+
+<span class="c1"># 4d-&gt;3d</span>
+<span class="n">depi1d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4500.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">nzi</span> <span class="o">=</span> <span class="n">depi1d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">depi4d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">depi1d</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nzi</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nzi</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+<span class="n">depi4d</span> <span class="o">+=</span> <span class="mi">500</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">depi4d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">depo1d</span> <span class="o">=</span> <span class="n">create_dep</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4000.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">333.33</span><span class="p">))</span>
+<span class="n">nzo</span> <span class="o">=</span> <span class="n">depo1d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">depo3d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">depo1d</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nzo</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">depo3d</span> <span class="o">+=</span> <span class="mi">500</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">depo3d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">vari</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mf">1e20</span><span class="p">)</span>
+<span class="n">vari</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">depi4d</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">depi4d</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">depo3d</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">depo3d</span><span class="p">)</span>
+<span class="n">depo3d</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">varol1</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo3d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">varol2</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo3d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">iaxo</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;assertEqual&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">varol1</span><span class="o">-</span><span class="n">varol2</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="n">varoc</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo3d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">iaxo</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">myplot</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depi4d</span><span class="p">,</span> <span class="n">varol1</span><span class="p">,</span> <span class="n">varoc</span><span class="p">,</span> <span class="n">depo3d</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;_3.png&#39;</span><span class="p">))</span>
+
+<span class="c1"># 4d-&gt;1d avec extrap=2</span>
+<span class="n">depi1d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4500.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">nzi</span> <span class="o">=</span> <span class="n">depi1d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">depi4d</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">depi1d</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nzi</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nzi</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+<span class="n">depi4d</span> <span class="o">+=</span> <span class="mi">500</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">depi4d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">depo1d</span> <span class="o">=</span> <span class="n">create_dep</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">5000.</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">333.33</span><span class="p">)))</span>
+<span class="n">vari</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mf">1e20</span><span class="p">)</span>
+<span class="n">vari</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">depi4d</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">depi4d</span><span class="p">)</span>
+<span class="n">depi4d</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">designateLevel</span><span class="p">()</span>
+<span class="n">varol1</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">extrap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">varol2</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">extrap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;assertEqual&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="n">varol1</span><span class="o">-</span><span class="n">varol2</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="n">varoc</span> <span class="o">=</span> <span class="n">regrid1d</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cellave&#39;</span><span class="p">,</span> <span class="n">iaxi</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axi</span><span class="o">=</span><span class="n">depi4d</span><span class="p">,</span> <span class="n">extrap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">myplot</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="n">depi4d</span><span class="p">,</span> <span class="n">varol1</span><span class="p">,</span> <span class="n">varoc</span><span class="p">,</span> <span class="n">depo1d</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="s1">&#39;_4.png&#39;</span><span class="p">))</span>
+
+<span class="n">P</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

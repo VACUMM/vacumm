@@ -1,0 +1,247 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.5.16.3. test_cdat_regrid_curv2rect.py – Testing CDAT regridding from curvilinear grid to rectangular grid &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tests/test_cdat_regrid_curv2rect.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="test-cdat-regrid-curv2rect-py-testing-cdat-regridding-from-curvilinear-grid-to-rectangular-grid">
+<h1>3.5.16.3. <strong class="program">test_cdat_regrid_curv2rect.py</strong> – Testing CDAT regridding from curvilinear grid to rectangular grid<a class="headerlink" href="#test-cdat-regrid-curv2rect-py-testing-cdat-regridding-from-curvilinear-grid-to-rectangular-grid" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Testing CDAT regridding from curvilinear grid to rectangular grid&quot;&quot;&quot;</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">#&#39;esmf&#39;:[&#39;conserv&#39;],</span>
+   <span class="s1">&#39;esmf&#39;</span><span class="p">:[</span>
+        <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;patch&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;conserv&#39;</span><span class="p">,</span>
+   <span class="p">],</span>
+   <span class="s1">&#39;libcf&#39;</span><span class="p">:[</span><span class="s1">&#39;linear&#39;</span><span class="p">],</span>
+<span class="p">}</span>
+<span class="n">ncfile</span> <span class="o">=</span> <span class="s1">&#39;swan.four.nc&#39;</span>
+<span class="n">ncvar</span> <span class="o">=</span> <span class="s1">&#39;HS&#39;</span>
+<span class="n">nt</span> <span class="o">=</span> <span class="mi">10</span> <span class="p">;</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">nt</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">xslice</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">yslice</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">121</span><span class="p">)</span>
+
+<span class="c1"># Imports</span>
+<span class="c1">#from matplotlib import use ; use(&#39;Agg&#39;)</span>
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">cdms2</span><span class="p">,</span> <span class="n">bounds1d</span><span class="p">,</span> <span class="n">bounds2d</span><span class="p">,</span> <span class="n">data_sample</span><span class="p">,</span> <span class="n">MV2</span><span class="p">,</span> <span class="n">cp_props</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">minmax</span><span class="p">,</span> <span class="n">code_file_name</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">os</span><span class="p">,</span> <span class="n">psinfo</span><span class="p">,</span> <span class="n">gc</span>
+<span class="c1">#from cdms2.mvCdmsRegrid import CdmsRegrid</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">time</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">format_exc</span>
+<span class="kn">from</span> <span class="nn">mpi4py</span> <span class="k">import</span> <span class="n">MPI</span>
+
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+
+<span class="c1">#if rank==0: print &#39;read&#39;</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_sample</span><span class="p">(</span><span class="n">ncfile</span><span class="p">))</span>
+<span class="n">vari2d</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">ncvar</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span><span class="n">yslice</span><span class="p">,</span><span class="n">xslice</span><span class="p">]</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">gridi</span> <span class="o">=</span> <span class="n">vari2d</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span>
+<span class="n">vari2d</span><span class="p">[:]</span> <span class="o">+=</span> <span class="mi">3</span><span class="o">*</span><span class="n">vari2d</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">vari2d</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">masked</span>
+<span class="n">nyi</span><span class="p">,</span><span class="n">nxi</span> <span class="o">=</span> <span class="n">vari2d</span><span class="o">.</span><span class="n">shape</span>
+
+<span class="c1">#if rank==0: print &#39;expand in time and depth&#39;</span>
+<span class="n">vari</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">vari2d</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nz</span><span class="p">)</span><span class="o">+</span><span class="n">vari2d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">cp_props</span><span class="p">(</span><span class="n">vari2d</span><span class="p">,</span> <span class="n">vari</span><span class="p">)</span>
+
+
+<span class="c1">#if rank==0: print &#39;grido&#39;</span>
+<span class="n">loni</span> <span class="o">=</span> <span class="n">gridi</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+<span class="n">lati</span> <span class="o">=</span> <span class="n">gridi</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+<span class="n">xib</span><span class="p">,</span> <span class="n">yib</span> <span class="o">=</span> <span class="n">bounds2d</span><span class="p">(</span><span class="n">loni</span><span class="p">,</span> <span class="n">lati</span><span class="p">)</span>
+<span class="n">loni</span><span class="o">.</span><span class="n">setBounds</span><span class="p">(</span><span class="n">xib</span><span class="p">)</span>
+<span class="n">lati</span><span class="o">.</span><span class="n">setBounds</span><span class="p">(</span><span class="n">yib</span><span class="p">)</span>
+<span class="n">xi</span> <span class="o">=</span> <span class="n">loni</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
+<span class="n">yi</span> <span class="o">=</span> <span class="n">lati</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">xi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">yi</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">xo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">xi</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span> <span class="o">-</span><span class="mi">30</span><span class="o">*</span><span class="n">dx</span><span class="o">+</span><span class="n">xi</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">dx</span><span class="p">)</span>
+<span class="n">yo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">yi</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">-</span><span class="mi">20</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span> <span class="n">yi</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="mi">20</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span>
+<span class="n">lono</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">(</span><span class="n">xo</span><span class="p">)</span>
+<span class="n">lono</span><span class="o">.</span><span class="n">designateLongitude</span><span class="p">()</span> <span class="p">;</span> <span class="n">lono</span><span class="o">.</span><span class="n">units</span><span class="o">=</span> <span class="s1">&#39;degrees_east&#39;</span>
+<span class="n">lato</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">(</span><span class="n">yo</span><span class="p">)</span>
+<span class="n">lato</span><span class="o">.</span><span class="n">designateLatitude</span><span class="p">()</span> <span class="p">;</span> <span class="n">lato</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;degrees_north&#39;</span>
+<span class="n">xob</span> <span class="o">=</span> <span class="n">bounds1d</span><span class="p">(</span><span class="n">lono</span><span class="p">)</span> <span class="p">;</span> <span class="n">lono</span><span class="o">.</span><span class="n">setBounds</span><span class="p">(</span><span class="n">xob</span><span class="p">)</span>
+<span class="n">yob</span> <span class="o">=</span> <span class="n">bounds1d</span><span class="p">(</span><span class="n">lato</span><span class="p">)</span> <span class="p">;</span> <span class="n">lato</span><span class="o">.</span><span class="n">setBounds</span><span class="p">(</span><span class="n">yob</span><span class="p">)</span>
+<span class="n">grido</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createRectGrid</span><span class="p">(</span><span class="n">lato</span><span class="p">,</span> <span class="n">lono</span><span class="p">)</span>
+<span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">minmax</span><span class="p">(</span><span class="n">loni</span><span class="o">.</span><span class="n">asma</span><span class="p">(),</span><span class="n">lono</span><span class="p">)</span>
+<span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">minmax</span><span class="p">(</span><span class="n">lati</span><span class="o">.</span><span class="n">asma</span><span class="p">(),</span> <span class="n">lato</span><span class="p">)</span>
+<span class="n">nyo</span><span class="p">,</span><span class="n">nxo</span> <span class="o">=</span> <span class="n">grido</span><span class="o">.</span><span class="n">shape</span>
+<span class="c1">#print &#39;rank&#39;,rank</span>
+<span class="n">basefile</span> <span class="o">=</span> <span class="n">code_file_name</span><span class="p">(</span><span class="n">ext</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">repfile</span> <span class="o">=</span> <span class="n">basefile</span><span class="o">+</span><span class="s1">&#39;.nt</span><span class="si">%(nt)s</span><span class="s1">-nz</span><span class="si">%(nz)s</span><span class="s1">-nyi</span><span class="si">%(nyi)s</span><span class="s1">-nxi</span><span class="si">%(nxi)s</span><span class="s1">.log&#39;</span><span class="o">%</span><span class="nb">locals</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">rank</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">repfile</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">repfile</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">repfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">size</span><span class="p">:</span>
+<span class="c1">#        print &#39;MPI&#39;, size</span>
+        <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;MPI: NPROC=</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">size</span>
+    <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;NT=</span><span class="si">%(nt)i</span><span class="s1">, NZ=</span><span class="si">%(nz)i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">locals</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;NYI=</span><span class="si">%(nyi)i</span><span class="s1">, NXI=</span><span class="si">%(nxi)i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">locals</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;NYO=</span><span class="si">%(nyo)i</span><span class="s1">, NXO=</span><span class="si">%(nxo)i</span><span class="s1">&#39;</span><span class="o">%</span><span class="nb">locals</span><span class="p">()</span>
+
+<span class="c1">#if rank==0: print &#39;regridding...&#39;</span>
+<span class="n">vmin</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">vmax</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">tool</span><span class="p">,</span> <span class="n">methods</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rank</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+            <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="n">tool</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">method</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span>
+            <span class="n">diag</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dstAreaFractions&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">diag</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">diag</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">varo</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">regrid</span><span class="p">(</span><span class="n">grido</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">tool</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">diag</span><span class="o">=</span><span class="n">diag</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rank</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39; ok&#39;</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">rank</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39; failed&#39;</span>
+                <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="n">format_exc</span><span class="p">()</span>
+            <span class="k">continue</span>
+        <span class="nb">print</span> <span class="s1">&#39;diag:&#39;</span><span class="p">,</span> <span class="n">diag</span>
+        <span class="k">if</span> <span class="n">rank</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="n">tool</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">method</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%5.1f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">),</span> <span class="s1">&#39;seconds&#39;</span><span class="p">,</span> <span class="n">psinfo</span><span class="p">()</span>
+            <span class="n">frac</span> <span class="o">=</span> <span class="n">diag</span><span class="p">[</span><span class="s1">&#39;dstAreaFractions&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">frac</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">frac</span><span class="o">&lt;=</span><span class="mf">1.e-3</span>
+                <span class="n">frac</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+                <span class="n">frac</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">frac</span><span class="p">,</span> <span class="n">varo</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">varo</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">varo</span><span class="p">[:]</span> <span class="o">/=</span> <span class="n">frac</span>
+                <span class="n">varo</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">varo</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1">#        del r</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rank</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39; plot&#39;</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">vari</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">asma</span><span class="p">(),</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">])</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xo</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="n">varo</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">asma</span><span class="p">(),</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">])</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39; / &#39;</span><span class="o">+</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">extend</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span><span class="c1">#cax=P.axes([0.92, 0.3, 0.02, 0.6]))</span>
+            <span class="n">figfile</span> <span class="o">=</span> <span class="n">basefile</span><span class="o">+</span><span class="s1">&#39;_</span><span class="si">%(tool)s</span><span class="s1">_</span><span class="si">%(method)s</span><span class="s1">.png&#39;</span><span class="o">%</span><span class="nb">vars</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">figfile</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">figfile</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">figfile</span><span class="p">)</span>
+            <span class="n">P</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">varo</span>
+<span class="k">if</span> <span class="n">rank</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span><span class="nb">print</span> <span class="o">&gt;&gt;</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;Done&#39;</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

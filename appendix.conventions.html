@@ -1,0 +1,182 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.3. Coding rules &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.3. Coding rules</a><ul>
+<li><a class="reference internal" href="#coding-norm-pep-8">3.3.1. Coding norm : PEP 8</a></li>
+<li><a class="reference internal" href="#docstrings">3.3.2. Docstrings</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/appendix.conventions.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="coding-rules">
+<span id="appendix-conventions"></span><h1>3.3. Coding rules<a class="headerlink" href="#coding-rules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="coding-norm-pep-8">
+<h2>3.3.1. Coding norm : PEP 8<a class="headerlink" href="#coding-norm-pep-8" title="Permalink to this headline">¶</a></h2>
+<p>The coding rules mainly follow he standards specified by the <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0008"><strong>PEP 8</strong></a>.
+These standards include the following important points:</p>
+<blockquote>
+<div><ul class="simple">
+<li>The indentations are composed of four spaces (no tabs).</li>
+<li>The names of classes and exceptions are capitalized at the beginning of the word,
+and no character is used to separate words in the case of compound nouns. Example : <code class="docutils literal notranslate"><span class="pre">MySuperClass</span></code>.</li>
+<li>Other names (functions, methods, attributes) are all lowercase and
+underscore `` <a href="#id1"><span class="problematic" id="id2">_`</span></a>` character is used to separate words. Example: <code class="docutils literal notranslate"><span class="pre">my_super_function</span></code>.</li>
+<li>The encoding must be UTF-8.</li>
+</ul>
+</div></blockquote>
+<p>The following points are of secondary importance:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Lines must not exceed 79 characters.</li>
+<li>Spaces must be used to separate operators.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="docstrings">
+<h2>3.3.2. Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">¶</a></h2>
+<p>The docstrings are  comments located immediately after a statement.
+They are used to learn about the stated purpose (purpose, parameters, outputs …)
+and this information will be inserted in the documentation of the library after compilation.</p>
+<p>Docstrings must be written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">rst</a> programming language,
+used by the documentation generator <a class="reference external" href="http://sphinx.pocoo.org">Sphinx</a> .
+The language used is English.</p>
+<blockquote>
+<div><p>We propose the following form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Short description of myfunc</span>
+
+<span class="sd">    More information about myfunc.</span>
+<span class="sd">    You can even include images.</span>
+
+<span class="sd">    .. note:: A simple note.</span>
+
+<span class="sd">    :Params:</span>
+
+<span class="sd">        - **a**: First mandatory parameter.</span>
+<span class="sd">          Its description continues here.</span>
+<span class="sd">        - **b**: The second mandatory one.</span>
+<span class="sd">        - **c**, optional: First optional keyword parameter.</span>
+<span class="sd">        - **d**, optional: Second one.</span>
+<span class="sd">        - Other parameters.</span>
+
+<span class="sd">    :Return:</span>
+
+<span class="sd">        - *x*: First return variable.</span>
+<span class="sd">        - *y*: Second one.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; x, y = myfunc(a, b, d=4, g=&#39;name&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Home</a>|&nbsp;</li>
+        <li><a href="contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

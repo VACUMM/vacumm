@@ -1,0 +1,181 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3.8.8. Leçon sur les axes et grilles &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/courses/grids.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lecon-sur-les-axes-et-grilles">
+<h1>3.8.8. Leçon sur les axes et grilles<a class="headerlink" href="#lecon-sur-les-axes-et-grilles" title="Permalink to this headline">¶</a></h1>
+<p>Fichier <code class="file docutils literal notranslate"><span class="pre">courses_grids.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Axes et grilles avec VACUMM&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">vcmq</span> <span class="k">import</span> <span class="n">N</span><span class="p">,</span> <span class="n">MV2</span><span class="p">,</span> <span class="n">create_lon</span><span class="p">,</span> <span class="n">create_lat</span><span class="p">,</span> <span class="n">create_grid</span><span class="p">,</span> <span class="n">isgrid</span><span class="p">,</span> <span class="n">isrect</span><span class="p">,</span> <span class="n">islon</span><span class="p">,</span> <span class="n">set_grid</span><span class="p">,</span>  <span class="n">get_grid</span><span class="p">,</span> <span class="n">get_axis</span><span class="p">,</span> <span class="n">varsel</span><span class="p">,</span> <span class="n">resol</span><span class="p">,</span> <span class="n">curv2rect</span><span class="p">,</span> <span class="n">get_xy</span><span class="p">,</span> <span class="n">meshgrid</span><span class="p">,</span> <span class="n">meshcells</span><span class="p">,</span> <span class="n">create_dep</span><span class="p">,</span> <span class="n">isregular</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">rotate_grid</span><span class="p">,</span> <span class="n">shiftgrid</span><span class="p">,</span> <span class="n">extendgrid</span><span class="p">,</span> <span class="n">create_axes2d</span><span class="p">,</span> <span class="n">isdepthup</span><span class="p">,</span> <span class="n">coord2slice</span><span class="p">,</span> <span class="n">monotonic</span><span class="p">,</span> <span class="n">xshift</span><span class="p">,</span> <span class="n">depth2dz</span><span class="p">,</span> <span class="n">get_closest</span>
+
+<span class="c1"># Créer</span>
+
+<span class="c1"># - axes</span>
+<span class="n">lon</span> <span class="o">=</span> <span class="n">create_lon</span><span class="p">((</span><span class="mf">2.</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mf">2.</span><span class="p">))</span>  <span class="c1"># -&gt; SPECIFIEZ LE LONG_NAME</span>
+<span class="n">lat</span> <span class="o">=</span> <span class="n">create_lat</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">43</span><span class="p">,</span> <span class="mf">50.</span><span class="p">))</span>
+<span class="n">dep</span> <span class="o">=</span> <span class="n">create_dep</span><span class="p">((</span><span class="mf">0.</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="c1"># -&gt; AFFICHEZ LES INFOS</span>
+<span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">5.</span><span class="p">),</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">4.</span><span class="p">))</span>
+<span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span> <span class="o">=</span> <span class="n">create_axes2d</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+<span class="n">ii</span> <span class="o">=</span> <span class="n">lon2d</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># - grille</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>    <span class="c1"># -&gt; ESSAYEZ AVEC LON EXPLICITE</span>
+<span class="n">gridc</span> <span class="o">=</span> <span class="n">create_grid</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">)</span>
+
+
+<span class="c1"># Verifier</span>
+<span class="nb">print</span> <span class="n">islon</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">isgrid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>              <span class="c1"># -&gt; TEST PARAM CURV=...</span>
+<span class="nb">print</span> <span class="n">isrect</span><span class="p">(</span><span class="n">gridc</span><span class="p">)</span>             <span class="c1"># -&gt; CREEZ GRILLE NON RECT ET RETESTER</span>
+<span class="nb">print</span> <span class="n">isdepthup</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span>            <span class="c1"># -&gt; TESTEZ EN CHANGEANT ATTRIBUT POSITIVE ET VALEURS</span>
+<span class="nb">print</span> <span class="n">isregular</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>            
+
+
+<span class="c1"># Affecter</span>
+<span class="n">var</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">set_grid</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+<span class="n">varc</span> <span class="o">=</span> <span class="n">MV2</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">gridc</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">set_grid</span><span class="p">(</span><span class="n">varc</span><span class="p">,</span> <span class="n">gridc</span><span class="p">)</span>            <span class="c1"># -&gt; VERIFIEZ ID DES AXES</span>
+
+
+<span class="c1"># Récupérer</span>
+<span class="n">mygrid</span> <span class="o">=</span> <span class="n">get_grid</span><span class="p">(</span><span class="n">gridc</span><span class="p">)</span>        <span class="c1"># -&gt; TESTEZ AVEC (LON,LAT) ET PARAMS STRICT ET INTERCEPT</span>
+<span class="n">mylon2d</span> <span class="o">=</span> <span class="n">get_axis</span><span class="p">(</span><span class="n">gridc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>    <span class="c1"># -&gt; COMPAREZ AVEC .GETAXIS()</span>
+
+
+<span class="c1"># Sélectionner</span>
+<span class="nb">print</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span><span class="c1"># -&gt; COMPAREZ AVEC .GETINTERVALEXT(...)</span>
+<span class="nb">print</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">44</span><span class="p">,</span> <span class="mi">46</span><span class="p">))</span> <span class="c1"># -&gt; TESTEZ SUR GRIDC</span>
+<span class="c1"># -&gt; TESTEZ VARSEL</span>
+
+
+<span class="c1"># Transformer</span>
+<span class="n">gridcr</span> <span class="o">=</span> <span class="n">curv2rect</span><span class="p">(</span><span class="n">gridc</span><span class="p">)</span>       <span class="c1"># -&gt; TESTEZ AVEC VOTRE GRILLE NON RECT </span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">create_lon</span><span class="p">([</span><span class="mi">350</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">10.</span><span class="p">])</span>
+<span class="nb">print</span> <span class="n">monotonic</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">xshift</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>         <span class="c1"># -&gt; COMPAREZ A VAR ET VERIFIEZ AXE</span>
+<span class="c1"># -&gt; TESTEZ XEXTEND</span>
+<span class="n">grido</span> <span class="o">=</span> <span class="n">rotate_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>   <span class="c1"># -&gt; TRACEZ LES LONGITUDE (PCOLOR)</span>
+<span class="n">grids</span> <span class="o">=</span> <span class="n">shiftgrid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># -&gt; VERIFIEZ PUIS TESTEZ SUR GRIDC + PASSER DE T À U</span>
+<span class="n">gride</span> <span class="o">=</span> <span class="n">extendgrid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">iext</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>   <span class="c1"># -&gt; VERIFIER PUIS TESTEZ LE MODE </span>
+
+
+<span class="c1"># Exploiter</span>
+<span class="nb">print</span> <span class="n">resol</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>               <span class="c1"># -&gt; TESTEZ EN METRES ET SUR AXE</span>
+<span class="nb">print</span> <span class="n">depth2dz</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">get_closest</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span>
+
+
+<span class="c1"># Utilitaires sut les coordonnées</span>
+<span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">meshgrid</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">xxb</span><span class="p">,</span> <span class="n">yyb</span> <span class="o">=</span> <span class="n">meshcells</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>      <span class="c1"># -&gt; EN 1D?</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

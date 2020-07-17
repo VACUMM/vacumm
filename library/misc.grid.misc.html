@@ -1,0 +1,1844 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.3.8.1. vacumm.misc.grid.misc – Generic utilities about grids &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.3.8.1. <code class="docutils literal notranslate"><span class="pre">vacumm.misc.grid.misc</span></code> – Generic utilities about grids</a></li>
+<li><a class="reference internal" href="#overview">2.3.8.2. Overview</a></li>
+<li><a class="reference internal" href="#content">2.3.8.3. Content</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/misc.grid.misc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-misc-grid-misc-generic-utilities-about-grids">
+<span id="dev-lib-mis-gri-gri"></span><h1>2.3.8.1. <a class="reference internal" href="#module-vacumm.misc.grid.misc" title="vacumm.misc.grid.misc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.misc.grid.misc</span></code></a> – Generic utilities about grids<a class="headerlink" href="#vacumm-misc-grid-misc-generic-utilities-about-grids" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="overview">
+<h1>2.3.8.2. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Functions:</th><td class="field-body"><table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.axes2d" title="vacumm.misc.grid.misc.axes2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">axes2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.axis1d_from_bounds" title="vacumm.misc.grid.misc.axis1d_from_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">axis1d_from_bounds()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.bounds1d" title="vacumm.misc.grid.misc.bounds1d"><code class="xref py py-func docutils literal notranslate"><span class="pre">bounds1d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.bounds2d" title="vacumm.misc.grid.misc.bounds2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">bounds2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.bounds2mesh" title="vacumm.misc.grid.misc.bounds2mesh"><code class="xref py py-func docutils literal notranslate"><span class="pre">bounds2mesh()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.cells2grid" title="vacumm.misc.grid.misc.cells2grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">cells2grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.check_xy_shape" title="vacumm.misc.grid.misc.check_xy_shape"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_xy_shape()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.coord2slice" title="vacumm.misc.grid.misc.coord2slice"><code class="xref py py-func docutils literal notranslate"><span class="pre">coord2slice()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.create_aux_axes" title="vacumm.misc.grid.misc.create_aux_axes"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_aux_axes()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.create_axes2d" title="vacumm.misc.grid.misc.create_axes2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_axes2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.create_curv_grid" title="vacumm.misc.grid.misc.create_curv_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_curv_grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.create_grid" title="vacumm.misc.grid.misc.create_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.create_grid2d" title="vacumm.misc.grid.misc.create_grid2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_grid2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.create_ugrid" title="vacumm.misc.grid.misc.create_ugrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_ugrid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.create_var2d" title="vacumm.misc.grid.misc.create_var2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_var2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.curv2rect" title="vacumm.misc.grid.misc.curv2rect"><code class="xref py py-func docutils literal notranslate"><span class="pre">curv2rect()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.curv_grid" title="vacumm.misc.grid.misc.curv_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">curv_grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.deg2xy" title="vacumm.misc.grid.misc.deg2xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2xy()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.depth2dz" title="vacumm.misc.grid.misc.depth2dz"><code class="xref py py-func docutils literal notranslate"><span class="pre">depth2dz()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.dz2depth" title="vacumm.misc.grid.misc.dz2depth"><code class="xref py py-func docutils literal notranslate"><span class="pre">dz2depth()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_axis" title="vacumm.misc.grid.misc.get_axis"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_axis()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_axis_slices" title="vacumm.misc.grid.misc.get_axis_slices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_axis_slices()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_closest" title="vacumm.misc.grid.misc.get_closest"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_closest()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_closest_depth" title="vacumm.misc.grid.misc.get_closest_depth"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_closest_depth()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_distances" title="vacumm.misc.grid.misc.get_distances"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_distances()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_geo_area" title="vacumm.misc.grid.misc.get_geo_area"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_geo_area()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_grid_axes" title="vacumm.misc.grid.misc.get_grid_axes"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid_axes()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_grid_type" title="vacumm.misc.grid.misc.get_grid_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid_type()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_resolution" title="vacumm.misc.grid.misc.get_resolution"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_resolution()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_tri" title="vacumm.misc.grid.misc.get_tri"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tri()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_unstruct_indices" title="vacumm.misc.grid.misc.get_unstruct_indices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_unstruct_indices()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_xy" title="vacumm.misc.grid.misc.get_xy"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_xy()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.get_zdim" title="vacumm.misc.grid.misc.get_zdim"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_zdim()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.grid2d" title="vacumm.misc.grid.misc.grid2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">grid2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.gridsel" title="vacumm.misc.grid.misc.gridsel"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridsel()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.haversine" title="vacumm.misc.grid.misc.haversine"><code class="xref py py-func docutils literal notranslate"><span class="pre">haversine()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.isdepthup" title="vacumm.misc.grid.misc.isdepthup"><code class="xref py py-func docutils literal notranslate"><span class="pre">isdepthup()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.isgrid" title="vacumm.misc.grid.misc.isgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">isgrid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.isoslice" title="vacumm.misc.grid.misc.isoslice"><code class="xref py py-func docutils literal notranslate"><span class="pre">isoslice()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.isrect" title="vacumm.misc.grid.misc.isrect"><code class="xref py py-func docutils literal notranslate"><span class="pre">isrect()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.isregular" title="vacumm.misc.grid.misc.isregular"><code class="xref py py-func docutils literal notranslate"><span class="pre">isregular()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.issgrid" title="vacumm.misc.grid.misc.issgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">issgrid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.istri" title="vacumm.misc.grid.misc.istri"><code class="xref py py-func docutils literal notranslate"><span class="pre">istri()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.isugrid" title="vacumm.misc.grid.misc.isugrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">isugrid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.makealtitudeup" title="vacumm.misc.grid.misc.makealtitudeup"><code class="xref py py-func docutils literal notranslate"><span class="pre">makealtitudeup()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.makedepthup" title="vacumm.misc.grid.misc.makedepthup"><code class="xref py py-func docutils literal notranslate"><span class="pre">makedepthup()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.mask2ind" title="vacumm.misc.grid.misc.mask2ind"><code class="xref py py-func docutils literal notranslate"><span class="pre">mask2ind()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.merge_axis_slice" title="vacumm.misc.grid.misc.merge_axis_slice"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge_axis_slice()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.merge_axis_slices" title="vacumm.misc.grid.misc.merge_axis_slices"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge_axis_slices()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.meshbounds" title="vacumm.misc.grid.misc.meshbounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshbounds()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.meshcells" title="vacumm.misc.grid.misc.meshcells"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshcells()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.meshgrid" title="vacumm.misc.grid.misc.meshgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshgrid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.meshweights" title="vacumm.misc.grid.misc.meshweights"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshweights()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.monotonic" title="vacumm.misc.grid.misc.monotonic"><code class="xref py py-func docutils literal notranslate"><span class="pre">monotonic()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.num2axes2d" title="vacumm.misc.grid.misc.num2axes2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">num2axes2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.resol" title="vacumm.misc.grid.misc.resol"><code class="xref py py-func docutils literal notranslate"><span class="pre">resol()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.rotate_grid" title="vacumm.misc.grid.misc.rotate_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">rotate_grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.set_grid" title="vacumm.misc.grid.misc.set_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_grid()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.t2uvgrids" title="vacumm.misc.grid.misc.t2uvgrids"><code class="xref py py-func docutils literal notranslate"><span class="pre">t2uvgrids()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.transect_specs" title="vacumm.misc.grid.misc.transect_specs"><code class="xref py py-func docutils literal notranslate"><span class="pre">transect_specs()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.var2d" title="vacumm.misc.grid.misc.var2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">var2d()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.varsel" title="vacumm.misc.grid.misc.varsel"><code class="xref py py-func docutils literal notranslate"><span class="pre">varsel()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.xextend" title="vacumm.misc.grid.misc.xextend"><code class="xref py py-func docutils literal notranslate"><span class="pre">xextend()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.xshift" title="vacumm.misc.grid.misc.xshift"><code class="xref py py-func docutils literal notranslate"><span class="pre">xshift()</span></code></a></li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.misc.grid.misc.GriddedSelector" title="vacumm.misc.grid.misc.GriddedSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">GriddedSelector</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.misc.grid.misc.GriddedSelector.select" title="vacumm.misc.grid.misc.GriddedSelector.select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td><td><ul class="simple">
+</ul>
+</td></tr></table>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h1>2.3.8.3. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-vacumm.misc.grid.misc"></span><p>Grid utilities.</p>
+<p>It deals with bounds, areas, interpolations…</p>
+<p>See: <a class="reference internal" href="../tutorials/misc.grid.html#user-tut-misc-grid"><span class="std std-ref">Gridded data</span></a>.</p>
+<dl class="class">
+<dt id="vacumm.misc.grid.misc.GriddedSelector">
+<em class="property">class </em><code class="descname">GriddedSelector</code><span class="sig-paren">(</span><em>grid</em>, <em>lon=None</em>, <em>lat=None</em>, <em>update_kwargs=False</em>, <em>apply_mask=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#GriddedSelector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.GriddedSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">cdms2.selectors.Selector</span></code> with grid preprocessing</p>
+<dl class="method">
+<dt id="vacumm.misc.grid.misc.GriddedSelector.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>var</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#GriddedSelector.select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.GriddedSelector.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply selection</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.axes2d">
+<code class="descname">axes2d</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#axes2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.axes2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.grid.misc.create_axes2d" title="vacumm.misc.grid.misc.create_axes2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_axes2d()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.axis1d_from_bounds">
+<code class="descname">axis1d_from_bounds</code><span class="sig-paren">(</span><em>axis1d</em>, <em>atts=None</em>, <em>numeric=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#axis1d_from_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.axis1d_from_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a numeric of formatted 1D axis from bounds</p>
+<ul class="simple">
+<li><strong>axis1d</strong>: Input 1d axis from which we get bounds</li>
+<li><em>numeric</em>: Return a simple numeric array</li>
+<li><em>atts</em>: Attributes for outputs axis</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xx</span> <span class="o">=</span> <span class="n">axis1d_from_bounds</span><span class="p">(</span><span class="n">xxb</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.bounds1d">
+<code class="descname">bounds1d</code><span class="sig-paren">(</span><em>xx</em>, <em>cellwidth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#bounds1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.bounds1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute bounds on a linear sequence or axis.
+It is based on <code class="xref py py-func docutils literal notranslate"><span class="pre">cdms2.genGenericBounds()</span></code> of CDAT.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bounds1d</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">360, 2</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">xx(nx,2)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.bounds2d">
+<code class="descname">bounds2d</code><span class="sig-paren">(</span><em>*xyaxes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#bounds2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.bounds2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute bounds on a rectangular grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xyaxes</strong>: 2D arrays(ny,nx) (or 2x1D arrays)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xx_bounds</span><span class="p">,</span><span class="n">yy_bounds</span> <span class="o">=</span> <span class="n">bounds2d</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">xx(ny,nx,4),...</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.bounds2mesh">
+<code class="descname">bounds2mesh</code><span class="sig-paren">(</span><em>xb</em>, <em>yb=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#bounds2mesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.bounds2mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert 2D 4-corners cell bounds arrays (results from <a class="reference internal" href="#vacumm.misc.grid.misc.bounds2d" title="vacumm.misc.grid.misc.bounds2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">bounds2d()</span></code></a>) to 2D arrays</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xb</strong>: array(ny,nx,4) or array(nx,2)</li>
+<li><strong>yb</strong>: None or array(ny,nx,4) or array(ny,2)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">xxb(ny+1,nx+1),yyb(ny+1,nx+1)</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.cells2grid">
+<code class="descname">cells2grid</code><span class="sig-paren">(</span><em>xxb</em>, <em>yyb</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#cells2grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.cells2grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a grid of cells (grid of corners, like results from <a class="reference internal" href="#vacumm.misc.grid.misc.meshcells" title="vacumm.misc.grid.misc.meshcells"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshcells()</span></code></a>) to a grid (grid of centers)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xxb</strong>: X of corners (ny+1,nx+1)</li>
+<li><strong>yyb</strong>: Y of corners (ny+1,nx+1)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">xx(ny,nx),yy(ny,nx)</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.check_xy_shape">
+<code class="descname">check_xy_shape</code><span class="sig-paren">(</span><em>xx</em>, <em>yy</em>, <em>mesh=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#check_xy_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.check_xy_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that xx and yy have the same shape</p>
+<ul class="simple">
+<li><strong>xx</strong>: X positions (in meters or degrees).</li>
+<li><strong>yy</strong>: Y positions (in meters or degrees).</li>
+<li><em>mesh</em>: Return a 2D axes if True, or if None and xx and yy have not the same shape [default: None]</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xx2d</span><span class="p">,</span> <span class="n">yy2d</span> <span class="o">=</span> <span class="n">check_xy_shape</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.coord2slice">
+<code class="descname">coord2slice</code><span class="sig-paren">(</span><em>gg</em>, <em>lon=None</em>, <em>lat=None</em>, <em>mode='slice'</em>, <em>mask=None</em>, <em>assubmask=True</em>, <em>squeeze=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#coord2slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.coord2slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from coordinates to indices on grid or axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>gg</strong>: A grid, a cmds variable with a grid,
+a tuple of axes or an axis.</p>
+</li>
+<li><p class="first"><strong>lon/lat</strong>: Interval of coordinates or slice. If single coordinates, the
+interval becomes for instance <code class="docutils literal notranslate"><span class="pre">(lon,lon,'ccb')</span></code>.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Output mode. You can pass only the first letter.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;slice&quot;</span></code>: Return a <a class="reference external" href="https://docs.python.org/dev/library/functions.html#slice" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">slice</span></code></a> object.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;indices&quot;</span></code>: Return a 3-element tuple as in a <a class="reference external" href="https://docs.python.org/dev/library/functions.html#slice" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">slice</span></code></a> context
+<code class="docutils literal notranslate"><span class="pre">(start,stop,step)</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code>: Return an array of valid indices of shape <code class="docutils literal notranslate"><span class="pre">(2,nvalid)</span></code>,
+where <code class="docutils literal notranslate"><span class="pre">out[0]</span></code> gives the X indices and <code class="docutils literal notranslate"><span class="pre">out[1]</span></code> gives the Y indices.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>mask</strong>, optional: Also use this mask to get indices
+(for 2D axes only).</p>
+</li>
+<li><p class="first"><strong>squeeze</strong>, optional: If <code class="docutils literal notranslate"><span class="pre">asslice</span></code> is False ad</p>
+</li>
+<li><p class="first"><strong>asslice</strong>, optional: DEPRECATED. Use <code class="docutils literal notranslate"><span class="pre">mode='slice'</span></code> instead.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">In array mode, it always returns an array of indices of shape <code class="docutils literal notranslate"><span class="pre">(2,nvalid)</span></code>,
+possibly empty if not intersection if found.</p>
+<p>Here <code class="docutils literal notranslate"><span class="pre">i/jslice</span></code> is a slice or a tuple of indices,
+depending on asslice. It can also be <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+not intersection are found.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">gg</span></code> is grid, a tuple of axes or a 2D axis:
+<code class="docutils literal notranslate"><span class="pre">islice,</span> <span class="pre">jslice,</span> <span class="pre">mask</span></code>.
+In case of a tuple of 1D axes, <code class="docutils literal notranslate"><span class="pre">mask</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> because not relevant.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">gg</span></code> is a 1D axis: <code class="docutils literal notranslate"><span class="pre">ijslice</span></code>, just as the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mapIntervaExt`()</span></code> method of 1D axes.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ijk</span> <span class="o">=</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon1d</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="n">lon0</span><span class="p">,</span><span class="n">lon1</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xijk</span><span class="p">,</span> <span class="n">yijk</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">coord2slice</span><span class="p">((</span><span class="n">lon1d</span><span class="p">,</span><span class="n">lat1d</span><span class="p">),</span>
+<span class="go">    lon=(lon0,lon1), lat=slice(0,3), mode=&#39;i&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">islice</span><span class="p">,</span> <span class="n">jslice</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">gridcurv</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="n">lat0</span><span class="p">,</span><span class="n">lat0</span><span class="p">,</span><span class="s1">&#39;ccb&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xijk</span><span class="p">,</span> <span class="n">yijk</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="n">lon0</span><span class="p">,</span><span class="n">lon1</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ij</span> <span class="o">=</span> <span class="n">coord2slice</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.create_aux_axes">
+<code class="descname">create_aux_axes</code><span class="sig-paren">(</span><em>x=None</em>, <em>y=None</em>, <em>bounds=False</em>, <em>numeric=False</em>, <em>lonid=None</em>, <em>latid=None</em>, <em>iid='points'</em>, <em>xatts=None</em>, <em>yatts=None</em>, <em>xbounds=None</em>, <em>ybounds=None</em>, <em>nobounds=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#create_aux_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.create_aux_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create auxilary 1d axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lon1d</span><span class="p">,</span> <span class="n">lat1d</span> <span class="o">=</span> <span class="n">create_aux_axes</span><span class="p">(</span><span class="n">x1d</span><span class="p">,</span> <span class="n">y1d</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xaxis</strong>, optional: 1D axis or array</li>
+<li><strong>xaxis</strong>, optional: 1D axis or array</li>
+<li><em>xatts</em>, optional: Attributes for output auxilary X axis</li>
+<li><em>yatts</em>, optional: Attributes for output auxilary Y axis</li>
+<li><strong>lonid</strong>, optional: Id of longitude axis [defaut=’lon’].</li>
+<li><strong>latid</strong>, optional: Id of latitude axis [defaut=’lat’].</li>
+<li><strong>iid</strong>, optional: Id of i axis [defaut=’iid’].</li>
+<li><strong>jid</strong>, optional: Id of j axis [defaut=’jid’].</li>
+<li><strong>xbounds2d</strong>, optional: 2D bounds of input xaxis</li>
+<li><strong>ybounds2d</strong>, optional: 2D bounds of input yaxis</li>
+<li><strong>nobounds</strong>, optional: create (True) or not (False - default) bounds of axis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">xaxis2d,yaxis2d</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.create_axes2d">
+<code class="descname">create_axes2d</code><span class="sig-paren">(</span><em>x=None</em>, <em>y=None</em>, <em>bounds=False</em>, <em>numeric=False</em>, <em>lonid=None</em>, <em>latid=None</em>, <em>iid='ni'</em>, <em>jid='nj'</em>, <em>xatts=None</em>, <em>yatts=None</em>, <em>xbounds2d=None</em>, <em>ybounds2d=None</em>, <em>nobounds=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#create_axes2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.create_axes2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create 2D numerical of complete axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span> <span class="o">=</span> <span class="n">create_axes2d</span><span class="p">(</span><span class="n">x2d</span><span class="p">,</span> <span class="n">y2d</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xaxis</strong>, optional: 1D or 2D X axis</li>
+<li><strong>xaxis</strong>, optional: 1D or 2D Y axis</li>
+<li><em>xatts</em>, optional: Attributes for output 2D X axis</li>
+<li><em>yatts</em>, optional: Attributes for output 2D Y axis</li>
+<li><strong>xbounds2d</strong>, optional: 2D bounds of input xaxis</li>
+<li><strong>ybounds2d</strong>, optional: 2D bounds of input yaxis</li>
+<li><strong>nobounds</strong>, optional: create (True) or not (False - default) bounds of axis</li>
+<li><strong>numeric</strong>, optional: Only return numerical values instead of complete axes</li>
+<li><strong>bounds</strong>, optional: Return extended axes positioned on bounds (useful for pcolor).
+Deprecated: use <a class="reference internal" href="#vacumm.misc.grid.misc.meshbounds" title="vacumm.misc.grid.misc.meshbounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshbounds()</span></code></a> instead.</li>
+<li><strong>lonid</strong>, optional: Id of longitude axis [defaut=’lon’].</li>
+<li><strong>latid</strong>, optional: Id of latitude axis [defaut=’lat’].</li>
+<li><strong>iid</strong>, optional: Id of i axis [defaut=’iid’].</li>
+<li><strong>jid</strong>, optional: Id of j axis [defaut=’jid’].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">xaxis2d,yaxis2d</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.create_curv_grid">
+<code class="descname">create_curv_grid</code><span class="sig-paren">(</span><em>xaxis</em>, <em>yaxis</em>, <em>xatts=None</em>, <em>yatts=None</em>, <em>id=None</em>, <em>mask=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#create_curv_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.create_curv_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a curvilinear 2D grid from 1D or 2D axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xaxis</strong>: Numeric or formatted X axis</li>
+<li><strong>yaxis</strong>: Numeric or formatted Y axis</li>
+<li><strong>xatts</strong>, optional: Attributes of X axis</li>
+<li><strong>yatts</strong>, optional: Attributes of Y axis</li>
+<li><strong>id</strong>, optional: Id of the grid</li>
+<li>Other keywords are passed to <a class="reference internal" href="#vacumm.misc.grid.misc.create_axes2d" title="vacumm.misc.grid.misc.create_axes2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_axes2d()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">curvgrid</span> <span class="o">=</span> <span class="n">curv_grid</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.grid.misc.create_grid2d" title="vacumm.misc.grid.misc.create_grid2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_grid2d()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.create_grid">
+<code class="descname">create_grid</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em>, <em>gtype=None</em>, <em>mask=None</em>, <em>lonatts={}</em>, <em>latatts={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#create_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.create_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a cdms rectangular or curvilinear grid from axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>lon</strong>: Array or axis of longitudes or any argument passed to <a class="reference internal" href="misc.axes.html#vacumm.misc.axes.create_lon" title="vacumm.misc.axes.create_lon"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_lon()</span></code></a>.</li>
+<li><strong>lat</strong>: Array or axis of latitudes or any argument passed to <a class="reference internal" href="misc.axes.html#vacumm.misc.axes.create_lat" title="vacumm.misc.axes.create_lat"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_lat()</span></code></a>.</li>
+<li><strong>mask</strong>, optional: Grid mask.</li>
+<li><strong>(lon/lat)atts</strong>, optional: Attributes to set for axes.</li>
+<li><strong>gtype</strong>, optional, string: grid type as one of None, ‘rect’, ‘curv’, ‘unstruct’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">A <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> grid object.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">create_grid</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span><span class="mf">3.</span><span class="p">,</span><span class="mf">5.</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">45.</span><span class="p">,</span> <span class="mf">60.</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_grid</span><span class="p">((</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span> <span class="p">(</span><span class="mf">45.</span><span class="p">,</span> <span class="mf">60.</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="misc.axes.html#vacumm.misc.axes.create_lon" title="vacumm.misc.axes.create_lon"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_lon()</span></code></a> <a class="reference internal" href="misc.axes.html#vacumm.misc.axes.create_lat" title="vacumm.misc.axes.create_lat"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_lat()</span></code></a>
+<a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a> <a class="reference internal" href="#vacumm.misc.grid.misc.set_grid" title="vacumm.misc.grid.misc.set_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_grid()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.create_grid2d">
+<code class="descname">create_grid2d</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#create_grid2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.create_grid2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.grid.misc.curv_grid" title="vacumm.misc.grid.misc.curv_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">curv_grid()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.create_ugrid">
+<code class="descname">create_ugrid</code><span class="sig-paren">(</span><em>xaxis</em>, <em>yaxis</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#create_ugrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.create_ugrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a unstructured grid from axes</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.create_var2d">
+<code class="descname">create_var2d</code><span class="sig-paren">(</span><em>var</em>, <em>xaxis=None</em>, <em>yaxis=None</em>, <em>xatts=None</em>, <em>yatts=None</em>, <em>gid=None</em>, <em>copy=1</em>, <em>lonid=None</em>, <em>latid=None</em>, <em>iid=None</em>, <em>jid=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#create_var2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.create_var2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create 2D cdms variable with on a proper 2d curvilinear grid</p>
+<p>You should generally call this routine when you want to attach 2D axes
+to a variable. This may happen with netcdf that doesn’t follow CF
+conventions, as in the example bellow.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;myfile.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lon2d</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lat2d</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sst</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s1">&#39;sst&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sstc</span> <span class="o">=</span> <span class="n">create_var2d</span><span class="p">(</span><span class="n">sst</span><span class="p">,</span> <span class="n">lon2d</span><span class="p">,</span> <span class="n">lat2d</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong>: Numeric or formatted X axis</li>
+<li><strong>xaxis</strong>, optional: Numeric or formatted X axis. Mandatory if var is not a cdms variable!</li>
+<li><strong>yaxis</strong>, optional: Numeric or formatted Y axis. Mandatory if var is not a cdms variable!</li>
+<li><strong>atts</strong>, optional: Attributes of the variable .</li>
+<li><strong>xatts</strong>, optional: Attributes of X axis.</li>
+<li><strong>yatts</strong>, optional: Attributes of Y axis.</li>
+<li><strong>gid</strong>, optional: Id of the grid.</li>
+<li>All other keywords are passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">cdms.createVariable()</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return:</th><td class="field-body"><p class="first">A <code class="xref py py-mod docutils literal notranslate"><span class="pre">MV2</span></code> array on a curvilinear grid.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.grid.misc.curv_grid" title="vacumm.misc.grid.misc.curv_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">curv_grid()</span></code></a> <a class="reference internal" href="#vacumm.misc.grid.misc.get_axis" title="vacumm.misc.grid.misc.get_axis"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_axis()</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.curv2rect">
+<code class="descname">curv2rect</code><span class="sig-paren">(</span><em>gg</em>, <em>mode='warn'</em>, <em>tol=0.01</em>, <em>f=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#curv2rect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.curv2rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a curvilinear grid to a rectangular grid</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This not an interpolation.
+Longitudes and latitudes are converted from 2D arrays
+to 1D arrays using axis averages.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>gg</strong>: Grid, tuple of axes or MV2 variable.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: what ot do when it does not seems to be rectangular</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code>: simply show a warning,</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code>: raise a <code class="xref py py-class docutils literal notranslate"><span class="pre">VACUMMError</span></code>,</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>: don’t do it.</li>
+<li>else just convert it at your own risks.</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><strong>tol</strong>, optional: Tolerance (passed to <a class="reference internal" href="#vacumm.misc.grid.misc.isrect" title="vacumm.misc.grid.misc.isrect"><code class="xref py py-func docutils literal notranslate"><span class="pre">isrect()</span></code></a>).</li>
+<li><strong>f</strong>, optional: File object or name (passed to <a class="reference internal" href="#vacumm.misc.grid.misc.isrect" title="vacumm.misc.grid.misc.isrect"><code class="xref py py-func docutils literal notranslate"><span class="pre">isrect()</span></code></a>).</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rgrid</span> <span class="o">=</span> <span class="n">curv2rect</span><span class="p">(</span><span class="n">cgrid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgrid</span> <span class="o">=</span> <span class="n">curv2rect</span><span class="p">((</span><span class="n">lon2d</span><span class="p">,</span><span class="n">lat2d</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>gg</strong>: A variable or a curvilinear grid (see <a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.curv_grid">
+<code class="descname">curv_grid</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#curv_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.curv_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.grid.misc.create_curv_grid" title="vacumm.misc.grid.misc.create_curv_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_curv_grid()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.deg2xy">
+<code class="descname">deg2xy</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em>, <em>proj=None</em>, <em>inverse=False</em>, <em>mesh=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#deg2xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.deg2xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from degrees to map (m) coordinates using map projection, and reverse</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>lon</strong>: Longitudes in degrees</li>
+<li><strong>lat</strong>: Latitude in degrees</li>
+<li><strong>proj</strong>, optional: Proj object for projection. If False, returns (lon,lat).
+If None, a new instance using <a class="reference internal" href="misc.grid.basemap.html#vacumm.misc.grid.basemap.get_proj" title="vacumm.misc.grid.basemap.get_proj"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_proj()</span></code></a> is created,
+where proj is passed as a parameter.</li>
+<li><strong>inverse</strong>, optional: Inverse transform (from meters to degrees)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">deg2xy</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2d</span><span class="p">,</span> <span class="n">y2d</span> <span class="o">=</span> <span class="n">deg2xy</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.depth2dz">
+<code class="descname">depth2dz</code><span class="sig-paren">(</span><em>depth</em>, <em>axis=None</em>, <em>mode=None</em>, <em>masked=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#depth2dz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.depth2dz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from depth to layer thickness</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>depth</strong>: 1D or ND array of depth (variable or axis).</li>
+<li><strong>axis</strong>, optional: Axis of vertical dimension.
+It is guessed of not provided.</li>
+<li><strong>mode</strong>, optional: Mode for defining the reference layer.
+Possible values: <code class="docutils literal notranslate"><span class="pre">'first'</span></code>, <code class="docutils literal notranslate"><span class="pre">'last'</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+It is either the first or the last layer. The layer is
+computed normally like other layer by difference,
+whereas its opposite (hidden) layer is either masked or has its
+thickness set the the thickness of its adjacent layer.
+If <code class="docutils literal notranslate"><span class="pre">mode</span></code> is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, it set to <code class="docutils literal notranslate"><span class="pre">'last'</span></code>
+if depths are positive up.</li>
+<li><strong>masked</strong>, optional: If True, hidden layer is masked.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.dz2depth">
+<code class="descname">dz2depth</code><span class="sig-paren">(</span><em>dz</em>, <em>ref=None</em>, <em>refloc=None</em>, <em>copyaxes=True</em>, <em>mode='edge'</em>, <em>zerolid=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#dz2depth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.dz2depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion from layer thickness to depths</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>dz</strong>: Layer thickness from bottom to top.</p>
+</li>
+<li><p class="first"><strong>ref</strong>: Reference depth for integration, which depends
+on <code class="docutils literal notranslate"><span class="pre">refloc</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;top&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;eta&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ssh&quot;</span></code>: Sea surface height.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;bottom&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;depth&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;bathy&quot;</span></code>: Bottom depth.</li>
+<li>Else, estimated by checking the standard_name of the
+variable, if some values are negatives (‘top’)
+or if maximal value is greater then 15. (‘bottom’).</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>refloc</strong>, optional: <code class="docutils literal notranslate"><span class="pre">&quot;top&quot;</span></code> | <code class="docutils literal notranslate"><span class="pre">&quot;eta&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;bottom&quot;</span></code> | <code class="docutils literal notranslate"><span class="pre">&quot;depth&quot;</span></code>,  or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;edge&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;edge+&quot;</span></code>: Compute depths at layer edges (interfaces).
+Adding a + includes the bottom layer and add a vertical level.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;middle&quot;</span></code>: Compute depths at the middle of layers</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>zerolid</strong>, optional: Force the surface to be at a zero depth</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_axis">
+<code class="descname">get_axis</code><span class="sig-paren">(</span><em>gg</em>, <em>iaxis=0</em>, <em>strict=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_axis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>A robust way to get an axis from a variable or a grid</p>
+<p>This is a generic way to get a 1D and 2D axes: the only
+way to get longitude and latitude axes of a curvilinear grid are the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">getLongitude()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">getLatitude()</span></code> methods
+(you can’t use <code class="xref py py-meth docutils literal notranslate"><span class="pre">getAxis()</span></code> with such grid).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lon</span> <span class="o">=</span> <span class="n">get_axis</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lat</span> <span class="o">=</span> <span class="n">get_axis</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>gg</strong>: The variable or a grid (see <a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a>)</li>
+<li><strong>iaxis</strong>, optional: The axis number [default: 0]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The requested axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_axis_slices">
+<code class="descname">get_axis_slices</code><span class="sig-paren">(</span><em>ndim</em>, <em>axis</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_axis_slices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_axis_slices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get standard slices for an axis of a ndim array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>ndim</strong>: The number of dimensions. It can also be
+a tuple (like an array shape) or an array.</li>
+<li><strong>axis</strong>: Index of the axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">A dictionary of tuples of slices. All tuples have a
+length of ndim, and can be used has a slice for the array
+(see example).</p>
+<ul class="simple">
+<li>“all”: Select everything.</li>
+<li>“first”/”last”: First and last.</li>
+<li>“firstp1”: Second element.</li>
+<li>“firstp2”: Third element.</li>
+<li>“lastm1”: Element before the last one.</li>
+<li>“lastm2”: Second element before the last one.</li>
+<li>“firsts”: All but the last.</li>
+<li>“lasts”: All but the first.</li>
+<li>“firstsm1”: All but the last two.</li>
+<li>“lastsp1”: All but the first two.</li>
+<li>“mid”: All but the first and last.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">var</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ss</span> <span class="o">=</span> <span class="n">get_axis_slices</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var_north</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">ss</span><span class="p">[</span><span class="s1">&#39;last&#39;</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var_south</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">ss</span><span class="p">[</span><span class="s1">&#39;first&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_closest">
+<code class="descname">get_closest</code><span class="sig-paren">(</span><em>xx</em>, <em>yy</em>, <em>xp</em>, <em>yp</em>, <em>proj=True</em>, <em>mask=None</em>, <em>gridded=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_closest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_closest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the closest unmasked point on a grid and return indices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>xx</strong>: 1D or 2D X axis, or random positions.</li>
+<li><strong>yy</strong>: 1D or 2D Y axis, or random positions.</li>
+<li><strong>xp</strong>: X position of the point (float)</li>
+<li><strong>yp</strong>: Y //</li>
+<li><strong>geo</strong>, optional: If True, force to treat the grid as geographical,
+thus convert coordinates to meters using
+<a class="reference internal" href="misc.phys.units.html#vacumm.misc.phys.units.deg2m" title="vacumm.misc.phys.units.deg2m"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2m()</span></code></a>.</li>
+<li><strong>gridded</strong>, optional: Treat input as gridded points,
+otherwise treat them as random points (flatten <code class="docutils literal notranslate"><span class="pre">xx</span></code> and <code class="docutils literal notranslate"><span class="pre">yy</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">(i,j)</span></code> 2-element tuple of indices along y and x for gridded data,</li>
+<li>OR <code class="docutils literal notranslate"><span class="pre">i</span></code> if not gridded.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_closest_depth">
+<code class="descname">get_closest_depth</code><span class="sig-paren">(</span><em>zz</em>, <em>zp</em>, <em>mask=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_closest_depth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_closest_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the closest unmasked point on a depth vector and return indices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>zz</strong>: 1D Z axis, or random positions.</li>
+<li><strong>zp</strong>: Z position of the point (float)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">(i,)</span></code> 1-element tuple of indices along z for gridded data,</li>
+<li>OR <code class="docutils literal notranslate"><span class="pre">i</span></code> if not gridded.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_distances">
+<code class="descname">get_distances</code><span class="sig-paren">(</span><em>xxa</em>, <em>yya</em>, <em>xxb=None</em>, <em>yyb=None</em>, <em>mode=None</em>, <em>pairwise=False</em>, <em>geo=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_distances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the distances (in m) between a series of points</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>xxa</strong>: X coordinate of the first series</p>
+</li>
+<li><p class="first"><strong>yya</strong>: Y //</p>
+</li>
+<li><p class="first"><strong>xxb</strong>: X coordinate of the second series</p>
+</li>
+<li><p class="first"><strong>yyb</strong>: Y //</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: distance computation mode</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">None</span></code>: use <code class="docutils literal notranslate"><span class="pre">&quot;harversine&quot;</span></code> if longitude and latitude axes
+else <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code></p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">&quot;simple&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;euclidian&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;meters&quot;</span></code>: simple euclidian distance with no coordinate
+tranformation</p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">&quot;harversine&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;sphere&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;degrees&quot;</span></code>: great circle distance in meters from
+coordinates in degrees</p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">&quot;deg2m&quot;</span></code>: euclidian distance with coordinates converted
+from degrees to meters using <a class="reference internal" href="misc.phys.units.html#vacumm.misc.phys.units.deg2m" title="vacumm.misc.phys.units.deg2m"><code class="xref py py-func docutils literal notranslate"><span class="pre">deg2m()</span></code></a>.</p>
+</li>
+<li><p class="first">A callable object like a function that directly compute distance
+from coordinates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="p">(</span><span class="n">xxa</span><span class="p">,</span> <span class="n">yya</span><span class="p">,</span> <span class="n">xxb</span><span class="p">,</span> <span class="n">yyb</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>pairwise</strong>, optional: The distances between A and B points are
+computed pairwise. There must have the same number of A and B points.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">Distances as an <code class="docutils literal notranslate"><span class="pre">(nb,na)</span></code> array if pairwise if false,
+else a <code class="docutils literal notranslate"><span class="pre">(na,)</span></code> array.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_geo_area">
+<code class="descname">get_geo_area</code><span class="sig-paren">(</span><em>grid</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_geo_area"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_geo_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute cell areas on the a regular geographical grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>grid</strong> The grid</li>
+<li><em>mask</em>: Force the use of this mask</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">2D array of areas in m^2</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">get_geo_area: treat 2D grid + use standard projection</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_grid">
+<code class="descname">get_grid</code><span class="sig-paren">(</span><em>gg</em>, <em>intercept=False</em>, <em>strict=False</em>, <em>gtype=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a cdms grid from gg</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span> <span class="o">=</span> <span class="n">get_grid</span><span class="p">((</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span> <span class="o">=</span> <span class="n">get_grid</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span> <span class="o">=</span> <span class="n">get_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="c1"># does nothing</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>g</strong>: A cdms variable with a grid OR cdms grid OR a tuple like (xx,yy) where xx and yy are numpy arrays or cdms axes</li>
+<li><strong>intercept</strong>, optional: Raise an error in case of problem</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_grid_axes">
+<code class="descname">get_grid_axes</code><span class="sig-paren">(</span><em>gg</em>, <em>raw=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_grid_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_grid_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the (lat,lon) axes from a grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>gg</strong>: A cdms grid or a tuple or axes (see <a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a>)</li>
+<li><strong>raw</strong>, optional: If True, return raw axes which are different from real axes with curvilinear grids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">(lon,</span> <span class="pre">lat)</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_grid_type">
+<code class="descname">get_grid_type</code><span class="sig-paren">(</span><em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_grid_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_grid_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the grid type as one of “rect”, “curv”, “unstruct” or None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_resolution">
+<code class="descname">get_resolution</code><span class="sig-paren">(</span><em>mygrid</em>, <em>lon_range=None</em>, <em>lat_range=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_resolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the mean resolution of a grid</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Deprecated: please use <a class="reference internal" href="#vacumm.misc.grid.misc.resol" title="vacumm.misc.grid.misc.resol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resol()</span></code></a> instead.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_tri">
+<code class="descname">get_tri</code><span class="sig-paren">(</span><em>xy</em>, <em>ttype='scipy'</em>, <em>triangles=None</em>, <em>mask=None</em>, <em>cache=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_tri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_tri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html#scipy.spatial.Delaunay" title="(in SciPy v1.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.spatial.Delaunay</span></code></a> (scipy) or
+a <a class="reference external" href="https://matplotlib.org/api/tri_api.html#matplotlib.tri.Triangulation" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.tri.Triangulation</span></code></a> (mpl) instance</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_unstruct_indices">
+<code class="descname">get_unstruct_indices</code><span class="sig-paren">(</span><em>grid</em>, <em>lon=None</em>, <em>lat=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_unstruct_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_unstruct_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get indices of valid unstructured cells according to a geographic
+selection</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_xy">
+<code class="descname">get_xy</code><span class="sig-paren">(</span><em>gg</em>, <em>proj=False</em>, <em>mesh=None</em>, <em>num=False</em>, <em>checklims=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get axes from gg</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>gg</strong>: (xx,yy) or grid (1D or 2D), cdms variable (see <a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a>),
+or a dict of lon/lat/x/y, or a (2,npts) numpy array.</li>
+<li><strong>proj</strong>, optional: If True or basemap instance, convert to meters.
+If None, check if lon and lat axes to force conversion. [default: False]</li>
+<li><strong>mesh</strong>, optional: Get axes as 2D arrays.</li>
+<li><strong>num</strong>, optional: Get axes as numpy arrays.</li>
+<li><strong>checklims</strong>, optional: For 2D axes only, mask longitudes outside (-720,720),
+and clip latitude outside (-90,90).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">get_xy</span><span class="p">((</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">get_xy</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">get_xy</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span><span class="mi">43</span><span class="p">,</span><span class="s1">&#39;cc&#39;</span><span class="p">)),</span> <span class="n">proj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.get_zdim">
+<code class="descname">get_zdim</code><span class="sig-paren">(</span><em>var</em>, <em>axis=None</em>, <em>default=None</em>, <em>strict=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#get_zdim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.get_zdim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the index of the Z dimension</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.grid2d">
+<code class="descname">grid2d</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#grid2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.grid2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.grid.misc.curv_grid" title="vacumm.misc.grid.misc.curv_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">curv_grid()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.gridsel">
+<code class="descname">gridsel</code><span class="sig-paren">(</span><em>gg</em>, <em>lon=None</em>, <em>lat=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#gridsel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.gridsel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a subregion from an axis or a grid</p>
+<p>Lat and lon generic selection are used for
+spatial selections.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Properly works on curved grids thanks to <a class="reference internal" href="#vacumm.misc.grid.misc.coord2slice" title="vacumm.misc.grid.misc.coord2slice"><code class="xref py py-func docutils literal notranslate"><span class="pre">coord2slice()</span></code></a>.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>gg</strong>: cdms2 grid or tuple of cdms2 axes.</li>
+<li><strong>lon/lat</strong>, optional: A slice, or a tuple of coordinates, or ‘:’.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">An extraction in the same format as input format</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gg</span> <span class="o">=</span> <span class="n">gridsel</span><span class="p">(</span><span class="n">gg</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">34</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span> <span class="o">=</span> <span class="n">gridsel</span><span class="p">((</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;ccb&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.haversine">
+<code class="descname">haversine</code><span class="sig-paren">(</span><em>xa</em>, <em>ya</em>, <em>xb</em>, <em>yb</em>, <em>radius=None</em>, <em>degrees=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#haversine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.haversine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the haversine distance for a known radius</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.isdepthup">
+<code class="descname">isdepthup</code><span class="sig-paren">(</span><em>depth</em>, <em>axis=None</em>, <em>ro=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#isdepthup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.isdepthup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Guess if depth is positive up</p>
+<p>It first check “positive” attribute, then guess from values:
+more positive values means positive down.</p>
+<p>..warning:: Bad values must be masked</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>depth</strong>: Depth arrays or axis.</li>
+<li><strong>axis</strong>, optional: Z axis index.</li>
+<li><strong>ro</strong>, optional: Read-only? If False and if depth
+is an axis, its ‘positive’ attribute is marked
+‘up’ or ‘down’ upon the results.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">None</span></code> if not Z axis found, else <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.isgrid">
+<code class="descname">isgrid</code><span class="sig-paren">(</span><em>grid</em>, <em>gtype=None</em>, <em>curv=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#isgrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.isgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if gg is a grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>gg</strong>: A cdms grid.</li>
+<li><strong>gtype</strong>, optional, strings, None: Grid type as one of “rect”,
+“curv”, “unstruct”. Prepend a “-” to inverse the test. You can also
+provide a list of choices.</li>
+<li><strong>curv</strong>, optional: If True, restrict to curvilinear grids. DEPRECATED</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isgrid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="c1"># is it a grid?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">isgrid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="s2">&quot;curv&quot;</span><span class="p">)</span> <span class="c1"># is a curved grid?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">isgrid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="s2">&quot;-curv&quot;</span><span class="p">)</span> <span class="c1"># is a grid but not a curved grid?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">isgrid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;rect&quot;</span><span class="p">,</span> <span class="s2">&quot;unstruct&quot;</span><span class="p">])</span> <span class="c1"># is a rectangular or unstructured grid?</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.isoslice">
+<code class="descname">isoslice</code><span class="sig-paren">(</span><em>var</em>, <em>prop</em>, <em>isoval=0</em>, <em>axis=0</em>, <em>masking=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#isoslice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.isoslice" title="Permalink to this definition">¶</a></dt>
+<dd><p>result = isoslice(variable,property[,isoval=0])</p>
+<p>result is a a projection of variable at property == isoval in the first
+nonsingleton dimension.  In the case when there is more than one zero
+crossing, the results are averaged.</p>
+<p>EXAMPLE:
+Assume two three dimensional variable, s (salt), z (depth), and
+u (velicity), all on the same 3D grid.  x and y are the horizontal
+positions, with the same horizontal dimensions as z (the 3D depth
+field).  Here, assume the vertical dimension, that will be projected,
+is the first.</p>
+<p>s_at_m5  = isoslice(s,z,-5);        # s at z == -5
+h_at_s30 = isoslice(z,s,30);       # z at s == 30
+u_at_s30 = isoslice(u,s,30);       # u at s == 30</p>
+<p>Get from OCTANT library : <a class="reference external" href="https://github.com/hetland/octant">https://github.com/hetland/octant</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.isrect">
+<code class="descname">isrect</code><span class="sig-paren">(</span><em>gg</em>, <em>tol=0.01</em>, <em>mode='real'</em>, <em>f=None</em>, <em>nocache=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#isrect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.isrect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check wether a grid is trully rectangular</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>gg</strong>: cdms2 grid, tuple of cdms axes or variabe with a grid.</p>
+</li>
+<li><p class="first"><strong>tol</strong>, optional: Tolerance for coordinates deformation.</p>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: Simple or real check.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;simple&quot;</span></code>: Simply check if axes are 1D.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;real&quot;</span></code>: Also check that axes along one direction do
+vary along the other direction with tolerance tol.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>f</strong>, optional: netcdf file object.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.isregular">
+<code class="descname">isregular</code><span class="sig-paren">(</span><em>axis</em>, <em>tol=0.05</em>, <em>iaxis=None</em>, <em>dx=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#isregular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.isregular" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check is an 1S or 2D axis is regular</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>axis</strong>: A <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> axis or <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> array</li>
+<li><strong>tol</strong>, optional: Relative tolerance</li>
+<li><strong>iaxis</strong>, optional: On which direction to operate for 2D axis</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isregular</span><span class="p">(</span><span class="n">lon1d</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">tol</span><span class="o">=.</span><span class="mi">01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">isregular</span><span class="p">(</span><span class="n">lon2d</span><span class="p">,</span> <span class="n">iaxis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.issgrid">
+<code class="descname">issgrid</code><span class="sig-paren">(</span><em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#issgrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.issgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a grid in structured</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.istri">
+<code class="descname">istri</code><span class="sig-paren">(</span><em>tri</em>, <em>ttype='scipy'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#istri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.istri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if tri is a <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html#scipy.spatial.Delaunay" title="(in SciPy v1.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.spatial.Delaunay</span></code></a> (scipy) or
+a <a class="reference external" href="https://matplotlib.org/api/tri_api.html#matplotlib.tri.Triangulation" title="(in Matplotlib v3.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.tri.Triangulation</span></code></a> instance (mpl)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.isugrid">
+<code class="descname">isugrid</code><span class="sig-paren">(</span><em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#isugrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.isugrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a grid in unstructured</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.makealtitudeup">
+<code class="descname">makealtitudeup</code><span class="sig-paren">(</span><em>vv</em>, <em>depth=None</em>, <em>axis=None</em>, <em>default=None</em>, <em>ro=False</em>, <em>strict=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#makealtitudeup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.makealtitudeup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make depth and variables positive up</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vv</strong>: A single variable or a list of them.</li>
+<li><strong>depth</strong>, optional: Explicit depths to not guess
+it with <code class="xref py py-meth docutils literal notranslate"><span class="pre">getLevel()</span></code>. If True or False, simply revert along Z
+dimension.</li>
+<li><strong>axis</strong>, optional: Z dimension (else guessed with <a class="reference internal" href="#vacumm.misc.grid.misc.get_zdim" title="vacumm.misc.grid.misc.get_zdim"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_zdim()</span></code></a>).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.makedepthup">
+<code class="descname">makedepthup</code><span class="sig-paren">(</span><em>vv</em>, <em>depth=None</em>, <em>axis=None</em>, <em>default=None</em>, <em>ro=False</em>, <em>strict=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#makedepthup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.makedepthup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make depth and variables positive up</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vv</strong>: A single variable or a list of them.</li>
+<li><strong>depth</strong>, optional: Explicit depths to not guess
+it with <code class="xref py py-meth docutils literal notranslate"><span class="pre">getLevel()</span></code>. If True or False, simply revert along Z
+dimension.</li>
+<li><strong>axis</strong>, optional: Z dimension (else guessed with <a class="reference internal" href="#vacumm.misc.grid.misc.get_zdim" title="vacumm.misc.grid.misc.get_zdim"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_zdim()</span></code></a>).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.mask2ind">
+<code class="descname">mask2ind</code><span class="sig-paren">(</span><em>mask</em>, <em>extended=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#mask2ind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.mask2ind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a mask to min and max valid indices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>mask</strong>: N-dimensional array of logical where
+valid points are at False.</li>
+<li><strong>extended</strong>, optional: Extend indices. Accepts
+<code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">(intmin,</span> <span class="pre">intmax)</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last">array(ndim,2) of (min,max) for each dimension</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.merge_axis_slice">
+<code class="descname">merge_axis_slice</code><span class="sig-paren">(</span><em>sel1</em>, <em>sel2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#merge_axis_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.merge_axis_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge a single tuple of slices</p>
+<p>Theses slices may have been created with <a class="reference internal" href="#vacumm.misc.grid.misc.get_axis_slices" title="vacumm.misc.grid.misc.get_axis_slices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_axis_slices()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>sel1/2</strong>: Tuples of slices.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sel1</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sel2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_axis_slice</span><span class="p">(</span><span class="n">sel1</span><span class="p">,</span> <span class="n">sel2</span><span class="p">)</span>
+<span class="go">(slice(1, 4, None), -2)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.merge_axis_slices">
+<code class="descname">merge_axis_slices</code><span class="sig-paren">(</span><em>slices1</em>, <em>slices2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#merge_axis_slices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.merge_axis_slices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge standard tuples of slices stored in dictionaries created with <a class="reference internal" href="#vacumm.misc.grid.misc.get_axis_slices" title="vacumm.misc.grid.misc.get_axis_slices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_axis_slices()</span></code></a>:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>slice1/2</strong>: Dictionaries of tuples of slices.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">slicesx</span> <span class="o">=</span> <span class="n">get_axis_slices</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># for X</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">slicesy</span> <span class="o">=</span> <span class="n">get_axis_slices</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># for Y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">slices12</span> <span class="o">=</span> <span class="n">merge_axis_slices</span><span class="p">(</span><span class="n">slicesx</span><span class="p">,</span> <span class="n">slicesy</span><span class="p">)</span> <span class="c1"># for X and Y</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.meshbounds">
+<code class="descname">meshbounds</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#meshbounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.meshbounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>A shortcut to <a class="reference internal" href="#vacumm.misc.grid.misc.meshcells" title="vacumm.misc.grid.misc.meshcells"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshcells()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.meshcells">
+<code class="descname">meshcells</code><span class="sig-paren">(</span><em>x</em>, <em>y=None</em>, <em>xwidth=None</em>, <em>ywidth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#meshcells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.meshcells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a 1D or 2D array corresponding the cell corners</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong>: 1D or 2D array</li>
+<li><strong>y</strong>: 1D or 2D array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">xxb(nx+1)``x</span>
+<span class="pre">OR</span>
+<span class="pre">``xxb(ny+1,nx+1),yyb(ny+1,nx+1)</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>TODO: Add full support to meshcells for xwidth and ywidth params</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.meshgrid">
+<code class="descname">meshgrid</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>copy=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#meshgrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.meshgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert pure numeric x/y axes to 2d arrays of same shape.
+It works like <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.meshgrid()</span></code> but is more flexible.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong>: 1D or 2D array</li>
+<li><strong>x</strong>: 2D or 2D array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">xx(ny,nx),yy(ny,nx)</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.meshweights">
+<code class="descname">meshweights</code><span class="sig-paren">(</span><em>x</em>, <em>y=None</em>, <em>proj=None</em>, <em>axis=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#meshweights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.meshweights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a 1D or 2D array corresponding the cell weights</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>x</strong>: 1D or nD array</p>
+</li>
+<li><p class="first"><strong>y</strong>: 1D or 2D array</p>
+</li>
+<li><p class="first"><strong>proj</strong>, optional: Geographic projection before computing weights
+(for 2D case only with both x and y)</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">True</span></code>: use default mercator projection (see <a class="reference internal" href="misc.grid.basemap.html#vacumm.misc.grid.basemap.merc" title="vacumm.misc.grid.basemap.merc"><code class="xref py py-func docutils literal notranslate"><span class="pre">merc()</span></code></a>),</li>
+<li>else, directly apply projection.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">ww(nx)</span></code>
+OR
+<code class="docutils literal notranslate"><span class="pre">ww(ny,nx)</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.monotonic">
+<code class="descname">monotonic</code><span class="sig-paren">(</span><em>xx</em>, <em>xref=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#monotonic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.monotonic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make monotonic an array of longitudes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxm</span> <span class="o">=</span> <span class="n">monotonic</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">xref</span><span class="o">=</span><span class="mf">120.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">xxm</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.num2axes2d">
+<code class="descname">num2axes2d</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#num2axes2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.num2axes2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.grid.misc.axes2d" title="vacumm.misc.grid.misc.axes2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">axes2d()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.resol">
+<code class="descname">resol</code><span class="sig-paren">(</span><em>axy</em>, <em>mode='median'</em>, <em>axis=None</em>, <em>meters=False</em>, <em>cache=True</em>, <em>lat=None</em>, <em>checklims=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#resol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.resol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the resolution of an axis or a grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>axy</strong>: It can be either</p>
+<blockquote>
+<div><ul class="simple">
+<li>a 1D axis or array</li>
+<li>a grid of 1D or 2D axes or tuple of (lon,lat)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>mode</strong>, optional:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;raw&quot;</span></code>: Get the local resolution between “grid points”.</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;averaged&quot;</span></code>: Return an averaged resolution (do not use if the grid highly anisotropic!!).</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code>: The local resolution is averaged and extrapolated to grid points.</li>
+<li>A string: An <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> attribute is used to compute the resolution.
+For instance <code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code> mode implies the use of <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.median()</span></code>.</li>
+<li>A callable function: Directly used to compute the resolution.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>meters</strong>, optional: Get the resolution in meters instead of degrees.</p>
+</li>
+<li><p class="first"><strong>axis</strong>, optional: Direction on which to compute resolution if a single
+2D axis is passed.</p>
+</li>
+<li><p class="first"><strong>lat</strong>, optional:: Latitude to use for projection of 1D zonal axis.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If not provided but needed, it defaults to 45. and
+a warning is emitted.</p>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>If you work on a pair of 2D axes, resolution is computed along
+grid axes, and NOT along X and Y.
+In this case, X and Y must have consistent units,
+and resolution along X and Y are defined by:</p>
+<div class="last math">
+<p><img src="../_images/math/402b38f80df6899741b5046bc06a40262df94b96.png" alt="dx_{i,j} = \sqrt{(x_{i+1,j}-x_{i,j})^2+ (y_{i+1,j}-y_{i,j})^2}
+
+dy_{i,j} = \sqrt{(x_{i,j+1}-x_{i,j})^2+ (y_{i,j+1}-y_{i,j})^2}"/></p>
+</div></div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dx</span> <span class="o">=</span> <span class="n">resol</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">resol</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dx2d</span> <span class="o">=</span> <span class="n">resol</span><span class="p">(</span><span class="n">x2d</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;loc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dx2d</span><span class="p">,</span> <span class="n">dy2d</span> <span class="o">=</span> <span class="n">resol</span><span class="p">((</span><span class="n">x1d</span><span class="p">,</span> <span class="n">y2d</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.rotate_grid">
+<code class="descname">rotate_grid</code><span class="sig-paren">(</span><em>ggi</em>, <em>angle</em>, <em>pivot='center'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#rotate_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.rotate_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate a grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>ggi</strong>: Cdms grid ou (lon,lat) or variable (see <a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a>).</p>
+</li>
+<li><p class="first"><strong>angle</strong>: Angle in degrees.</p>
+</li>
+<li><p class="first"><strong>pivot</strong>, optional: it can be either</p>
+<blockquote>
+<div><ul class="simple">
+<li>A tuple of (lon, lat)</li>
+<li>A string that specify the vertical and horizontal position.
+Use the following keys : <code class="docutils literal notranslate"><span class="pre">top</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span></code>.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Other keywords are passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">curv_grid()</span></code></p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A curvilinear cdms grid.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mygrid</span> <span class="o">=</span> <span class="n">rotate_grid</span><span class="p">((</span><span class="n">lon</span><span class="p">,</span><span class="n">lat</span><span class="p">),</span> <span class="mf">60.</span><span class="p">,</span> <span class="s1">&#39;top right&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mygrid2</span> <span class="o">=</span> <span class="n">rotate_grid</span><span class="p">(</span><span class="n">mygrid</span><span class="p">,</span> <span class="mf">60.</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span><span class="mi">45</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.set_grid">
+<code class="descname">set_grid</code><span class="sig-paren">(</span><em>var</em>, <em>gg</em>, <em>intercept=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#set_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.set_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a grid to a variable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong>: A cdms variable with at least 2 dimensions</li>
+<li><strong>gg</strong>: A cdms grid or tuple or axes (see <a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">var</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.t2uvgrids">
+<code class="descname">t2uvgrids</code><span class="sig-paren">(</span><em>gg</em>, <em>getu=True</em>, <em>getv=True</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#t2uvgrids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.t2uvgrids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a (C) grid at T-points to a grid at U- and/or V- points</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>gg</strong>: A (x,y) or a cdms grid or a cdms variable with a grid (see <a class="reference internal" href="#vacumm.misc.grid.misc.get_grid" title="vacumm.misc.grid.misc.get_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_grid()</span></code></a>)</li>
+<li><em>getu</em>: Get the grid at U-points [default: True]</li>
+<li><em>getv</em>: Get the grid at V-points [default: True]</li>
+<li><em>mask</em>: If False, do not try to guess masks ; if None, try to get them from
+original grid by conversion to U and V points with t2uvmask() [default: None]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first"><code class="docutils literal notranslate"><span class="pre">ugrid,vgrid</span></code> OR <code class="docutils literal notranslate"><span class="pre">ugrid</span></code> OR <code class="docutils literal notranslate"><span class="pre">vgrid</span></code> depending on getu and getv</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gridu</span><span class="p">,</span> <span class="n">gridv</span> <span class="o">=</span> <span class="n">t2uvgrids</span><span class="p">(</span><span class="n">gridt</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.transect_specs">
+<code class="descname">transect_specs</code><span class="sig-paren">(</span><em>gg</em>, <em>lon0</em>, <em>lat0</em>, <em>lon1</em>, <em>lat1</em>, <em>subsamp=3</em>, <em>getxy=False</em>, <em>getproj=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#transect_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.transect_specs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get specs for a transect given a grid and starting and ending points</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first simple">
+<li><strong>lon/lat0/1</strong>: Coordinates of first and last point in degrees.</li>
+<li><strong>subsamp</strong>, optional: Subsampling with respect to grid cell.</li>
+<li><strong>getxy</strong>, optional: Also return projected coordinates.</li>
+<li><strong>getproj</strong>, optional: Also return projection map.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first">lons, lats[, xx, yy][, proj]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">See also:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#vacumm.misc.grid.misc.resol" title="vacumm.misc.grid.misc.resol"><code class="xref py py-func docutils literal notranslate"><span class="pre">resol()</span></code></a>, <a class="reference external" href="https://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap.gcpoints" title="(in Basemap Matplotlib Toolkit v1.1.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mpl_toolkits.basemap.Basemap.gcpoints()</span></code></a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.var2d">
+<code class="descname">var2d</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#var2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.var2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#vacumm.misc.grid.misc.create_var2d" title="vacumm.misc.grid.misc.create_var2d"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_var2d()</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.varsel">
+<code class="descname">varsel</code><span class="sig-paren">(</span><em>var</em>, <em>lon=None</em>, <em>lat=None</em>, <em>grid=None</em>, <em>cache=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#varsel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.varsel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a subregion of a variable</p>
+<p>Lat and lon generic selection are used for
+spatial selections.</p>
+<p>If <cite>var</cite> has no grid or a rectangular grid, it simply
+equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Properly works on curved grids thanks to <a class="reference internal" href="#vacumm.misc.grid.misc.coord2slice" title="vacumm.misc.grid.misc.coord2slice"><code class="xref py py-func docutils literal notranslate"><span class="pre">coord2slice()</span></code></a>.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var</strong>: MV2 array.</li>
+<li><strong>lon/lat</strong>: Coordinates intervals or slices.</li>
+<li>Extra keywords are passed to the variable.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.xextend">
+<code class="descname">xextend</code><span class="sig-paren">(</span><em>vari</em>, <em>n</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#xextend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.xextend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extend a variable along x axis</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">x is the last axis and must be 1D</p>
+</div>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Make possible to use 2D axes with <a class="reference internal" href="#vacumm.misc.grid.misc.xextend" title="vacumm.misc.grid.misc.xextend"><code class="xref py py-func docutils literal notranslate"><span class="pre">xextend()</span></code></a></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>vari</strong>: <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> variable</p>
+</li>
+<li><p class="first"><strong>n</strong>: size of the extention</p>
+<blockquote>
+<div><ul class="simple">
+<li>if an integer: <code class="docutils literal notranslate"><span class="pre">nleft</span> <span class="pre">=</span> <span class="pre">nright</span> <span class="pre">=</span> <span class="pre">n</span></code></li>
+<li>else: nleft, nright = n</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>mode</strong>, optional: mode of extension</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: choose <code class="docutils literal notranslate"><span class="pre">&quot;cyclic&quot;</span></code> is x axis
+has a “modulo” attribute</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;cyclic&quot;</span></code>: assume x axis is cyclic</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;constant&quot;</span></code>: extrapolate with first or last values</li>
+<li>else, extend with masked values
+and linearly extrapolate positions</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">varo</span> <span class="o">=</span> <span class="n">xextend</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cyclic&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.misc.grid.misc.xshift">
+<code class="descname">xshift</code><span class="sig-paren">(</span><em>vari</em>, <em>n</em>, <em>mode=None</em>, <em>monot=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/misc/grid/misc.html#xshift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.misc.grid.misc.xshift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift a cyclic array along x axis</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">x is the last axis and must be 1D</p>
+</div>
+<div class="admonition-todo admonition" id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">Make possible to use 2D axes with <a class="reference internal" href="#vacumm.misc.grid.misc.xshift" title="vacumm.misc.grid.misc.xshift"><code class="xref py py-func docutils literal notranslate"><span class="pre">xshift()</span></code></a></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>vari</strong>: <code class="xref py py-mod docutils literal notranslate"><span class="pre">cdms2</span></code> variable</p>
+</li>
+<li><p class="first"><strong>n</strong>: size of the shift</p>
+<blockquote>
+<div><p>Positive means east bound is moved toward east.
+If <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">is</span> <span class="pre">None</span></code>:</p>
+<ul class="simple">
+<li>if an integer, use it as grid points</li>
+<li>else (a float), use at as degrees.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">varo</span> <span class="o">=</span> <span class="n">xshift</span><span class="p">(</span><span class="n">vari</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

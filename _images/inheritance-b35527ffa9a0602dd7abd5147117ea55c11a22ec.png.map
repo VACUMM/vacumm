@@ -1,0 +1,7 @@
+<map id="inheritance0635db51c7" name="inheritance0635db51c7">
+<area shape="poly" id="node2" title="Base class for reStructuredText directives." alt="" coords="432,34,430,25,424,17,414,11,402,7,388,5,375,7,362,11,353,17,346,25,344,34,346,43,353,51,362,57,375,61,388,63,402,61,414,57,424,51,430,43"/>
+<area shape="poly" id="node6" href="#vacumm.sphinxext.overview.OverViewDirective" target="_top" title="OverViewDirective" alt="" coords="465,139,461,130,450,122,433,116,412,112,388,111,364,112,343,116,326,122,315,130,312,139,315,148,326,156,343,163,364,167,388,168,412,167,433,163,450,156,461,148"/>
+<area shape="poly" id="node3" title="`Element` is the superclass to all specific elements." alt="" coords="192,139,190,130,184,122,175,116,164,112,151,111,138,112,126,116,117,122,111,130,109,139,111,148,117,156,126,163,138,167,151,168,164,167,175,163,184,156,190,148"/>
+<area shape="poly" id="node7" href="#vacumm.sphinxext.overview.overview" target="_top" title="overview" alt="" coords="142,245,140,236,134,228,124,221,112,217,99,216,85,217,73,221,64,228,58,236,56,245,58,254,64,262,73,268,85,272,99,273,112,272,124,268,134,262,140,254"/>
+<area shape="poly" id="node4" title="Abstract base class of nodes in a document tree." alt="" coords="187,34,185,25,180,17,172,11,162,7,151,5,140,7,130,11,122,17,117,25,115,34,117,43,122,51,130,57,140,61,151,63,162,61,172,57,180,51,185,43"/>
+</map>

@@ -1,0 +1,370 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.10.1. vacumm.tide.station_info – Informations sur les stations et ports &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.10.1. <code class="docutils literal notranslate"><span class="pre">vacumm.tide.station_info</span></code> – Informations sur les stations et ports</a><ul>
+<li><a class="reference internal" href="#overview">2.10.1.1. Overview</a></li>
+<li><a class="reference internal" href="#content">2.10.1.2. Content</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/tide.station_info.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vacumm-tide-station-info-informations-sur-les-stations-et-ports">
+<span id="lib-tide-station-info"></span><h1>2.10.1. <a class="reference internal" href="#module-vacumm.tide.station_info" title="vacumm.tide.station_info"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.tide.station_info</span></code></a> – Informations sur les stations et ports<a class="headerlink" href="#vacumm-tide-station-info-informations-sur-les-stations-et-ports" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>2.10.1.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Classes:</th><td class="field-body"><table class="hlist"><tr><td><ul>
+<li><p class="first"><a class="reference internal" href="#vacumm.tide.station_info.MeanSeaLevel" title="vacumm.tide.station_info.MeanSeaLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeanSeaLevel</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.tide.station_info.MeanSeaLevel.names" title="vacumm.tide.station_info.MeanSeaLevel.names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">names</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.tide.station_info.MeanSeaLevel.clip" title="vacumm.tide.station_info.MeanSeaLevel.clip"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clip()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.tide.station_info.MeanSeaLevel.get_names" title="vacumm.tide.station_info.MeanSeaLevel.get_names"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_names()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.tide.station_info.MeanSeaLevelError" title="vacumm.tide.station_info.MeanSeaLevelError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeanSeaLevelError</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.tide.station_info.Station" title="vacumm.tide.station_info.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.tide.station_info.StationInfo" title="vacumm.tide.station_info.StationInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">StationInfo</span></code></a></p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.attributes" title="vacumm.tide.station_info.StationInfo.attributes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">attributes()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.definitions" title="vacumm.tide.station_info.StationInfo.definitions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">definitions()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.file" title="vacumm.tide.station_info.StationInfo.file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">file()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.find" title="vacumm.tide.station_info.StationInfo.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.get_dict" title="vacumm.tide.station_info.StationInfo.get_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_dict()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.info" title="vacumm.tide.station_info.StationInfo.info"><code class="xref py py-meth docutils literal notranslate"><span class="pre">info()</span></code></a></li>
+</ul>
+</td><td><ul class="simple">
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.is_set" title="vacumm.tide.station_info.StationInfo.is_set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_set()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.search" title="vacumm.tide.station_info.StationInfo.search"><code class="xref py py-meth docutils literal notranslate"><span class="pre">search()</span></code></a></li>
+<li><a class="reference internal" href="#vacumm.tide.station_info.StationInfo.set_file" title="vacumm.tide.station_info.StationInfo.set_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_file()</span></code></a></li>
+</ul>
+</td></tr></table>
+</li>
+<li><p class="first"><a class="reference internal" href="#vacumm.tide.station_info.StationInfoError" title="vacumm.tide.station_info.StationInfoError"><code class="xref py py-class docutils literal notranslate"><span class="pre">StationInfoError</span></code></a></p>
+</li>
+</ul>
+</td></tr></table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="content">
+<h2>2.10.1.2. Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Inheritance diagram:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-vacumm.tide.station_info"></span><p>Information about seaports and stations</p>
+<p>StationInfo : A class to retrieve alot of information about seaports and stations.
+MeanSeaLevel : A class dedicated to mean sea level along french coast (more complete than StationInfo).</p>
+<dl class="class">
+<dt id="vacumm.tide.station_info.MeanSeaLevel">
+<em class="property">class </em><code class="descname">MeanSeaLevel</code><span class="sig-paren">(</span><em>msl=None</em>, <em>names=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#MeanSeaLevel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.MeanSeaLevel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bathy.bathy.html#vacumm.bathy.bathy.XYZBathy" title="vacumm.bathy.bathy.XYZBathy"><code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.bathy.bathy.XYZBathy</span></code></a></p>
+<p>Retrieve mean sea level at stations</p>
+<dl class="docutils">
+<dt>Information can be retrieved thanks to the following properties:</dt>
+<dd>.data: List of internal data, each element being [name, x, y, z]
+.names: List of seaport and station names
+.x or .lon: longitudes array (n,)
+.y or .lat: latitudes array (n,)
+.xy or coords: array of coordinates (2,n)
+.z or .sealevel: mean sea level array (n,)
+.xyz or .block: array combining coordinates and sea levels (3,n)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm.tide.station_info</span> <span class="k">import</span> <span class="n">MeanSeaLevel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msl</span> <span class="o">=</span> <span class="n">MeanSeaLevel</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">msl</span><span class="p">)):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span> <span class="n">msl</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">msl</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">msl</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">msl</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mf">44.</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">48</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="misc.io.html#vacumm.misc.io.XYZ" title="vacumm.misc.io.XYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYZ</span></code></a></p>
+</div>
+<dl class="method">
+<dt id="vacumm.tide.station_info.MeanSeaLevel.clip">
+<code class="descname">clip</code><span class="sig-paren">(</span><em>zone=None</em>, <em>inverse=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#MeanSeaLevel.clip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.MeanSeaLevel.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geographical selection of part of the data</p>
+<ul class="simple">
+<li><strong>zone</strong>: (xmin,ymin,xmax,ymax) or a complex polygon (see <a class="reference internal" href="misc.grid.masking.html#vacumm.misc.grid.masking.polygons" title="vacumm.misc.grid.masking.polygons"><code class="xref py py-func docutils literal notranslate"><span class="pre">polygons()</span></code></a>).</li>
+<li><em>inverse</em>: Inverse the selection.</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.MeanSeaLevel.get_names">
+<code class="descname">get_names</code><span class="sig-paren">(</span><em>mask=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#MeanSeaLevel.get_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.MeanSeaLevel.get_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get <a class="reference internal" href="#vacumm.tide.station_info.MeanSeaLevel.names" title="vacumm.tide.station_info.MeanSeaLevel.names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">names</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vacumm.tide.station_info.MeanSeaLevel.names">
+<code class="descname">names</code><a class="headerlink" href="#vacumm.tide.station_info.MeanSeaLevel.names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get name of valid stations</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.tide.station_info.MeanSeaLevelError">
+<em class="property">exception </em><code class="descname">MeanSeaLevelError</code><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#MeanSeaLevelError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.MeanSeaLevelError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Exception" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.tide.station_info.Station">
+<em class="property">class </em><code class="descname">Station</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#Station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.Station" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.tide.station_info._StationPlot_</span></code></p>
+<p>A station with its info as a result from <a class="reference internal" href="#vacumm.tide.station_info.StationInfo" title="vacumm.tide.station_info.StationInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">StationInfo</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">vacumm</span> <span class="k">import</span> <span class="n">StationInfo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">station</span> <span class="o">=</span> <span class="n">StationInfo</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Brest&#39;</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">station</span><span class="o">.</span><span class="n">longitude</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="vacumm.tide.station_info.StationInfo">
+<em class="property">class </em><code class="descname">StationInfo</code><span class="sig-paren">(</span><em>nom=None</em>, <em>regexp=True</em>, <em>verbose=True</em>, <em>file=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">vacumm.tide.station_info._StationPlot_</span></code></p>
+<p>Finding information about tidal stations</p>
+<blockquote>
+<div>This class helps finding information on
+ports and tide jauge measurement stations.
+It attempts to search for a station using several
+possible criteria, and returns attributes such as
+ids, positions, mean sea level, etc (listed using
+method <a class="reference internal" href="#vacumm.tide.station_info.StationInfo.attributes" title="vacumm.tide.station_info.StationInfo.attributes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">attributes()</span></code></a>).
+See help on <a class="reference internal" href="#vacumm.tide.station_info.StationInfo.search" title="vacumm.tide.station_info.StationInfo.search"><code class="xref py py-meth docutils literal notranslate"><span class="pre">search()</span></code></a> method.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nom</strong>: name or regexp to search for.</li>
+<li><strong>regexp</strong>:</li>
+<li><strong>file</strong>: File in wich to search for info</li>
+<li><strong>verbose</strong>: Verbose mode</li>
+<li>All other keywords are passed to <a class="reference internal" href="#vacumm.tide.station_info.StationInfo.search" title="vacumm.tide.station_info.StationInfo.search"><code class="xref py py-func docutils literal notranslate"><span class="pre">search()</span></code></a> method after initialization.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.attributes">
+<code class="descname">attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of attributes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.definitions">
+<code class="descname">definitions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.definitions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.definitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print out the definition of all terms</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.file">
+<code class="descname">file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the file path where information are stored</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.find">
+<code class="descname">find</code><span class="sig-paren">(</span><em>nom=None</em>, <em>regexp=True</em>, <em>verbose=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for a station using several possible criteria and load it.</p>
+<ul class="simple">
+<li><em>nom</em>: Search within station names using this pattern</li>
+<li><em>regexp</em>: If True, use regular expression for search within names [default: True]</li>
+<li><em>position</em>: A two-element iterable ([lon,lat]) for searching for the closest station to this positions</li>
+<li><em>verbose</em>: Verbose mode [default: True]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.get_dict">
+<code class="descname">get_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.get_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.get_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current station as a dictionnary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.info">
+<code class="descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show all available information about the current station</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.is_set">
+<code class="descname">is_set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.is_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.is_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return if a station is set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.search">
+<code class="descname">search</code><span class="sig-paren">(</span><em>nom=None</em>, <em>regexp=True</em>, <em>nmax=5</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for stations using several possible criteria and display results.</p>
+<ul class="simple">
+<li><em>nom</em>: Search within station names using this pattern</li>
+<li><em>regexp</em>: If True, use regular expression for search within names [default: True]</li>
+<li><em>position</em>: A two-element iterable ([lon,lat]) for searching for the closest station to this positions</li>
+<li><em>nmax</em>: Maximal number of stations displayed [default: 5]</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="vacumm.tide.station_info.StationInfo.set_file">
+<code class="descname">set_file</code><span class="sig-paren">(</span><em>file</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfo.set_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfo.set_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current file and load it</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vacumm.tide.station_info.StationInfoError">
+<em class="property">exception </em><code class="descname">StationInfoError</code><a class="reference internal" href="../_modules/vacumm/tide/station_info.html#StationInfoError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.tide.station_info.StationInfoError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Exception" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></a></p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>

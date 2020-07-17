@@ -1,0 +1,185 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2.12.1.2. vacumm.report.ifroco.maps – Plotting maps &#8212; VACUMM v3.6.2 documentation</title>
+    <link rel="stylesheet" href="../_static/vacumm.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+<!--<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../static/logo_vacumm.png" border="0" alt="vacumm"/></a>
+</div>-->
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_vacumm.png" alt="Logo"/>
+            </a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/library/report.ifroco.maps.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-vacumm.report.ifroco.maps">
+<span id="vacumm-report-ifroco-maps-plotting-maps"></span><span id="lib-report-ifroco-maps"></span><h1>2.12.1.2. <a class="reference internal" href="#module-vacumm.report.ifroco.maps" title="vacumm.report.ifroco.maps"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vacumm.report.ifroco.maps</span></code></a> – Plotting maps<a class="headerlink" href="#module-vacumm.report.ifroco.maps" title="Permalink to this headline">¶</a></h1>
+<p>Plotting maps</p>
+<dl class="function">
+<dt id="vacumm.report.ifroco.maps.get_plot_specs">
+<code class="descname">get_plot_specs</code><span class="sig-paren">(</span><em>lon</em>, <em>lat</em>, <em>xfigsize=None</em>, <em>axes_rect=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/report/ifroco/maps.html#get_plot_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.report.ifroco.maps.get_plot_specs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get plot area specs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lon/lat</strong>: Data coordinates to plot.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.report.ifroco.maps.nested_axes">
+<code class="descname">nested_axes</code><span class="sig-paren">(</span><em>rect1=None</em>, <em>margins=None</em>, <em>fig=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/report/ifroco/maps.html#nested_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.report.ifroco.maps.nested_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup two nested axes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first">
+<li><p class="first"><strong>rect1</strong>, optional: Rectangle specs for the inner axes
+[left,bottom,width,height] in figure coordinates.
+Default from config <code class="docutils literal notranslate"><span class="pre">[maps]</span> <span class="pre">cax</span></code>.</p>
+</li>
+<li><p class="first"><strong>margin</strong>, option: Margins in pixel around the inner axes
+[left,bottom,right,top].</p>
+<blockquote>
+<div><p>Default from config <code class="docutils literal notranslate"><span class="pre">[maps]</span> <span class="pre">cax_margins</span></code>.</p>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return:</th><td class="field-body"><p class="first last"><cite>ax0, ax1</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vacumm.report.ifroco.maps.plot_map">
+<code class="descname">plot_map</code><span class="sig-paren">(</span><em>data</em>, <em>levels=None</em>, <em>units=None</em>, <em>long_name=None</em>, <em>title=None</em>, <em>axes_rect=None</em>, <em>xfigsize=None</em>, <em>extend=None</em>, <em>savefig=None</em>, <em>copyright=None</em>, <em>logos=None</em>, <em>close=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vacumm/report/ifroco/maps.html#plot_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vacumm.report.ifroco.maps.plot_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot data on a map</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong>: Single 2D variable or tuple of two variables for quiver.</li>
+<li><strong>units</strong>, optional: Change data units displayed in the colorar label.</li>
+<li><strong>long_name</strong>, optional: Name dispay in the default title.</li>
+<li><strong>title</strong>, optional: Title as a string or list of strings.
+It is dsipayed using <code class="xref py py-func docutils literal notranslate"><span class="pre">add_title()</span></code>.</li>
+<li><strong>copyright</strong>, optional: Add a copyright (multi-)line to the plot
+using <code class="xref py py-func docutils literal notranslate"><span class="pre">add_copyright()</span></code>.</li>
+<li><strong>logos</strong>, optional: Add logos to the plot
+using <code class="xref py py-func docutils literal notranslate"><span class="pre">add_logos()</span></code>.</li>
+<li><strong>savefig</strong>, optional: Save the figure to  this file.</li>
+<li>Extra keywords are passed to the <a class="reference internal" href="misc.plot.html#vacumm.misc.plot.map2" title="vacumm.misc.plot.map2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map2()</span></code></a>
+method.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Home</a>|&nbsp;</li>
+        <li><a href="../contents.html">Docs</a>|&nbsp;</li>
+        <li><a href="../user.faq.html">FAQ</a>|&nbsp;</li>
+<!--         <li><a href="../search.html">chercher</a>|&nbsp;</li> -->
+        <li><a href="../gallery.html">Gallery</a>|&nbsp;</li>
+        <li><a href="https://forge.ifremer.fr/projects/vacumm">Forge</a>&nbsp; &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2010-2015, Actimar/IFREMER.
+      Last updated on 21 Jan 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
+</html>
