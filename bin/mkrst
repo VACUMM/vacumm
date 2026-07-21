@@ -57,7 +57,7 @@ def pkg2rst(pkgdir, outdir, force):
 			if os.path.exists(fp) and not force:
 				print 'skipping', fp, ': already exists'
 			else:
-				print 'writting rst for module', module
+				print 'writing rst for module', module
 				f = file(fp, 'w')
 				f.write(s.getvalue())
 				f.close()
@@ -84,9 +84,7 @@ if __name__ == '__main__':
 	if os.path.exists(fp) and not options.force:
 		print 'skipping', fp, ': already exists'
 	else:
-		print 'writting rst for package index', fp
+		print 'writing rst for package index', fp
 		f = file(fp, 'w')
 		rstfiles = '\n   '.join([s for s in sorted(modules) if s != pkgindex])
 		f.write(indTpl%vars())
-
-
